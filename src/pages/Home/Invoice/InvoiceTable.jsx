@@ -213,7 +213,7 @@ const InvoiceTable = ({ title }) => {
                                 target="_blank"
                                 rel="noreferrer"
                               >
-                                <FaDownload className="editIcon text-green-500" />
+                                <FaDownload className="editIcon text-yellow-300" />
                               </a>
                             </Tooltip>
                           </td>
@@ -259,12 +259,17 @@ const InvoiceTable = ({ title }) => {
                                     handleMoveToRecycledbin(card._id)
                                   }
                                   className="bg-white p-1 rounded-sm"
+                                 
                                   style={{
-                                    cursor: deleteLoading
-                                      ? "not-allowed"
-                                      : "pointer",
-                                    opacity: deleteLoading ? 0.7 : 1,
-                                  }}
+                                      cursor: deleteLoading
+                                        ? "not-allowed"
+                                        : "pointer",
+                                      background: "white",
+                                      border: "none",
+                                      padding: 5,
+                                      borderRadius: "9999px",
+                                       opacity: deleteLoading ? 0.7 : 1,
+                                    }}
                                 >
                                   <FaTrashAlt className="text-[#f5365c] size-[16px]" />
                                 </button>

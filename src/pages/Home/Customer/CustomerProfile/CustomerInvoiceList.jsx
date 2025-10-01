@@ -229,7 +229,7 @@ const CustomerInvoiceList = ({
                                 target="_blank"
                                 rel="noreferrer"
                               >
-                                <FaDownload className="editIcon text-green-500" />
+                                <FaDownload className="editIcon text-yellow-300" />
                               </a>
                             </Tooltip>
                           </td>
@@ -266,10 +266,12 @@ const CustomerInvoiceList = ({
                                   handleMoveToRecycledbin(card._id)
                                 }
                                 className="editIconWrap cursor-pointer"
-                                style={{
-                                  border: "none",
-                                  background: "transparent",
-                                }}
+                                style={{                                      
+                                      background: "white",
+                                      border: "none",
+                                      padding: 5,
+                                      borderRadius: "9999px"
+                                    }}
                                 aria-label="Move to Recycle Bin"
                               >
                                 <FaTrashAlt className="deleteIcon text-red-500" />

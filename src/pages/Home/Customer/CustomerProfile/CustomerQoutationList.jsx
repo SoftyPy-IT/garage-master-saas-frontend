@@ -243,7 +243,7 @@ const CustomerQoutationList = ({ id, customerId, user_type, tenantDomain, compan
                                 target="_blank"
                                 rel="noreferrer"
                               >
-                                <FaDownload className="editIcon text-green-500" />
+                                <FaDownload className="editIcon text-yellow-300" />
                               </a>
                             </Tooltip>
                           </td>
@@ -278,10 +278,13 @@ const CustomerQoutationList = ({ id, customerId, user_type, tenantDomain, compan
                                 disabled={deleteLoading}
                                 onClick={() => deletePackage(card._id)}
                                 className="editIconWrap cursor-pointer"
-                                style={{
-                                  border: "none",
-                                  background: "transparent",
-                                }}
+                               style={{
+                                      
+                                      background: "white",
+                                      border: "none",
+                                      padding: 5,
+                                      borderRadius: "9999px"
+                                    }}
                                 aria-label="Delete Quotation"
                               >
                                 <FaTrashAlt className="deleteIcon text-red-500" />

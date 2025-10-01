@@ -112,7 +112,7 @@ const EmployeeStatistics = () => {
       <div className=" xl:flex gap-5  justify-between sectionMargin  mb-10 ">
         <div className="earningCardWrap ">
           <p className="mb-3 font-semibold">Employee Statistic</p>
-          <div className="grid grid-cols-1 md:grid-cols-2 justify-between gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 justify-between gap-3">
             <div className="flex items-center w-50 justify-between  earningCard">
               <div>
                 <div style={{ width: 60, height: 60 }}>

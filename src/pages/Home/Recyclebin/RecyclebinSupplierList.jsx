@@ -192,6 +192,13 @@ const tenantDomain = useTenantDomain();
                               disabled={supplierLoading}
                               onClick={() => handleDeleteOrRestore(card._id)}
                               className="editIconWrap"
+                              style={{
+                                     
+                                      background: "white",
+                                      border: "none",
+                                      padding: 5,
+                                      borderRadius: "9999px"
+                                    }}
                             >
                               <FaTrashAlt className="deleteIcon text-red-500" />
                             </button>

@@ -317,7 +317,16 @@ const InvoiceTable = () => {
                             <button
                               disabled={deleteLoading}
                               onClick={() => handleDeleteOrRestore(card._id)}
-                              className=" bg-white  p-1 rounded-sm "
+                              className=" bg-white  p-1  "
+                              style={{
+                                      cursor: deleteLoading
+                                        ? "not-allowed"
+                                        : "pointer",
+                                      background: "white",
+                                      border: "none",
+                                      padding: 5,
+                                      borderRadius: "9999px"
+                                    }}
                             >
                               <FaTrashAlt className="text-[#f5365c] size-[16px]" />
                             </button>

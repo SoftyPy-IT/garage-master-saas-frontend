@@ -65,14 +65,7 @@ const Home = () => {
         
         <ProfitOverView />
         
-      )}
-
-      {/* {showSensitiveData && (
-        <>
-          <AllServices />
-          <DashboardSummary data={allMetaData?.data} accountSummary={accountSummary}/>
-        </>
-      )} */}
+      )}      
 
       {/* <div className="flex xl:flex-nowrap flex-wrap sectionMargin  ">
         <MonthlyBarChart />
