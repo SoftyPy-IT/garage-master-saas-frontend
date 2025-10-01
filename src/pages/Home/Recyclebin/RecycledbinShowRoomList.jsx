@@ -228,6 +228,15 @@ const tenantDomain = useTenantDomain();
                             disabled={showroomDeleteLoading}
                             onClick={() => handleDeleteOrRestore(card._id)}
                             className="editIconWrap"
+                            style={{
+                                      cursor: deleteLoading
+                                        ? "not-allowed"
+                                        : "pointer",
+                                      background: "white",
+                                      border: "none",
+                                      padding: 5,
+                                      borderRadius: "9999px"
+                                    }}
                           >
                             <FaTrashAlt className="deleteIcon text-red-500" />
                           </button>

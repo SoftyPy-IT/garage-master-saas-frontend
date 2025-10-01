@@ -258,7 +258,7 @@ const QuotationTable = ({title}) => {
                                   target="_blank"
                                   rel="noreferrer"
                                 >
-                                  <FaDownload className="editIcon text-green-500" />
+                                  <FaDownload className="editIcon text-yellow-300" />
                                 </a>
                               </Tooltip>
                             </td>
@@ -307,14 +307,15 @@ const QuotationTable = ({title}) => {
                                     onClick={() =>
                                       handleMoveToRecycled(card._id)
                                     }
-                                    className="editIconWrap"
+                                    className="editIconWrap rounded-full"
                                     style={{
                                       cursor: deleteLoading
                                         ? "not-allowed"
                                         : "pointer",
-                                      background: "none",
+                                      background: "white",
                                       border: "none",
-                                      padding: 0,
+                                      padding: 5,
+                                      borderRadius: "9999px"
                                     }}
                                   >
                                     <FaTrashAlt className="deleteIcon text-red-500" />
