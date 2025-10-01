@@ -209,7 +209,7 @@ const CustomerJobCardList = ({
                               target="_blank"
                               rel="noreferrer"
                             >
-                              <FaDownload className="editIcon text-green-500" />
+                              <FaDownload className="editIcon text-yellow-300" />
                               <span className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity">
                                 Download
                               </span>
@@ -234,6 +234,13 @@ const CustomerJobCardList = ({
                               disabled={deleteLoading}
                               onClick={() => deletePackage(card?._id)}
                               className="editIconWrap"
+                              style={{
+                                      
+                                      background: "white",
+                                      border: "none",
+                                      padding: 5,
+                                      borderRadius: "9999px"
+                                    }}
                             >
                               <FaTrashAlt className="deleteIcon text-red-500" />
                             </button>

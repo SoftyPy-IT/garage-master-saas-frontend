@@ -196,7 +196,7 @@ const DuemoneyReceiptList = () => {
                         target="_blank"
                         rel="noreferrer"
                       >
-                        <FaDownload className="editIcon text-green-500" />
+                        <FaDownload className="editIcon text-yellow-300" />
                       </a>
                     </td>
                     <td>
@@ -213,6 +213,13 @@ const DuemoneyReceiptList = () => {
                         disabled={deleteLoading}
                         onClick={() => handleMoveRecycledbin(card._id)}
                         className="editIconWrap"
+                        style={{
+                                      
+                                      background: "white",
+                                      border: "none",
+                                      padding: 5,
+                                      borderRadius: "9999px"
+                                    }}
                       >
                         <FaTrashAlt className="deleteIcon text-red-500" />
                       </button>
