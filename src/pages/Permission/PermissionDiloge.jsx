@@ -30,40 +30,39 @@ const AddEditPermissionDialog = ({
   handleSavePermission,
 }) => {
   const theme = useTheme();
-  const { userOptions, pageOptions, tenantDomain } = usePermissionFormData();
+  const { userOptions, pageOptions, tenantDomain, roleOptions } = usePermissionFormData();
   const [createPermission] = useCreatePermissionMutation();
   const user = useSelector(selectCurrentUser);
-const handleSubmit = async (data) => {
-  try {
-    console.log('Submitting permission data:', data);
+  const handleSubmit = async (data) => {
+    try {
 
-    const permissionData = {
-      pageId: data.pageId,
-      create: data.create || false,
-      edit: data.edit || false,
-      view: data.view || false,
-      delete: data.delete || false,
-    };
-console.log('Prepared permission data:', permissionData);
+      const permissionData = {
+        pageId: data.pageId,
+        create: data.create || false,
+        edit: data.edit || false,
+        view: data.view || false,
+        delete: data.delete || false,
+      };
+      console.log('Prepared permission data:', permissionData);
 
-    // Use current user's ID (if that's what your backend expects)
-    const result = await createPermission({
-      userId: user.userId, // Current user's ID
-      tenantDomain,
-      data: permissionData
-    }).unwrap();
+      // Use current user's ID (if that's what your backend expects)
+      const result = await createPermission({
+        userId: user.userId,
+        tenantDomain,
+        data: permissionData
+      }).unwrap();
 
-    console.log('Permission created successfully:', result);
-    handleClose();
+      console.log('Permission created successfully:', result);
+      handleClose();
 
-    if (handleSavePermission) {
-      handleSavePermission(result);
+      if (handleSavePermission) {
+        handleSavePermission(result);
+      }
+
+    } catch (error) {
+      console.error('Error creating permission:', error);
     }
-
-  } catch (error) {
-    console.error('Error creating permission:', error);
-  }
-};
+  };
 
   return (
     <Dialog
@@ -119,7 +118,7 @@ console.log('Prepared permission data:', permissionData);
               />
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid item xs={12} md={6}>
               <FormAutocomplete
                 options={pageOptions}
                 name="pageId"
@@ -128,17 +127,26 @@ console.log('Prepared permission data:', permissionData);
 
               />
             </Grid>
+            <Grid item xs={12} md={6}>
+              <FormAutocomplete
+                options={roleOptions}
+                name="roleId"
+                label="Select Role"
+                margin="normal"
 
+              />
+            </Grid>
             <Grid item xs={12}>
               <Typography variant="h6" fontWeight={600} mb={2}>
                 Permissions
               </Typography>
-              <Grid container spacing={2}>
+              <Grid container spacing={1}>
                 <Grid item xs={12} sm={6} md={3}>
                   <FormCheckBox
                     name="create"
                     label="Create"
                     description="Ability to create new entries"
+                    size="none"
                   />
                 </Grid>
                 <Grid item xs={12} sm={6} md={3}>
@@ -146,6 +154,7 @@ console.log('Prepared permission data:', permissionData);
                     name="edit"
                     label="Edit"
                     description="Ability to modify existing entries"
+                    size="none"
                   />
                 </Grid>
                 <Grid item xs={12} sm={6} md={3}>
@@ -153,6 +162,7 @@ console.log('Prepared permission data:', permissionData);
                     name="view"
                     label="View"
                     description="Ability to view entries"
+                    size="none"
                   />
                 </Grid>
                 <Grid item xs={12} sm={6} md={3}>
