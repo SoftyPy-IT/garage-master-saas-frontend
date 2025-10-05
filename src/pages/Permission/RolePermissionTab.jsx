@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React from "react";
 import { Grid, Card, Avatar, Typography, List, ListItem, ListItemText, ListItemIcon, Checkbox, Divider, Button, Box, useTheme, alpha } from "@mui/material";
 
@@ -38,7 +39,7 @@ const RolePermissionsTab = ({ roles, permissionMatrix, handleDialogOpen }) => {
                 {role.name}
               </Typography>
             </Box>
-            
+
             <List dense>
               {permissionMatrix.map((category, catIndex) => (
                 <div key={catIndex}>
@@ -71,7 +72,7 @@ const RolePermissionsTab = ({ roles, permissionMatrix, handleDialogOpen }) => {
                 </div>
               ))}
             </List>
-            
+
             <Box display="flex" justifyContent="flex-end" mt={2}>
               <Button
                 variant="outlined"
