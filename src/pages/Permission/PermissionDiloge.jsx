@@ -1,19 +1,45 @@
 /* eslint-disable react/prop-types */
-import { Dialog, DialogTitle, DialogContent, DialogActions, Grid, FormControl, InputLabel, Select, MenuItem, Avatar, Typography, Box, Button, Card, Checkbox,  useTheme, alpha } from "@mui/material";
-import { Security, Person, Save,  } from "@mui/icons-material";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Grid,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Avatar,
+  Typography,
+  Box,
+  Button,
+  Card,
+  Checkbox,
+  useTheme,
+  alpha,
+} from "@mui/material";
+import { Security, Person, Save } from "@mui/icons-material";
+import { useGetAllUserQuery } from "../../redux/api/userApi";
+import { useTenantDomain } from "../../hooks/useTenantDomain";
+import { useGetAllPagesQuery } from "../../redux/api/pageApi";
 
-const AddEditPermissionDialog = ({ 
-  open, 
-  handleClose, 
-  permissionType, 
-  permissionForm, 
-  handleFormChange, 
-  handleSavePermission, 
-  users, 
-  roles, 
-  pages 
+const AddEditPermissionDialog = ({
+  open,
+  handleClose,
+  permissionType,
+  permissionForm,
+  handleFormChange,
+  handleSavePermission,
+  users,
+  roles,
+  pages,
 }) => {
   const theme = useTheme();
+  const { tenantDomain } = useTenantDomain();
+
+  const { data: userData } = useGetAllUserQuery({ tenantDomain });
+  const { data: pageData } = useGetAllPagesQuery({ tenantDomain });
+  console.log(pageData);
 
   return (
     <Dialog
@@ -45,7 +71,9 @@ const AddEditPermissionDialog = ({
           </Avatar>
           <Box>
             <Typography variant="h6" fontWeight={600}>
-              {permissionType === "edit" ? "Edit Permission" : "Add New Permission"}
+              {permissionType === "edit"
+                ? "Edit Permission"
+                : "Add New Permission"}
             </Typography>
             <Typography variant="body2" color="text.secondary">
               Configure access control for users and roles
@@ -165,7 +193,10 @@ const AddEditPermissionDialog = ({
                   sx={{
                     p: 2,
                     borderRadius: 2,
-                    border: `1px solid ${alpha(theme.palette.success.main, 0.2)}`,
+                    border: `1px solid ${alpha(
+                      theme.palette.success.main,
+                      0.2
+                    )}`,
                     bgcolor: alpha(theme.palette.success.main, 0.02),
                     transition: "all 0.3s",
                     "&:hover": {
@@ -195,7 +226,10 @@ const AddEditPermissionDialog = ({
                   sx={{
                     p: 2,
                     borderRadius: 2,
-                    border: `1px solid ${alpha(theme.palette.warning.main, 0.2)}`,
+                    border: `1px solid ${alpha(
+                      theme.palette.warning.main,
+                      0.2
+                    )}`,
                     bgcolor: alpha(theme.palette.warning.main, 0.02),
                     transition: "all 0.3s",
                     "&:hover": {
