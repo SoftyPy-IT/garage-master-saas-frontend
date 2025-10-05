@@ -1,8 +1,8 @@
-import React from "react";
+/* eslint-disable react/prop-types */
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Avatar, Chip, Typography, Checkbox, Box, Tooltip, IconButton, useTheme, alpha } from "@mui/material";
 import { Edit, Delete, Person, LibraryBooks } from "@mui/icons-material";
 
-const UserPermissionsTab = ({ filteredPermissions, users, pages, roles, handleDialogOpen, handleDeletePermission, getRoleColor }) => {
+const UserPermissionsTab = ({ filteredPermissions, users, pages, handleDialogOpen, handleDeletePermission, getRoleColor }) => {
   const theme = useTheme();
 
   return (
