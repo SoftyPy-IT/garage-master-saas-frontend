@@ -2,9 +2,10 @@
 /* eslint-disable react/prop-types */
 // src/context/PermissionContext.js
 import { createContext, useContext, useState, useEffect } from "react";
-import Cookies from "js-cookie";
 import { CircularProgress, Box, Typography, Button } from "@mui/material";
 import { useTenantDomain } from "../hooks/useTenantDomain";
+import { useSelector } from "react-redux";
+import { selectCurrentToken } from "../redux/feature/authSlice";
 
 const PermissionContext = createContext();
 
@@ -17,12 +18,14 @@ export const usePermissions = () => {
 };
 
 export const PermissionProvider = ({ children }) => {
-  const {tenantDomain} = useTenantDomain();
+  const { tenantDomain } = useTenantDomain();
+  const token = useSelector(selectCurrentToken);
+
   const [permissions, setPermissions] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchPermissions = async (token) => {
+  const fetchPermissions = async () => {
     try {
       if (!token) {
         setLoading(false);
@@ -60,40 +63,40 @@ export const PermissionProvider = ({ children }) => {
       setLoading(false);
     }
   };
+
   const checkPermission = (pagePath, action = "view") => {
     if (!permissions) {
       console.log("Permissions not loaded yet");
       return false;
     }
 
-    // find from permission array
-    const permission = permissions.find(p => {
-
+    const permission = permissions.find((p) => {
       const possiblePaths = [
         pagePath,
-        pagePath.endsWith('/') ? pagePath.slice(0, -1) : pagePath + '/',
-        pagePath.startsWith('/') ? pagePath : '/' + pagePath
+        pagePath.endsWith("/") ? pagePath.slice(0, -1) : pagePath + "/",
+        pagePath.startsWith("/") ? pagePath : "/" + pagePath,
       ];
-      
-      return possiblePaths.includes(p.page?.path) || 
-             possiblePaths.includes(p.route) || 
-             possiblePaths.includes(p.path);
+
+      return (
+        possiblePaths.includes(p.page?.path) ||
+        possiblePaths.includes(p.route) ||
+        possiblePaths.includes(p.path)
+      );
     });
-    
+
     if (!permission) {
       console.log("No permission found for page:", pagePath);
       return false;
     }
-    
-    const hasPermission = permission[action] || false;
-    
-    return hasPermission;
+
+    return permission[action] || false;
   };
 
+  // Refetch whenever token or tenantDomain changes
   useEffect(() => {
-    const token = Cookies.get("token");
-    fetchPermissions(token);
-  }, [tenantDomain]);
+    setLoading(true);
+    fetchPermissions();
+  }, [token, tenantDomain]);
 
   const value = {
     permissions,
@@ -105,12 +108,7 @@ export const PermissionProvider = ({ children }) => {
 
   if (loading) {
     return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        height="100vh"
-      >
+      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
         <Box textAlign="center">
           <CircularProgress size={60} />
           <Typography variant="h6" mt={2}>
@@ -123,12 +121,7 @@ export const PermissionProvider = ({ children }) => {
 
   if (error) {
     return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        height="100vh"
-      >
+      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
         <Box textAlign="center">
           <Typography variant="h6" color="error">
             Error loading permissions: {error}
@@ -145,9 +138,5 @@ export const PermissionProvider = ({ children }) => {
     );
   }
 
-  return (
-    <PermissionContext.Provider value={value}>
-      {children}
-    </PermissionContext.Provider>
-  );
+  return <PermissionContext.Provider value={value}>{children}</PermissionContext.Provider>;
 };

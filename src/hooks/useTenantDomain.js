@@ -25,6 +25,7 @@ export function useTenantDomain() {
     }
   }, []);
 
+
   // Return an object instead of just the string
   return { tenantDomain };
 }
