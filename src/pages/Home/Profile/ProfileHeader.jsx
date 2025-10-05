@@ -671,22 +671,14 @@ const ProfileHeader = ({
                     startIcon={<FaEdit />}
                     onClick={handleEditClick}
                     disabled={isUploading}
-                    sx={{
-                     
+                    sx={{                     
                       border: "1px solid rgba(255,255,255,0.3)",
-                      color: "white",
+                      color: "",
                       px: 3,
                       py: 1.5,
                       borderRadius: "12px",
-                      "&:hover": {
-                        bgcolor: "rgba(255,255,255,0.3)",
-                        transform: "translateY(-2px)",
-                        boxShadow: "0 8px 25px rgba(0,0,0,0.2)",
-                      },
-                      "&:disabled": {
-                        bgcolor: "rgba(255,255,255,0.1)",
-                        color: "rgba(255,255,255,0.5)",
-                      },
+                     
+                      
                       transition: "all 0.3s ease",
                     }}
                   >

@@ -55,7 +55,7 @@ const UserProfile = ({ tenantDomain }) => {
         onClick={toggleDropdown}
       >
         <img
-          src={data?.data[0]?.image}
+          src={data?.data[0]?.image || "/images/user.jpg"}
           alt="User"
           className="w-10 h-10 rounded-full border-2 border-white shadow-sm"
         />
