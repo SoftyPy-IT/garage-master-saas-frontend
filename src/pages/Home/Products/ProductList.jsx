@@ -567,7 +567,7 @@ export default function ProductList() {
   const [isPrinting, setIsPrinting] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const navigate = useNavigate();
-  // const search = new URLSearchParams(location.search).get("search");
+
   const [filterType, setFilterType] = useState("");
   // Query parameters
   const tenantDomain = useTenantDomain();

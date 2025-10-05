@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useState, useEffect } from "react";
 import {
   Box,
@@ -45,24 +46,16 @@ import RolePermissionsTab from "./RolePermissionTab";
 import PermissionTemplates from "./PermissionTemplate";
 import AddEditPermissionDialog from "./PermissionDiloge";
 import CheckPermissionDialog from "./CheckPermissionDiloge";
+import { useGetAllPermissionsQuery } from "../../redux/api/permissionApi";
+import { useTenantDomain } from "../../hooks/useTenantDomain";
 
 const Permission = () => {
   const [tabValue, setTabValue] = useState(0);
   const [openDialog, setOpenDialog] = useState(false);
   const [openCheckDialog, setOpenCheckDialog] = useState(false);
-  const [permissionType, setPermissionType] = useState("user");
   const [permissions, setPermissions] = useState([]);
   const [filteredPermissions, setFilteredPermissions] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [permissionForm, setPermissionForm] = useState({
-    userId: "",
-    roleId: "",
-    pageId: "",
-    create: false,
-    edit: false,
-    view: false,
-    delete: false,
-  });
   const [checkPermissionForm, setCheckPermissionForm] = useState({
     userId: "",
     pageId: "",
@@ -71,6 +64,10 @@ const Permission = () => {
   const [permissionResult, setPermissionResult] = useState(null);
   const [showResult, setShowResult] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { tenantDomain } = useTenantDomain();
+
+  const { data: permissionsData, isLoading: permissionsLoading } = useGetAllPermissionsQuery({ tenantDomain });
+  console.log("permissionsData", permissionsData);
   const [stats, setStats] = useState({
     users: 0,
     roles: 0,
@@ -78,7 +75,7 @@ const Permission = () => {
     permissions: 0,
   });
 
-  // Static data for demonstration
+
   const users = [
     { id: "1", name: "John Doe", email: "john@example.com", role: "Admin" },
     {
@@ -125,7 +122,6 @@ const Permission = () => {
     { id: "13", name: "Settings", icon: <Settings /> },
   ];
 
-  // Mock permissions data
   const mockPermissions = [
     {
       id: "1",
@@ -181,7 +177,6 @@ const Permission = () => {
     },
   ];
 
-  // Permission matrix data
   const permissionMatrix = [
     {
       category: "Client Management",
@@ -410,34 +405,7 @@ const Permission = () => {
     setTabValue(newValue);
   };
 
-  const handleDialogOpen = (type, id = null) => {
-    setPermissionType(type);
-    if (id) {
-      // Edit existing permission
-      const permission = permissions.find((p) => p.id === id);
-      if (permission) {
-        setPermissionForm({
-          userId: permission.userId,
-          roleId: permission.roleId,
-          pageId: permission.pageId,
-          create: permission.create,
-          edit: permission.edit,
-          view: permission.view,
-          delete: permission.delete,
-        });
-      }
-    } else {
-      // Create new permission
-      setPermissionForm({
-        userId: "",
-        roleId: "",
-        pageId: "",
-        create: false,
-        edit: false,
-        view: false,
-        delete: false,
-      });
-    }
+  const handleDialogOpen = () => {
     setOpenDialog(true);
   };
 
@@ -454,25 +422,12 @@ const Permission = () => {
     setPermissionResult(null);
     setShowResult(false);
     setOpenCheckDialog(true);
-  };
+  }
 
   const handleCheckDialogClose = () => {
     setOpenCheckDialog(false);
   };
 
-  const handleFormChange = (e) => {
-    const { name, value, checked } = e.target;
-    setPermissionForm({
-      ...permissionForm,
-      [name]:
-        name === "create" ||
-        name === "edit" ||
-        name === "view" ||
-        name === "delete"
-          ? checked
-          : value,
-    });
-  };
 
   const handleCheckFormChange = (e) => {
     const { name, value } = e.target;
@@ -482,43 +437,14 @@ const Permission = () => {
     });
   };
 
-  const handleSavePermission = () => {
-    // Simulate API call to save permission
-    setLoading(true);
-    setTimeout(() => {
-      // In a real app, you would make an API call here
-      console.log("Saving permission:", permissionForm);
 
-      // Update local state for demo
-      const newPermission = {
-        id: (permissions.length + 1).toString(),
-        userId: permissionForm.userId,
-        roleId: permissionForm.roleId,
-        pageId: permissionForm.pageId,
-        create: permissionForm.create,
-        edit: permissionForm.edit,
-        view: permissionForm.view,
-        delete: permissionForm.delete,
-        userName: users.find((u) => u.id === permissionForm.userId)?.name || "",
-        roleName: roles.find((r) => r.id === permissionForm.roleId)?.name || "",
-        pageName: pages.find((p) => p.id === permissionForm.pageId)?.name || "",
-      };
-
-      setPermissions([...permissions, newPermission]);
-      setLoading(false);
-      setOpenDialog(false);
-    }, 800);
-  };
 
   const handleCheckPermission = () => {
-    // Simulate API call to check permission
     setLoading(true);
     setTimeout(() => {
-      // In a real app, you would make an API call here
-      console.log("Checking permission:", checkPermissionForm);
 
-      // Mock result - in a real app this would come from the API
-      const hasPermission = Math.random() > 0.3; // 70% chance of having permission
+
+      const hasPermission = Math.random() > 0.3;
       setPermissionResult(hasPermission);
       setShowResult(true);
       setLoading(false);
@@ -526,10 +452,8 @@ const Permission = () => {
   };
 
   const handleDeletePermission = (id) => {
-    // Simulate API call to delete permission
     setLoading(true);
     setTimeout(() => {
-      // Update local state for demo
       setPermissions(permissions.filter((p) => p.id !== id));
       setLoading(false);
     }, 800);
@@ -543,7 +467,7 @@ const Permission = () => {
   return (
     <Box sx={{ p: 3 }}>
       {/* Header Section */}
-      <PermissionHeader/>
+      <PermissionHeader />
 
       {/* Stats Cards */}
       <StatsCards stats={stats} />
@@ -667,6 +591,7 @@ const Permission = () => {
             />
           )}
 
+
           {/* Role Permissions Tab */}
           {tabValue === 2 && (
             <RolePermissionsTab
@@ -685,13 +610,8 @@ const Permission = () => {
       <AddEditPermissionDialog
         open={openDialog}
         handleClose={handleDialogClose}
-        permissionType={permissionType}
-        permissionForm={permissionForm}
-        handleFormChange={handleFormChange}
-        handleSavePermission={handleSavePermission}
-        users={users}
-        roles={roles}
-        pages={pages}
+
+
       />
 
       {/* Check Permission Dialog */}
