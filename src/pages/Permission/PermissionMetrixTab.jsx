@@ -76,7 +76,7 @@ const PermissionMatrixTab = ({ permissionMatrix, roles }) => {
                       {roles.map((role) => (
                         <TableCell key={role._id} align="center">
                           <Checkbox
-                            checked={permission[role.name.toLowerCase().replace(' ', '')] || false}
+                            checked={permission[role.name?.toLowerCase().replace(' ', '')] || false}
                             color="primary"
                             inputProps={{
                               "aria-label": `${permission.name} for ${role.name}`,

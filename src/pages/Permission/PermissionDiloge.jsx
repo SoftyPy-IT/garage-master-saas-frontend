@@ -15,13 +15,15 @@ import {
 } from "@mui/material";
 import { Security, Save } from "@mui/icons-material";
 import GarageForm from "../../components/form/Form";
-import AutocompleteSelect from "../../components/form/AutocompleteSelect";
 import FormAutocomplete from "../../components/form/FormAutocomplete";
 import FormCheckBox from "../../components/form/checkbox";
 import { usePermissionFormData } from "../../hooks/usePermissionFormData";
 import { useCreatePermissionMutation } from "../../redux/api/permissionApi";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "../../redux/feature/authSlice";
+import GarageAutoCompleted from "../../components/form/Autocomplete";
+import FormAutoCompleted from "../../components/form/FormAutoCompleted";
+
 
 const AddEditPermissionDialog = ({
   open,
@@ -33,25 +35,42 @@ const AddEditPermissionDialog = ({
   const { userOptions, pageOptions, tenantDomain, roleOptions } = usePermissionFormData();
   const [createPermission] = useCreatePermissionMutation();
   const user = useSelector(selectCurrentUser);
+
   const handleSubmit = async (data) => {
+    console.log('Form data submitted:', data);
     try {
+      // Extract the values from the selected objects
+      const pageId = Array.isArray(data.pageId)
+        ? data.pageId.map(item => item.value || item) // Handle both object and string values
+        : data.pageId?.value || data.pageId;
+
+      const userId = Array.isArray(data.userId)
+        ? data.userId.map(item => item.value || item)
+        : data.userId?.value || data.userId;
+
+      const roleId = Array.isArray(data.roleId)
+        ? data.roleId.map(item => item.value || item)
+        : data.roleId?.value || data.roleId;
 
       const permissionData = {
-        pageId: data.pageId,
+        pageId: pageId,
         create: data.create || false,
         edit: data.edit || false,
         view: data.view || false,
         delete: data.delete || false,
+        userId: userId, // Make sure to include userId in your API call
+        roleId: roleId, // Include roleId if needed
       };
+
       console.log('Prepared permission data:', permissionData);
 
-      // Use current user's ID (if that's what your backend expects)
       const result = await createPermission({
-        userId: user.userId,
+        userId: user.userId, // Using current user's ID as the creator
         tenantDomain,
         data: permissionData
       }).unwrap();
 
+      console.log('API response:', result);
       console.log('Permission created successfully:', result);
       handleClose();
 
@@ -108,7 +127,7 @@ const AddEditPermissionDialog = ({
         <DialogContent sx={{ pt: 3 }}>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
-              <AutocompleteSelect
+              <FormAutoCompleted
                 options={userOptions}
                 name="userId"
                 label="Select User"
@@ -119,7 +138,7 @@ const AddEditPermissionDialog = ({
             </Grid>
 
             <Grid item xs={12} md={6}>
-              <FormAutocomplete
+              <FormAutoCompleted
                 options={pageOptions}
                 name="pageId"
                 label="Select Page"
@@ -128,7 +147,7 @@ const AddEditPermissionDialog = ({
               />
             </Grid>
             <Grid item xs={12} md={6}>
-              <FormAutocomplete
+              <FormAutoCompleted
                 options={roleOptions}
                 name="roleId"
                 label="Select Role"

@@ -68,13 +68,19 @@ const Permission = () => {
 
   const { data: permissionsData, isLoading: permissionsLoading } = useGetAllPermissionsQuery({ tenantDomain });
 
-  // Extract unique pages and roles from permissions data
+  // Extract unique pages and roles from permissions data with safety checks
   const pages = permissionsData?.data
-    ? [...new Map(permissionsData.data.map(item => [item.page._id, item.page])).values()]
+    ? [...new Map(permissionsData.data
+      .filter(item => item?.page?._id)
+      .map(item => [item.page._id, item.page])
+    ).values()]
     : [];
 
   const roles = permissionsData?.data
-    ? [...new Map(permissionsData.data.map(item => [item.roleId._id, item.roleId])).values()]
+    ? [...new Map(permissionsData.data
+      .filter(item => item?.roleId?._id)
+      .map(item => [item.roleId._id, item.roleId])
+    ).values()]
     : [];
 
   // Transform API data to match component format
@@ -84,25 +90,25 @@ const Permission = () => {
     return apiData.data.map(permission => ({
       id: permission._id,
       userId: permission.userId?._id || '',
-      roleId: permission.roleId._id,
-      pageId: permission.page._id,
-      create: permission.create,
-      edit: permission.edit,
-      view: permission.view,
-      delete: permission.delete,
+      roleId: permission.roleId?._id || '',
+      pageId: permission.page?._id || '',
+      create: permission.create || false,
+      edit: permission.edit || false,
+      view: permission.view || false,
+      delete: permission.delete || false,
       userName: permission.userId?.name || 'System',
-      roleName: permission.roleId.name,
-      pageName: permission.page.name,
+      roleName: permission.roleId?.name || 'Unknown Role',
+      pageName: permission.page?.name || 'Unknown Page',
       userEmail: permission.userId?.email || 'system@example.com'
     }));
   };
 
-  // Build permission matrix from API data
+  // Build permission matrix from API data with safety checks
   const buildPermissionMatrix = () => {
     if (!permissionsData?.data) return [];
 
     const matrix = [];
-    const pageCategories = [...new Set(pages.map(page => page.category))];
+    const pageCategories = [...new Set(pages.map(page => page.category).filter(Boolean))];
 
     pageCategories.forEach(category => {
       const categoryPages = pages.filter(page => page.category === category);
@@ -110,7 +116,7 @@ const Permission = () => {
 
       categoryPages.forEach(page => {
         // Get permissions for this page across all roles
-        const pagePermissions = permissionsData.data.filter(p => p.page._id === page._id);
+        const pagePermissions = permissionsData.data.filter(p => p.page?._id === page._id);
 
         if (pagePermissions.length > 0) {
           // Create permission entry for each CRUD action
@@ -121,10 +127,11 @@ const Permission = () => {
               name: `${action.charAt(0).toUpperCase() + action.slice(1)} ${page.name}`,
             };
 
-            // Add permission status for each role
+            // Add permission status for each role with safety checks
             roles.forEach(role => {
-              const rolePermission = pagePermissions.find(p => p.roleId._id === role._id);
-              permissionEntry[role.name.toLowerCase().replace(' ', '')] = rolePermission ? rolePermission[action] : false;
+              const roleName = role?.name ? role.name.toLowerCase().replace(/\s+/g, '') : 'unknownrole';
+              const rolePermission = pagePermissions.find(p => p.roleId?._id === role._id);
+              permissionEntry[roleName] = rolePermission ? (rolePermission[action] || false) : false;
             });
 
             categoryPermissions.push(permissionEntry);
@@ -176,8 +183,8 @@ const Permission = () => {
     }
 
     const uniqueUsers = new Set(permissionsData.data.map(p => p.userId?._id).filter(Boolean)).size;
-    const uniqueRoles = new Set(permissionsData.data.map(p => p.roleId._id)).size;
-    const uniquePages = new Set(permissionsData.data.map(p => p.page._id)).size;
+    const uniqueRoles = new Set(permissionsData.data.map(p => p.roleId?._id).filter(Boolean)).size;
+    const uniquePages = new Set(permissionsData.data.map(p => p.page?._id).filter(Boolean)).size;
 
     return {
       users: uniqueUsers,
@@ -199,15 +206,15 @@ const Permission = () => {
   }, [permissionsData]);
 
   useEffect(() => {
-    // Filter permissions based on search term
+    // Filter permissions based on search term with safety checks
     if (searchTerm === "") {
       setFilteredPermissions(permissions);
     } else {
       const filtered = permissions.filter(
         (perm) =>
-          perm.userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          perm.roleName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          perm.pageName.toLowerCase().includes(searchTerm.toLowerCase())
+          perm.userName?.toLowerCase()?.includes(searchTerm?.toLowerCase()) ||
+          perm.roleName?.toLowerCase()?.includes(searchTerm?.toLowerCase()) ||
+          perm.pageName?.toLowerCase()?.includes(searchTerm?.toLowerCase())
       );
       setFilteredPermissions(filtered);
     }
@@ -251,10 +258,10 @@ const Permission = () => {
   const handleCheckPermission = () => {
     setLoading(true);
     setTimeout(() => {
-      // Check permission against actual data
+      // Check permission against actual data with safety checks
       const hasPermission = permissionsData?.data?.some(permission =>
         permission.userId?._id === checkPermissionForm.userId &&
-        permission.page._id === checkPermissionForm.pageId &&
+        permission.page?._id === checkPermissionForm.pageId &&
         permission[checkPermissionForm.action] === true
       ) || false;
 
@@ -308,7 +315,7 @@ const Permission = () => {
             <Button
               variant="contained"
               startIcon={<Add />}
-              onClick={() => handleDialogOpen("user")}
+              onClick={handleDialogOpen}
               sx={{
                 borderRadius: 2,
                 boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
@@ -450,7 +457,7 @@ const Permission = () => {
         color="primary"
         aria-label="add permission"
         sx={{ position: "fixed", bottom: 16, right: 16 }}
-        onClick={() => handleDialogOpen("user")}
+        onClick={handleDialogOpen}
       >
         <Add />
       </Fab>
