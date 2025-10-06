@@ -167,7 +167,7 @@ input:focus {
   .activeDrawer,
   .drawer-content {
     width: 95% !important;
-    right: 0 !important;
+    /* right: 0 !important; */
   }
 } /* Tablet (769px – 1024px) */
 @media (max-width: 1024px) {
