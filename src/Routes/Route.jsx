@@ -130,13 +130,13 @@ import PurchaseReturnList from "../pages/Inventory/PurchaseReturn/PurchaseReturn
 import WarrantiesPage from "../pages/Inventory/Warranty/WarrantiesPage";
 import StockTransaction from "../pages/Inventory/StockTransaction/StockTransaction";
 import InvoiceList from "../pages/Home/Invoice/ViewInvoice";
-import Unauthorized from "../pages/Unauthorized";
 import ProtectedRoute from "./PrivateRoute";
 import FeatureAccess from "../pages/PermissionDashboard/FeatureAccess";
 import UserManagement from "../pages/PermissionDashboard/UserManagement";
 import PageManagement from "../pages/PageManagement/PageManagement";
 import RoleManagement from "../pages/RoleManagement";
 import Permission from "../pages/Permission/Permission";
+import Unauthorized from "../pages/UnAuthorized";
 
 const createProtectedRoute = (path, element, pagePath, action = "view") => {
   return {
@@ -168,7 +168,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "unauthorized",
-        element: <Unauthorized />,
+        element: <Unauthorized/>,
       },
     ],
   },
