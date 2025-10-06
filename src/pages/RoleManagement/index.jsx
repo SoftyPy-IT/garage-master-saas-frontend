@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 // pages/RoleManagement.js
 import { useState } from "react";
 import {
@@ -18,431 +19,385 @@ import {
   IconButton,
   Menu,
   MenuItem,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  FormControl,
-  InputLabel,
-  Select,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
-  Checkbox,
-  Divider,
   Tabs,
   Tab,
   Badge,
-  useTheme,
   TextField,
   InputAdornment,
+  Switch,
+  FormControlLabel,
+  Alert,
+  Snackbar,
 } from "@mui/material";
 import {
   Add,
   MoreVert,
   Edit,
   Delete,
-  Visibility,
-  Settings,
   Person,
-  AssignmentTurnedIn,
-  Business,
+  Search,
+  FilterList,
 } from "@mui/icons-material";
+import AddRoleModal from "./AddRoleModal";
+import { useGetAllRolesQuery, useDeleteRoleMutation } from "../../redux/api/roleApi";
+import { useTenantDomain } from "../../hooks/useTenantDomain";
+import swal from "sweetalert";
 
 const RoleManagement = () => {
   const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedRole, setSelectedRole] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
-  const [tabValue, setTabValue] = useState(0);
+  const [editMode, setEditMode] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
 
-  const handleMenuClick = (event) => {
+  const { tenantDomain } = useTenantDomain();
+  const { data: rolesData, isLoading, error, refetch } = useGetAllRolesQuery({ tenantDomain });
+  const [deleteRole] = useDeleteRoleMutation();
+
+  const roles = rolesData?.data || [];
+
+  const handleMenuClick = (event, role) => {
     setAnchorEl(event.currentTarget);
+    setSelectedRole(role);
   };
 
   const handleMenuClose = () => {
     setAnchorEl(null);
+    setSelectedRole(null);
   };
 
-  const handleDialogOpen = () => {
+  const handleOpenDialog = () => {
+    setEditMode(false);
+    setSelectedRole(null);
     setOpenDialog(true);
   };
 
-  const handleDialogClose = () => {
+  const handleCloseDialog = () => {
     setOpenDialog(false);
+    setSelectedRole(null);
+    setEditMode(false);
   };
 
-  const handleTabChange = (event, newValue) => {
-    setTabValue(newValue);
+  const handleEditRole = () => {
+    setEditMode(true);
+    setOpenDialog(true);
+    handleMenuClose();
   };
 
-  const roles = [
-    {
-      id: 1,
-      name: "Admin",
-      description: "Full access to client operations and user management",
-      users: 12,
-      status: "Active",
-      permissions: 18,
-      client: "ABC Motors",
-    },
-    {
-      id: 2,
-      name: "Accountant",
-      description: "Access to financial operations and reporting",
-      users: 8,
-      status: "Active",
-      permissions: 12,
-      client: "XYZ Garage",
-    },
-    {
-      id: 3,
-      name: "User",
-      description: "Basic access to client and jobcard management",
-      users: 48,
-      status: "Active",
-      permissions: 8,
-      client: "Quick Auto",
-    },
-    {
-      id: 4,
-      name: "Mechanic",
-      description: "Access to jobcard and service operations",
-      users: 15,
-      status: "Active",
-      permissions: 10,
-      client: "Super Auto",
-    },
-  ];
 
-  const permissions = [
-    {
-      category: "Client Management",
-      items: [
-        { name: "View Clients", checked: true },
-        { name: "Create Clients", checked: true },
-        { name: "Edit Clients", checked: true },
-        { name: "Delete Clients", checked: false },
-      ],
-    },
-    {
-      category: "Jobcard Management",
-      items: [
-        { name: "View Jobcards", checked: true },
-        { name: "Create Jobcards", checked: true },
-        { name: "Edit Jobcards", checked: true },
-        { name: "Delete Jobcards", checked: false },
-      ],
-    },
-    {
-      category: "Invoice Management",
-      items: [
-        { name: "View Invoices", checked: true },
-        { name: "Create Invoices", checked: true },
-        { name: "Edit Invoices", checked: true },
-        { name: "Delete Invoices", checked: false },
-      ],
-    },
-    {
-      category: "Quotation Management",
-      items: [
-        { name: "View Quotations", checked: true },
-        { name: "Create Quotations", checked: true },
-        { name: "Edit Quotations", checked: true },
-        { name: "Delete Quotations", checked: false },
-      ],
-    },
-    {
-      category: "Money Receipt Management",
-      items: [
-        { name: "View Money Receipts", checked: true },
-        { name: "Create Money Receipts", checked: true },
-        { name: "Edit Money Receipts", checked: true },
-        { name: "Delete Money Receipts", checked: false },
-      ],
-    },
-  ];
+  const handleDeleteRole = async (id) => {
+    const willDelete = await swal({
+      title: "Are you sure?",
+      text: " You want to move  this supplier recycle bin?",
+      icon: "warning",
+      dangerMode: true,
+    });
 
-  const getRoleColor = (role) => {
-    return role === "Admin"
-      ? "primary"
-      : role === "Accountant"
-      ? "secondary"
-      : role === "User"
-      ? "info"
-      : "warning";
+    if (willDelete) {
+      try {
+        await deleteRole({ id: selectedRole._id, tenantDomain, }).unwrap();
+        swal(
+          "Move to Recycle bin!",
+          "Move to Recycle bin successful.",
+          "success"
+        );
+      } catch (error) {
+        swal("Error", "An error occurred while deleting the card.", "error");
+      }
+    }
   };
+
+
+
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
+  };
+  const getRoleColor = (type) => {
+    const colors = {
+      admin: "error",
+      manager: "warning",
+      employee: "info",
+      user: "success",
+      superadmin: "secondary",
+    };
+    return colors[type] || "default";
+  };
+
+  const getRoleIcon = (type) => {
+    const icons = {
+      admin: "👑",
+      manager: "💼",
+      employee: "👨‍💼",
+      user: "👤",
+      superadmin: "🌟",
+    };
+    return icons[type] || "⚙️";
+  };
+
+  const filteredRoles = roles.filter(role =>
+    role.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    role.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    role.type?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const getStatusColor = (status) => {
+    return status === "active" ? "success" : "error";
+  };
+
+  // Stats calculations
+  const totalRoles = roles.length;
+  const activeRoles = roles.filter(r => r.status === 'active').length;
+  const totalUsers = roles.reduce((sum, role) => sum + (role.users || 0), 0);
+  const roleTypes = [...new Set(roles.map(role => role.type))].length;
+
+  if (isLoading) {
+    return (
+      <Box sx={{ p: 3, textAlign: 'center' }}>
+        <Typography variant="h6">Loading roles...</Typography>
+      </Box>
+    );
+  }
+
 
   return (
-    <Box>
-      <Typography variant="h4" fontWeight="bold" mb={1}>
-        Role Management
-      </Typography>
-      <Typography variant="body1" color="text.secondary" mb={4}>
-        Create and manage user roles with specific permissions for each client
-      </Typography>
+    <Box sx={{ p: 3 }}>
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h4" fontWeight="bold" gutterBottom>
+          Role Management
+        </Typography>
+        <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+          Create and manage user roles with specific permissions and access levels
+        </Typography>
 
-      <Card elevation={0} sx={{ p: 3, mb: 4 }}>
-        <Box
-          display="flex"
-          justifyContent="space-between"
-          alignItems="center"
-          mb={3}
-        >
+        {/* Stats Cards */}
+        <Grid container spacing={3} sx={{ mb: 4 }}>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card sx={{ p: 3, textAlign: 'center', bgcolor: 'primary.main', color: 'white' }}>
+              <Typography variant="h3" fontWeight="bold">
+                {totalRoles}
+              </Typography>
+              <Typography variant="body1">Total Roles</Typography>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card sx={{ p: 3, textAlign: 'center', bgcolor: 'success.main', color: 'white' }}>
+              <Typography variant="h3" fontWeight="bold">
+                {activeRoles}
+              </Typography>
+              <Typography variant="body1">Active Roles</Typography>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card sx={{ p: 3, textAlign: 'center', bgcolor: 'warning.main', color: 'white' }}>
+              <Typography variant="h3" fontWeight="bold">
+                {totalUsers}
+              </Typography>
+              <Typography variant="body1">Total Users</Typography>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card sx={{ p: 3, textAlign: 'center', bgcolor: 'info.main', color: 'white' }}>
+              <Typography variant="h3" fontWeight="bold">
+                {roleTypes}
+              </Typography>
+              <Typography variant="body1">Role Types</Typography>
+            </Card>
+          </Grid>
+        </Grid>
+      </Box>
+
+      {/* Main Content */}
+      <Card elevation={2} sx={{ p: 3, borderRadius: 2 }}>
+        {/* Toolbar */}
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
           <Typography variant="h5" fontWeight="bold">
-            Roles
+            Role List
           </Typography>
           <Button
             variant="contained"
             startIcon={<Add />}
-            onClick={handleDialogOpen}
+            onClick={handleOpenDialog}
+            sx={{ borderRadius: 2 }}
           >
-            Add Role
+            Add New Role
           </Button>
         </Box>
 
-        <Tabs
-          value={tabValue}
-          onChange={handleTabChange}
-          aria-label="role tabs"
-        >
-          <Tab label="All Roles" />
-          <Tab label="System Roles" />
-          <Tab label="Custom Roles" />
-        </Tabs>
+        {/* Search and Filter */}
+        <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
+          <TextField
+            placeholder="Search roles..."
+            variant="outlined"
+            size="small"
+            value={searchTerm}
+            onChange={handleSearchChange}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search />
+                </InputAdornment>
+              ),
+            }}
+            sx={{ flex: 1 }}
+          />
+          <Button
+            variant="outlined"
+            startIcon={<FilterList />}
+            sx={{ borderRadius: 2 }}
+          >
+            Filter
+          </Button>
+        </Box>
 
-        <TableContainer component={Paper} elevation={0} sx={{ mt: 2 }}>
+
+        {/* Roles Table */}
+        <TableContainer component={Paper} elevation={0} sx={{ border: 1, borderColor: 'divider', borderRadius: 2 }}>
           <Table>
-            <TableHead>
+            <TableHead sx={{ bgcolor: 'grey.50' }}>
               <TableRow>
-                <TableCell>Role</TableCell>
-                <TableCell>Client</TableCell>
-                <TableCell>Description</TableCell>
-                <TableCell>Users</TableCell>
-                <TableCell>Permissions</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell align="right">Actions</TableCell>
+                <TableCell sx={{ fontWeight: 'bold' }}>Role</TableCell>
+                <TableCell sx={{ fontWeight: 'bold' }}>Type</TableCell>
+                <TableCell sx={{ fontWeight: 'bold' }}>Description</TableCell>
+                <TableCell sx={{ fontWeight: 'bold' }}>Users</TableCell>
+                <TableCell sx={{ fontWeight: 'bold' }}>Created By</TableCell>
+                <TableCell sx={{ fontWeight: 'bold' }}>Status</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 'bold' }}>Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {roles.map((role) => (
-                <TableRow key={role.id}>
+              {filteredRoles.map((role) => (
+                <TableRow
+                  key={role._id}
+                  sx={{
+                    '&:hover': { bgcolor: 'action.hover' },
+                    transition: 'all 0.2s'
+                  }}
+                >
                   <TableCell>
                     <Box display="flex" alignItems="center">
                       <Avatar
                         sx={{
-                          bgcolor: getRoleColor(role.name) + ".main",
+                          bgcolor: `${getRoleColor(role.type)}.main`,
                           mr: 2,
+                          width: 40,
+                          height: 40,
                         }}
                       >
-                        <Settings />
+                        {getRoleIcon(role.type)}
                       </Avatar>
-                      <Typography variant="body1" fontWeight={500}>
-                        {role.name}
-                      </Typography>
+                      <Box>
+                        <Typography variant="body1" fontWeight={600}>
+                          {role.name}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          Created: {new Date(role.createdAt).toLocaleDateString()}
+                        </Typography>
+                      </Box>
                     </Box>
                   </TableCell>
                   <TableCell>
                     <Chip
-                      icon={<Business />}
-                      label={role.client}
+                      label={role.type?.charAt(0).toUpperCase() + role.type?.slice(1)}
                       size="small"
+                      color={getRoleColor(role.type)}
                       variant="outlined"
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2" color="text.secondary">
+                      {role.description}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      badgeContent={role.users || 0}
                       color="primary"
-                    />
-                  </TableCell>
-                  <TableCell>{role.description}</TableCell>
-                  <TableCell>
-                    <Chip
-                      icon={<Person />}
-                      label={`${role.users} users`}
-                      size="small"
-                      variant="outlined"
-                      color={getRoleColor(role.name)}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Badge badgeContent={role.permissions} color="primary">
-                      <AssignmentTurnedIn />
+                      sx={{ mr: 2 }}
+                    >
+                      <Person />
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <Chip label={role.status} size="small" color="success" />
+                    <Typography variant="body2">
+                      {role.createdBy || 'System'}
+                    </Typography>
                   </TableCell>
-                  <TableCell align="right">
-                    <IconButton onClick={handleMenuClick}>
+                  <TableCell>
+                    <Box display="flex" alignItems="center" gap={1}>
+                      <FormControlLabel
+                        control={
+                          <Switch
+                            checked={role.status === "active"}
+                            color="success"
+                            size="small"
+                          />
+                        }
+                        label=""
+                      />
+                      <Chip
+                        label={role.status}
+                        size="small"
+                        color={getStatusColor(role.status)}
+                        variant="outlined"
+                      />
+                    </Box>
+                  </TableCell>
+                  <TableCell align="center">
+                    <IconButton
+                      onClick={(e) => handleMenuClick(e, role)}
+                      sx={{
+                        border: 1,
+                        borderColor: 'divider',
+                        '&:hover': { bgcolor: 'primary.main', color: 'white' }
+                      }}
+                    >
                       <MoreVert />
                     </IconButton>
-                    <Menu
-                      anchorEl={anchorEl}
-                      open={Boolean(anchorEl)}
-                      onClose={handleMenuClose}
-                    >
-                      <MenuItem onClick={handleMenuClose}>
-                        <Visibility fontSize="small" sx={{ mr: 1 }} /> View
-                      </MenuItem>
-                      <MenuItem onClick={handleMenuClose}>
-                        <Edit fontSize="small" sx={{ mr: 1 }} /> Edit
-                      </MenuItem>
-                      <MenuItem onClick={handleMenuClose}>
-                        <Delete fontSize="small" sx={{ mr: 1 }} /> Delete
-                      </MenuItem>
-                    </Menu>
                   </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </TableContainer>
-      </Card>
 
-      <Card elevation={0} sx={{ p: 3 }}>
-        <Typography variant="h5" fontWeight="bold" mb={3}>
-          Permission Matrix
-        </Typography>
-
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
-            <Card elevation={0} sx={{ p: 2, height: "100%" }}>
-              <Typography variant="h6" fontWeight="bold" mb={2}>
-                Admin Permissions
-              </Typography>
-              <List dense>
-                {permissions.map((category, index) => (
-                  <div key={index}>
-                    <Typography variant="body1" fontWeight={500} mt={1} mb={1}>
-                      {category.category}
-                    </Typography>
-                    {category.items.map((permission, idx) => (
-                      <ListItem key={idx} disablePadding>
-                        <ListItemIcon>
-                          <Checkbox
-                            edge="start"
-                            checked={true}
-                            tabIndex={-1}
-                            disableRipple
-                          />
-                        </ListItemIcon>
-                        <ListItemText primary={permission.name} />
-                      </ListItem>
-                    ))}
-                    {index < permissions.length - 1 && (
-                      <Divider component="li" />
-                    )}
-                  </div>
-                ))}
-              </List>
-            </Card>
-          </Grid>
-
-          <Grid item xs={12} md={6}>
-            <Card elevation={0} sx={{ p: 2, height: "100%" }}>
-              <Typography variant="h6" fontWeight="bold" mb={2}>
-                Accountant Permissions
-              </Typography>
-              <List dense>
-                {permissions.map((category, index) => (
-                  <div key={index}>
-                    <Typography variant="body1" fontWeight={500} mt={1} mb={1}>
-                      {category.category}
-                    </Typography>
-                    {category.items.map((permission, idx) => (
-                      <ListItem key={idx} disablePadding>
-                        <ListItemIcon>
-                          <Checkbox
-                            edge="start"
-                            checked={permission.checked}
-                            tabIndex={-1}
-                            disableRipple
-                          />
-                        </ListItemIcon>
-                        <ListItemText primary={permission.name} />
-                      </ListItem>
-                    ))}
-                    {index < permissions.length - 1 && (
-                      <Divider component="li" />
-                    )}
-                  </div>
-                ))}
-              </List>
-            </Card>
-          </Grid>
-        </Grid>
-      </Card>
-
-      <Dialog
-        open={openDialog}
-        onClose={handleDialogClose}
-        maxWidth="md"
-        fullWidth
-      >
-        <DialogTitle>Create New Role</DialogTitle>
-        <DialogContent>
-          <Box display="flex" flexDirection="column" gap={3} mt={1}>
-            <TextField
-              label="Role Name"
-              variant="outlined"
-              fullWidth
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Settings />
-                  </InputAdornment>
-                ),
-              }}
-            />
-            <TextField
-              label="Description"
-              variant="outlined"
-              fullWidth
-              multiline
-              rows={2}
-            />
-            <FormControl fullWidth>
-              <InputLabel>Client</InputLabel>
-              <Select label="Client" defaultValue="">
-                <MenuItem value="abc">ABC Motors</MenuItem>
-                <MenuItem value="xyz">XYZ Garage</MenuItem>
-                <MenuItem value="quick">Quick Auto</MenuItem>
-                <MenuItem value="super">Super Auto</MenuItem>
-              </Select>
-            </FormControl>
-
-            <Typography variant="h6" fontWeight="bold" mt={1}>
-              Permissions
+        {filteredRoles.length === 0 && (
+          <Box sx={{ textAlign: 'center', py: 4 }}>
+            <Typography variant="h6" color="text.secondary">
+              No roles found
             </Typography>
-
-            <List dense>
-              {permissions.map((category, index) => (
-                <div key={index}>
-                  <Typography variant="body1" fontWeight={500} mt={1} mb={1}>
-                    {category.category}
-                  </Typography>
-                  {category.items.map((permission, idx) => (
-                    <ListItem key={idx} disablePadding>
-                      <ListItemIcon>
-                        <Checkbox
-                          edge="start"
-                          checked={false}
-                          tabIndex={-1}
-                          disableRipple
-                        />
-                      </ListItemIcon>
-                      <ListItemText primary={permission.name} />
-                    </ListItem>
-                  ))}
-                  {index < permissions.length - 1 && <Divider component="li" />}
-                </div>
-              ))}
-            </List>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+              Try adjusting your search or create a new role
+            </Typography>
           </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleDialogClose}>Cancel</Button>
-          <Button variant="contained" onClick={handleDialogClose}>
-            Create Role
-          </Button>
-        </DialogActions>
-      </Dialog>
+        )}
+      </Card>
+
+      {/* Action Menu */}
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+      >
+        <MenuItem onClick={handleEditRole}>
+          <Edit fontSize="small" sx={{ mr: 1 }} /> Edit Role
+        </MenuItem>
+        <MenuItem onClick={handleDeleteRole} sx={{ color: 'error.main' }}>
+          <Delete fontSize="small" sx={{ mr: 1 }} /> Delete Role
+        </MenuItem>
+      </Menu>
+
+      {/* Role Dialog */}
+      <AddRoleModal
+        open={openDialog}
+        onClose={handleCloseDialog}
+        editMode={editMode}
+        roleData={selectedRole}
+        refetchRoles={refetch}
+        isLoading={isLoading}
+      />
+
+
     </Box>
   );
 };

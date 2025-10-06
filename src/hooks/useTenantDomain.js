@@ -5,7 +5,7 @@ export function getTenantDomain(hostname) {
   if (!hostname) return "";
 
   if (hostname.includes("localhost")) {
-    const hostWithoutPort = hostname.split(":")[0]; 
+    const hostWithoutPort = hostname.split(":")[0];
     const parts = hostWithoutPort.split(".");
     // Remove 'localhost' part (last part)
     return parts.slice(0, parts.length - 1).join(".");
@@ -25,7 +25,5 @@ export function useTenantDomain() {
     }
   }, []);
 
-
-  // Return an object instead of just the string
   return { tenantDomain };
 }

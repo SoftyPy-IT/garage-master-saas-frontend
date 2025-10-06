@@ -1,9 +1,17 @@
 /* eslint-disable react/prop-types */
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Avatar, Chip, Typography, Checkbox, Box, Tooltip, IconButton, useTheme, alpha } from "@mui/material";
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Avatar, Chip, Typography, Checkbox, Box, Tooltip, IconButton, useTheme, alpha, CircularProgress } from "@mui/material";
 import { Edit, Delete, Person, LibraryBooks } from "@mui/icons-material";
 
-const UserPermissionsTab = ({ filteredPermissions, users, pages, handleDialogOpen, handleDeletePermission, getRoleColor }) => {
+const UserPermissionsTab = ({ filteredPermissions, pages, handleDialogOpen, handleDeletePermission, getRoleColor, loading }) => {
   const theme = useTheme();
+
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" py={4}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
     <Box>
@@ -43,7 +51,7 @@ const UserPermissionsTab = ({ filteredPermissions, users, pages, handleDialogOpe
                           {permission.userName}
                         </Typography>
                         <Typography variant="caption" color="text.secondary">
-                          {users.find(u => u.id === permission.userId)?.email}
+                          {permission.userEmail}
                         </Typography>
                       </Box>
                     </Box>
@@ -67,7 +75,7 @@ const UserPermissionsTab = ({ filteredPermissions, users, pages, handleDialogOpe
                           color: theme.palette.info.main,
                         }}
                       >
-                        {pages.find(p => p.name === permission.pageName)?.icon || <LibraryBooks />}
+                        <LibraryBooks />
                       </Avatar>
                       <Typography variant="body2">
                         {permission.pageName}
