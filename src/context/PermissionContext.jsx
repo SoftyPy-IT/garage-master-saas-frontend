@@ -53,7 +53,7 @@ export const PermissionProvider = ({ children }) => {
 
       const data = await response.json();
       if (data.success) {
-        setPermissions(data.data);
+        setPermissions(data.data.permissions);
       } else {
         setError(data.message || "Unknown error");
       }
@@ -66,7 +66,6 @@ export const PermissionProvider = ({ children }) => {
 
   const checkPermission = (pagePath, action = "view") => {
     if (!permissions) {
-      console.log("Permissions not loaded yet");
       return false;
     }
 
@@ -85,7 +84,6 @@ export const PermissionProvider = ({ children }) => {
     });
 
     if (!permission) {
-      console.log("No permission found for page:", pagePath);
       return false;
     }
 

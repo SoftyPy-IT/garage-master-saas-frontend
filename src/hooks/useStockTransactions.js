@@ -123,7 +123,7 @@ export const useStockTransactions = () => {
     searchTerm,
     filterType,
     headCells,
-    
+
     // Data
     totalTransactions,
     totalIn,
@@ -131,7 +131,7 @@ export const useStockTransactions = () => {
     data,
     error,
     isLoading,
-    
+
     // Actions
     setPage,
     setRowsPerPage,
@@ -140,7 +140,7 @@ export const useStockTransactions = () => {
     setSearchTerm,
     setFilterType,
     refetch,
-    
+
     // Handlers
     handleRequestSort: (property) => {
       const isAsc = orderBy === property && order === "asc";
@@ -160,7 +160,7 @@ export const useStockTransactions = () => {
       setFilterType("all");
     },
     handleExport: () => {
-      console.log("Exporting data...");
+
     },
   };
 };

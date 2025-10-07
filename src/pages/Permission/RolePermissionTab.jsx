@@ -1,5 +1,4 @@
 /* eslint-disable react/prop-types */
-
 import { Grid, Card, Avatar, Typography, List, ListItem, ListItemText, ListItemIcon, Checkbox, Divider, Button, Box, useTheme, alpha } from "@mui/material";
 import { AccountBalance, ManageAccounts, Person, Security, Star } from "@mui/icons-material";
 
@@ -59,10 +58,11 @@ const RolePermissionsTab = ({ roles, permissionMatrix, handleDialogOpen }) => {
                         <ListItemIcon>
                           <Checkbox
                             edge="start"
-                            checked={permission[role.name.toLowerCase().replace(' ', '')] || false}
+                            checked={permission[role.name.toLowerCase().replace(/\s+/g, '')] || false}
                             tabIndex={-1}
                             disableRipple
                             color="primary"
+                            disabled
                           />
                         </ListItemIcon>
                         <ListItemText primary={permission.name} />
@@ -85,7 +85,7 @@ const RolePermissionsTab = ({ roles, permissionMatrix, handleDialogOpen }) => {
                 variant="outlined"
                 size="small"
                 color="primary"
-                onClick={() => handleDialogOpen("role")}
+                onClick={() => handleDialogOpen()} // You can pass role-specific data here if needed
               >
                 Edit Permissions
               </Button>

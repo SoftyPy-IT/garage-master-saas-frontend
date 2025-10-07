@@ -511,9 +511,7 @@ const PermissionManagement = () => {
     // Simulate API call to save permission
     setLoading(true);
     setTimeout(() => {
-      // In a real app, you would make an API call here
-      console.log("Saving permission:", permissionForm);
-      
+
       // Update local state for demo
       const newPermission = {
         id: (permissions.length + 1).toString(),
@@ -528,7 +526,7 @@ const PermissionManagement = () => {
         roleName: roles.find(r => r.id === permissionForm.roleId)?.name || "",
         pageName: pages.find(p => p.id === permissionForm.pageId)?.name || "",
       };
-      
+
       setPermissions([...permissions, newPermission]);
       setLoading(false);
       setOpenDialog(false);
@@ -539,11 +537,7 @@ const PermissionManagement = () => {
     // Simulate API call to check permission
     setLoading(true);
     setTimeout(() => {
-      // In a real app, you would make an API call here
-      console.log("Checking permission:", checkPermissionForm);
-      
-      // Mock result - in a real app this would come from the API
-      const hasPermission = Math.random() > 0.3; // 70% chance of having permission
+      const hasPermission = Math.random() > 0.3;
       setPermissionResult(hasPermission);
       setShowResult(true);
       setLoading(false);
@@ -575,15 +569,15 @@ const PermissionManagement = () => {
         sx={{
           mb: 2,
           p: 2,
-  
-         
+
+
         }}
       >
-        <Box position="absolute" top={-20} right={-20} width={200} height={200} borderRadius="50%" 
-             sx={{ background: alpha(theme.palette.primary.light, 0.1) }} />
-        <Box position="absolute" bottom={-30} left={-30} width={250} height={250} borderRadius="50%" 
-             sx={{ background: alpha(theme.palette.primary.light, 0.1) }} />
-        
+        <Box position="absolute" top={-20} right={-20} width={200} height={200} borderRadius="50%"
+          sx={{ background: alpha(theme.palette.primary.light, 0.1) }} />
+        <Box position="absolute" bottom={-30} left={-30} width={250} height={250} borderRadius="50%"
+          sx={{ background: alpha(theme.palette.primary.light, 0.1) }} />
+
         <Box position="relative" zIndex={1}>
           <Typography variant="h3" fontWeight="bold" mb={1}>
             Permission Management
@@ -634,7 +628,7 @@ const PermissionManagement = () => {
             </Box>
           </Card>
         </Grid>
-        
+
         <Grid item xs={12} sm={6} md={3}>
           <Card
             elevation={0}
@@ -673,7 +667,7 @@ const PermissionManagement = () => {
             </Box>
           </Card>
         </Grid>
-        
+
         <Grid item xs={12} sm={6} md={3}>
           <Card
             elevation={0}
@@ -712,7 +706,7 @@ const PermissionManagement = () => {
             </Box>
           </Card>
         </Grid>
-        
+
         <Grid item xs={12} sm={6} md={3}>
           <Card
             elevation={0}
@@ -752,7 +746,7 @@ const PermissionManagement = () => {
           </Card>
         </Grid>
       </Grid>
-      
+
       {/* Main Content */}
       <Card elevation={0} sx={{ p: 3, mb: 4, borderRadius: 3 }}>
         <Box
@@ -1116,7 +1110,7 @@ const PermissionManagement = () => {
                         {role.name}
                       </Typography>
                     </Box>
-                    
+
                     <List dense>
                       {permissionMatrix.map((category, catIndex) => (
                         <div key={catIndex}>
@@ -1149,7 +1143,7 @@ const PermissionManagement = () => {
                         </div>
                       ))}
                     </List>
-                    
+
                     <Box display="flex" justifyContent="flex-end" mt={2}>
                       <Button
                         variant="outlined"

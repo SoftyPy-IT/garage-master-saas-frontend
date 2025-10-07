@@ -64,22 +64,25 @@ const Permission = () => {
   const [permissionResult, setPermissionResult] = useState(null);
   const [showResult, setShowResult] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [editingPermissionId, setEditingPermissionId] = useState(null); // NEW: Store only the _id
   const { tenantDomain } = useTenantDomain();
 
   const { data: permissionsData, isLoading: permissionsLoading } = useGetAllPermissionsQuery({ tenantDomain });
 
   // Extract unique pages and roles from permissions data with safety checks
-  const pages = permissionsData?.data
-    ? [...new Map(permissionsData.data
+  const pages = permissionsData?.data?.permissions
+    ? [...new Map(permissionsData.data?.permissions
       .filter(item => item?.page?._id)
       .map(item => [item.page._id, item.page])
     ).values()]
     : [];
 
-  const roles = permissionsData?.data
-    ? [...new Map(permissionsData.data
-      .filter(item => item?.roleId?._id)
-      .map(item => [item.roleId._id, item.roleId])
+  // FIXED: Extract roles properly from roleId array
+  const roles = permissionsData?.data?.permissions
+    ? [...new Map(permissionsData?.data?.permissions
+      .flatMap(item => item.roleId || []) // Use flatMap to handle arrays
+      .filter(role => role?._id)
+      .map(role => [role._id, role])
     ).values()]
     : [];
 
@@ -87,20 +90,26 @@ const Permission = () => {
   const transformPermissionData = (apiData) => {
     if (!apiData?.data) return [];
 
-    return apiData.data.map(permission => ({
-      id: permission._id,
-      userId: permission.userId?._id || '',
-      roleId: permission.roleId?._id || '',
-      pageId: permission.page?._id || '',
-      create: permission.create || false,
-      edit: permission.edit || false,
-      view: permission.view || false,
-      delete: permission.delete || false,
-      userName: permission.userId?.name || 'System',
-      roleName: permission.roleId?.name || 'Unknown Role',
-      pageName: permission.page?.name || 'Unknown Page',
-      userEmail: permission.userId?.email || 'system@example.com'
-    }));
+    return apiData.data.permissions?.flatMap(permission => {
+
+      const roleArray = Array.isArray(permission.roleId) ? permission.roleId : [permission.roleId];
+
+      return roleArray.map(role => ({
+        id: permission._id,
+        permissionId: permission._id,
+        userId: permission.userId?._id || '',
+        roleId: role?._id || '',
+        pageId: permission.page?._id || '',
+        create: permission.create || false,
+        edit: permission.edit || false,
+        view: permission.view || false,
+        delete: permission.delete || false,
+        userName: permission.userId?.name || 'System',
+        roleName: role?.name || 'Unknown Role',
+        pageName: permission.page?.name || 'Unknown Page',
+        userEmail: permission.userId?.email || 'system@example.com'
+      }));
+    });
   };
 
   // Build permission matrix from API data with safety checks
@@ -116,7 +125,7 @@ const Permission = () => {
 
       categoryPages.forEach(page => {
         // Get permissions for this page across all roles
-        const pagePermissions = permissionsData.data.filter(p => p.page?._id === page._id);
+        const pagePermissions = permissionsData?.data?.permissions?.filter(p => p.page?._id === page._id);
 
         if (pagePermissions.length > 0) {
           // Create permission entry for each CRUD action
@@ -129,9 +138,16 @@ const Permission = () => {
 
             // Add permission status for each role with safety checks
             roles.forEach(role => {
-              const roleName = role?.name ? role.name.toLowerCase().replace(/\s+/g, '') : 'unknownrole';
-              const rolePermission = pagePermissions.find(p => p.roleId?._id === role._id);
-              permissionEntry[roleName] = rolePermission ? (rolePermission[action] || false) : false;
+              const roleKey = role?.name ? role.name.toLowerCase().replace(/\s+/g, '') : 'unknownrole';
+
+              // Check if any permission for this page has this role with the action enabled
+              const hasPermission = pagePermissions.some(permission => {
+                const roleArray = Array.isArray(permission.roleId) ? permission.roleId : [permission.roleId];
+                const roleMatch = roleArray.some(r => r._id === role._id);
+                return roleMatch && permission[action];
+              });
+
+              permissionEntry[roleKey] = hasPermission;
             });
 
             categoryPermissions.push(permissionEntry);
@@ -165,7 +181,15 @@ const Permission = () => {
       'HRM': <Group />,
       'Accounts': <AccountBalance />,
       'Reports': <Assessment />,
-      'Settings': <Settings />
+      'Settings': <Settings />,
+      'Permission': <Security />,
+      'Role Management': <ManageAccounts />,
+      'user-management': <Person />,
+      'page-management': <ViewModule />,
+      'Feature Access': <Star />,
+      'All User List': <Group />,
+      'Profile': <Person />,
+      'Money Receipt Management': <Payments />
     };
 
     return iconMap[category] || <ViewModule />;
@@ -182,9 +206,9 @@ const Permission = () => {
       };
     }
 
-    const uniqueUsers = new Set(permissionsData.data.map(p => p.userId?._id).filter(Boolean)).size;
-    const uniqueRoles = new Set(permissionsData.data.map(p => p.roleId?._id).filter(Boolean)).size;
-    const uniquePages = new Set(permissionsData.data.map(p => p.page?._id).filter(Boolean)).size;
+    const uniqueUsers = new Set(permissionsData?.data?.permissions?.map(p => p.userId?._id).filter(Boolean)).size;
+    const uniqueRoles = new Set(permissionsData?.data?.permissions?.flatMap(p => p.roleId || []).map(role => role._id).filter(Boolean)).size;
+    const uniquePages = new Set(permissionsData?.data?.permissions?.map(p => p.page?._id).filter(Boolean)).size;
 
     return {
       users: uniqueUsers,
@@ -224,12 +248,20 @@ const Permission = () => {
     setTabValue(newValue);
   };
 
-  const handleDialogOpen = () => {
+  // NEW: Updated dialog handlers - only pass _id
+  const handleDialogOpen = (permissionId = null) => {
+    setEditingPermissionId(permissionId);
     setOpenDialog(true);
   };
 
   const handleDialogClose = () => {
+    setEditingPermissionId(null);
     setOpenDialog(false);
+  };
+
+  // NEW: Handle permission save
+  const handleSavePermission = (savedPermission) => {
+    // You can refresh the data or update local state here
   };
 
   const handleCheckDialogOpen = () => {
@@ -253,22 +285,6 @@ const Permission = () => {
       ...checkPermissionForm,
       [name]: value,
     });
-  };
-
-  const handleCheckPermission = () => {
-    setLoading(true);
-    setTimeout(() => {
-      // Check permission against actual data with safety checks
-      const hasPermission = permissionsData?.data?.some(permission =>
-        permission.userId?._id === checkPermissionForm.userId &&
-        permission.page?._id === checkPermissionForm.pageId &&
-        permission[checkPermissionForm.action] === true
-      ) || false;
-
-      setPermissionResult(hasPermission);
-      setShowResult(true);
-      setLoading(false);
-    }, 800);
   };
 
   const handleDeletePermission = (id) => {
@@ -315,24 +331,13 @@ const Permission = () => {
             <Button
               variant="contained"
               startIcon={<Add />}
-              onClick={handleDialogOpen}
+              onClick={() => handleDialogOpen()} // Open dialog without permission id (for create)
+              color="secondary"
               sx={{
                 borderRadius: 2,
-                boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
               }}
             >
               Add Permission
-            </Button>
-            <Button
-              variant="outlined"
-              color="secondary"
-              startIcon={<Pageview />}
-              onClick={handleCheckDialogOpen}
-              sx={{
-                borderRadius: 2,
-              }}
-            >
-              Check Permission
             </Button>
           </Box>
         </Box>
@@ -412,7 +417,7 @@ const Permission = () => {
               filteredPermissions={filteredPermissions}
               pages={pages}
               roles={roles}
-              handleDialogOpen={handleDialogOpen}
+              handleDialogOpen={handleDialogOpen} // Pass the function
               handleDeletePermission={handleDeletePermission}
               getRoleColor={getRoleColor}
               loading={permissionsLoading}
@@ -437,19 +442,9 @@ const Permission = () => {
       <AddEditPermissionDialog
         open={openDialog}
         handleClose={handleDialogClose}
-      />
-
-      {/* Check Permission Dialog */}
-      <CheckPermissionDialog
-        open={openCheckDialog}
-        handleClose={handleCheckDialogClose}
-        checkPermissionForm={checkPermissionForm}
-        handleCheckFormChange={handleCheckFormChange}
-        handleCheckPermission={handleCheckPermission}
-        users={permissions.map(p => ({ id: p.userId, name: p.userName, email: p.userEmail }))}
-        pages={pages}
-        showResult={showResult}
-        permissionResult={permissionResult}
+        permissionId={editingPermissionId} // Pass only the _id
+        permissionType={editingPermissionId ? "edit" : "add"} // Determine if it's add or edit
+        handleSavePermission={handleSavePermission} // Pass the save handler
       />
 
       {/* Floating Action Button */}
@@ -457,7 +452,7 @@ const Permission = () => {
         color="primary"
         aria-label="add permission"
         sx={{ position: "fixed", bottom: 16, right: 16 }}
-        onClick={handleDialogOpen}
+        onClick={() => handleDialogOpen()} // Open for create
       >
         <Add />
       </Fab>

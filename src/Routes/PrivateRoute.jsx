@@ -3,11 +3,11 @@
 // src/components/ProtectedRoute.js
 
 import { usePermissions } from '../context/PermissionContext';
-import { 
-  Box, 
-  Typography, 
-  Button, 
-  CircularProgress 
+import {
+  Box,
+  Typography,
+  Button,
+  CircularProgress
 } from '@mui/material';
 
 const ProtectedRoute = ({ children, pagePath, action = 'view' }) => {
@@ -15,10 +15,10 @@ const ProtectedRoute = ({ children, pagePath, action = 'view' }) => {
 
   if (loading) {
     return (
-      <Box 
-        display="flex" 
-        justifyContent="center" 
-        alignItems="center" 
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
         height="100vh"
       >
         <CircularProgress size={60} />
@@ -42,13 +42,13 @@ const ProtectedRoute = ({ children, pagePath, action = 'view' }) => {
         });
       });
     }
-    
+
     return (
-      <Box 
-        display="flex" 
-        flexDirection="column" 
-        justifyContent="center" 
-        alignItems="center" 
+      <Box
+        display="flex"
+        flexDirection="column"
+        justifyContent="center"
+        alignItems="center"
         height="100vh"
         textAlign="center"
         p={3}
@@ -65,16 +65,16 @@ const ProtectedRoute = ({ children, pagePath, action = 'view' }) => {
         <Typography variant="body2" color="textSecondary" paragraph>
           Available permissions are logged in the console.
         </Typography>
-        <Button 
-          variant="contained" 
-          color="primary" 
+        <Button
+          variant="contained"
+          color="primary"
           onClick={() => window.history.back()}
           sx={{ mr: 2 }}
         >
           Go Back
         </Button>
-        <Button 
-          variant="outlined" 
+        <Button
+          variant="outlined"
           onClick={() => window.location.href = '/dashboard'}
         >
           Dashboard

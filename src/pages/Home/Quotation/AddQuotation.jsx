@@ -89,7 +89,6 @@ const AddQuotation = () => {
   };
 
   const { data: stockData } = useGetAllStocksQuery(queryParams);
-  console.log("stock data this  ", stockData);
   const { data: CompanyInfoData } = useGetCompanyProfileQuery({
     tenantDomain,
   });
@@ -490,63 +489,62 @@ const AddQuotation = () => {
     return "Pcs";
   };
 
-const handleSelectSuggestion = (product) => {
-  console.log(product);
-  if (activeInputType === "service") {
-    const newItems = [...serviceItems];
-    const matchingUnit = findMatchingUnit(product.product.unit);
-    newItems[activeInputIndex].description = product.product.product_name;
-    newItems[activeInputIndex].unit = matchingUnit;
-    newItems[activeInputIndex].rate = product.product.sellingPrice || 0;
-    newItems[activeInputIndex].rateDisplay = (
-      product.product.sellingPrice || 0
-    ).toString();
-    // Use available stock quantity instead of product quantity
-    newItems[activeInputIndex].quantity = (product.stock || 0).toString();
-    newItems[activeInputIndex].product = product.product._id;
-    newItems[activeInputIndex].warehouse = product.warehouse;
-    newItems[activeInputIndex].product_name = product.product.product_name;
-    newItems[activeInputIndex].sellingPrice =
-      product.product.sellingPrice || 0;
-    newItems[activeInputIndex].batchNumber = product.batchNumber || "";
+  const handleSelectSuggestion = (product) => {
+    if (activeInputType === "service") {
+      const newItems = [...serviceItems];
+      const matchingUnit = findMatchingUnit(product.product.unit);
+      newItems[activeInputIndex].description = product.product.product_name;
+      newItems[activeInputIndex].unit = matchingUnit;
+      newItems[activeInputIndex].rate = product.product.sellingPrice || 0;
+      newItems[activeInputIndex].rateDisplay = (
+        product.product.sellingPrice || 0
+      ).toString();
+      // Use available stock quantity instead of product quantity
+      newItems[activeInputIndex].quantity = (product.stock || 0).toString();
+      newItems[activeInputIndex].product = product.product._id;
+      newItems[activeInputIndex].warehouse = product.warehouse;
+      newItems[activeInputIndex].product_name = product.product.product_name;
+      newItems[activeInputIndex].sellingPrice =
+        product.product.sellingPrice || 0;
+      newItems[activeInputIndex].batchNumber = product.batchNumber || "";
 
-    // Calculate total based on quantity and rate
-    newItems[activeInputIndex].total =
-      (Number.parseFloat(newItems[activeInputIndex].quantity) || 0) *
-      (Number.parseFloat(newItems[activeInputIndex].rate) || 0);
-    newItems[activeInputIndex].total = Number.parseFloat(
-      newItems[activeInputIndex].total.toFixed(2)
-    );
-    setServiceItems(newItems);
-  } else if (activeInputType === "parts") {
-    const newItems = [...items];
-    const matchingUnit = findMatchingUnit(product.product.unit);
-    newItems[activeInputIndex].description = product.product.product_name;
-    newItems[activeInputIndex].unit = matchingUnit;
-    newItems[activeInputIndex].rate = product.product.sellingPrice || 0;
-    newItems[activeInputIndex].rateDisplay = (
-      product.product.sellingPrice || 0
-    ).toString();
-    // Use available stock quantity instead of product quantity
-    newItems[activeInputIndex].quantity = (product.stock || 0).toString();
-    newItems[activeInputIndex].product = product.product._id;
-    newItems[activeInputIndex].warehouse = product.warehouse;
-    newItems[activeInputIndex].product_name = product.product.product_name;
-    newItems[activeInputIndex].sellingPrice =
-      product.product.sellingPrice || 0;
-    newItems[activeInputIndex].batchNumber = product.batchNumber || "";
+      // Calculate total based on quantity and rate
+      newItems[activeInputIndex].total =
+        (Number.parseFloat(newItems[activeInputIndex].quantity) || 0) *
+        (Number.parseFloat(newItems[activeInputIndex].rate) || 0);
+      newItems[activeInputIndex].total = Number.parseFloat(
+        newItems[activeInputIndex].total.toFixed(2)
+      );
+      setServiceItems(newItems);
+    } else if (activeInputType === "parts") {
+      const newItems = [...items];
+      const matchingUnit = findMatchingUnit(product.product.unit);
+      newItems[activeInputIndex].description = product.product.product_name;
+      newItems[activeInputIndex].unit = matchingUnit;
+      newItems[activeInputIndex].rate = product.product.sellingPrice || 0;
+      newItems[activeInputIndex].rateDisplay = (
+        product.product.sellingPrice || 0
+      ).toString();
+      // Use available stock quantity instead of product quantity
+      newItems[activeInputIndex].quantity = (product.stock || 0).toString();
+      newItems[activeInputIndex].product = product.product._id;
+      newItems[activeInputIndex].warehouse = product.warehouse;
+      newItems[activeInputIndex].product_name = product.product.product_name;
+      newItems[activeInputIndex].sellingPrice =
+        product.product.sellingPrice || 0;
+      newItems[activeInputIndex].batchNumber = product.batchNumber || "";
 
-    // Calculate total based on quantity and rate
-    newItems[activeInputIndex].total =
-      (Number.parseFloat(newItems[activeInputIndex].quantity) || 0) *
-      (Number.parseFloat(newItems[activeInputIndex].rate) || 0);
-    newItems[activeInputIndex].total = Number.parseFloat(
-      newItems[activeInputIndex].total.toFixed(2)
-    );
-    setItems(newItems);
-  }
-  setShowSuggestions(false);
-};
+      // Calculate total based on quantity and rate
+      newItems[activeInputIndex].total =
+        (Number.parseFloat(newItems[activeInputIndex].quantity) || 0) *
+        (Number.parseFloat(newItems[activeInputIndex].rate) || 0);
+      newItems[activeInputIndex].total = Number.parseFloat(
+        newItems[activeInputIndex].total.toFixed(2)
+      );
+      setItems(newItems);
+    }
+    setShowSuggestions(false);
+  };
 
   const prepareItemsForSubmission = (itemsArray) => {
     return itemsArray.map((item) => {
@@ -806,16 +804,16 @@ const handleSelectSuggestion = (product) => {
                   )}
                   {(jobCardData?.data?.user_type === "company" ||
                     jobCardData?.data?.user_type === "showRoom") && (
-                    <TextField
-                      fullWidth
-                      label="Customer"
-                      focused={
-                        jobCardData?.data?.company?.vehicle_username ||
-                        jobCardData?.data?.showRoom?.vehicle_username
-                      }
-                      {...register("vehicle_username")}
-                    />
-                  )}
+                      <TextField
+                        fullWidth
+                        label="Customer"
+                        focused={
+                          jobCardData?.data?.company?.vehicle_username ||
+                          jobCardData?.data?.showRoom?.vehicle_username
+                        }
+                        {...register("vehicle_username")}
+                      />
+                    )}
                 </Grid>
                 <Grid item lg={12} md={12} sm={12} xs={12}>
                   <Grid container spacing={1}>
@@ -879,24 +877,24 @@ const handleSelectSuggestion = (product) => {
                       )}
                       {(jobCardData?.data?.user_type === "company" ||
                         jobCardData?.data?.user_type === "showRoom") && (
-                        <TextField
-                          {...register("company_contact")}
-                          variant="outlined"
-                          fullWidth
-                          type="tel"
-                          value={
-                            phoneNumber
-                              ? phoneNumber
-                              : jobCardData?.data?.customer?.customer_contact
-                          }
-                          onChange={handlePhoneNumberChange}
-                          placeholder="Company Contact No (N)"
-                          focused={
-                            jobCardData?.data?.company?.company_contact ||
-                            jobCardData?.data?.showRoom?.company_contact
-                          }
-                        />
-                      )}
+                          <TextField
+                            {...register("company_contact")}
+                            variant="outlined"
+                            fullWidth
+                            type="tel"
+                            value={
+                              phoneNumber
+                                ? phoneNumber
+                                : jobCardData?.data?.customer?.customer_contact
+                            }
+                            onChange={handlePhoneNumberChange}
+                            placeholder="Company Contact No (N)"
+                            focused={
+                              jobCardData?.data?.company?.company_contact ||
+                              jobCardData?.data?.showRoom?.company_contact
+                            }
+                          />
+                        )}
                     </Grid>
                   </Grid>
                 </Grid>
@@ -1026,8 +1024,8 @@ const handleSelectSuggestion = (product) => {
                       currentMileage ||
                       (getDataWithChassisNo?.mileageHistory?.length > 0
                         ? getDataWithChassisNo.mileageHistory[
-                            getDataWithChassisNo.mileageHistory.length - 1
-                          ].mileage
+                          getDataWithChassisNo.mileageHistory.length - 1
+                        ].mileage
                         : getDataWithChassisNo?.mileage || "")
                     }
                     onChange={(e) => {

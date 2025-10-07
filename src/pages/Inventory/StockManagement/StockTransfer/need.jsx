@@ -346,7 +346,6 @@
 //           items,
 //         };
 
-//         console.log("Transfer data:", transferData);
 
 //         // Call the API with the correct structure
 //         const result = await createStockTransfer({

@@ -22,7 +22,7 @@ const permissionApi = baseApi.injectEndpoints({
 
     getSinglePermission: builder.query({
       query: ({ tenantDomain, id }) => ({
-        url: `/permission/${id}`,
+        url: `/permission/single/${id}`,
         method: "GET",
         params: { tenantDomain },
       }),
@@ -30,9 +30,9 @@ const permissionApi = baseApi.injectEndpoints({
     }),
 
     updatePermission: builder.mutation({
-      query: ({ tenantDomain, id, ...data }) => ({
-        url: `/permission/${id}`,
-        method: "PATCH",
+      query: ({ userId, tenantDomain, id, data }) => ({
+        url: `/permission/${userId}/${id}`,
+        method: "PUT",
         body: data,
         params: { tenantDomain },
       }),

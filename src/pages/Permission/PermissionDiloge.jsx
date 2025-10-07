@@ -12,76 +12,133 @@ import {
   Button,
   useTheme,
   alpha,
+  CircularProgress,
 } from "@mui/material";
 import { Security, Save } from "@mui/icons-material";
 import GarageForm from "../../components/form/Form";
-import FormAutocomplete from "../../components/form/FormAutocomplete";
 import FormCheckBox from "../../components/form/checkbox";
+import FormAutoCompleted from "../../components/form/FormAutoCompleted";
 import { usePermissionFormData } from "../../hooks/usePermissionFormData";
-import { useCreatePermissionMutation } from "../../redux/api/permissionApi";
+import { useCreatePermissionMutation, useUpdatePermissionMutation, useGetSinglePermissionQuery } from "../../redux/api/permissionApi";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "../../redux/feature/authSlice";
-import GarageAutoCompleted from "../../components/form/Autocomplete";
-import FormAutoCompleted from "../../components/form/FormAutoCompleted";
-
+import { toast } from "react-toastify";
 
 const AddEditPermissionDialog = ({
   open,
   handleClose,
-  permissionType,
+  permissionId,
+  permissionType = "add",
   handleSavePermission,
 }) => {
   const theme = useTheme();
   const { userOptions, pageOptions, tenantDomain, roleOptions } = usePermissionFormData();
   const [createPermission] = useCreatePermissionMutation();
+  const [updatePermission] = useUpdatePermissionMutation();
   const user = useSelector(selectCurrentUser);
 
+  const { data: singlePermissionData, isLoading: permissionLoading } = useGetSinglePermissionQuery(
+    { tenantDomain, id: permissionId },
+    { skip: !permissionId || permissionType !== "edit" }
+  );
+
   const handleSubmit = async (data) => {
-    console.log('Form data submitted:', data);
     try {
-      // Extract the values from the selected objects
-      const pageId = Array.isArray(data.pageId)
-        ? data.pageId.map(item => item.value || item) // Handle both object and string values
-        : data.pageId?.value || data.pageId;
-
-      const userId = Array.isArray(data.userId)
-        ? data.userId.map(item => item.value || item)
-        : data.userId?.value || data.userId;
-
-      const roleId = Array.isArray(data.roleId)
-        ? data.roleId.map(item => item.value || item)
-        : data.roleId?.value || data.roleId;
+      const pageId = data.pageId?.value || data.pageId;
+      const userId = data.userId?.value || data.userId;
+      const roleId = data.roleId?.value || data.roleId;
 
       const permissionData = {
-        pageId: pageId,
+        pageId: [pageId],
+        userId: [userId],
+        roleId: [roleId],
         create: data.create || false,
         edit: data.edit || false,
         view: data.view || false,
         delete: data.delete || false,
-        userId: userId, // Make sure to include userId in your API call
-        roleId: roleId, // Include roleId if needed
       };
 
-      console.log('Prepared permission data:', permissionData);
-
-      const result = await createPermission({
-        userId: user.userId, // Using current user's ID as the creator
-        tenantDomain,
-        data: permissionData
-      }).unwrap();
-
-      console.log('API response:', result);
-      console.log('Permission created successfully:', result);
-      handleClose();
-
-      if (handleSavePermission) {
-        handleSavePermission(result);
+      let result;
+      if (permissionType === "edit" && permissionId) {
+        result = await updatePermission({
+          userId: user.userId,
+          id: permissionId,
+          tenantDomain,
+          data: permissionData,
+        }).unwrap();
+      } else {
+        result = await createPermission({
+          userId: user.userId,
+          tenantDomain,
+          data: permissionData,
+        }).unwrap();
       }
 
+      console.log('result', result)
+      if (result.success) {
+        toast.success(result.message || 'Permission successfully !')
+        handleClose();
+
+      }
+
+
+
     } catch (error) {
-      console.error('Error creating permission:', error);
+      console.error(
+        `Error ${permissionType === "edit" ? "updating" : "creating"} permission:`,
+        error
+      );
     }
   };
+
+  const defaultValues = permissionType === "edit" && singlePermissionData?.data?.hasPermission
+    ? {
+      userId: singlePermissionData.data.hasPermission.userId[0]
+        ? {
+          value: singlePermissionData.data.hasPermission.userId[0]._id || singlePermissionData.data.hasPermission.userId[0].id,
+          label: singlePermissionData.data.hasPermission.userId[0].name,
+        }
+        : null,
+      roleId: singlePermissionData.data.hasPermission.roleId[0]
+        ? {
+          value: singlePermissionData.data.hasPermission.roleId[0]._id,
+          label: singlePermissionData.data.hasPermission.roleId[0].name,
+        }
+        : null,
+      pageId: singlePermissionData.data.hasPermission.pageId[0]
+        ? {
+          value: singlePermissionData.data.hasPermission.pageId[0]._id,
+          label: singlePermissionData.data.hasPermission.pageId[0].name,
+        }
+        : null,
+      create: singlePermissionData.data.hasPermission.create || false,
+      edit: singlePermissionData.data.hasPermission.edit || false,
+      view: singlePermissionData.data.hasPermission.view || false,
+      delete: singlePermissionData.data.hasPermission.delete || false,
+    }
+    : {
+      userId: null,
+      roleId: null,
+      pageId: null,
+      create: false,
+      edit: false,
+      view: false,
+      delete: false,
+    };
+
+  // Loading state
+  if (permissionType === "edit" && permissionLoading) {
+    return (
+      <Dialog open={open} onClose={handleClose}>
+        <Box display="flex" justifyContent="center" alignItems="center" p={4}>
+          <CircularProgress />
+          <Typography variant="body2" sx={{ ml: 2 }}>
+            Loading permission data...
+          </Typography>
+        </Box>
+      </Dialog>
+    );
+  }
 
   return (
     <Dialog
@@ -89,41 +146,27 @@ const AddEditPermissionDialog = ({
       onClose={handleClose}
       maxWidth="md"
       fullWidth
-      PaperProps={{
-        sx: { borderRadius: 3, overflow: "hidden" },
-      }}
+      PaperProps={{ sx: { borderRadius: 3, overflow: "hidden" } }}
     >
-      <GarageForm onSubmit={handleSubmit}>
-        <DialogTitle
-          sx={{
-            bgcolor: alpha(theme.palette.primary.main, 0.05),
-            py: 3,
-          }}
-        >
+      <GarageForm onSubmit={handleSubmit} defaultValues={defaultValues}>
+        <DialogTitle sx={{ bgcolor: alpha(theme.palette.primary.main, 0.05), py: 3 }}>
           <Box display="flex" alignItems="center">
-            <Avatar
-              sx={{
-                width: 56,
-                height: 56,
-                mr: 2,
-                bgcolor: alpha(theme.palette.primary.main, 0.1),
-                color: theme.palette.primary.main,
-              }}
-            >
+            <Avatar sx={{ width: 56, height: 56, mr: 2, bgcolor: alpha(theme.palette.primary.main, 0.1), color: theme.palette.primary.main }}>
               <Security />
             </Avatar>
             <Box>
               <Typography variant="h6" fontWeight={600}>
-                {permissionType === "edit"
-                  ? "Edit Permission"
-                  : "Add New Permission"}
+                {permissionType === "edit" ? "Edit Permission" : "Add New Permission"}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Configure access control for users and roles
+                {permissionType === "edit"
+                  ? "Update permission settings"
+                  : "Configure access control for users and roles"}
               </Typography>
             </Box>
           </Box>
         </DialogTitle>
+
         <DialogContent sx={{ pt: 3 }}>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
@@ -133,7 +176,7 @@ const AddEditPermissionDialog = ({
                 label="Select User"
                 size="normal"
                 margin="normal"
-
+                multiple={false}
               />
             </Grid>
 
@@ -143,67 +186,46 @@ const AddEditPermissionDialog = ({
                 name="pageId"
                 label="Select Page"
                 margin="normal"
-
+                multiple={false}
               />
             </Grid>
+
             <Grid item xs={12} md={6}>
               <FormAutoCompleted
                 options={roleOptions}
                 name="roleId"
                 label="Select Role"
                 margin="normal"
-
+                multiple={false}
               />
             </Grid>
+
             <Grid item xs={12}>
               <Typography variant="h6" fontWeight={600} mb={2}>
                 Permissions
               </Typography>
               <Grid container spacing={1}>
                 <Grid item xs={12} sm={6} md={3}>
-                  <FormCheckBox
-                    name="create"
-                    label="Create"
-                    description="Ability to create new entries"
-                    size="none"
-                  />
+                  <FormCheckBox name="create" label="Create" description="Ability to create new entries" size="none" />
                 </Grid>
                 <Grid item xs={12} sm={6} md={3}>
-                  <FormCheckBox
-                    name="edit"
-                    label="Edit"
-                    description="Ability to modify existing entries"
-                    size="none"
-                  />
+                  <FormCheckBox name="edit" label="Edit" description="Ability to modify existing entries" size="none" />
                 </Grid>
                 <Grid item xs={12} sm={6} md={3}>
-                  <FormCheckBox
-                    name="view"
-                    label="View"
-                    description="Ability to view entries"
-                    size="none"
-                  />
+                  <FormCheckBox name="view" label="View" description="Ability to view entries" size="none" />
                 </Grid>
                 <Grid item xs={12} sm={6} md={3}>
-                  <FormCheckBox
-                    name="delete"
-                    label="Delete"
-                    description="Ability to remove entries"
-                  />
+                  <FormCheckBox name="delete" label="Delete" description="Ability to remove entries" />
                 </Grid>
               </Grid>
             </Grid>
           </Grid>
         </DialogContent>
+
         <DialogActions sx={{ px: 3, pb: 3 }}>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button
-            type="submit"
-            variant="contained"
-            startIcon={<Save />}
-            sx={{ borderRadius: 2 }}
-          >
-            Save Permission
+          <Button type="submit" variant="contained" startIcon={<Save />} sx={{ borderRadius: 2 }}>
+            {permissionType === "edit" ? "Update Permission" : "Save Permission"}
           </Button>
         </DialogActions>
       </GarageForm>
