@@ -79,7 +79,27 @@ const ProjectOverView = () => {
                     : null
                 }
               >
-                <div className="dashboardCard ">
+                <div
+                  className="dashboardCard "
+                  style={{
+                    background: `linear-gradient(to right, ${
+                      [
+                        "#42a5f5",
+                        "#478ed1",
+                        "#66bb6a",
+                        "#43a047",
+                        "#ffb74d",
+                        "#f57c00",
+                        "#ec407a",
+                        "#d81b60",
+                        "#ab47bc",
+                        "#8e24aa",
+                        "#26c6da",
+                        "#00acc1",
+                      ][i * 2]
+                    })`,
+                  }}
+                >
                   <div className="dashboardIconWrap">
                     {i == 0 ? (
                       <HiOutlineUserGroup className="dashboardIcon" size={50} />

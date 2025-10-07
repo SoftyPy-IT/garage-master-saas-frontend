@@ -37,24 +37,24 @@ const AutocompleteSelect = ({
             // Show controlled value from react-hook-form
             multiple
               ? options.filter((opt) =>
-                  (field.value || []).includes(
-                    typeof opt === "string" ? opt : opt.label
-                  )
+                (field.value || []).includes(
+                  typeof opt === "string" ? opt : opt.label
                 )
+              )
               : options.find(
-                  (opt) =>
-                    (typeof opt === "string" ? opt : opt.label) === field.value
-                ) || null
+                (opt) =>
+                  (typeof opt === "string" ? opt : opt.label) === field.value
+              ) || null
           }
           onChange={(_, newValue) => {
             field.onChange(
               multiple
                 ? newValue.map((option) =>
-                    typeof option === "string" ? option : option.label
-                  )
+                  typeof option === "string" ? option : option.label
+                )
                 : typeof newValue === "string"
-                ? newValue
-                : newValue?.label || ""
+                  ? newValue
+                  : newValue?.label || ""
             );
           }}
           renderInput={(params) => (

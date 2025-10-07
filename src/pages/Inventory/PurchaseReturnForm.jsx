@@ -157,7 +157,7 @@ export default function PurchaseReturnForm({ id }) {
     if (stockData && stockData.data && stockData.data.length > 0) {
       const initialReturnItems = stockData.data.map((item, index) => {
         const productId = item.product?._id;
-        
+
         // Check if this product is in the return items (for edit mode)
         const existingItem = singlePurchaseReturn?.data?.items?.find(
           (returnItem) => returnItem.productId?._id === productId
@@ -208,8 +208,8 @@ export default function PurchaseReturnForm({ id }) {
         "returnDate",
         singlePurchaseReturn.data.returnDate
           ? new Date(singlePurchaseReturn.data.returnDate)
-              .toISOString()
-              .split("T")[0]
+            .toISOString()
+            .split("T")[0]
           : new Date().toISOString().split("T")[0]
       );
       setValue("referenceNo", singlePurchaseReturn.data.referenceNo || "");
@@ -295,11 +295,11 @@ export default function PurchaseReturnForm({ id }) {
       returnItems.map((item) =>
         item.id === id
           ? {
-              ...item,
-              returnQuantity: Math.min(Math.max(0, quantity), item.maxQuantity),
-              total:
-                Math.min(Math.max(0, quantity), item.maxQuantity) * item.price,
-            }
+            ...item,
+            returnQuantity: Math.min(Math.max(0, quantity), item.maxQuantity),
+            total:
+              Math.min(Math.max(0, quantity), item.maxQuantity) * item.price,
+          }
           : item
       )
     );
@@ -415,12 +415,10 @@ export default function PurchaseReturnForm({ id }) {
           items: items,
           totalReturnAmount,
         };
-        console.log("return data", returnData);
         const result = await createPurchaseReturn({
           tenantDomain,
           ...returnData,
         }).unwrap();
-        console.log("result", result);
 
         toast.dismiss(loadingToast);
         toast.success("Purchase return created successfully");
@@ -1190,8 +1188,8 @@ export default function PurchaseReturnForm({ id }) {
                     {isSubmitting || isUpdating
                       ? "Processing..."
                       : id
-                      ? "Update Return"
-                      : "Submit Return"}
+                        ? "Update Return"
+                        : "Submit Return"}
                   </Button>
                   <Button
                     fullWidth

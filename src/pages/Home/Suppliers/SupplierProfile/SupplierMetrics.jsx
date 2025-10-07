@@ -14,7 +14,7 @@ import {
 import { GradientBox } from "./supplier";
 
 const SupplierMetrics = ({ supplier, paymentStats }) => {
-  console.log(supplier);
+
 
   // Format currency with Bangladeshi Taka symbol
   const formatCurrency = (value) => {
@@ -23,7 +23,7 @@ const SupplierMetrics = ({ supplier, paymentStats }) => {
   };
 
   // Calculate total orders from order status summary
-  const totalOrders = supplier?.orderStatusSummary 
+  const totalOrders = supplier?.orderStatusSummary
     ? Object.values(supplier.orderStatusSummary).reduce((sum, count) => sum + count, 0)
     : (supplier?.orders?.length || 0);
 
@@ -85,11 +85,11 @@ const SupplierMetrics = ({ supplier, paymentStats }) => {
           >
             {totalOrders}
           </Typography>
-          
+
           {/* Order Status Summary */}
           <Box sx={{ mt: 1 }}>
             {supplier?.orderStatusSummary && (
-              <Box sx={{ display: "flex", flexDirection: "row", flexWrap:'wrap', gap: 0.8 }}>
+              <Box sx={{ display: "flex", flexDirection: "row", flexWrap: 'wrap', gap: 0.8 }}>
                 {Object.entries(supplier.orderStatusSummary).map(([status, count]) => (
                   <Box
                     key={status}
@@ -131,8 +131,8 @@ const SupplierMetrics = ({ supplier, paymentStats }) => {
               </Box>
             )}
           </Box>
-          
-        
+
+
         </GradientBox>
       </Grid>
 
@@ -160,7 +160,7 @@ const SupplierMetrics = ({ supplier, paymentStats }) => {
           >
             {supplier?.products?.length || 0}
           </Typography>
-         
+
         </GradientBox>
       </Grid>
 

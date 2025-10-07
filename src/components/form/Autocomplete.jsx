@@ -4,7 +4,6 @@ import { Controller, useFormContext } from "react-hook-form";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import Chip from "@mui/material/Chip";
-
 const GarageAutoCompleted = ({
   name,
   label = "Autocomplete",
@@ -59,8 +58,8 @@ const GarageAutoCompleted = ({
           onChange={(_, newValue) => {
             const updatedValue = Array.isArray(newValue)
               ? newValue
-                  .filter((v) => v !== null && v !== undefined)
-                  .map((v) => (typeof v === "string" ? v : v.label))
+                .filter((v) => v !== null && v !== undefined)
+                .map((v) => (typeof v === "string" ? v : v.label))
               : [];
             field.onChange(updatedValue);
           }}

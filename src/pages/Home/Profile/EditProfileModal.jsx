@@ -41,7 +41,6 @@ const EditProfileModal = ({
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Form data to update:", formData);
     onUpdate(formData);
   };
 
@@ -49,14 +48,14 @@ const EditProfileModal = ({
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>
         Edit Profile
-        <IconButton 
+        <IconButton
           onClick={onClose}
           sx={{ position: 'absolute', right: 8, top: 8 }}
         >
           <FaTimes />
         </IconButton>
       </DialogTitle>
-      
+
       <form onSubmit={handleSubmit}>
         <DialogContent>
           <TextField
@@ -68,7 +67,7 @@ const EditProfileModal = ({
             margin="normal"
             variant="outlined"
           />
-          
+
           <TextField
             fullWidth
             label="Email Address"
@@ -80,7 +79,7 @@ const EditProfileModal = ({
             variant="outlined"
           />
         </DialogContent>
-        
+
         <DialogActions>
           <Button onClick={onClose}>Cancel</Button>
           <Button type="submit" variant="contained">

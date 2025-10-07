@@ -112,20 +112,20 @@ const EditProfileModal = ({
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
     const updateData = {};
-    
+
     if (formData.name !== userData.name) {
       updateData.name = formData.name;
     }
-    
+
     if (formData.email !== userData.email) {
       updateData.email = formData.email;
     }
-    
+
     if (formData.password) {
       updateData.password = formData.password;
     }
@@ -150,12 +150,12 @@ const EditProfileModal = ({
       onClose={handleClose}
       maxWidth="md"
       fullWidth
-      
+
     >
       <div
-        
+
       >
-        <DialogTitle sx={{ 
+        <DialogTitle sx={{
           background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
           color: "white",
           display: "flex",
@@ -348,7 +348,7 @@ const ProfileHeader = ({
 
   // Debugging effect
   useEffect(() => {
-    console.log("Modal state changed:", isEditing);
+
   }, [isEditing]);
 
   const handleAvatarClick = () => {
@@ -428,7 +428,7 @@ const ProfileHeader = ({
 
   const handleUpdateProfile = async (updateData) => {
     const updateToast = toast.loading("Updating profile...");
-    
+
     try {
       await updateUser({
         tenantDomain,
@@ -439,7 +439,7 @@ const ProfileHeader = ({
       toast.success("Profile updated successfully!", {
         id: updateToast,
       });
-      
+
       setIsEditing(false);
     } catch (error) {
       console.error("Update error:", error);
@@ -459,14 +459,14 @@ const ProfileHeader = ({
   };
 
   const handleEditClick = () => {
-    console.log("Edit button clicked - opening modal");
+
     setIsEditing(true);
   };
 
   return (
     <>
       <div
-       
+
       >
         <GradientCard sx={{ mb: 4, overflow: "visible" }}>
           <CardContent sx={{ p: 4 }}>
@@ -672,21 +672,13 @@ const ProfileHeader = ({
                     onClick={handleEditClick}
                     disabled={isUploading}
                     sx={{
-                     
                       border: "1px solid rgba(255,255,255,0.3)",
-                      color: "white",
+                      color: "",
                       px: 3,
                       py: 1.5,
                       borderRadius: "12px",
-                      "&:hover": {
-                        bgcolor: "rgba(255,255,255,0.3)",
-                        transform: "translateY(-2px)",
-                        boxShadow: "0 8px 25px rgba(0,0,0,0.2)",
-                      },
-                      "&:disabled": {
-                        bgcolor: "rgba(255,255,255,0.1)",
-                        color: "rgba(255,255,255,0.5)",
-                      },
+
+
                       transition: "all 0.3s ease",
                     }}
                   >
@@ -703,7 +695,6 @@ const ProfileHeader = ({
       <EditProfileModal
         open={isEditing}
         onClose={() => {
-          console.log("Closing modal");
           setIsEditing(false);
         }}
         userData={userData}

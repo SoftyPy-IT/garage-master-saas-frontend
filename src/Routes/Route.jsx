@@ -130,6 +130,10 @@ import PurchaseReturnList from "../pages/Inventory/PurchaseReturn/PurchaseReturn
 import WarrantiesPage from "../pages/Inventory/Warranty/WarrantiesPage";
 import StockTransaction from "../pages/Inventory/StockTransaction/StockTransaction";
 import InvoiceList from "../pages/Home/Invoice/ViewInvoice";
+<<<<<<< HEAD
+=======
+
+>>>>>>> 5dac16753ad84db384bf1d0d502ccb56e7b63380
 import ProtectedRoute from "./PrivateRoute";
 import FeatureAccess from "../pages/PermissionDashboard/FeatureAccess";
 import UserManagement from "../pages/PermissionDashboard/UserManagement";

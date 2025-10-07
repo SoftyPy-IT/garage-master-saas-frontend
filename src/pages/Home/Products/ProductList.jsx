@@ -71,7 +71,6 @@ import {
 import { useTenantDomain } from "../../../hooks/useTenantDomain";
 import Loading from "../../../components/Loading/Loading";
 
-// Status component with appropriate colors
 const StatusChip = ({ status }) => {
   let color, icon, label;
 
@@ -118,8 +117,6 @@ const StatusChip = ({ status }) => {
     />
   );
 };
-
-// Product card component for grid view
 const ProductCard = ({ product, onEdit, onDelete, onFavorite, isFavorite }) => {
   const [elevation, setElevation] = useState(1);
 
@@ -567,9 +564,8 @@ export default function ProductList() {
   const [isPrinting, setIsPrinting] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const navigate = useNavigate();
-  // const search = new URLSearchParams(location.search).get("search");
+
   const [filterType, setFilterType] = useState("");
-  // Query parameters
   const tenantDomain = useTenantDomain();
 
   const queryParams = {
@@ -582,7 +578,6 @@ export default function ProductList() {
   const { data, isLoading } = useGetAllIProductQuery(queryParams);
   const [deleteProduct] = useDeleteProductMutation();
 
-  // Mock categories for filter
   const categories = [
     "Lubricants",
     "Brakes",
@@ -597,7 +592,6 @@ export default function ProductList() {
 
   const statuses = ["active", "low_stock", "out_of_stock", "discontinued"];
 
-  // Handle filter menu
   const handleFilterMenuOpen = (event) => {
     setFilterAnchorEl(event.currentTarget);
   };
@@ -605,8 +599,6 @@ export default function ProductList() {
   const handleFilterMenuClose = () => {
     setFilterAnchorEl(null);
   };
-
-  // Handle sort menu
   const handleSortMenuOpen = (event) => {
     setSortAnchorEl(event.currentTarget);
   };
@@ -615,17 +607,12 @@ export default function ProductList() {
     setSortAnchorEl(null);
   };
 
-  // Handle tab change
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
   };
-
-  // Handle view mode change
   const handleViewModeChange = (mode) => {
     setViewMode(mode);
   };
-
-  // Handle sort change
   const handleSortChange = (field) => {
     if (sortField === field) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
@@ -635,8 +622,6 @@ export default function ProductList() {
     }
     handleSortMenuClose();
   };
-
-  // Handle filter change
   const handleCategoryFilterChange = (category) => {
     setFilterCategory(category);
     handleFilterMenuClose();
@@ -646,18 +631,13 @@ export default function ProductList() {
     setFilterStatus(status);
     handleFilterMenuClose();
   };
-
-  // Handle search
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
   };
 
-  // Handle pagination
   const handlePageChange = (event, page) => {
     setCurrentPage(page);
   };
-
-  // Handle favorite toggle
   const handleFavoriteToggle = (productId) => {
     if (favoriteProducts.includes(productId)) {
       setFavoriteProducts(favoriteProducts.filter((id) => id !== productId));
@@ -665,8 +645,6 @@ export default function ProductList() {
       setFavoriteProducts([...favoriteProducts, productId]);
     }
   };
-
-  // Handle delete
   const handleDeleteClick = (id) => {
     setProductToDelete(id);
     setIsDeleteDialogOpen(true);

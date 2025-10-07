@@ -1,7 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import {
   Box,
-  Card,
   Typography,
   Button,
   Tabs,
@@ -11,11 +11,13 @@ import {
   Tooltip,
   IconButton,
   Fab,
-  CircularProgress,
+  Container,
+  Paper,
+  useTheme,
+  alpha,
 } from "@mui/material";
 import {
   Add,
-  Pageview,
   Search,
   Close,
   FilterList,
@@ -41,36 +43,50 @@ import PermissionHeader from "./PermissionHeader";
 import StatsCards from "./StatsCards";
 import PermissionMatrixTab from "./PermissionMetrixTab";
 import UserPermissionsTab from "./UserPermissionTab";
-import RolePermissionsTab from "./RolePermissionTab";
-import PermissionTemplates from "./PermissionTemplate";
 import AddEditPermissionDialog from "./PermissionDiloge";
-import CheckPermissionDialog from "./CheckPermissionDiloge";
+import { useDeletePermissionMutation, useGetAllPermissionsQuery } from "../../redux/api/permissionApi";
+import { useTenantDomain } from "../../hooks/useTenantDomain";
+import Swal from "sweetalert2";
+import { selectCurrentUser } from "../../redux/feature/authSlice";
+import { useSelector } from "react-redux";
+import AddRoleModal from "../RoleManagement/AddRoleModal";
+import PageForm from "../PageManagement/PageForm";
+import Loading from "../../components/Loading/Loading";
+import AddUserModal from "../Home/Tenant/AddUserModal";
 
 const Permission = () => {
+  const theme = useTheme();
   const [tabValue, setTabValue] = useState(0);
   const [openDialog, setOpenDialog] = useState(false);
-  const [openCheckDialog, setOpenCheckDialog] = useState(false);
-  const [permissionType, setPermissionType] = useState("user");
   const [permissions, setPermissions] = useState([]);
   const [filteredPermissions, setFilteredPermissions] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [permissionForm, setPermissionForm] = useState({
-    userId: "",
-    roleId: "",
-    pageId: "",
-    create: false,
-    edit: false,
-    view: false,
-    delete: false,
-  });
-  const [checkPermissionForm, setCheckPermissionForm] = useState({
-    userId: "",
-    pageId: "",
-    action: "view",
-  });
-  const [permissionResult, setPermissionResult] = useState(null);
-  const [showResult, setShowResult] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [editingPermissionId, setEditingPermissionId] = useState(null);
+  const { tenantDomain } = useTenantDomain();
+  const user = useSelector(selectCurrentUser);
+  const [pageOpen, setPageOpen] = useState(false)
+  const [roleOpen, setRoleOpen] = useState(false)
+  const [userOpen, setUserOpen] = useState(false)
+
+  const { data: permissionsData, isLoading: permissionsLoading } = useGetAllPermissionsQuery({ tenantDomain });
+  const [deletePermission] = useDeletePermissionMutation()
+
+  const pages = permissionsData?.data?.permissions
+    ? [...new Map(permissionsData.data?.permissions
+      .filter(item => item?.page?._id)
+      .map(item => [item.page._id, item.page])
+    ).values()]
+    : [];
+
+  const roles = permissionsData?.data?.permissions
+    ? [...new Map(permissionsData?.data?.permissions
+      .flatMap(item => item.roles || [])
+      .filter(role => role?._id)
+      .map(role => [role._id, role])
+    ).values()]
+    : [];
+
+  // Use summary data from backend instead of calculating
   const [stats, setStats] = useState({
     users: 0,
     roles: 0,
@@ -78,329 +94,131 @@ const Permission = () => {
     permissions: 0,
   });
 
-  // Static data for demonstration
-  const users = [
-    { id: "1", name: "John Doe", email: "john@example.com", role: "Admin" },
-    {
-      id: "2",
-      name: "Jane Smith",
-      email: "jane@example.com",
-      role: "Accountant",
-    },
-    {
-      id: "3",
-      name: "Robert Johnson",
-      email: "robert@example.com",
-      role: "User",
-    },
-    {
-      id: "4",
-      name: "Emily Davis",
-      email: "emily@example.com",
-      role: "Manager",
-    },
-  ];
+  const transformPermissionData = (apiData) => {
+    if (!apiData?.data) return [];
 
-  const roles = [
-    { id: "1", name: "Super Admin", color: "primary", icon: <Star /> },
-    { id: "2", name: "Admin", color: "secondary", icon: <Security /> },
-    { id: "3", name: "Accountant", color: "info", icon: <AccountBalance /> },
-    { id: "4", name: "Manager", color: "warning", icon: <ManageAccounts /> },
-    { id: "5", name: "User", color: "success", icon: <Person /> },
-  ];
+    return apiData.data.permissions?.flatMap(permission => {
+      const roleArray = Array.isArray(permission.roles) ? permission.roles : [permission.roles];
 
-  const pages = [
-    { id: "1", name: "Dashboard", icon: <Dashboard /> },
-    { id: "2", name: "Client Management", icon: <PersonPin /> },
-    { id: "3", name: "Jobcard Management", icon: <AssignmentTurnedIn /> },
-    { id: "4", name: "Invoice Management", icon: <LibraryBooks /> },
-    { id: "5", name: "Quotation Management", icon: <Description /> },
-    { id: "6", name: "Money Receipt", icon: <Payments /> },
-    { id: "7", name: "Supplier Management", icon: <Inventory /> },
-    { id: "8", name: "Inventory", icon: <ViewModule /> },
-    { id: "9", name: "Purchase", icon: <ShoppingCart /> },
-    { id: "10", name: "HRM", icon: <Group /> },
-    { id: "11", name: "Accounts", icon: <AccountBalance /> },
-    { id: "12", name: "Reports", icon: <Assessment /> },
-    { id: "13", name: "Settings", icon: <Settings /> },
-  ];
+      return roleArray.map(role => ({
+        id: permission._id,
+        permissionId: permission._id,
+        roleId: role?._id || '',
+        pageId: permission.page?._id || '',
+        create: permission.create || false,
+        edit: permission.edit || false,
+        view: permission.view || false,
+        delete: permission.delete || false,
+        roleName: role?.name || 'Unknown Role',
+        pageName: permission.page?.name || 'Unknown Page',
+      }));
+    });
+  };
 
-  // Mock permissions data
-  const mockPermissions = [
-    {
-      id: "1",
-      userId: "1",
-      roleId: "2",
-      pageId: "2",
-      create: true,
-      edit: true,
-      view: true,
-      delete: false,
-      userName: "John Doe",
-      roleName: "Admin",
-      pageName: "Client Management",
-    },
-    {
-      id: "2",
-      userId: "2",
-      roleId: "3",
-      pageId: "4",
-      create: true,
-      edit: true,
-      view: true,
-      delete: false,
-      userName: "Jane Smith",
-      roleName: "Accountant",
-      pageName: "Invoice Management",
-    },
-    {
-      id: "3",
-      userId: "3",
-      roleId: "5",
-      pageId: "3",
-      create: false,
-      edit: false,
-      view: true,
-      delete: false,
-      userName: "Robert Johnson",
-      roleName: "User",
-      pageName: "Jobcard Management",
-    },
-    {
-      id: "4",
-      userId: "4",
-      roleId: "4",
-      pageId: "6",
-      create: true,
-      edit: true,
-      view: true,
-      delete: false,
-      userName: "Emily Davis",
-      roleName: "Manager",
-      pageName: "Money Receipt",
-    },
-  ];
+  const buildPermissionMatrix = () => {
+    if (!permissionsData?.data) return [];
 
-  // Permission matrix data
-  const permissionMatrix = [
-    {
-      category: "Client Management",
-      icon: <PersonPin />,
-      permissions: [
-        {
-          name: "View Clients",
-          superadmin: true,
-          admin: true,
-          accountant: true,
-          manager: true,
-          user: true,
-        },
-        {
-          name: "Create Client",
-          superadmin: true,
-          admin: true,
-          accountant: false,
-          manager: true,
-          user: false,
-        },
-        {
-          name: "Edit Client",
-          superadmin: true,
-          admin: true,
-          accountant: false,
-          manager: true,
-          user: false,
-        },
-        {
-          name: "Delete Client",
-          superadmin: true,
-          admin: false,
-          accountant: false,
-          manager: false,
-          user: false,
-        },
-      ],
-    },
-    {
-      category: "Jobcard Management",
-      icon: <AssignmentTurnedIn />,
-      permissions: [
-        {
-          name: "View Jobcards",
-          superadmin: true,
-          admin: true,
-          accountant: true,
-          manager: true,
-          user: true,
-        },
-        {
-          name: "Create Jobcard",
-          superadmin: true,
-          admin: true,
-          accountant: false,
-          manager: true,
-          user: true,
-        },
-        {
-          name: "Edit Jobcard",
-          superadmin: true,
-          admin: true,
-          accountant: false,
-          manager: true,
-          user: false,
-        },
-        {
-          name: "Delete Jobcard",
-          superadmin: true,
-          admin: false,
-          accountant: false,
-          manager: false,
-          user: false,
-        },
-      ],
-    },
-    {
-      category: "Invoice Management",
-      icon: <LibraryBooks />,
-      permissions: [
-        {
-          name: "View Invoices",
-          superadmin: true,
-          admin: true,
-          accountant: true,
-          manager: true,
-          user: true,
-        },
-        {
-          name: "Create Invoice",
-          superadmin: true,
-          admin: true,
-          accountant: true,
-          manager: true,
-          user: false,
-        },
-        {
-          name: "Edit Invoice",
-          superadmin: true,
-          admin: true,
-          accountant: true,
-          manager: true,
-          user: false,
-        },
-        {
-          name: "Delete Invoice",
-          superadmin: true,
-          admin: false,
-          accountant: false,
-          manager: false,
-          user: false,
-        },
-      ],
-    },
-    {
-      category: "Quotation Management",
-      icon: <Description />,
-      permissions: [
-        {
-          name: "View Quotations",
-          superadmin: true,
-          admin: true,
-          accountant: true,
-          manager: true,
-          user: true,
-        },
-        {
-          name: "Create Quotation",
-          superadmin: true,
-          admin: true,
-          accountant: false,
-          manager: true,
-          user: false,
-        },
-        {
-          name: "Edit Quotation",
-          superadmin: true,
-          admin: true,
-          accountant: false,
-          manager: true,
-          user: false,
-        },
-        {
-          name: "Delete Quotation",
-          superadmin: true,
-          admin: false,
-          accountant: false,
-          manager: false,
-          user: false,
-        },
-      ],
-    },
-    {
-      category: "Money Receipt Management",
-      icon: <Payments />,
-      permissions: [
-        {
-          name: "View Money Receipts",
-          superadmin: true,
-          admin: true,
-          accountant: true,
-          manager: true,
-          user: true,
-        },
-        {
-          name: "Create Money Receipt",
-          superadmin: true,
-          admin: true,
-          accountant: true,
-          manager: true,
-          user: false,
-        },
-        {
-          name: "Edit Money Receipt",
-          superadmin: true,
-          admin: true,
-          accountant: true,
-          manager: true,
-          user: false,
-        },
-        {
-          name: "Delete Money Receipt",
-          superadmin: true,
-          admin: false,
-          accountant: false,
-          manager: false,
-          user: false,
-        },
-      ],
-    },
-  ];
+    const matrix = [];
+    const pageCategories = [...new Set(pages.map(page => page.category).filter(Boolean))];
 
-  useEffect(() => {
-    // Simulate API call to fetch permissions
-    setLoading(true);
-    setTimeout(() => {
-      setPermissions(mockPermissions);
-      setFilteredPermissions(mockPermissions);
-      setStats({
-        users: users.length,
-        roles: roles.length,
-        pages: pages.length,
-        permissions: mockPermissions.length,
+    pageCategories.forEach(category => {
+      const categoryPages = pages.filter(page => page.category === category);
+      const categoryPermissions = [];
+
+      categoryPages.forEach(page => {
+        const pagePermissions = permissionsData?.data?.permissions?.filter(p => p.page?._id === page._id);
+
+        if (pagePermissions.length > 0) {
+          const actions = ['view', 'create', 'edit', 'delete'];
+
+          actions.forEach(action => {
+            const permissionEntry = {
+              name: `${action.charAt(0).toUpperCase() + action.slice(1)} ${page.name}`,
+            };
+
+            roles.forEach(role => {
+              const roleKey = role?.name ? role.name.toLowerCase().replace(/\s+/g, '') : 'unknownrole';
+
+              const hasPermission = pagePermissions.some(permission => {
+                const roleArray = Array.isArray(permission.roles) ? permission.roles : [permission.roles];
+                const roleMatch = roleArray.some(r => r._id === role._id);
+                return roleMatch && permission[action];
+              });
+
+              permissionEntry[roleKey] = hasPermission;
+            });
+
+            categoryPermissions.push(permissionEntry);
+          });
+        }
       });
-      setLoading(false);
-    }, 800);
-  }, []);
+
+      if (categoryPermissions.length > 0) {
+        matrix.push({
+          category: category,
+          icon: getCategoryIcon(category),
+          permissions: categoryPermissions
+        });
+      }
+    });
+
+    return matrix;
+  };
+
+  const getCategoryIcon = (category) => {
+    const iconMap = {
+      'Main': <Dashboard />,
+      'Client': <PersonPin />,
+      'Jobcard': <AssignmentTurnedIn />,
+      'Invoice': <LibraryBooks />,
+      'Quotation': <Description />,
+      'Payment': <Payments />,
+      'Inventory': <Inventory />,
+      'Purchase': <ShoppingCart />,
+      'HRM': <Group />,
+      'Accounts': <AccountBalance />,
+      'Reports': <Assessment />,
+      'Settings': <Settings />,
+      'Permission': <Security />,
+      'Role Management': <ManageAccounts />,
+      'user-management': <Person />,
+      'page-management': <ViewModule />,
+      'Feature Access': <Star />,
+      'All User List': <Group />,
+      'Profile': <Person />,
+      'Money Receipt Management': <Payments />,
+      'Brand': <ViewModule />
+    };
+
+    return iconMap[category] || <ViewModule />;
+  };
 
   useEffect(() => {
-    // Filter permissions based on search term
+    if (permissionsData?.data) {
+      const transformedPermissions = transformPermissionData(permissionsData);
+      setPermissions(transformedPermissions);
+      setFilteredPermissions(transformedPermissions);
+
+      // Use summary data from backend
+      if (permissionsData.data.summary) {
+        setStats({
+          users: permissionsData.data.summary.totalUsers || 0,
+          roles: permissionsData.data.summary.totalRoles || 0,
+          pages: permissionsData.data.summary.totalPages || 0,
+          permissions: permissionsData.data.summary.totalPermissions || 0,
+        });
+      }
+    }
+  }, [permissionsData]);
+
+  useEffect(() => {
     if (searchTerm === "") {
       setFilteredPermissions(permissions);
     } else {
       const filtered = permissions.filter(
         (perm) =>
-          perm.userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          perm.roleName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          perm.pageName.toLowerCase().includes(searchTerm.toLowerCase())
+          perm.roleName?.toLowerCase()?.includes(searchTerm?.toLowerCase()) ||
+          perm.pageName?.toLowerCase()?.includes(searchTerm?.toLowerCase())
       );
       setFilteredPermissions(filtered);
     }
@@ -410,332 +228,340 @@ const Permission = () => {
     setTabValue(newValue);
   };
 
-  const handleDialogOpen = (type, id = null) => {
-    setPermissionType(type);
-    if (id) {
-      // Edit existing permission
-      const permission = permissions.find((p) => p.id === id);
-      if (permission) {
-        setPermissionForm({
-          userId: permission.userId,
-          roleId: permission.roleId,
-          pageId: permission.pageId,
-          create: permission.create,
-          edit: permission.edit,
-          view: permission.view,
-          delete: permission.delete,
-        });
-      }
-    } else {
-      // Create new permission
-      setPermissionForm({
-        userId: "",
-        roleId: "",
-        pageId: "",
-        create: false,
-        edit: false,
-        view: false,
-        delete: false,
-      });
-    }
+  const handleDialogOpen = (permissionId = null) => {
+    setEditingPermissionId(permissionId);
     setOpenDialog(true);
   };
 
+  const handlePageOpen = () => setPageOpen(true)
+  const handlePageClose = () => setPageOpen(false)
+  const handleRoleOpen = () => setRoleOpen(true)
+  const handleRoleClose = () => setRoleOpen(false)
+  const handleUserOpen = () => setUserOpen(true)
+  const handleUserClose = () => setUserOpen(false)
+
   const handleDialogClose = () => {
+    setEditingPermissionId(null);
     setOpenDialog(false);
   };
 
-  const handleCheckDialogOpen = () => {
-    setCheckPermissionForm({
-      userId: "",
-      pageId: "",
-      action: "view",
+  const handleDeletePermission = async (id) => {
+    const confirmResult = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: theme.palette.primary.main,
+      cancelButtonColor: theme.palette.error.main,
+      confirmButtonText: "Yes, delete it!",
+      background: "#fff",
+      customClass: {
+        title: "text-purple-800 font-medium",
+        content: "text-gray-600",
+      },
     });
-    setPermissionResult(null);
-    setShowResult(false);
-    setOpenCheckDialog(true);
-  };
 
-  const handleCheckDialogClose = () => {
-    setOpenCheckDialog(false);
-  };
+    if (confirmResult.isConfirmed) {
+      try {
+        await deletePermission({
+          userId: user?.userId,
+          tenantDomain,
+          id,
+        }).unwrap();
 
-  const handleFormChange = (e) => {
-    const { name, value, checked } = e.target;
-    setPermissionForm({
-      ...permissionForm,
-      [name]:
-        name === "create" ||
-        name === "edit" ||
-        name === "view" ||
-        name === "delete"
-          ? checked
-          : value,
-    });
-  };
-
-  const handleCheckFormChange = (e) => {
-    const { name, value } = e.target;
-    setCheckPermissionForm({
-      ...checkPermissionForm,
-      [name]: value,
-    });
-  };
-
-  const handleSavePermission = () => {
-    // Simulate API call to save permission
-    setLoading(true);
-    setTimeout(() => {
-      // In a real app, you would make an API call here
-      console.log("Saving permission:", permissionForm);
-
-      // Update local state for demo
-      const newPermission = {
-        id: (permissions.length + 1).toString(),
-        userId: permissionForm.userId,
-        roleId: permissionForm.roleId,
-        pageId: permissionForm.pageId,
-        create: permissionForm.create,
-        edit: permissionForm.edit,
-        view: permissionForm.view,
-        delete: permissionForm.delete,
-        userName: users.find((u) => u.id === permissionForm.userId)?.name || "",
-        roleName: roles.find((r) => r.id === permissionForm.roleId)?.name || "",
-        pageName: pages.find((p) => p.id === permissionForm.pageId)?.name || "",
-      };
-
-      setPermissions([...permissions, newPermission]);
-      setLoading(false);
-      setOpenDialog(false);
-    }, 800);
-  };
-
-  const handleCheckPermission = () => {
-    // Simulate API call to check permission
-    setLoading(true);
-    setTimeout(() => {
-      // In a real app, you would make an API call here
-      console.log("Checking permission:", checkPermissionForm);
-
-      // Mock result - in a real app this would come from the API
-      const hasPermission = Math.random() > 0.3; // 70% chance of having permission
-      setPermissionResult(hasPermission);
-      setShowResult(true);
-      setLoading(false);
-    }, 800);
-  };
-
-  const handleDeletePermission = (id) => {
-    // Simulate API call to delete permission
-    setLoading(true);
-    setTimeout(() => {
-      // Update local state for demo
-      setPermissions(permissions.filter((p) => p.id !== id));
-      setLoading(false);
-    }, 800);
+        Swal.fire({
+          icon: "success",
+          title: "Deleted!",
+          text: "The permission has been deleted successfully.",
+          showConfirmButton: false,
+          timer: 2000,
+          background: "#fff",
+          customClass: {
+            title: "text-purple-800 font-medium",
+            content: "text-gray-600",
+          },
+        });
+      } catch (error) {
+        Swal.fire({
+          icon: "error",
+          title: "Error!",
+          text: "An error occurred while deleting the permission.",
+          confirmButtonColor: theme.palette.primary.main,
+          background: "#fff",
+          customClass: {
+            title: "text-purple-800 font-medium",
+            content: "text-gray-600",
+          },
+        });
+      }
+    }
   };
 
   const getRoleColor = (roleName) => {
-    const role = roles.find((r) => r.name === roleName);
-    return role ? role.color : "default";
+    const roleColors = {
+      'Super Admin': 'primary',
+      'Admin': 'secondary',
+      'Accountant': 'info',
+      'Manager': 'warning',
+      'User': 'success'
+    };
+    return roleColors[roleName] || 'default';
   };
 
+  const permissionMatrix = buildPermissionMatrix();
+
   return (
-    <Box sx={{ p: 3 }}>
-      {/* Header Section */}
-      <PermissionHeader/>
+    <Box sx={{
+      minHeight: '100vh',
+      background: `linear-gradient(135deg, ${alpha(theme.palette.primary.light, 0.1)} 0%, ${alpha(theme.palette.secondary.light, 0.1)} 100%)`,
+      py: 3
+    }}>
+      <Container maxWidth="xl">
+        <PermissionHeader />
+        <StatsCards stats={stats} />
 
-      {/* Stats Cards */}
-      <StatsCards stats={stats} />
-
-      {/* Main Content */}
-      <Card elevation={0} sx={{ p: 3, mb: 4, borderRadius: 3 }}>
-        <Box
-          display="flex"
-          justifyContent="space-between"
-          alignItems="center"
-          mb={3}
-        >
-          <Typography variant="h5" fontWeight="bold">
-            Permission Controls
-          </Typography>
-          <Box display="flex" gap={2}>
-            <Button
-              variant="contained"
-              startIcon={<Add />}
-              onClick={() => handleDialogOpen("user")}
-              sx={{
-                borderRadius: 2,
-                boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-              }}
-            >
-              Add Permission
-            </Button>
-            <Button
-              variant="outlined"
-              color="secondary"
-              startIcon={<Pageview />}
-              onClick={handleCheckDialogOpen}
-              sx={{
-                borderRadius: 2,
-              }}
-            >
-              Check Permission
-            </Button>
-          </Box>
-        </Box>
-
-        <Tabs
-          value={tabValue}
-          onChange={handleTabChange}
-          aria-label="permission tabs"
-          sx={{ mb: 3 }}
-          variant="fullWidth"
-          textColor="primary"
-          indicatorColor="primary"
-        >
-          <Tab
-            label="Permission Matrix"
-            icon={<ViewModule />}
-            iconPosition="start"
-          />
-          <Tab
-            label="User Permissions"
-            icon={<Person />}
-            iconPosition="start"
-          />
-          <Tab label="Role Permissions" icon={<Group />} iconPosition="start" />
-        </Tabs>
-
-        {/* Search Bar */}
-        <Box sx={{ mb: 3, display: "flex", alignItems: "center" }}>
-          <TextField
-            placeholder="Search permissions..."
-            variant="outlined"
-            size="small"
-            fullWidth
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            sx={{
-              borderRadius: 2,
-              "& .MuiOutlinedInput-root": {
-                borderRadius: 2,
-              },
-            }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Search />
-                </InputAdornment>
-              ),
-              endAdornment: searchTerm && (
-                <InputAdornment position="end">
-                  <IconButton size="small" onClick={() => setSearchTerm("")}>
-                    <Close />
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-          />
-          <Tooltip title="Advanced Filters">
-            <IconButton sx={{ ml: 1 }}>
-              <FilterList />
-            </IconButton>
-          </Tooltip>
-        </Box>
-
-        {/* Tab Content */}
-        <Box>
-          {/* Permission Matrix Tab */}
-          {tabValue === 0 && (
-            <PermissionMatrixTab
-              permissionMatrix={permissionMatrix}
-              roles={roles}
-            />
-          )}
-
-          {/* User Permissions Tab */}
-          {tabValue === 1 && (
-            <UserPermissionsTab
-              filteredPermissions={filteredPermissions}
-              users={users}
-              pages={pages}
-              roles={roles}
-              handleDialogOpen={handleDialogOpen}
-              handleDeletePermission={handleDeletePermission}
-              getRoleColor={getRoleColor}
-            />
-          )}
-
-          {/* Role Permissions Tab */}
-          {tabValue === 2 && (
-            <RolePermissionsTab
-              roles={roles}
-              permissionMatrix={permissionMatrix}
-              handleDialogOpen={handleDialogOpen}
-            />
-          )}
-        </Box>
-      </Card>
-
-      {/* Permission Templates */}
-      <PermissionTemplates />
-
-      {/* Add/Edit Permission Dialog */}
-      <AddEditPermissionDialog
-        open={openDialog}
-        handleClose={handleDialogClose}
-        permissionType={permissionType}
-        permissionForm={permissionForm}
-        handleFormChange={handleFormChange}
-        handleSavePermission={handleSavePermission}
-        users={users}
-        roles={roles}
-        pages={pages}
-      />
-
-      {/* Check Permission Dialog */}
-      <CheckPermissionDialog
-        open={openCheckDialog}
-        handleClose={handleCheckDialogClose}
-        checkPermissionForm={checkPermissionForm}
-        handleCheckFormChange={handleCheckFormChange}
-        handleCheckPermission={handleCheckPermission}
-        users={users}
-        pages={pages}
-        showResult={showResult}
-        permissionResult={permissionResult}
-      />
-
-      {/* Floating Action Button */}
-      <Fab
-        color="primary"
-        aria-label="add permission"
-        sx={{ position: "fixed", bottom: 16, right: 16 }}
-        onClick={() => handleDialogOpen("user")}
-      >
-        <Add />
-      </Fab>
-
-      {/* Loading Overlay */}
-      {loading && (
-        <Box
+        <Paper
+          elevation={0}
           sx={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            bgcolor: "rgba(0, 0, 0, 0.5)",
-            zIndex: 9999,
+            p: 3,
+            mb: 4,
+            borderRadius: 4,
+            background: 'rgba(255, 255, 255, 0.9)',
+            backdropFilter: 'blur(10px)',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)'
           }}
         >
-          <CircularProgress color="inherit" />
-        </Box>
-      )}
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+            mb={3}
+            flexWrap="wrap"
+            gap={2}
+          >
+            <Typography variant="h4" fontWeight="bold" color="primary.main">
+              Permission Controls
+            </Typography>
+            <Box display="flex" gap={2} flexWrap="wrap">
+              <Button
+                variant="contained"
+                startIcon={<Person />}
+                onClick={handleUserOpen}
+                sx={{
+                  borderRadius: 3,
+                  px: 3,
+                  py: 1.2,
+                  background: 'linear-gradient(45deg, #2196f3 30%, #21cbf3 90%)',
+                  boxShadow: '0 4px 10px rgba(33, 150, 243, 0.3)',
+                }}
+              >
+                Create User
+              </Button>
+
+              <Button
+                variant="contained"
+                startIcon={<ViewModule />}
+                onClick={handlePageOpen}
+                sx={{
+                  borderRadius: 3,
+                  px: 3,
+                  py: 1.2,
+                  background: 'linear-gradient(45deg, #4caf50 30%, #66bb6a 90%)',
+                  boxShadow: '0 4px 10px rgba(76, 175, 80, 0.3)',
+                }}
+              >
+                Create Page
+              </Button>
+
+              <Button
+                variant="contained"
+                startIcon={<Security />}
+                onClick={handleRoleOpen}
+                sx={{
+                  borderRadius: 3,
+                  px: 3,
+                  py: 1.2,
+                  background: 'linear-gradient(45deg, #ff9800 30%, #ffb74d 90%)',
+                  boxShadow: '0 4px 10px rgba(255, 152, 0, 0.3)',
+                }}
+              >
+                Create Role
+              </Button>
+
+              <Button
+                variant="contained"
+                startIcon={<Add />}
+                onClick={() => handleDialogOpen()}
+                sx={{
+                  borderRadius: 3,
+                  px: 3,
+                  py: 1.2,
+                  background: 'linear-gradient(45deg, #9c27b0 30%, #ba68c8 90%)',
+                  boxShadow: '0 4px 10px rgba(156, 39, 176, 0.3)',
+                }}
+              >
+                Add Permission
+              </Button>
+            </Box>
+          </Box>
+
+          <Tabs
+            value={tabValue}
+            onChange={handleTabChange}
+            aria-label="permission tabs"
+            sx={{
+              mb: 3,
+              '& .MuiTab-root': {
+                fontWeight: 600,
+                textTransform: 'none',
+                fontSize: '1rem',
+                minHeight: 48,
+              },
+              '& .Mui-selected': {
+                color: theme.palette.primary.main,
+              },
+              '& .MuiTabs-indicator': {
+                height: 3,
+                borderRadius: 3,
+              }
+            }}
+            variant="fullWidth"
+            textColor="primary"
+            indicatorColor="primary"
+          >
+
+            <Tab
+              label="User Permissions"
+              icon={<Person />}
+              iconPosition="start"
+            />
+            <Tab
+              label="Permission Matrix"
+              icon={<ViewModule />}
+              iconPosition="start"
+            />
+          </Tabs>
+
+          <Box sx={{ mb: 3, display: "flex" }}>
+            <TextField
+              placeholder="Search permissions..."
+              variant="outlined"
+              size="small"
+              fullWidth
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              sx={{
+                borderRadius: 3,
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: 3,
+                  backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                  '&:hover fieldset': {
+                    borderColor: alpha(theme.palette.primary.main, 0.5),
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: theme.palette.primary.main,
+                  },
+                },
+              }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Search color="action" />
+                  </InputAdornment>
+                ),
+                endAdornment: searchTerm && (
+                  <InputAdornment position="end">
+                    <IconButton size="small" onClick={() => setSearchTerm("")}>
+                      <Close />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+            <Tooltip title="Advanced Filters">
+              <IconButton
+                sx={{
+                  ml: 2,
+                  backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                  '&:hover': {
+                    backgroundColor: alpha(theme.palette.primary.main, 0.1),
+                  }
+                }}
+              >
+                <FilterList />
+              </IconButton>
+            </Tooltip>
+          </Box>
+          <Box>
+
+            {tabValue === 0 && (
+              <div>
+                <UserPermissionsTab
+                  filteredPermissions={filteredPermissions}
+                  pages={pages}
+                  roles={roles}
+                  handleDialogOpen={handleDialogOpen}
+                  handleDeletePermission={handleDeletePermission}
+                  getRoleColor={getRoleColor}
+                  loading={permissionsLoading}
+                />
+              </div>
+            )}
+            {tabValue === 1 && (
+              <div>
+                <PermissionMatrixTab
+                  permissionMatrix={permissionMatrix}
+                  roles={roles}
+                />
+              </div>
+            )}
+          </Box>
+        </Paper>
+
+        <AddEditPermissionDialog
+          open={openDialog}
+          handleClose={handleDialogClose}
+          permissionId={editingPermissionId}
+          permissionType={editingPermissionId ? "edit" : "add"}
+        />
+
+        <AddRoleModal
+          open={roleOpen}
+          onClose={handleRoleClose}
+        />
+
+        <PageForm
+          open={pageOpen}
+          onClose={handlePageClose}
+          tenantDomain={tenantDomain}
+        />
+
+        <AddUserModal
+          open={userOpen}
+          onClose={handleUserClose}
+        />
+
+        <Fab
+          color="primary"
+          aria-label="add permission"
+          sx={{
+            position: "fixed",
+            bottom: 24,
+            right: 24,
+            background: 'linear-gradient(45deg, #9c27b0 30%, #ba68c8 90%)',
+            boxShadow: '0 6px 20px rgba(156, 39, 176, 0.4)',
+            width: 56,
+            height: 56,
+          }}
+          onClick={() => handleDialogOpen()}
+        >
+          <Add />
+        </Fab>
+
+        {permissionsLoading && (
+          <Loading />
+        )}
+      </Container>
     </Box>
   );
 };

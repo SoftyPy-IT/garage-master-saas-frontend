@@ -25,7 +25,7 @@
 //   const [showSensitiveData, setShowSensitiveData] = useState(false);
 //   const tenantDomain = useTenantDomain();
 //   const { checkPermission } = usePermissions();
-//   console.log('permission check',checkPermission)
+
   
 //   const {
 //     data: allMetaData,

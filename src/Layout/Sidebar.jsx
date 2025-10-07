@@ -109,11 +109,10 @@ const Sidebar = ({ toggle }) => {
   return (
     <aside className="flex ">
       <div
-        className={`${
-          toggle
-            ? `fixed overflow-y-scroll overflow-x-hidden drawwerLeftSide  h-screen text-lg font-semibold  bg-[#2C3136] text-white`
-            : `fixed overflow-y-scroll overflow-x-hidden sideBarActive h-screen text-lg font-semibold  bg-[#2C3136] text-white`
-        }`}
+        className={`${toggle
+          ? `fixed overflow-y-scroll overflow-x-hidden drawwerLeftSide  h-screen text-lg font-semibold  bg-[#2C3136] text-white`
+          : `fixed overflow-y-scroll overflow-x-hidden sideBarActive h-screen text-lg font-semibold  bg-[#2C3136] text-white`
+          }`}
       >
         <div className=" ">
           <NavLink to="/dashboard" className="z-10  flex p-4 items-center">
@@ -529,7 +528,7 @@ const Sidebar = ({ toggle }) => {
                 </NavLink>
               </div>
             </Typography>
-          
+
           </AccordionDetails>
         </Accordion>
         {/* Inventory */}
@@ -794,7 +793,46 @@ const Sidebar = ({ toggle }) => {
             </div>
           </Link>
         </div>
-
+        <Accordion
+          sx={{ paddingBottom: "10px" }}
+          className="dashboardAccordion"
+          expanded={expanded === "panel27"}
+          onChange={handleChange("panel27")}
+        >
+          <AccordionSummary
+            sx={{ marginBottom: "-10px" }}
+            expandIcon={<ExpandLess className="accordionExpandIcon" />}
+            aria-controls="panel6a-content"
+            id="panel6a-header"
+          >
+            <Typography>
+              <span className="flex items-center justify-center ">
+                <Storage />
+                <span className="ml-2"> Permission </span>
+              </span>
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Typography className="accordionTypoGrapy">
+              <div className="flex items-center">
+                <BackupTable className="mr-2" />
+                <NavLink to="/dashboard/user-permission">User Permission</NavLink>
+              </div>
+            </Typography>
+            <Typography className="accordionTypoGrapy">
+              <div className="flex items-center">
+                <RestorePage className="mr-2" />
+                <NavLink to="/dashboard/role-management">Role Management </NavLink>
+              </div>
+            </Typography>
+            <Typography className="accordionTypoGrapy">
+              <div className="flex items-center">
+                <RestorePage className="mr-2" />
+                <NavLink to="/dashboard/page-management">Page Management </NavLink>
+              </div>
+            </Typography>
+          </AccordionDetails>
+        </Accordion>
         {/* Recycle Bin */}
         <Accordion
           sx={{ paddingBottom: "10px" }}
