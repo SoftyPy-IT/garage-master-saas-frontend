@@ -32,7 +32,6 @@ export default function TransferItemsTable({
   formData,
   theme,
 }) {
-  console.log(transferItems)
   return (
     <TableContainer
       component={Paper}
@@ -164,8 +163,8 @@ export default function TransferItemsTable({
                       ? item.product.currentStock > 10
                         ? "success"
                         : item.product.currentStock > 0
-                        ? "warning"
-                        : "error"
+                          ? "warning"
+                          : "error"
                       : "default"
                   }
                   sx={{ fontWeight: "bold" }}

@@ -90,7 +90,7 @@ const SupplierProduct = ({ productData }) => {
         text: "An error occurred while deleting the product.",
         confirmButtonColor: "#6a1b9a",
       });
-    } 
+    }
   };
 
   const handleFilterClose = () => {
@@ -111,11 +111,9 @@ const SupplierProduct = ({ productData }) => {
 
   const handleProductAction = (action, product) => {
     if (action === "edit") {
-      // Navigate to update-product page with product ID
       navigate(`/dashboard/update-product/?id=${product._id}`);
     } else if (action === "view") {
-      // Log product details to console
-      console.log("Product Details:", product);
+
       setSelectedProduct(product);
       setDialogAction(action);
       setOpenDialog(true);
@@ -131,7 +129,7 @@ const SupplierProduct = ({ productData }) => {
         confirmButtonText: "Yes, delete it!",
       }).then((result) => {
         if (result.isConfirmed) {
-          handleDelete(product._id); 
+          handleDelete(product._id);
         }
       });
     } else {

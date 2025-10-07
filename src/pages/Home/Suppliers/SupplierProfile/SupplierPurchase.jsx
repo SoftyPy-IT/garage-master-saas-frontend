@@ -79,14 +79,13 @@ const SupplierPurchase = ({ purchaseData }) => {
     useDeletePurchaseMutation();
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedOrderForAction, setSelectedOrderForAction] = useState(null);
-  console.log(selectedOrderForAction);
- const handleOpen = () => {
-  const url = new URL(window.location);
-  url.searchParams.delete('id');
-  window.history.pushState({}, '', url);
-  
-  setOpen(true);
-};
+  const handleOpen = () => {
+    const url = new URL(window.location);
+    url.searchParams.delete('id');
+    window.history.pushState({}, '', url);
+
+    setOpen(true);
+  };
   const handleClose = () => setOpen(false);
 
   const handleFilterMenuOpen = (event) => {

@@ -92,7 +92,6 @@ const EmployeeSalaryForm = ({ id }) => {
       page: currentPage,
       searchTerm: searchTerm,
     });
-  console.log("employee ", getAllEmployee);
 
   const { data: singleSalary, isLoading: singleSalaryLoading } =
     useGetSalaryByMonthQuery({ tenantDomain, month });
@@ -150,7 +149,7 @@ const EmployeeSalaryForm = ({ id }) => {
 
   const initializeWithDefaults = (employeeCount) => {
     const newOvertimeHours = [];
-    
+
     getAllEmployee.data.employees.forEach((employee) => {
       const summary = employee.overtimeSummary?.find(
         item => item.month === initialSelectedOption && item.year === parseInt(currentYear)
@@ -475,7 +474,7 @@ const EmployeeSalaryForm = ({ id }) => {
     // Then check for overtimeSummary data
     const selectedMonth = selectedOption[index];
     const selectedYearValue = parseInt(selectedYear[index]);
-    
+
     // Find matching overtime summary
     const summary = employee.overtimeSummary?.find(
       item => item.month === selectedMonth && item.year === selectedYearValue
@@ -485,7 +484,7 @@ const EmployeeSalaryForm = ({ id }) => {
     if (summary) {
       return parseFloat(summary.totalOvertime);
     }
-    
+
     return calculateOvertimeHours(employee);
   };
 
@@ -874,9 +873,8 @@ const EmployeeSalaryForm = ({ id }) => {
                     Showing:
                   </Typography>
                   <Chip
-                    label={`${filteredEmployees.length} of ${
-                      getAllEmployee?.data?.employees?.length || 0
-                    } employees`}
+                    label={`${filteredEmployees.length} of ${getAllEmployee?.data?.employees?.length || 0
+                      } employees`}
                     size="small"
                     color={selectedEmployees.length > 0 ? "primary" : "default"}
                     variant="outlined"
@@ -1408,11 +1406,10 @@ const EmployeeSalaryForm = ({ id }) => {
                 ? "Updating..."
                 : "Submitting..."
               : isEditMode
-              ? "Update All Salaries"
-              : `Submit Salary ${
-                  selectedEmployees.length > 0
-                    ? `(${selectedEmployees.length} employees)`
-                    : ""
+                ? "Update All Salaries"
+                : `Submit Salary ${selectedEmployees.length > 0
+                  ? `(${selectedEmployees.length} employees)`
+                  : ""
                 }`}
           </Button>
         </Box>

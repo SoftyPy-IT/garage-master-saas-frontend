@@ -1,10 +1,36 @@
 /* eslint-disable react/prop-types */
 import React from "react";
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Avatar, Typography, Checkbox, Box, useTheme, alpha } from "@mui/material";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Avatar,
+  Typography,
+  Checkbox,
+  Box,
+  useTheme,
+  alpha
+} from "@mui/material";
 import { AccountBalance, ManageAccounts, Person, Security, Star } from "@mui/icons-material";
 
 const PermissionMatrixTab = ({ permissionMatrix, roles }) => {
   const theme = useTheme();
+
+  // Safe function to get role key
+  const getRoleKey = (role) => {
+    if (!role?.name) return 'unknownrole';
+    return role.name.toLowerCase().replace(/\s+/g, '');
+  };
+
+  // Safe function to get permission status
+  const getPermissionStatus = (permission, role) => {
+    const roleKey = getRoleKey(role);
+    return permission[roleKey] || false;
+  };
 
   return (
     <Box>
@@ -32,7 +58,7 @@ const PermissionMatrixTab = ({ permissionMatrix, roles }) => {
                       {getRoleIcon(role.name)}
                     </Avatar>
                     <Typography variant="body2" fontWeight={500}>
-                      {role.name}
+                      {role?.name || 'Unknown Role'}
                     </Typography>
                   </Box>
                 </TableCell>
@@ -40,7 +66,7 @@ const PermissionMatrixTab = ({ permissionMatrix, roles }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {permissionMatrix.length > 0 ? (
+            {permissionMatrix && permissionMatrix.length > 0 ? (
               permissionMatrix.map((category, catIndex) => (
                 <React.Fragment key={catIndex}>
                   <TableRow>
@@ -66,21 +92,22 @@ const PermissionMatrixTab = ({ permissionMatrix, roles }) => {
                       </Box>
                     </TableCell>
                   </TableRow>
-                  {category.permissions.map((permission, permIndex) => (
-                    <TableRow key={permIndex}>
+                  {category.permissions && category.permissions.map((permission, permIndex) => (
+                    <TableRow key={`${catIndex}-${permIndex}`}>
                       <TableCell sx={{ pl: 4 }}>
                         <Typography variant="body2">
                           {permission.name}
                         </Typography>
                       </TableCell>
                       {roles.map((role) => (
-                        <TableCell key={role._id} align="center">
+                        <TableCell key={`${role._id}-${permIndex}`} align="center">
                           <Checkbox
-                            checked={permission[role.name?.toLowerCase().replace(' ', '')] || false}
+                            checked={getPermissionStatus(permission, role)}
                             color="primary"
                             inputProps={{
                               "aria-label": `${permission.name} for ${role.name}`,
                             }}
+                            disabled // Make it read-only for now
                           />
                         </TableCell>
                       ))}
@@ -106,6 +133,8 @@ const PermissionMatrixTab = ({ permissionMatrix, roles }) => {
 
 // Helper function to get role icons
 const getRoleIcon = (roleName) => {
+  if (!roleName) return <Person />;
+
   const iconMap = {
     'Super Admin': <Star />,
     'Admin': <Security />,

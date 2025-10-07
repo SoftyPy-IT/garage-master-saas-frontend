@@ -85,15 +85,13 @@ const CreateWarrantyModal = ({ open, onClose, editingWarranty }) => {
   };
 
   const handleFormSubmit = (data) => {
-    console.log('raw data', data)
     const formattedData = {
       ...data,
       durationType: formatDurationTypeForDatabase(data.durationType),
     };
-    console.log('formated data', formattedData)
     handleSubmit(formattedData);
   };
-  
+
 
   return (
     <>
