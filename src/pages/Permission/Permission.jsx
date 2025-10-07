@@ -429,14 +429,15 @@ const Permission = () => {
             textColor="primary"
             indicatorColor="primary"
           >
-            <Tab
-              label="Permission Matrix"
-              icon={<ViewModule />}
-              iconPosition="start"
-            />
+
             <Tab
               label="User Permissions"
               icon={<Person />}
+              iconPosition="start"
+            />
+            <Tab
+              label="Permission Matrix"
+              icon={<ViewModule />}
               iconPosition="start"
             />
           </Tabs>
@@ -492,15 +493,8 @@ const Permission = () => {
             </Tooltip>
           </Box>
           <Box>
+
             {tabValue === 0 && (
-              <div>
-                <PermissionMatrixTab
-                  permissionMatrix={permissionMatrix}
-                  roles={roles}
-                />
-              </div>
-            )}
-            {tabValue === 1 && (
               <div>
                 <UserPermissionsTab
                   filteredPermissions={filteredPermissions}
@@ -510,6 +504,14 @@ const Permission = () => {
                   handleDeletePermission={handleDeletePermission}
                   getRoleColor={getRoleColor}
                   loading={permissionsLoading}
+                />
+              </div>
+            )}
+            {tabValue === 1 && (
+              <div>
+                <PermissionMatrixTab
+                  permissionMatrix={permissionMatrix}
+                  roles={roles}
                 />
               </div>
             )}
