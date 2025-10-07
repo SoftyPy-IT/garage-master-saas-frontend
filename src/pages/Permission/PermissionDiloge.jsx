@@ -29,7 +29,6 @@ const AddEditPermissionDialog = ({
   handleClose,
   permissionId,
   permissionType = "add",
-  handleSavePermission,
 }) => {
   const theme = useTheme();
   const { userOptions, pageOptions, tenantDomain, roleOptions } = usePermissionFormData();

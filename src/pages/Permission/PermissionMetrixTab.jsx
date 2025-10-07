@@ -13,20 +13,18 @@ import {
   Checkbox,
   Box,
   useTheme,
-  alpha
+  alpha,
 } from "@mui/material";
 import { AccountBalance, ManageAccounts, Person, Security, Star } from "@mui/icons-material";
 
 const PermissionMatrixTab = ({ permissionMatrix, roles }) => {
   const theme = useTheme();
 
-  // Safe function to get role key
   const getRoleKey = (role) => {
     if (!role?.name) return 'unknownrole';
     return role.name.toLowerCase().replace(/\s+/g, '');
   };
 
-  // Safe function to get permission status
   const getPermissionStatus = (permission, role) => {
     const roleKey = getRoleKey(role);
     return permission[roleKey] || false;
@@ -34,13 +32,23 @@ const PermissionMatrixTab = ({ permissionMatrix, roles }) => {
 
   return (
     <Box>
-      <TableContainer component={Paper} elevation={0} sx={{ borderRadius: 2 }}>
+      <TableContainer
+        component={Paper}
+        elevation={0}
+        sx={{
+          borderRadius: 3,
+          overflow: 'hidden',
+          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+        }}
+      >
         <Table>
-          <TableHead sx={{ bgcolor: alpha(theme.palette.primary.main, 0.05) }}>
+          <TableHead sx={{
+            bgcolor: alpha(theme.palette.primary.main, 0.08),
+          }}>
             <TableRow>
-              <TableCell>Permission</TableCell>
+              <TableCell sx={{ fontWeight: 600, py: 2 }}>Permission</TableCell>
               {roles.map((role) => (
-                <TableCell key={role._id} align="center">
+                <TableCell key={role._id} align="center" sx={{ fontWeight: 600, py: 2 }}>
                   <Box
                     display="flex"
                     alignItems="center"
@@ -48,16 +56,17 @@ const PermissionMatrixTab = ({ permissionMatrix, roles }) => {
                   >
                     <Avatar
                       sx={{
-                        width: 32,
-                        height: 32,
-                        mr: 1,
-                        bgcolor: alpha(theme.palette.primary.main, 0.1),
+                        width: 36,
+                        height: 36,
+                        mr: 1.5,
+                        bgcolor: alpha(theme.palette.primary.main, 0.15),
                         color: theme.palette.primary.main,
+                        boxShadow: `0 2px 8px ${alpha(theme.palette.primary.main, 0.2)}`,
                       }}
                     >
                       {getRoleIcon(role.name)}
                     </Avatar>
-                    <Typography variant="body2" fontWeight={500}>
+                    <Typography variant="body2" fontWeight={600}>
                       {role?.name || 'Unknown Role'}
                     </Typography>
                   </Box>
@@ -72,42 +81,62 @@ const PermissionMatrixTab = ({ permissionMatrix, roles }) => {
                   <TableRow>
                     <TableCell
                       colSpan={roles.length + 1}
-                      sx={{ py: 1, backgroundColor: alpha(theme.palette.primary.main, 0.02) }}
+                      sx={{
+                        py: 2,
+                        backgroundColor: alpha(theme.palette.primary.main, 0.03),
+                        borderBottom: `1px solid ${alpha(theme.palette.primary.main, 0.1)}`,
+                      }}
                     >
                       <Box display="flex" alignItems="center">
                         <Avatar
                           sx={{
-                            width: 32,
-                            height: 32,
+                            width: 36,
+                            height: 36,
                             mr: 2,
-                            bgcolor: alpha(theme.palette.primary.main, 0.1),
+                            bgcolor: alpha(theme.palette.primary.main, 0.12),
                             color: theme.palette.primary.main,
+                            boxShadow: `0 2px 8px ${alpha(theme.palette.primary.main, 0.15)}`,
                           }}
                         >
                           {category.icon}
                         </Avatar>
-                        <Typography variant="body1" fontWeight={600}>
+                        <Typography variant="body1" fontWeight={600} color="primary.main">
                           {category.category}
                         </Typography>
                       </Box>
                     </TableCell>
                   </TableRow>
                   {category.permissions && category.permissions.map((permission, permIndex) => (
-                    <TableRow key={`${catIndex}-${permIndex}`}>
-                      <TableCell sx={{ pl: 4 }}>
-                        <Typography variant="body2">
+                    <TableRow
+                      key={`${catIndex}-${permIndex}`}
+                      sx={{
+                        '&:hover': {
+                          backgroundColor: alpha(theme.palette.primary.main, 0.02),
+                        },
+                      }}
+                    >
+                      <TableCell sx={{ pl: 5, py: 1.5 }}>
+                        <Typography variant="body2" fontWeight={500}>
                           {permission.name}
                         </Typography>
                       </TableCell>
                       {roles.map((role) => (
-                        <TableCell key={`${role._id}-${permIndex}`} align="center">
+                        <TableCell key={`${role._id}-${permIndex}`} align="center" sx={{ py: 1.5 }}>
                           <Checkbox
                             checked={getPermissionStatus(permission, role)}
                             color="primary"
                             inputProps={{
                               "aria-label": `${permission.name} for ${role.name}`,
                             }}
-                            disabled // Make it read-only for now
+                            disabled
+                            sx={{
+                              '&.Mui-disabled': {
+                                opacity: 0.7,
+                              },
+                              '&.Mui-checked': {
+                                color: theme.palette.primary.main,
+                              },
+                            }}
                           />
                         </TableCell>
                       ))}
@@ -117,7 +146,7 @@ const PermissionMatrixTab = ({ permissionMatrix, roles }) => {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={roles.length + 1} align="center" sx={{ py: 4 }}>
+                <TableCell colSpan={roles.length + 1} align="center" sx={{ py: 6 }}>
                   <Typography variant="body2" color="text.secondary">
                     No permission matrix data available
                   </Typography>
@@ -131,7 +160,6 @@ const PermissionMatrixTab = ({ permissionMatrix, roles }) => {
   );
 };
 
-// Helper function to get role icons
 const getRoleIcon = (roleName) => {
   if (!roleName) return <Person />;
 

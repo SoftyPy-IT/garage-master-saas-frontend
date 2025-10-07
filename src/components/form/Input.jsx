@@ -3,6 +3,7 @@
 import { Controller, useFormContext } from "react-hook-form";
 import { TextField, InputAdornment } from "@mui/material";
 import { styled } from "@mui/system";
+import { useEffect } from "react";
 
 const StyledTextField = styled(TextField)({
   "& .MuiOutlinedInput-root": {
@@ -38,17 +39,26 @@ const FormInput = ({
   autoFocus = false,
   onChange,
   value,
-  icon: Icon, 
+  defaultValue,
+  icon: Icon,
   iconPosition = "start",
   InputProps,
 }) => {
-  
-  const { control } = useFormContext();
+
+  const { control, setValue } = useFormContext();
+
+  // Set default value if provided
+  useEffect(() => {
+    if (defaultValue !== undefined) {
+      setValue(name, defaultValue);
+    }
+  }, [name, defaultValue, setValue]);
 
   return (
     <Controller
       control={control}
       name={name}
+      defaultValue={defaultValue || ""}
       render={({ field, fieldState: { error } }) => (
         <StyledTextField
           {...field}
@@ -64,7 +74,6 @@ const FormInput = ({
           error={!!error?.message}
           helperText={error?.message}
           multiline={multiline}
-    
           rows={rows}
           autoFocus={autoFocus}
           disabled={disabled}
@@ -79,6 +88,7 @@ const FormInput = ({
                 <Icon />
               </InputAdornment>
             ),
+            ...InputProps,
           }}
         />
       )}
