@@ -1,11 +1,12 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/prop-types */
-// src/context/PermissionContext.js
+/* eslint-disable no-unused-vars */
+/* eslint-disable react-hooks/exhaustive-deps */
 import { createContext, useContext, useState, useEffect } from "react";
 import { CircularProgress, Box, Typography, Button } from "@mui/material";
 import { useTenantDomain } from "../hooks/useTenantDomain";
 import { useSelector } from "react-redux";
-import { selectCurrentToken } from "../redux/feature/authSlice";
+import { selectCurrentToken, selectCurrentUser } from "../redux/feature/authSlice";
+import { useGetUserPermissionQuery } from "../redux/api/userApi";
 
 const PermissionContext = createContext();
 
@@ -19,57 +20,27 @@ export const usePermissions = () => {
 
 export const PermissionProvider = ({ children }) => {
   const { tenantDomain } = useTenantDomain();
-  const token = useSelector(selectCurrentToken);
+  const user = useSelector(selectCurrentUser);
 
-  const [permissions, setPermissions] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
-  const fetchPermissions = async () => {
-    try {
-      if (!token) {
-        setLoading(false);
-        return;
-      }
-
-      if (!tenantDomain) {
-        setLoading(false);
-        return;
-      }
-
-      const response = await fetch(
-        `http://localhost:7000/api/v1/permission/my-permissions?tenantDomain=${tenantDomain}`,
-        {
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
-          credentials: "include",
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch permissions");
-      }
-
-      const data = await response.json();
-      if (data.success) {
-        setPermissions(data.data.permissions);
-      } else {
-        setError(data.message || "Unknown error");
-      }
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+  const { data: permissionData, isLoading, error, isError } = useGetUserPermissionQuery(
+    { userId: user?.userId, tenantDomain },
+    {
+      skip: !user?.userId || !tenantDomain,
     }
-  };
+  );
 
+  // পারমিশন ডেটা এক্সট্র্যাক্ট করুন
+  const permissions = permissionData?.data?.permissions || [];
+  console.log('permission', permissions)
+  // নির্দিষ্ট পেজের জন্য পারমিশন চেক করার ফাংশন
   const checkPermission = (pagePath, action = "view") => {
-    if (!permissions) {
+    if (!permissions || permissions.length === 0) {
       return false;
     }
 
     const permission = permissions.find((p) => {
+      // বিভিন্ন পথ ফরম্যাট চেক করুন
       const possiblePaths = [
         pagePath,
         pagePath.endsWith("/") ? pagePath.slice(0, -1) : pagePath + "/",
@@ -78,8 +49,8 @@ export const PermissionProvider = ({ children }) => {
 
       return (
         possiblePaths.includes(p.page?.path) ||
-        possiblePaths.includes(p.route) ||
-        possiblePaths.includes(p.path)
+        possiblePaths.includes(p.page?.route) ||
+        possiblePaths.includes(p.route)
       );
     });
 
@@ -90,21 +61,30 @@ export const PermissionProvider = ({ children }) => {
     return permission[action] || false;
   };
 
-  // Refetch whenever token or tenantDomain changes
-  useEffect(() => {
-    setLoading(true);
-    fetchPermissions();
-  }, [token, tenantDomain]);
+  // নির্দিষ্ট পেজে অ্যাক্সেস আছে কিনা চেক করার ফাংশন
+  const hasPageAccess = (pagePath) => {
+    return checkPermission(pagePath, "view");
+  };
+
+  // অ্যাকশন সম্পাদন করার আগে পারমিশন চেক করার ফাংশন
+  const performActionWithPermission = (pagePath, action, callback, alertMessage) => {
+    if (checkPermission(pagePath, action)) {
+      callback();
+    } else {
+      alert(alertMessage || `You don't have permission to ${action} this item.`);
+    }
+  };
 
   const value = {
     permissions,
-    loading,
-    error,
+    loading: isLoading,
+    error: isError ? error?.message || "Failed to fetch permissions" : null,
     checkPermission,
-    fetchPermissions,
+    hasPageAccess,
+    performActionWithPermission,
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
         <Box textAlign="center">
@@ -117,12 +97,12 @@ export const PermissionProvider = ({ children }) => {
     );
   }
 
-  if (error) {
+  if (isError) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
         <Box textAlign="center">
           <Typography variant="h6" color="error">
-            Error loading permissions: {error}
+            Error loading permissions: {error?.message || "Unknown error"}
           </Typography>
           <Button
             variant="contained"

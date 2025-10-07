@@ -169,7 +169,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "unauthorized",
-        element: <Unauthorized/>,
+        element: <Unauthorized />,
       },
     ],
   },
@@ -186,33 +186,33 @@ export const router = createBrowserRouter([
       ),
       createProtectedRoute(
         "role-management",
-        <RoleManagement/>,
+        <RoleManagement />,
         "/dashboard/role-management",
-        "create"
+        "view"
       ),
       createProtectedRoute(
         "user-permission",
         <Permission />,
         "/dashboard/user-permission",
-        "create"
+        "view"
       ),
       createProtectedRoute(
         "feature-access",
         <FeatureAccess />,
         "/dashboard/feature-access",
-        "create"
+        "view"
       ),
       createProtectedRoute(
         "user-management",
         <UserManagement />,
         "/dashboard/user-management",
-        "create"
+        "view"
       ),
       createProtectedRoute(
         "page-management",
         <PageManagement />,
         "/dashboard/page-management",
-        "create"
+        "view"
       ),
       createProtectedRoute("preview", <PreviewJobCard />, "/dashboard/preview"),
       createProtectedRoute(
@@ -784,8 +784,6 @@ export const router = createBrowserRouter([
         <AdminUserListPage />,
         "/dashboard/all-user"
       ),
-      // ডুপ্লিকেট রাউট রিমুভ করা হয়েছে
-      // createProtectedRoute("all-user", <UserProfilePage />, "/dashboard/all-user"),
       createProtectedRoute(
         "profile-update",
         <UpdateProfile />,

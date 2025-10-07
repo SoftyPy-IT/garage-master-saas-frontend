@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable react/prop-types */
 // src/components/ProtectedRoute.js
@@ -11,7 +12,7 @@ import {
 } from '@mui/material';
 
 const ProtectedRoute = ({ children, pagePath, action = 'view' }) => {
-  const { checkPermission, loading, permissions } = usePermissions();
+  const { hasPageAccess, loading, permissions } = usePermissions();
 
   if (loading) {
     return (
@@ -26,23 +27,11 @@ const ProtectedRoute = ({ children, pagePath, action = 'view' }) => {
     );
   }
 
-  // check permission
-  const hasPermission = checkPermission(pagePath, action);
-  console.log('ProtectedRoute - hasPermission:', hasPermission);
+  // পেজ অ্যাক্সেস চেক করুন
+  const hasAccess = hasPageAccess(pagePath);
+  console.log('ProtectedRoute - hasAccess:', hasAccess, 'for page:', pagePath);
 
-  if (!hasPermission) {
-    if (permissions && Array.isArray(permissions)) {
-      permissions.forEach((p, i) => {
-        console.log(`Permission ${i}:`, {
-          path: p.page?.path || p.path || p.route,
-          view: p.view,
-          edit: p.edit,
-          create: p.create,
-          delete: p.delete
-        });
-      });
-    }
-
+  if (!hasAccess) {
     return (
       <Box
         display="flex"
@@ -61,9 +50,6 @@ const ProtectedRoute = ({ children, pagePath, action = 'view' }) => {
         </Typography>
         <Typography variant="body2" color="textSecondary" paragraph>
           Required permission: {action} for {pagePath}
-        </Typography>
-        <Typography variant="body2" color="textSecondary" paragraph>
-          Available permissions are logged in the console.
         </Typography>
         <Button
           variant="contained"

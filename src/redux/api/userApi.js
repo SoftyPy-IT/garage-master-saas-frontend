@@ -10,8 +10,6 @@ const userApi = baseApi.injectEndpoints({
       }),
     }),
 
-
-
     deleteUser: builder.mutation({
       query: ({ tenantDomain, id }) => ({
         url: `/user/${id}`,
@@ -25,6 +23,14 @@ const userApi = baseApi.injectEndpoints({
         url: `/user`,
         method: "GET",
         params: { tenantDomain, limit, page, searchTerm },
+      }),
+      providesTags: ["user"],
+    }),
+    getUserPermission: builder.query({
+      query: ({ tenantDomain, userId }) => ({
+        url: `/user/${userId}/permissions`,
+        method: "GET",
+        params: { tenantDomain, },
       }),
       providesTags: ["user"],
     }),
@@ -61,5 +67,6 @@ export const {
   useDeleteUserMutation,
   useGetAllContactUserQuery,
   useDeleteContactUserMutation,
-  useUpdateUserMutation
+  useUpdateUserMutation,
+  useGetUserPermissionQuery
 } = userApi;
