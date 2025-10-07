@@ -635,19 +635,19 @@ const AddCompany = () => {
                       label={
                         <>
                           Driver Name (T)
-                          <span
+                          {/* <span
                             style={{
                               color: "red",
                               fontSize: "25px",
                             }}
                           >
                             *
-                          </span>
+                          </span> */}
                         </>
                       }
                       fullWidth
                       {...register("driver_name", {
-                        required: "Driver Name is required",
+                        // required: "Driver Name is required",
                       })}
                       error={!!errors.driver_name}
                       helperText={errors.driver_name?.message}

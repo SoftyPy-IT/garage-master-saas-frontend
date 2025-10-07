@@ -19,6 +19,7 @@ import {
 import DashboardSummary from "./Dashboard/IncomeCard";
 import Loading from "../../components/Loading/Loading";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { IconButton, Tooltip } from "@mui/material";
 
 const Home = () => {
   const [showSensitiveData, setShowSensitiveData] = useState(false);
@@ -46,7 +47,20 @@ const Home = () => {
           onClick={() => setShowSensitiveData(!showSensitiveData)}
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
         >
-          {showSensitiveData ? <VisibilityOff /> : <Visibility />}
+          {showSensitiveData ? (
+            <>
+              <Tooltip title="Hide">
+                
+                  <VisibilityOff />
+                
+              </Tooltip>
+            </>
+          ) : (
+            <>
+             <Tooltip title="Show"> <Visibility /></Tooltip>
+           
+            </>
+          )}
         </button>
       </div>
 

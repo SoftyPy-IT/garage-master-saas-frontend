@@ -1494,7 +1494,7 @@ const AddJobCard = () => {
                     label={
                       <>
                         Driver Name (T)
-                        <span
+                        {/* <span
                           style={{
                             color: "red",
                             fontSize: "25px",
@@ -1502,7 +1502,7 @@ const AddJobCard = () => {
                         >
                           {" "}
                           *
-                        </span>
+                        </span> */}
                       </>
                     }
                     {...register("driver_name")}
@@ -1543,7 +1543,7 @@ const AddJobCard = () => {
                         label={
                           <>
                             Driver Contact Number (N)
-                            <span
+                            {/* <span
                               style={{
                                 color: "red",
                                 fontSize: "25px",
@@ -1551,7 +1551,7 @@ const AddJobCard = () => {
                             >
                               {" "}
                               *
-                            </span>
+                            </span> */}
                           </>
                         }
                         variant="outlined"
