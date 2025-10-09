@@ -1,4 +1,4 @@
-// store.js
+// src/redux/store.js
 import { configureStore } from "@reduxjs/toolkit";
 import {
   persistReducer,
@@ -17,7 +17,7 @@ import authReducer from "./feature/authSlice";
 const persistConfig = {
   key: "auth",
   storage,
-  whitelist: ["token", "user"],
+  whitelist: ["user", "token"],
 };
 
 const persistedAuthReducer = persistReducer(persistConfig, authReducer);
@@ -33,7 +33,6 @@ export const store = configureStore({
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
     }).concat(baseApi.middleware),
-  devTools: true,
 });
 
 export const persistor = persistStore(store);

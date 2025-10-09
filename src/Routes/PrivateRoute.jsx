@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable react/prop-types */
-// src/components/ProtectedRoute.js
+
 
 import { usePermissions } from '../context/PermissionContext';
 import {
@@ -27,7 +27,7 @@ const ProtectedRoute = ({ children, pagePath, action = 'view' }) => {
     );
   }
 
-  // পেজ অ্যাক্সেস চেক করুন
+  // check page access 
   const hasAccess = hasPageAccess(pagePath);
   console.log('ProtectedRoute - hasAccess:', hasAccess, 'for page:', pagePath);
 

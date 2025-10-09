@@ -48,15 +48,11 @@ const UserPermissionsTab = ({ filteredPermissions, handleDialogOpen, handleDelet
   };
 
   const handleUpdateMultiplePermissions = async (e) => {
-    // Prevent default form submission behavior
+
     if (e) e.preventDefault();
 
     try {
-      // Debug: Log the selected permissions and changes
-      console.log("Selected permissions:", selectedPermissions);
-      console.log("Permission changes:", permissionChanges);
 
-      // Prepare the data for the API
       const permissionUpdates = selectedPermissions.map(permissionId => {
         const changes = permissionChanges[permissionId] || {};
         return {
@@ -65,22 +61,12 @@ const UserPermissionsTab = ({ filteredPermissions, handleDialogOpen, handleDelet
         };
       });
 
-      // Debug: Log the final data being sent to the API
-      console.log("Sending to API:", {
-        tenantDomain,
-        permissionUpdates
-      });
-
-      // Call the API
       const result = await updateMultiplePermissions({
         tenantDomain,
         permissionUpdates
       }).unwrap();
-
-      // Debug: Log the API response
       console.log("API response:", result);
 
-      // Show success message
       Swal.fire({
         icon: "success",
         title: "Updated!",
@@ -94,10 +80,6 @@ const UserPermissionsTab = ({ filteredPermissions, handleDialogOpen, handleDelet
       setSelectedPermissions([]);
       setPermissionChanges({});
     } catch (error) {
-      // Debug: Log the error
-      console.error("Error updating permissions:", error);
-
-      // Show error message
       Swal.fire({
         icon: "error",
         title: "Error!",

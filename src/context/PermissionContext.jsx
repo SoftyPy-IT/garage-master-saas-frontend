@@ -1,11 +1,11 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext } from "react";
 import { CircularProgress, Box, Typography, Button } from "@mui/material";
 import { useTenantDomain } from "../hooks/useTenantDomain";
 import { useSelector } from "react-redux";
-import { selectCurrentToken, selectCurrentUser } from "../redux/feature/authSlice";
+import { selectCurrentUser } from "../redux/feature/authSlice";
 import { useGetUserPermissionQuery } from "../redux/api/userApi";
 
 const PermissionContext = createContext();
@@ -21,26 +21,26 @@ export const usePermissions = () => {
 export const PermissionProvider = ({ children }) => {
   const { tenantDomain } = useTenantDomain();
   const user = useSelector(selectCurrentUser);
-
-
+  console.log(user)
+  console.log(user)
   const { data: permissionData, isLoading, error, isError } = useGetUserPermissionQuery(
     { userId: user?.userId, tenantDomain },
     {
       skip: !user?.userId || !tenantDomain,
     }
   );
+  console.log
 
-  // পারমিশন ডেটা এক্সট্র্যাক্ট করুন
   const permissions = permissionData?.data?.permissions || [];
-  console.log('permission', permissions)
-  // নির্দিষ্ট পেজের জন্য পারমিশন চেক করার ফাংশন
+  console.log(permissions)
+  // check specific page permission
   const checkPermission = (pagePath, action = "view") => {
     if (!permissions || permissions.length === 0) {
       return false;
     }
 
     const permission = permissions.find((p) => {
-      // বিভিন্ন পথ ফরম্যাট চেক করুন
+      // check different path 
       const possiblePaths = [
         pagePath,
         pagePath.endsWith("/") ? pagePath.slice(0, -1) : pagePath + "/",
@@ -61,12 +61,11 @@ export const PermissionProvider = ({ children }) => {
     return permission[action] || false;
   };
 
-  // নির্দিষ্ট পেজে অ্যাক্সেস আছে কিনা চেক করার ফাংশন
   const hasPageAccess = (pagePath) => {
     return checkPermission(pagePath, "view");
   };
 
-  // অ্যাকশন সম্পাদন করার আগে পারমিশন চেক করার ফাংশন
+  // check before action
   const performActionWithPermission = (pagePath, action, callback, alertMessage) => {
     if (checkPermission(pagePath, action)) {
       callback();

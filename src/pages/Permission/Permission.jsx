@@ -53,6 +53,7 @@ import AddRoleModal from "../RoleManagement/AddRoleModal";
 import PageForm from "../PageManagement/PageForm";
 import Loading from "../../components/Loading/Loading";
 import AddUserModal from "../Home/Tenant/AddUserModal";
+import MultipleAccess from "./MultipleAccess";
 
 const Permission = () => {
   const theme = useTheme();
@@ -198,8 +199,6 @@ const Permission = () => {
       const transformedPermissions = transformPermissionData(permissionsData);
       setPermissions(transformedPermissions);
       setFilteredPermissions(transformedPermissions);
-
-      // Use summary data from backend
       if (permissionsData.data.summary) {
         setStats({
           users: permissionsData.data.summary.totalUsers || 0,
@@ -255,10 +254,7 @@ const Permission = () => {
       cancelButtonColor: theme.palette.error.main,
       confirmButtonText: "Yes, delete it!",
       background: "#fff",
-      customClass: {
-        title: "text-purple-800 font-medium",
-        content: "text-gray-600",
-      },
+
     });
 
     if (confirmResult.isConfirmed) {
@@ -276,10 +272,7 @@ const Permission = () => {
           showConfirmButton: false,
           timer: 2000,
           background: "#fff",
-          customClass: {
-            title: "text-purple-800 font-medium",
-            content: "text-gray-600",
-          },
+
         });
       } catch (error) {
         Swal.fire({
@@ -288,10 +281,7 @@ const Permission = () => {
           text: "An error occurred while deleting the permission.",
           confirmButtonColor: theme.palette.primary.main,
           background: "#fff",
-          customClass: {
-            title: "text-purple-800 font-medium",
-            content: "text-gray-600",
-          },
+
         });
       }
     }
@@ -440,6 +430,11 @@ const Permission = () => {
               icon={<ViewModule />}
               iconPosition="start"
             />
+            <Tab
+              label="Multiple User Permission "
+              icon={<ViewModule />}
+              iconPosition="start"
+            />
           </Tabs>
 
           <Box sx={{ mb: 3, display: "flex" }}>
@@ -512,6 +507,19 @@ const Permission = () => {
                 <PermissionMatrixTab
                   permissionMatrix={permissionMatrix}
                   roles={roles}
+                />
+              </div>
+            )}
+            {tabValue === 2 && (
+              <div>
+                <MultipleAccess
+                  filteredPermissions={filteredPermissions}
+                  pages={pages}
+                  roles={roles}
+                  handleDialogOpen={handleDialogOpen}
+                  handleDeletePermission={handleDeletePermission}
+                  getRoleColor={getRoleColor}
+                  loading={permissionsLoading}
                 />
               </div>
             )}

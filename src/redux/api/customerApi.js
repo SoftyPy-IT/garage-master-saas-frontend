@@ -3,17 +3,15 @@ import { baseApi } from "./baseApi";
 const customerApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     createCustomer: builder.mutation({
-      query: (customerInfo) => ({
+      query: ({ customerInfo, tenantDomain }) => ({
         url: "/customers",
         method: "POST",
         body: customerInfo,
-        headers: {
-          tenant: window.location.hostname,
-        },
+        params: { tenantDomain }
       }),
       invalidatesTags: ["customer"],
     }),
-    
+
     getAllCustomers: builder.query({
       query: ({ tenantDomain, limit, page, searchTerm, isRecycled }) => ({
         url: `/customers`,
@@ -50,18 +48,18 @@ const customerApi = baseApi.injectEndpoints({
       query: ({ tenantDomain, id }) => ({
         url: `/customers/delete-permanantly/${id}`,
         method: "DELETE",
-          params: {
+        params: {
           tenantDomain,
         },
       }),
       invalidatesTags: ["customer"],
     }),
-    
+
     moveRecycledCustomer: builder.mutation({
       query: ({ tenantDomain, id }) => ({
         url: `/customers/recycle/${id}`,
         method: "PATCH",
-          params: {
+        params: {
           tenantDomain,
         },
       }),
@@ -71,7 +69,7 @@ const customerApi = baseApi.injectEndpoints({
       query: ({ tenantDomain, id }) => ({
         url: `/customers/restore/${id}`,
         method: "PATCH",
-          params: {
+        params: {
           tenantDomain,
         },
       }),

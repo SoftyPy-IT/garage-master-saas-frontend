@@ -7,7 +7,6 @@ const Can = ({ page, action, children, fallback = null, showAlert = false }) => 
     const isAllowed = checkPermission(page, action);
 
     if (showAlert) {
-        // যদি showAlert true হয়, তাহলে একটি বাটন রেন্ডার করুন যা ক্লিক করলে পারমিশন চেক করবে
         return (
             <div onClick={() => performActionWithPermission(
                 page,
@@ -19,8 +18,6 @@ const Can = ({ page, action, children, fallback = null, showAlert = false }) => 
             </div>
         );
     }
-
-    // সাধারণ ক্ষেত্রে, পারমিশন থাকলে children রেন্ডার করুন
     return isAllowed ? <>{children}</> : <>{fallback}</>;
 };
 
