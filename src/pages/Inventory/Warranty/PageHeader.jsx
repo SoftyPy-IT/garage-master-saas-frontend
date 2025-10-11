@@ -29,7 +29,21 @@ export const PageHeader = ({ searchTerm, setSearchTerm, handleOpenModal }) => {
         Warranty Management
       </Typography>
 
-      <Box sx={{ display: "flex", gap: 2 }}>
+      <Box sx={{ display: { sm: "flex" }, gap: 2 }}>
+        <div className="md:hidden flex justify-end mb-2">
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={handleOpenModal}
+            sx={{
+              background: "linear-gradient(45deg, #6a1b9a, #8e24aa)",
+              color: "white",
+            }}
+          >
+            New Warranty
+          </Button>
+        </div>
+
         <TextField
           placeholder="Search..."
           size="small"
@@ -42,16 +56,20 @@ export const PageHeader = ({ searchTerm, setSearchTerm, handleOpenModal }) => {
           }}
           sx={{ width: { xs: "100%", sm: 220 } }}
         />
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={handleOpenModal}
-          sx={{
-            background: "linear-gradient(45deg, #6a1b9a, #8e24aa)",color:'white'
-          }}
-        >
-          New Warranty
-        </Button>
+
+        <div className="hidden md:flex">
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={handleOpenModal}
+            sx={{
+              background: "linear-gradient(45deg, #6a1b9a, #8e24aa)",
+              color: "white",
+            }}
+          >
+            New Warranty
+          </Button>
+        </div>
       </Box>
     </Box>
   );

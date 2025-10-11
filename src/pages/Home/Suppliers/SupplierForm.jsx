@@ -186,7 +186,7 @@ const SupplierForm = ({ id }) => {
         <h2>Loading</h2>
       ) : (
         <section className="md:py-0" style={{ minHeight: "100vh" }}>
-          <div className="max-w-6xl mx-auto px-4 mt-10 ">
+          <div className="max-w-6xl mx-auto lg:px-4 mt-10 ">
             <div className="mb-4 flex justify-between items-center">
               <h2 className="md:text-3xl font-[600] text-[#2980b9] block">
                 {isEditing ? "Edit Supplier" : "Add New Supplier"}
@@ -226,7 +226,7 @@ const SupplierForm = ({ id }) => {
             </Collapse>
 
             <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-              <CardContent sx={{ p: 3 }}>
+              <CardContent sx={{ p: {sm:0, lg:3} }}>
                 <GarageForm
                   onSubmit={handleFormSubmission}
                   defaultValues={defaultSupplierValues}
@@ -281,8 +281,8 @@ const SupplierForm = ({ id }) => {
                         />
                       </Grid>
                       <Grid item xs={12} md={6}>
-                        <Grid container spacing={1}>
-                          <Grid item xs={4}>
+                    <div className="md:flex items-center content-center justify-center gap-2">
+                        <Grid item xs={12} sm={3} md={3} lg={3}>
                             <CountryCodeAutocomplete
                               name="country_code"
                               label="Code"
@@ -290,7 +290,7 @@ const SupplierForm = ({ id }) => {
                               defaultValue={countryCode}
                             />
                           </Grid>
-                          <Grid item xs={8}>
+                          <Grid item xs={12} >
                             <TASInput
                               name="phone_number"
                               label="Phone Number"
@@ -299,7 +299,7 @@ const SupplierForm = ({ id }) => {
                               onChange={handlePhoneNumberChange}
                             />
                           </Grid>
-                        </Grid>
+                     </div>
                       </Grid>
                       <Grid item xs={12} md={6}>
                         <TASInput

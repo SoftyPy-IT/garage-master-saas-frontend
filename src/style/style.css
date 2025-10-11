@@ -29,7 +29,7 @@
 .drawer-content {
   position: absolute !important;
   right: 0px !important;
-  width: 85%;
+  width: 86%;
   transition: all 0.5s cubic-bezier(0.55, 0.54, 0.68, 0.63);
 }
 .activeDrawer {
@@ -177,7 +177,7 @@ input:focus {
   }
   .activeDrawer,
   .drawer-content {
-    width: 92% !important;
+    /* width: 92% !important; */
     right: 12px !important;
   }
 } /* Desktop (1025px – 1440px) */

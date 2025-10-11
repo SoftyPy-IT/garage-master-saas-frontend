@@ -1604,7 +1604,7 @@ const Invoice = () => {
               </div>
             </div>
           </div>
-          <div className="mt-8 buttonGroup ">
+          <div className="flex flex-col lg:flex-row mt-8 buttonGroup ">
             <div className="hidden md:block order-3 md:order-2 ">
               <button type="submit" onClick={() => setGoOtherButton("preview")}>
                 Preview

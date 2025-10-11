@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
-"use client"
+"use client";
 
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect, useMemo } from "react";
 import {
   Box,
   Typography,
@@ -35,71 +35,81 @@ import {
   Collapse,
   Alert,
   AlertTitle,
-} from "@mui/material"
-import NavigateNextIcon from "@mui/icons-material/NavigateNext"
-import SearchIcon from "@mui/icons-material/Search"
-import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart"
-import TrendingDownIcon from "@mui/icons-material/TrendingDown"
-import VisibilityIcon from "@mui/icons-material/Visibility"
-import FilterListIcon from "@mui/icons-material/FilterList"
-import InventoryIcon from "@mui/icons-material/Inventory"
-import WarningIcon from "@mui/icons-material/Warning"
-import ErrorIcon from "@mui/icons-material/Error"
-import InfoIcon from "@mui/icons-material/Info"
-import StoreIcon from "@mui/icons-material/Store"
-import BarChartIcon from "@mui/icons-material/BarChart"
-import RefreshIcon from "@mui/icons-material/Refresh"
-import CloseIcon from "@mui/icons-material/Close"
-import SortIcon from "@mui/icons-material/Sort"
-import AccessTimeIcon from "@mui/icons-material/AccessTime"
-import { useGetAllStocksQuery } from "../../redux/api/stocksApi"
-import { useTenantDomain } from "../../hooks/useTenantDomain"
+} from "@mui/material";
+import NavigateNextIcon from "@mui/icons-material/NavigateNext";
+import SearchIcon from "@mui/icons-material/Search";
+import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
+import TrendingDownIcon from "@mui/icons-material/TrendingDown";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import FilterListIcon from "@mui/icons-material/FilterList";
+import InventoryIcon from "@mui/icons-material/Inventory";
+import WarningIcon from "@mui/icons-material/Warning";
+import ErrorIcon from "@mui/icons-material/Error";
+import InfoIcon from "@mui/icons-material/Info";
+import StoreIcon from "@mui/icons-material/Store";
+import BarChartIcon from "@mui/icons-material/BarChart";
+import RefreshIcon from "@mui/icons-material/Refresh";
+import CloseIcon from "@mui/icons-material/Close";
+import SortIcon from "@mui/icons-material/Sort";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import { useGetAllStocksQuery } from "../../redux/api/stocksApi";
+import { useTenantDomain } from "../../hooks/useTenantDomain";
 
 export default function LowStocksPage() {
-  const theme = useTheme()
-  const [searchTerm, setSearchTerm] = useState("")
-  const [filterStatus, setFilterStatus] = useState("all")
-  const [openDialog, setOpenDialog] = useState(false)
-  const [openOrderDialog, setOpenOrderDialog] = useState(false)
-  const [selectedProduct, setSelectedProduct] = useState(null)
-  const [orderQuantity, setOrderQuantity] = useState(0)
-  const [tabValue, setTabValue] = useState(0)
-  const [alertOpen, setAlertOpen] = useState(true)
-  const [sortBy, setSortBy] = useState("name")
-  const [sortOrder, setSortOrder] = useState("asc")
-  const [loading, setLoading] = useState(true)
-  const [currentPage, setCurrentPage] = useState(1)
-  const [processedProducts, setProcessedProducts] = useState([])
-const tenantDomain = useTenantDomain();
-  const queryParams = {tenantDomain, page: currentPage, limit: 100, searchTerm: searchTerm }
-  const { data: stockData, isLoading: stockLoading, refetch } = useGetAllStocksQuery(queryParams)
-
-
+  const theme = useTheme();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterStatus, setFilterStatus] = useState("all");
+  const [openDialog, setOpenDialog] = useState(false);
+  const [openOrderDialog, setOpenOrderDialog] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [orderQuantity, setOrderQuantity] = useState(0);
+  const [tabValue, setTabValue] = useState(0);
+  const [alertOpen, setAlertOpen] = useState(true);
+  const [sortBy, setSortBy] = useState("name");
+  const [sortOrder, setSortOrder] = useState("asc");
+  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [processedProducts, setProcessedProducts] = useState([]);
+  const tenantDomain = useTenantDomain();
+  const queryParams = {
+    tenantDomain,
+    page: currentPage,
+    limit: 100,
+    searchTerm: searchTerm,
+  };
+  const {
+    data: stockData,
+    isLoading: stockLoading,
+    refetch,
+  } = useGetAllStocksQuery(queryParams);
 
   useEffect(() => {
     if (stockData && stockData.success && stockData.data) {
       const processed = stockData.data.map((stock) => {
-        const product = stock.product || {}
-        const currentStock = stock.stock || 0
+        const product = stock.product || {};
+        const currentStock = stock.stock || 0;
 
-        const criticalLevel = 5 
-        const lowStockLevel = 20 
-        const outOfStockLevel = 0 
+        const criticalLevel = 5;
+        const lowStockLevel = 20;
+        const outOfStockLevel = 0;
 
-        let status = "in-stock"
+        let status = "in-stock";
         if (currentStock === outOfStockLevel) {
-          status = "out-of-stock"
+          status = "out-of-stock";
         } else if (currentStock <= criticalLevel) {
-          status = "critical"
+          status = "critical";
         } else if (currentStock <= lowStockLevel) {
-          status = "low-stock"
+          status = "low-stock";
         }
 
         return {
           id: stock._id?.product || product._id || Math.random().toString(),
           code: product._id || "N/A",
           name: product.name || product.productName || "Unnamed Product",
-          category: product.category?.main_category || product.category?.name || "Uncategorized",
+          category:
+            product.category?.main_category ||
+            product.category?.name ||
+            "Uncategorized",
           brand: product.brand?.brand || product.brand?.name || "N/A",
           currentStock: currentStock,
           minimumStock: criticalLevel,
@@ -107,7 +117,10 @@ const tenantDomain = useTenantDomain();
           status: status,
           supplier: "Auto Parts Supplier",
           lastOrderDate: new Date().toLocaleDateString(),
-          image: product.image || product.brand?.image || "/placeholder.svg?height=120&width=120",
+          image:
+            product.image ||
+            product.brand?.image ||
+            "/placeholder.svg?height=120&width=120",
           warehouse: stock.warehouse?.name || "N/A",
           warehouseCode: stock.warehouse?.code || "N/A",
           avgPurchasePrice: stock.avgPurchasePrice || 0,
@@ -120,52 +133,54 @@ const tenantDomain = useTenantDomain();
           outQuantity: stock.outQuantity || 0,
 
           originalData: stock,
-        }
-      })
-      setProcessedProducts(processed)
-      setLoading(false)
+        };
+      });
+      setProcessedProducts(processed);
+      setLoading(false);
     }
-  }, [stockData])
+  }, [stockData]);
 
   const handleOpenDialog = (product) => {
-    setSelectedProduct(product)
-    setOpenDialog(true)
-  }
+    setSelectedProduct(product);
+    setOpenDialog(true);
+  };
 
   const handleCloseDialog = () => {
-    setOpenDialog(false)
-    setSelectedProduct(null)
-  }
+    setOpenDialog(false);
+    setSelectedProduct(null);
+  };
 
   const handleOpenOrderDialog = (product) => {
-    setSelectedProduct(product)
-    setOrderQuantity(product.reorderLevel - product.currentStock)
-    setOpenOrderDialog(true)
-  }
+    setSelectedProduct(product);
+    setOrderQuantity(product.reorderLevel - product.currentStock);
+    setOpenOrderDialog(true);
+  };
 
   const handleCloseOrderDialog = () => {
-    setOpenOrderDialog(false)
-  }
+    setOpenOrderDialog(false);
+  };
 
   const handlePlaceOrder = () => {
-    setOpenOrderDialog(false)
-  }
+    setOpenOrderDialog(false);
+  };
 
   const handleSort = (field) => {
     if (sortBy === field) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc")
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
     } else {
-      setSortBy(field)
-      setSortOrder("asc")
+      setSortBy(field);
+      setSortOrder("asc");
     }
-  }
+  };
 
   const countByStatus = useMemo(() => {
-    const allItems = processedProducts
-    const outOfStock = allItems.filter((p) => p.status === "out-of-stock").length
-    const critical = allItems.filter((p) => p.status === "critical").length
-    const lowStock = allItems.filter((p) => p.status === "low-stock").length
-    const inStock = allItems.filter((p) => p.status === "in-stock").length
+    const allItems = processedProducts;
+    const outOfStock = allItems.filter(
+      (p) => p.status === "out-of-stock"
+    ).length;
+    const critical = allItems.filter((p) => p.status === "critical").length;
+    const lowStock = allItems.filter((p) => p.status === "low-stock").length;
+    const inStock = allItems.filter((p) => p.status === "in-stock").length;
 
     return {
       total: allItems.length,
@@ -174,51 +189,54 @@ const tenantDomain = useTenantDomain();
       lowStock: lowStock,
       inStock: inStock,
       needsAttention: outOfStock + critical + lowStock,
-    }
-  }, [processedProducts])
+    };
+  }, [processedProducts]);
 
   const filteredProducts = useMemo(() => {
     return processedProducts
       .filter((product) => {
-
         const matchesSearch =
           product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
           product.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
           product.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          product.warehouse.toLowerCase().includes(searchTerm.toLowerCase())
+          product.warehouse.toLowerCase().includes(searchTerm.toLowerCase());
 
-
-        let matchesTab = true
+        let matchesTab = true;
         if (tabValue === 1) {
-  
-          matchesTab = product.status === "out-of-stock"
+          matchesTab = product.status === "out-of-stock";
         } else if (tabValue === 2) {
-
-          matchesTab = product.status === "critical"
+          matchesTab = product.status === "critical";
         } else if (tabValue === 3) {
-
-          matchesTab = product.status === "low-stock"
+          matchesTab = product.status === "low-stock";
         }
         const matchesStatus =
           filterStatus === "all" ||
-          (filterStatus === "out-of-stock" && product.status === "out-of-stock") ||
+          (filterStatus === "out-of-stock" &&
+            product.status === "out-of-stock") ||
           (filterStatus === "critical" && product.status === "critical") ||
-          (filterStatus === "low-stock" && product.status === "low-stock")
+          (filterStatus === "low-stock" && product.status === "low-stock");
 
-        return matchesSearch && matchesTab && matchesStatus
+        return matchesSearch && matchesTab && matchesStatus;
       })
       .sort((a, b) => {
-        let comparison = 0
+        let comparison = 0;
         if (sortBy === "name") {
-          comparison = a.name.localeCompare(b.name)
+          comparison = a.name.localeCompare(b.name);
         } else if (sortBy === "currentStock") {
-          comparison = a.currentStock - b.currentStock
+          comparison = a.currentStock - b.currentStock;
         } else if (sortBy === "brand") {
-          comparison = a.brand.localeCompare(b.brand)
+          comparison = a.brand.localeCompare(b.brand);
         }
-        return sortOrder === "asc" ? comparison : -comparison
-      })
-  }, [processedProducts, searchTerm, filterStatus, sortBy, sortOrder, tabValue])
+        return sortOrder === "asc" ? comparison : -comparison;
+      });
+  }, [
+    processedProducts,
+    searchTerm,
+    filterStatus,
+    sortBy,
+    sortOrder,
+    tabValue,
+  ]);
 
   const getStatusChip = (status) => {
     switch (status) {
@@ -236,7 +254,7 @@ const tenantDomain = useTenantDomain();
               "& .MuiChip-icon": { color: "white" },
             }}
           />
-        )
+        );
       case "critical":
         return (
           <Chip
@@ -251,7 +269,7 @@ const tenantDomain = useTenantDomain();
               "& .MuiChip-icon": { color: "white" },
             }}
           />
-        )
+        );
       case "low-stock":
         return (
           <Chip
@@ -266,30 +284,30 @@ const tenantDomain = useTenantDomain();
               "& .MuiChip-icon": { color: "white" },
             }}
           />
-        )
+        );
       default:
-        return <Chip label="Unknown" color="default" size="small" />
+        return <Chip label="Unknown" color="default" size="small" />;
     }
-  }
+  };
 
   const getStockPercentage = (current, minimum) => {
-    if (minimum === 0) return 0
-    const percentage = (current / minimum) * 100
-    return Math.min(percentage, 100)
-  }
+    if (minimum === 0) return 0;
+    const percentage = (current / minimum) * 100;
+    return Math.min(percentage, 100);
+  };
 
   const getStockColor = (status) => {
     switch (status) {
       case "out-of-stock":
-        return theme.palette.error.main
+        return theme.palette.error.main;
       case "critical":
-        return theme.palette.warning.main
+        return theme.palette.warning.main;
       case "low-stock":
-        return theme.palette.info.main
+        return theme.palette.info.main;
       default:
-        return theme.palette.success.main
+        return theme.palette.success.main;
     }
-  }
+  };
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("en-US", {
@@ -297,24 +315,29 @@ const tenantDomain = useTenantDomain();
       currency: "USD",
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
-    }).format(amount)
-  }
+    }).format(amount);
+  };
 
-  const isLoading = stockLoading || loading
+  const isLoading = stockLoading || loading;
 
   return (
     <Box
       sx={{
-        background: `linear-gradient(to right, ${alpha(theme.palette.primary.light, 0.1)}, ${alpha(
-          theme.palette.background.default,
-          0.1,
-        )})`,
+        // background: `linear-gradient(to right, ${alpha(theme.palette.primary.light, 0.1)}, ${alpha(
+        //   theme.palette.background.default,
+        //   0.1,
+        // )})`,
         minHeight: "100vh",
-        p: 3,
+        p: 1,
         borderRadius: 2,
       }}
     >
-      <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb" sx={{ mb: 3 }}>
+      <Breadcrumbs
+        separator={<NavigateNextIcon fontSize="small" />}
+        aria-label="breadcrumb"
+        sx={{ mb: 3, p: 3 }}
+        className="shadow-lg"
+      >
         <Link color="inherit" href="/dashboard">
           Dashboard
         </Link>
@@ -358,8 +381,12 @@ const tenantDomain = useTenantDomain();
               background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`,
               boxShadow: `0 4px 10px ${alpha(theme.palette.primary.main, 0.3)}`,
               transition: "all 0.3s",
+               padding:"10px",
               "&:hover": {
-                boxShadow: `0 6px 15px ${alpha(theme.palette.primary.main, 0.4)}`,
+                boxShadow: `0 6px 15px ${alpha(
+                  theme.palette.primary.main,
+                  0.4
+                )}`,
                 transform: "translateY(-2px)",
               },
             }}
@@ -367,7 +394,12 @@ const tenantDomain = useTenantDomain();
             Order All
           </Button>
 
-          <Button variant="outlined" startIcon={<RefreshIcon />} onClick={() => refetch()} sx={{ borderRadius: 2 }}>
+          <Button
+            variant="outlined"
+            startIcon={<RefreshIcon />}
+            onClick={() => refetch()}
+            sx={{ borderRadius: 2,  padding:"10px" }}
+          >
             Refresh
           </Button>
         </Box>
@@ -375,7 +407,13 @@ const tenantDomain = useTenantDomain();
 
       <Collapse in={alertOpen}>
         <Alert
-          severity={countByStatus.outOfStock > 0 ? "error" : countByStatus.critical > 0 ? "warning" : "info"}
+          severity={
+            countByStatus.outOfStock > 0
+              ? "error"
+              : countByStatus.critical > 0
+              ? "warning"
+              : "info"
+          }
           sx={{
             mb: 3,
             borderRadius: 2,
@@ -383,7 +421,12 @@ const tenantDomain = useTenantDomain();
             "& .MuiAlert-icon": { color: theme.palette.warning.main },
           }}
           action={
-            <IconButton aria-label="close" color="inherit" size="small" onClick={() => setAlertOpen(false)}>
+            <IconButton
+              aria-label="close"
+              color="inherit"
+              size="small"
+              onClick={() => setAlertOpen(false)}
+            >
               <CloseIcon fontSize="inherit" />
             </IconButton>
           }
@@ -392,25 +435,29 @@ const tenantDomain = useTenantDomain();
             {countByStatus.outOfStock > 0
               ? "Critical Alert!"
               : countByStatus.critical > 0
-                ? "Warning!"
-                : "Stock Status"}
+              ? "Warning!"
+              : "Stock Status"}
           </AlertTitle>
           {countByStatus.outOfStock > 0 && (
             <>
-              Your inventory has <strong>{countByStatus.outOfStock}</strong> items completely out of stock.{" "}
+              Your inventory has <strong>{countByStatus.outOfStock}</strong>{" "}
+              items completely out of stock.{" "}
             </>
           )}
           {countByStatus.critical > 0 && (
             <>
-              You have <strong>{countByStatus.critical}</strong> items at critical stock levels.{" "}
+              You have <strong>{countByStatus.critical}</strong> items at
+              critical stock levels.{" "}
             </>
           )}
           {countByStatus.lowStock > 0 && (
             <>
-              Additionally, <strong>{countByStatus.lowStock}</strong> items are running low.{" "}
+              Additionally, <strong>{countByStatus.lowStock}</strong> items are
+              running low.{" "}
             </>
           )}
-          Immediate attention recommended for {countByStatus.needsAttention} items.
+          Immediate attention recommended for {countByStatus.needsAttention}{" "}
+          items.
         </Alert>
       </Collapse>
 
@@ -420,10 +467,10 @@ const tenantDomain = useTenantDomain();
             sx={{
               borderRadius: 2,
               boxShadow: `0 6px 16px ${alpha(theme.palette.error.main, 0.15)}`,
-              background: `linear-gradient(135deg, ${alpha(theme.palette.error.light, 0.2)}, ${alpha(
-                theme.palette.error.main,
-                0.05,
-              )})`,
+              background: `linear-gradient(135deg, ${alpha(
+                theme.palette.error.light,
+                0.2
+              )}, ${alpha(theme.palette.error.main, 0.05)})`,
               border: `1px solid ${alpha(theme.palette.error.main, 0.1)}`,
               transition: "transform 0.3s",
               "&:hover": {
@@ -441,13 +488,24 @@ const tenantDomain = useTenantDomain();
                 }}
               >
                 <Box>
-                  <Typography color="text.secondary" variant="body2" sx={{ mb: 1 }}>
+                  <Typography
+                    color="text.secondary"
+                    variant="body2"
+                    sx={{ mb: 1 }}
+                  >
                     Stock Out
                   </Typography>
-                  <Typography variant="h4" sx={{ fontWeight: 700, color: theme.palette.error.main }}>
+                  <Typography
+                    variant="h4"
+                    sx={{ fontWeight: 700, color: theme.palette.error.main }}
+                  >
                     {countByStatus.outOfStock}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ mt: 1 }}
+                  >
                     Items
                   </Typography>
                 </Box>
@@ -480,16 +538,22 @@ const tenantDomain = useTenantDomain();
           <Card
             sx={{
               borderRadius: 2,
-              boxShadow: `0 6px 16px ${alpha(theme.palette.warning.main, 0.15)}`,
-              background: `linear-gradient(135deg, ${alpha(theme.palette.warning.light, 0.2)}, ${alpha(
+              boxShadow: `0 6px 16px ${alpha(
                 theme.palette.warning.main,
-                0.05,
-              )})`,
+                0.15
+              )}`,
+              background: `linear-gradient(135deg, ${alpha(
+                theme.palette.warning.light,
+                0.2
+              )}, ${alpha(theme.palette.warning.main, 0.05)})`,
               border: `1px solid ${alpha(theme.palette.warning.main, 0.1)}`,
               transition: "transform 0.3s",
               "&:hover": {
                 transform: "translateY(-5px)",
-                boxShadow: `0 8px 20px ${alpha(theme.palette.warning.main, 0.2)}`,
+                boxShadow: `0 8px 20px ${alpha(
+                  theme.palette.warning.main,
+                  0.2
+                )}`,
               },
             }}
           >
@@ -502,13 +566,24 @@ const tenantDomain = useTenantDomain();
                 }}
               >
                 <Box>
-                  <Typography color="text.secondary" variant="body2" sx={{ mb: 1 }}>
+                  <Typography
+                    color="text.secondary"
+                    variant="body2"
+                    sx={{ mb: 1 }}
+                  >
                     Critical Stock
                   </Typography>
-                  <Typography variant="h4" sx={{ fontWeight: 700, color: theme.palette.warning.main }}>
+                  <Typography
+                    variant="h4"
+                    sx={{ fontWeight: 700, color: theme.palette.warning.main }}
+                  >
                     {countByStatus.critical}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ mt: 1 }}
+                  >
                     Items
                   </Typography>
                 </Box>
@@ -542,10 +617,10 @@ const tenantDomain = useTenantDomain();
             sx={{
               borderRadius: 2,
               boxShadow: `0 6px 16px ${alpha(theme.palette.info.main, 0.15)}`,
-              background: `linear-gradient(135deg, ${alpha(theme.palette.info.light, 0.2)}, ${alpha(
-                theme.palette.info.main,
-                0.05,
-              )})`,
+              background: `linear-gradient(135deg, ${alpha(
+                theme.palette.info.light,
+                0.2
+              )}, ${alpha(theme.palette.info.main, 0.05)})`,
               border: `1px solid ${alpha(theme.palette.info.main, 0.1)}`,
               transition: "transform 0.3s",
               "&:hover": {
@@ -563,13 +638,24 @@ const tenantDomain = useTenantDomain();
                 }}
               >
                 <Box>
-                  <Typography color="text.secondary" variant="body2" sx={{ mb: 1 }}>
+                  <Typography
+                    color="text.secondary"
+                    variant="body2"
+                    sx={{ mb: 1 }}
+                  >
                     Low Stock
                   </Typography>
-                  <Typography variant="h4" sx={{ fontWeight: 700, color: theme.palette.info.main }}>
+                  <Typography
+                    variant="h4"
+                    sx={{ fontWeight: 700, color: theme.palette.info.main }}
+                  >
                     {countByStatus.lowStock}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ mt: 1 }}
+                  >
                     Items
                   </Typography>
                 </Box>
@@ -602,16 +688,22 @@ const tenantDomain = useTenantDomain();
           <Card
             sx={{
               borderRadius: 2,
-              boxShadow: `0 6px 16px ${alpha(theme.palette.success.main, 0.15)}`,
-              background: `linear-gradient(135deg, ${alpha(theme.palette.success.light, 0.2)}, ${alpha(
+              boxShadow: `0 6px 16px ${alpha(
                 theme.palette.success.main,
-                0.05,
-              )})`,
+                0.15
+              )}`,
+              background: `linear-gradient(135deg, ${alpha(
+                theme.palette.success.light,
+                0.2
+              )}, ${alpha(theme.palette.success.main, 0.05)})`,
               border: `1px solid ${alpha(theme.palette.success.main, 0.1)}`,
               transition: "transform 0.3s",
               "&:hover": {
                 transform: "translateY(-5px)",
-                boxShadow: `0 8px 20px ${alpha(theme.palette.success.main, 0.2)}`,
+                boxShadow: `0 8px 20px ${alpha(
+                  theme.palette.success.main,
+                  0.2
+                )}`,
               },
             }}
           >
@@ -624,13 +716,24 @@ const tenantDomain = useTenantDomain();
                 }}
               >
                 <Box>
-                  <Typography color="text.secondary" variant="body2" sx={{ mb: 1 }}>
+                  <Typography
+                    color="text.secondary"
+                    variant="body2"
+                    sx={{ mb: 1 }}
+                  >
                     Total Items
                   </Typography>
-                  <Typography variant="h4" sx={{ fontWeight: 700, color: theme.palette.success.main }}>
+                  <Typography
+                    variant="h4"
+                    sx={{ fontWeight: 700, color: theme.palette.success.main }}
+                  >
                     {countByStatus.total}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ mt: 1 }}
+                  >
                     In System
                   </Typography>
                 </Box>
@@ -664,6 +767,7 @@ const tenantDomain = useTenantDomain();
         <Tabs
           value={tabValue}
           onChange={(e, newValue) => setTabValue(newValue)}
+          variant="scrollable"
           sx={{
             borderBottom: 1,
             borderColor: "divider",
@@ -692,34 +796,60 @@ const tenantDomain = useTenantDomain();
               <Box sx={{ display: "flex", alignItems: "center" }}>
                 <InventoryIcon sx={{ mr: 1, fontSize: 20 }} />
                 All Items
-                <Badge badgeContent={countByStatus.total} color="primary" sx={{ ml: 1 }} />
+                <Badge
+                  badgeContent={countByStatus.total}
+                  color="primary"
+                  sx={{ ml: 1 }}
+                />
               </Box>
             }
           />
           <Tab
             label={
               <Box sx={{ display: "flex", alignItems: "center" }}>
-                <ErrorIcon sx={{ mr: 1, fontSize: 20, color: theme.palette.error.main }} />
+                <ErrorIcon
+                  sx={{ mr: 1, fontSize: 20, color: theme.palette.error.main }}
+                />
                 Out of Stock
-                <Badge badgeContent={countByStatus.outOfStock} color="error" sx={{ ml: 1 }} />
+                <Badge
+                  badgeContent={countByStatus.outOfStock}
+                  color="error"
+                  sx={{ ml: 1 }}
+                />
               </Box>
             }
           />
           <Tab
             label={
               <Box sx={{ display: "flex", alignItems: "center" }}>
-                <WarningIcon sx={{ mr: 1, fontSize: 20, color: theme.palette.warning.main }} />
+                <WarningIcon
+                  sx={{
+                    mr: 1,
+                    fontSize: 20,
+                    color: theme.palette.warning.main,
+                  }}
+                />
                 Critical
-                <Badge badgeContent={countByStatus.critical} color="warning" sx={{ ml: 1 }} />
+                <Badge
+                  badgeContent={countByStatus.critical}
+                  color="warning"
+                  sx={{ ml: 1 }}
+                />
               </Box>
             }
           />
           <Tab
             label={
               <Box sx={{ display: "flex", alignItems: "center" }}>
-                <InfoIcon sx={{ mr: 1, fontSize: 20, color: theme.palette.info.main }} />
+                <InfoIcon
+                  sx={{ mr: 1, fontSize: 20, color: theme.palette.info.main }}
+                />
                 Low Stock
-                <Badge badgeContent={countByStatus.lowStock} color="info" sx={{ ml: 1 }} />
+                <Badge
+                  badgeContent={countByStatus.lowStock}
+                  color="info"
+                  sx={{ ml: 1 }}
+                />
               </Box>
             }
           />
@@ -762,32 +892,42 @@ const tenantDomain = useTenantDomain();
                 filterStatus === "all"
                   ? "out-of-stock"
                   : filterStatus === "out-of-stock"
-                    ? "critical"
-                    : filterStatus === "critical"
-                      ? "low-stock"
-                      : "all",
+                  ? "critical"
+                  : filterStatus === "critical"
+                  ? "low-stock"
+                  : "all"
               )
             }
-            sx={{ borderRadius: 2 }}
+            sx={{ borderRadius: 2, padding:"10px" }}
           >
             {filterStatus === "all"
               ? "Show All"
               : filterStatus === "out-of-stock"
-                ? "Out of Stock Only"
-                : filterStatus === "critical"
-                  ? "Critical Only"
-                  : "Low Stock Only"}
+              ? "Out of Stock Only"
+              : filterStatus === "critical"
+              ? "Critical Only"
+              : "Low Stock Only"}
           </Button>
 
           <Button
             variant="outlined"
             startIcon={<SortIcon />}
             onClick={() =>
-              handleSort(sortBy === "name" ? "currentStock" : sortBy === "currentStock" ? "brand" : "name")
+              handleSort(
+                sortBy === "name"
+                  ? "currentStock"
+                  : sortBy === "currentStock"
+                  ? "brand"
+                  : "name"
+              )
             }
-            sx={{ borderRadius: 2 }}
+            sx={{ borderRadius: 2, padding:"10px" }}
           >
-            {sortBy === "name" ? "Name" : sortBy === "currentStock" ? "Stock" : "Brand"}
+            {sortBy === "name"
+              ? "Name"
+              : sortBy === "currentStock"
+              ? "Stock"
+              : "Brand"}
             {sortOrder === "asc" ? " ⬆" : " ⬇"}
           </Button>
         </Box>
@@ -809,12 +949,21 @@ const tenantDomain = useTenantDomain();
                   display: "flex",
                   flexDirection: "column",
                   position: "relative",
-                  boxShadow: `0 6px 16px ${alpha(getStockColor(product.status), 0.15)}`,
-                  border: `1px solid ${alpha(getStockColor(product.status), 0.1)}`,
+                  boxShadow: `0 6px 16px ${alpha(
+                    getStockColor(product.status),
+                    0.15
+                  )}`,
+                  border: `1px solid ${alpha(
+                    getStockColor(product.status),
+                    0.1
+                  )}`,
                   transition: "all 0.3s",
                   "&:hover": {
                     transform: "translateY(-5px)",
-                    boxShadow: `0 8px 20px ${alpha(getStockColor(product.status), 0.25)}`,
+                    boxShadow: `0 8px 20px ${alpha(
+                      getStockColor(product.status),
+                      0.25
+                    )}`,
                   },
                 }}
               >
@@ -831,7 +980,7 @@ const tenantDomain = useTenantDomain();
 
                 <Box
                   sx={{
-                    p: 2,
+                    p: {xs:1, sm:2},
                     display: "flex",
                     alignItems: "center",
                     borderBottom: `1px solid ${theme.palette.divider}`,
@@ -845,7 +994,10 @@ const tenantDomain = useTenantDomain();
                       width: 60,
                       height: 60,
                       mr: 2,
-                      boxShadow: `0 4px 8px ${alpha(theme.palette.common.black, 0.1)}`,
+                      boxShadow: `0 4px 8px ${alpha(
+                        theme.palette.common.black,
+                        0.1
+                      )}`,
                     }}
                   />
                   <Box>
@@ -860,7 +1012,13 @@ const tenantDomain = useTenantDomain();
 
                 <CardContent sx={{ flexGrow: 1, pt: 2 }}>
                   <Box sx={{ mb: 2 }}>
-                    <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.5 }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        mb: 0.5,
+                      }}
+                    >
                       <Typography variant="body2" color="text.secondary">
                         Current Stock:
                       </Typography>
@@ -876,7 +1034,10 @@ const tenantDomain = useTenantDomain();
                     </Box>
                     <LinearProgress
                       variant="determinate"
-                      value={getStockPercentage(product.currentStock, product.minimumStock)}
+                      value={getStockPercentage(
+                        product.currentStock,
+                        product.minimumStock
+                      )}
                       sx={{
                         height: 8,
                         borderRadius: 4,
@@ -909,8 +1070,18 @@ const tenantDomain = useTenantDomain();
                       <Typography variant="body2" color="text.secondary">
                         Warehouse:
                       </Typography>
-                      <Typography variant="body1" sx={{ fontWeight: 500, display: "flex", alignItems: "center" }}>
-                        <StoreIcon fontSize="small" sx={{ mr: 0.5, color: theme.palette.primary.main }} />
+                      <Typography
+                        variant="body1"
+                        sx={{
+                          fontWeight: 500,
+                          display: "flex",
+                          alignItems: "center",
+                        }}
+                      >
+                        <StoreIcon
+                          fontSize="small"
+                          sx={{ mr: 0.5, color: theme.palette.primary.main }}
+                        />
                         {product.warehouse}
                       </Typography>
                     </Grid>
@@ -935,7 +1106,13 @@ const tenantDomain = useTenantDomain();
 
                 <Divider />
 
-                <Box sx={{ p: 2, display: "flex", justifyContent: "space-between" }}>
+                <Box
+                  sx={{
+                    p: 2,
+                    display: "flex",
+                    justifyContent: "space-between",
+                  }}
+                >
                   <Button
                     size="small"
                     variant="outlined"
@@ -1002,17 +1179,19 @@ const tenantDomain = useTenantDomain();
           sx={{
             pb: 1,
             borderBottom: `1px solid ${theme.palette.divider}`,
-            background: `linear-gradient(to right, ${alpha(theme.palette.primary.light, 0.1)}, ${alpha(
-              theme.palette.background.default,
-              0.05,
-            )})`,
+            background: `linear-gradient(to right, ${alpha(
+              theme.palette.primary.light,
+              0.1
+            )}, ${alpha(theme.palette.background.default, 0.05)})`,
           }}
         >
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <TrendingDownIcon
               sx={{
                 mr: 1,
-                color: selectedProduct ? getStockColor(selectedProduct.status) : theme.palette.primary.main,
+                color: selectedProduct
+                  ? getStockColor(selectedProduct.status)
+                  : theme.palette.primary.main,
               }}
             />
             <Typography variant="h6">Low Stock Product Details</Typography>
@@ -1031,10 +1210,15 @@ const tenantDomain = useTenantDomain();
                       width: "100%",
                       height: 200,
                       mb: 2,
-                      boxShadow: `0 4px 12px ${alpha(theme.palette.common.black, 0.1)}`,
+                      boxShadow: `0 4px 12px ${alpha(
+                        theme.palette.common.black,
+                        0.1
+                      )}`,
                     }}
                   />
-                  <Box sx={{ position: "absolute", top: 10, right: 10 }}>{getStatusChip(selectedProduct.status)}</Box>
+                  <Box sx={{ position: "absolute", top: 10, right: 10 }}>
+                    {getStatusChip(selectedProduct.status)}
+                  </Box>
                 </Box>
 
                 <Box sx={{ mb: 2 }}>
@@ -1044,17 +1228,29 @@ const tenantDomain = useTenantDomain();
                   <Box sx={{ mt: 1 }}>
                     <LinearProgress
                       variant="determinate"
-                      value={getStockPercentage(selectedProduct.currentStock, selectedProduct.minimumStock)}
+                      value={getStockPercentage(
+                        selectedProduct.currentStock,
+                        selectedProduct.minimumStock
+                      )}
                       sx={{
                         height: 10,
                         borderRadius: 5,
-                        bgcolor: alpha(getStockColor(selectedProduct.status), 0.1),
+                        bgcolor: alpha(
+                          getStockColor(selectedProduct.status),
+                          0.1
+                        ),
                         "& .MuiLinearProgress-bar": {
                           bgcolor: getStockColor(selectedProduct.status),
                         },
                       }}
                     />
-                    <Box sx={{ display: "flex", justifyContent: "space-between", mt: 0.5 }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        mt: 0.5,
+                      }}
+                    >
                       <Typography variant="caption" sx={{ fontWeight: 500 }}>
                         Current: {selectedProduct.currentStock}
                       </Typography>
@@ -1071,13 +1267,16 @@ const tenantDomain = useTenantDomain();
                   color="primary"
                   startIcon={<AddShoppingCartIcon />}
                   onClick={() => {
-                    handleCloseDialog()
-                    handleOpenOrderDialog(selectedProduct)
+                    handleCloseDialog();
+                    handleOpenOrderDialog(selectedProduct);
                   }}
                   sx={{
                     borderRadius: 2,
                     background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`,
-                    boxShadow: `0 4px 10px ${alpha(theme.palette.primary.main, 0.3)}`,
+                    boxShadow: `0 4px 10px ${alpha(
+                      theme.palette.primary.main,
+                      0.3
+                    )}`,
                     py: 1.5,
                   }}
                 >
@@ -1086,12 +1285,20 @@ const tenantDomain = useTenantDomain();
               </Grid>
 
               <Grid item xs={12} md={8}>
-                <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, color: theme.palette.primary.main }}>
+                <Typography
+                  variant="h5"
+                  gutterBottom
+                  sx={{ fontWeight: 600, color: theme.palette.primary.main }}
+                >
                   {selectedProduct.name}
                 </Typography>
 
                 <Box sx={{ display: "flex", mb: 0.5 }}>
-                  <Typography variant="body2" color="text.secondary" sx={{ minWidth: 120 }}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ minWidth: 120 }}
+                  >
                     Product Code:
                   </Typography>
                   <Typography variant="body2" sx={{ fontWeight: 500 }}>
@@ -1100,7 +1307,11 @@ const tenantDomain = useTenantDomain();
                 </Box>
 
                 <Box sx={{ display: "flex", mb: 0.5 }}>
-                  <Typography variant="body2" color="text.secondary" sx={{ minWidth: 120 }}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ minWidth: 120 }}
+                  >
                     Category:
                   </Typography>
                   <Typography variant="body2" sx={{ fontWeight: 500 }}>
@@ -1109,7 +1320,11 @@ const tenantDomain = useTenantDomain();
                 </Box>
 
                 <Box sx={{ display: "flex", mb: 0.5 }}>
-                  <Typography variant="body2" color="text.secondary" sx={{ minWidth: 120 }}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ minWidth: 120 }}
+                  >
                     Brand:
                   </Typography>
                   <Typography variant="body2" sx={{ fontWeight: 500 }}>
@@ -1126,11 +1341,18 @@ const tenantDomain = useTenantDomain();
                         p: 2,
                         textAlign: "center",
                         bgcolor: alpha(theme.palette.primary.main, 0.05),
-                        border: `1px solid ${alpha(theme.palette.primary.main, 0.1)}`,
+                        border: `1px solid ${alpha(
+                          theme.palette.primary.main,
+                          0.1
+                        )}`,
                         borderRadius: 2,
                       }}
                     >
-                      <Typography variant="body2" color="text.secondary" gutterBottom>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        gutterBottom
+                      >
                         Current Stock
                       </Typography>
                       <Typography
@@ -1154,11 +1376,18 @@ const tenantDomain = useTenantDomain();
                         p: 2,
                         textAlign: "center",
                         bgcolor: alpha(theme.palette.warning.main, 0.05),
-                        border: `1px solid ${alpha(theme.palette.warning.main, 0.1)}`,
+                        border: `1px solid ${alpha(
+                          theme.palette.warning.main,
+                          0.1
+                        )}`,
                         borderRadius: 2,
                       }}
                     >
-                      <Typography variant="body2" color="text.secondary" gutterBottom>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        gutterBottom
+                      >
                         Minimum Stock
                       </Typography>
                       <Typography
@@ -1182,11 +1411,18 @@ const tenantDomain = useTenantDomain();
                         p: 2,
                         textAlign: "center",
                         bgcolor: alpha(theme.palette.success.main, 0.05),
-                        border: `1px solid ${alpha(theme.palette.success.main, 0.1)}`,
+                        border: `1px solid ${alpha(
+                          theme.palette.success.main,
+                          0.1
+                        )}`,
                         borderRadius: 2,
                       }}
                     >
-                      <Typography variant="body2" color="text.secondary" gutterBottom>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        gutterBottom
+                      >
                         Reorder Level
                       </Typography>
                       <Typography
@@ -1211,8 +1447,14 @@ const tenantDomain = useTenantDomain();
                   <Typography variant="subtitle2" color="text.secondary">
                     Warehouse
                   </Typography>
-                  <Typography variant="body1" sx={{ display: "flex", alignItems: "center" }}>
-                    <StoreIcon fontSize="small" sx={{ mr: 0.5, color: theme.palette.primary.main }} />
+                  <Typography
+                    variant="body1"
+                    sx={{ display: "flex", alignItems: "center" }}
+                  >
+                    <StoreIcon
+                      fontSize="small"
+                      sx={{ mr: 0.5, color: theme.palette.primary.main }}
+                    />
                     {selectedProduct.warehouse}
                   </Typography>
                 </Box>
@@ -1221,8 +1463,14 @@ const tenantDomain = useTenantDomain();
                   <Typography variant="subtitle2" color="text.secondary">
                     Last Order Date
                   </Typography>
-                  <Typography variant="body1" sx={{ display: "flex", alignItems: "center" }}>
-                    <AccessTimeIcon fontSize="small" sx={{ mr: 0.5, color: theme.palette.primary.main }} />
+                  <Typography
+                    variant="body1"
+                    sx={{ display: "flex", alignItems: "center" }}
+                  >
+                    <AccessTimeIcon
+                      fontSize="small"
+                      sx={{ mr: 0.5, color: theme.palette.primary.main }}
+                    />
                     {selectedProduct.lastOrderDate}
                   </Typography>
                 </Box>
@@ -1233,7 +1481,11 @@ const tenantDomain = useTenantDomain();
                   </Typography>
                   <Alert severity="warning" sx={{ mt: 1, borderRadius: 2 }}>
                     <Typography variant="body2">
-                      Immediate order of <strong>{selectedProduct.reorderLevel - selectedProduct.currentStock}</strong>{" "}
+                      Immediate order of{" "}
+                      <strong>
+                        {selectedProduct.reorderLevel -
+                          selectedProduct.currentStock}
+                      </strong>{" "}
                       pcs is recommended.
                     </Typography>
                   </Alert>
@@ -1242,8 +1494,14 @@ const tenantDomain = useTenantDomain();
             </Grid>
           )}
         </DialogContent>
-        <DialogActions sx={{ px: 3, py: 2, borderTop: `1px solid ${theme.palette.divider}` }}>
-          <Button onClick={handleCloseDialog} variant="outlined" sx={{ borderRadius: 2 }}>
+        <DialogActions
+          sx={{ px: 3, py: 2, borderTop: `1px solid ${theme.palette.divider}` }}
+        >
+          <Button
+            onClick={handleCloseDialog}
+            variant="outlined"
+            sx={{ borderRadius: 2 }}
+          >
             Close
           </Button>
           <Button
@@ -1251,8 +1509,8 @@ const tenantDomain = useTenantDomain();
             color="primary"
             startIcon={<AddShoppingCartIcon />}
             onClick={() => {
-              handleCloseDialog()
-              if (selectedProduct) handleOpenOrderDialog(selectedProduct)
+              handleCloseDialog();
+              if (selectedProduct) handleOpenOrderDialog(selectedProduct);
             }}
             sx={{
               borderRadius: 2,
@@ -1282,14 +1540,16 @@ const tenantDomain = useTenantDomain();
           sx={{
             pb: 1,
             borderBottom: `1px solid ${theme.palette.divider}`,
-            background: `linear-gradient(to right, ${alpha(theme.palette.primary.light, 0.1)}, ${alpha(
-              theme.palette.background.default,
-              0.05,
-            )})`,
+            background: `linear-gradient(to right, ${alpha(
+              theme.palette.primary.light,
+              0.1
+            )}, ${alpha(theme.palette.background.default, 0.05)})`,
           }}
         >
           <Box sx={{ display: "flex", alignItems: "center" }}>
-            <AddShoppingCartIcon sx={{ mr: 1, color: theme.palette.primary.main }} />
+            <AddShoppingCartIcon
+              sx={{ mr: 1, color: theme.palette.primary.main }}
+            />
             <Typography variant="h6">Purchase Order</Typography>
           </Box>
         </DialogTitle>
@@ -1304,13 +1564,19 @@ const tenantDomain = useTenantDomain();
                   sx={{
                     width: "100%",
                     height: 120,
-                    boxShadow: `0 4px 12px ${alpha(theme.palette.common.black, 0.1)}`,
+                    boxShadow: `0 4px 12px ${alpha(
+                      theme.palette.common.black,
+                      0.1
+                    )}`,
                   }}
                 />
               </Grid>
 
               <Grid item xs={12} sm={8}>
-                <Typography variant="h6" sx={{ fontWeight: 600, color: theme.palette.primary.main }}>
+                <Typography
+                  variant="h6"
+                  sx={{ fontWeight: 600, color: theme.palette.primary.main }}
+                >
                   {selectedProduct.name}
                 </Typography>
                 <Typography variant="body2" color="text.secondary" gutterBottom>
@@ -1318,7 +1584,11 @@ const tenantDomain = useTenantDomain();
                 </Typography>
 
                 <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
-                  <Typography variant="body2" color="text.secondary" sx={{ mr: 1 }}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ mr: 1 }}
+                  >
                     Current Stock:
                   </Typography>
                   <Chip
@@ -1328,14 +1598,18 @@ const tenantDomain = useTenantDomain();
                       selectedProduct.status === "out-of-stock"
                         ? "error"
                         : selectedProduct.status === "critical"
-                          ? "warning"
-                          : "info"
+                        ? "warning"
+                        : "info"
                     }
                   />
                 </Box>
 
                 <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
-                  <Typography variant="body2" color="text.secondary" sx={{ mr: 1 }}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ mr: 1 }}
+                  >
                     Warehouse:
                   </Typography>
                   <Typography variant="body2" sx={{ fontWeight: 500 }}>
@@ -1370,7 +1644,10 @@ const tenantDomain = useTenantDomain();
                   sx={{
                     p: 2,
                     bgcolor: alpha(theme.palette.success.main, 0.05),
-                    border: `1px solid ${alpha(theme.palette.success.main, 0.1)}`,
+                    border: `1px solid ${alpha(
+                      theme.palette.success.main,
+                      0.1
+                    )}`,
                     borderRadius: 2,
                   }}
                 >
@@ -1410,8 +1687,14 @@ const tenantDomain = useTenantDomain();
             </Grid>
           )}
         </DialogContent>
-        <DialogActions sx={{ px: 3, py: 2, borderTop: `1px solid ${theme.palette.divider}` }}>
-          <Button onClick={handleCloseOrderDialog} variant="outlined" sx={{ borderRadius: 2 }}>
+        <DialogActions
+          sx={{ px: 3, py: 2, borderTop: `1px solid ${theme.palette.divider}` }}
+        >
+          <Button
+            onClick={handleCloseOrderDialog}
+            variant="outlined"
+            sx={{ borderRadius: 2 }}
+          >
             Cancel
           </Button>
           <Button
@@ -1429,5 +1712,5 @@ const tenantDomain = useTenantDomain();
         </DialogActions>
       </Dialog>
     </Box>
-  )
+  );
 }

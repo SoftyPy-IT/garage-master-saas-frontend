@@ -167,8 +167,8 @@ const WorldClassSupplierList = () => {
 
 
   return (
-    <div className="w-full mt-8 px-0 md:px-2">
-      <GlassCard>
+    <div className="w-full mt-5 px-0 md:px-0 ">
+      <GlassCard className="p-5">
         <div className="flex justify-between items-center mb-6 flex-wrap gap-2">
           <h2 className="text-xl md:text-2xl font-bold flex items-center">
             <BusinessIcon sx={{ mr: 1, color: theme.palette.primary.main }} />

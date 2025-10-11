@@ -495,7 +495,7 @@ const PurChaseForm = () => {
           </Box>
 
           <TASForm onSubmit={handleSubmit} defaultValues={defaultValues}>
-            <Box sx={{ p: { xs: 0, sm: 4 } }}>
+            <Box sx={{ p: { xs: 0, sm: 0 } }}>
               <Grid container spacing={4}>
                 {/* Left Column - Document Upload */}
                 <Grid item xs={12} md={3}>
@@ -1640,7 +1640,7 @@ const PurChaseForm = () => {
                             <Grid item xs={12}>
                               <Box
                                 sx={{
-                                  display: "flex",
+                                  display: {sm:"flex"},
                                   justifyContent: "space-between",
                                   py: 2,
                                   mt: 1,
@@ -1648,6 +1648,7 @@ const PurChaseForm = () => {
                                     "linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%)",
                                   borderRadius: "12px",
                                   px: 2,
+                                  textAlign:"center"
                                 }}
                               >
                                 <Box

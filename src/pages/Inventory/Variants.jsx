@@ -285,7 +285,7 @@ export default function VariantsPage() {
           Variant Attributes
         </Typography>
 
-        <Box sx={{ display: { md: "flex" }, gap: 2 }}>
+        <div className="md:flex gap-2">
           <div className="flex md:hidden justify-end mb-2">
             <Button
               variant="contained"
@@ -323,6 +323,7 @@ export default function VariantsPage() {
             }}
             sx={{ width: { xs: "100%", sm: 220 } }}
           />
+
           <div className="hidden md:flex justify-end mb-2">
             <Button
               variant="contained"
@@ -347,7 +348,7 @@ export default function VariantsPage() {
               New Variant
             </Button>
           </div>
-        </Box>
+        </div>
       </Box>
 
       <div className="mb-4 md:flex items-center gap-2 space-x-3 space-y-3">

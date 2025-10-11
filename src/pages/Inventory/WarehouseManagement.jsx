@@ -24,7 +24,6 @@ import {
   Zoom,
   LinearProgress,
   useTheme,
-
   Alert,
   Snackbar,
   TextField,
@@ -36,13 +35,11 @@ import {
   Delete as DeleteIcon,
   NavigateNext as NavigateNextIcon,
   Search as SearchIcon,
-
   Warehouse as WarehouseIcon,
   LocationOn as LocationOnIcon,
   Person as PersonIcon,
   CheckCircle as CheckCircleIcon,
   Cancel as CancelIcon,
-
 } from "@mui/icons-material";
 import { alpha } from "@mui/material/styles";
 
@@ -71,8 +68,11 @@ export default function WarehouseManagement() {
 
   const tenantDomain = useTenantDomain();
 
-  const { data: warehouseData, isLoading: isDataLoading, refetch } =
-    useGetAllWarehousesQuery({ tenantDomain });
+  const {
+    data: warehouseData,
+    isLoading: isDataLoading,
+    refetch,
+  } = useGetAllWarehousesQuery({ tenantDomain });
 
   const [deleteWarehouse] = useDeleteWarehouseMutation();
   const [snackbar, setSnackbar] = useState({
@@ -148,7 +148,6 @@ export default function WarehouseManagement() {
   const handleCloseSnackbar = () => {
     setSnackbar({ ...snackbar, open: false });
   };
-
 
   const getStatusChip = (status) => {
     switch (status) {
@@ -239,7 +238,7 @@ export default function WarehouseManagement() {
       <Breadcrumbs
         separator={<NavigateNextIcon fontSize="small" />}
         aria-label="breadcrumb"
-        sx={{ mb: 3, mt: 3, boxShadow: 2, py: 3 }}
+        sx={{ mb: 3, mt: 3, boxShadow: 2, p: 3 }}
       >
         <Link
           color="inherit"
@@ -387,7 +386,6 @@ export default function WarehouseManagement() {
           <Typography variant="h6" sx={{ fontWeight: "bold" }}>
             Filters and Search
           </Typography>
-         
         </Box>
 
         <TextField
@@ -405,8 +403,6 @@ export default function WarehouseManagement() {
             ),
           }}
         />
-
-       
       </Paper>
 
       {loading ? (
@@ -415,151 +411,164 @@ export default function WarehouseManagement() {
           <Typography>Loading warehouse data...</Typography>
         </Paper>
       ) : (
-        <TableContainer
-          component={Paper}
+        <Paper
           sx={{
             borderRadius: 2,
             overflow: "hidden",
             boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
           }}
         >
-          <Table sx={{ minWidth: 650 }}>
-            <TableHead>
-              <TableRow
-                sx={{ backgroundColor: alpha(theme.palette.primary.main, 0.1) }}
-              >
-                <TableCell sx={{ fontWeight: "bold" }}>ID</TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>Name</TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>Type</TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>Location</TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>Manager</TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>Capacity</TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>Opening Date</TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
-                <TableCell align="center" sx={{ fontWeight: "bold" }}>
-                  Actions
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {warehouses.map((warehouse) => (
+          <TableContainer>
+            <Table sx={{ minWidth: 650 }}>
+              <TableHead>
                 <TableRow
-                  key={warehouse?._id}
                   sx={{
-                    "&:hover": {
-                      backgroundColor: alpha(theme.palette.primary.main, 0.04),
-                    },
-                    transition: "background-color 0.2s ease",
+                    backgroundColor: alpha(theme.palette.primary.main, 0.1),
                   }}
                 >
-                  <TableCell sx={{ fontWeight: "medium" }}>
-                    {warehouse?.warehouseId || "N/A"}
+                  <TableCell sx={{ fontWeight: "bold" }}>ID</TableCell>
+                  <TableCell sx={{ fontWeight: "bold" }}>Name</TableCell>
+                  <TableCell sx={{ fontWeight: "bold" }}>Type</TableCell>
+                  <TableCell sx={{ fontWeight: "bold" }}>Location</TableCell>
+                  <TableCell sx={{ fontWeight: "bold" }}>Manager</TableCell>
+                  <TableCell sx={{ fontWeight: "bold" }}>Capacity</TableCell>
+                  <TableCell sx={{ fontWeight: "bold" }}>
+                    Opening Date
                   </TableCell>
-                  <TableCell sx={{ fontWeight: "medium" }}>
-                    {warehouse?.name}
-                  </TableCell>
-                  <TableCell>{getTypeChip(warehouse?.type)}</TableCell>
-                  <TableCell>
-                    <Box sx={{ display: "flex", alignItems: "center" }}>
-                      <LocationOnIcon
-                        fontSize="small"
-                        sx={{ mr: 0.5, color: "text.secondary" }}
-                      />
-                      <Typography variant="body2">
-                        {warehouse?.city}
-                        {warehouse?.address && `, ${warehouse.address}`}
-                      </Typography>
-                    </Box>
-                  </TableCell>
-                  <TableCell>
-                    <Box sx={{ display: "flex", alignItems: "center" }}>
-                      <PersonIcon
-                        fontSize="small"
-                        sx={{ mr: 0.5, color: "text.secondary" }}
-                      />
-                      <Typography variant="body2">
-                        {warehouse?.manager || "N/A"}
-                      </Typography>
-                    </Box>
-                  </TableCell>
-                  <TableCell>
-                    {warehouse?.capacity ? `${warehouse.capacity} sq ft` : "N/A"}
-                  </TableCell>
-                  <TableCell>
-                    {warehouse?.openingDate
-                      ? formatDate(warehouse.openingDate)
-                      : "N/A"}
-                  </TableCell>
-                  <TableCell>{getStatusChip(warehouse?.status)}</TableCell>
-                  <TableCell align="center">
-                    <Tooltip title="View Details" TransitionComponent={Zoom}>
-                      <IconButton
-                        size="small"
-                        onClick={() => handleViewDetails(warehouse)}
-                        sx={{
-                          color: theme.palette.primary.main,
-                          backgroundColor: alpha(
-                            theme.palette.primary.main,
-                            0.1
-                          ),
-                          mr: 1,
-                          "&:hover": {
-                            backgroundColor: alpha(
-                              theme.palette.primary.main,
-                              0.2
-                            ),
-                          },
-                        }}
-                      >
-                        <VisibilityIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Edit" TransitionComponent={Zoom}>
-                      <IconButton
-                        size="small"
-                        onClick={() => handleEditOpen(warehouse._id)}
-                        sx={{
-                          color: theme.palette.warning.main,
-                          backgroundColor: alpha(
-                            theme.palette.warning.main,
-                            0.1
-                          ),
-                          mr: 1,
-                          "&:hover": {
-                            backgroundColor: alpha(
-                              theme.palette.warning.main,
-                              0.2
-                            ),
-                          },
-                        }}
-                      >
-                        <EditIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Delete" TransitionComponent={Zoom}>
-                      <IconButton
-                        size="small"
-                        onClick={() => handleDeleteWarehouse(warehouse._id)}
-                        sx={{
-                          color: theme.palette.error.main,
-                          backgroundColor: alpha(theme.palette.error.main, 0.1),
-                          "&:hover": {
-                            backgroundColor: alpha(
-                              theme.palette.error.main,
-                              0.2
-                            ),
-                          },
-                        }}
-                      >
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
+                  <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
+                  <TableCell align="center" sx={{ fontWeight: "bold" }}>
+                    Actions
                   </TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {warehouses.map((warehouse) => (
+                  <TableRow
+                    key={warehouse?._id}
+                    sx={{
+                      "&:hover": {
+                        backgroundColor: alpha(
+                          theme.palette.primary.main,
+                          0.04
+                        ),
+                      },
+                      transition: "background-color 0.2s ease",
+                    }}
+                  >
+                    <TableCell sx={{ fontWeight: "medium" }}>
+                      {warehouse?.warehouseId || "N/A"}
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: "medium" }}>
+                      {warehouse?.name}
+                    </TableCell>
+                    <TableCell>{getTypeChip(warehouse?.type)}</TableCell>
+                    <TableCell>
+                      <Box sx={{ display: "flex", alignItems: "center" }}>
+                        <LocationOnIcon
+                          fontSize="small"
+                          sx={{ mr: 0.5, color: "text.secondary" }}
+                        />
+                        <Typography variant="body2">
+                          {warehouse?.city}
+                          {warehouse?.address && `, ${warehouse.address}`}
+                        </Typography>
+                      </Box>
+                    </TableCell>
+                    <TableCell>
+                      <Box sx={{ display: "flex", alignItems: "center" }}>
+                        <PersonIcon
+                          fontSize="small"
+                          sx={{ mr: 0.5, color: "text.secondary" }}
+                        />
+                        <Typography variant="body2">
+                          {warehouse?.manager || "N/A"}
+                        </Typography>
+                      </Box>
+                    </TableCell>
+                    <TableCell>
+                      {warehouse?.capacity
+                        ? `${warehouse.capacity} sq ft`
+                        : "N/A"}
+                    </TableCell>
+                    <TableCell>
+                      {warehouse?.openingDate
+                        ? formatDate(warehouse.openingDate)
+                        : "N/A"}
+                    </TableCell>
+                    <TableCell>{getStatusChip(warehouse?.status)}</TableCell>
+                    <TableCell align="center">
+                      <Tooltip title="View Details" TransitionComponent={Zoom}>
+                        <IconButton
+                          size="small"
+                          onClick={() => handleViewDetails(warehouse)}
+                          sx={{
+                            color: theme.palette.primary.main,
+                            backgroundColor: alpha(
+                              theme.palette.primary.main,
+                              0.1
+                            ),
+                            mr: 1,
+                            "&:hover": {
+                              backgroundColor: alpha(
+                                theme.palette.primary.main,
+                                0.2
+                              ),
+                            },
+                          }}
+                        >
+                          <VisibilityIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Edit" TransitionComponent={Zoom}>
+                        <IconButton
+                          size="small"
+                          onClick={() => handleEditOpen(warehouse._id)}
+                          sx={{
+                            color: theme.palette.warning.main,
+                            backgroundColor: alpha(
+                              theme.palette.warning.main,
+                              0.1
+                            ),
+                            mr: 1,
+                            "&:hover": {
+                              backgroundColor: alpha(
+                                theme.palette.warning.main,
+                                0.2
+                              ),
+                            },
+                          }}
+                        >
+                          <EditIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Delete" TransitionComponent={Zoom}>
+                        <IconButton
+                          size="small"
+                          onClick={() => handleDeleteWarehouse(warehouse._id)}
+                          sx={{
+                            color: theme.palette.error.main,
+                            backgroundColor: alpha(
+                              theme.palette.error.main,
+                              0.1
+                            ),
+                            "&:hover": {
+                              backgroundColor: alpha(
+                                theme.palette.error.main,
+                                0.2
+                              ),
+                            },
+                          }}
+                        >
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Paper>
       )}
 
       {/* Add/Edit Warehouse Dialog */}

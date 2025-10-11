@@ -28,7 +28,7 @@ const AllServices = ({ showSensitiveData }) => {
   if (isLoading) return <Loading />;
 
   const card =
-    "flex flex-col xl:flex-row items-center justify-center content-center gap-x-2 mt-3 xl:mt-8 space-y-2 ";
+    "flex flex-col items-center justify-center content-center gap-x-2 mt-3 space-y-2 ";
   const amount = "text-center text-[32px] font-bold ";
 
   return (
