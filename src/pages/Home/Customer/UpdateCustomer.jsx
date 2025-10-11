@@ -69,7 +69,7 @@ const UpdateCustomer = () => {
     setYearSelectInput(option.label);
     setFilteredOptions([]);
   };
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain } = useTenantDomain();
 
   const {
     data: singleCard,
@@ -767,19 +767,19 @@ const UpdateCustomer = () => {
 
                       {(!getDataWithChassisNo?.mileageHistory ||
                         getDataWithChassisNo.mileageHistory.length === 0) && (
-                        <TextField
-                          type="number"
-                          fullWidth
-                          label="Mileage (N)"
-                          {...register("mileage", {
-                            pattern: {
-                              value: /^\d+$/,
-                              message: "Please enter a valid number.",
-                            },
-                          })}
-                          focused={getDataWithChassisNo?.mileage || ""}
-                        />
-                      )}
+                          <TextField
+                            type="number"
+                            fullWidth
+                            label="Mileage (N)"
+                            {...register("mileage", {
+                              pattern: {
+                                value: /^\d+$/,
+                                message: "Please enter a valid number.",
+                              },
+                            })}
+                            focused={getDataWithChassisNo?.mileage || ""}
+                          />
+                        )}
                     </Box>
                   </Grid>
 

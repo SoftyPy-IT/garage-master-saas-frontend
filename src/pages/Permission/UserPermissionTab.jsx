@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Avatar, Chip, Typography, Checkbox, Box, Tooltip, IconButton, useTheme, alpha, CircularProgress, Button } from "@mui/material";
 import { Edit, Delete, LibraryBooks, Save } from "@mui/icons-material";
@@ -65,7 +66,6 @@ const UserPermissionsTab = ({ filteredPermissions, handleDialogOpen, handleDelet
         tenantDomain,
         permissionUpdates
       }).unwrap();
-      console.log("API response:", result);
 
       Swal.fire({
         icon: "success",

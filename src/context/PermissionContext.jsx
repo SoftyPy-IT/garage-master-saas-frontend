@@ -7,6 +7,7 @@ import { useTenantDomain } from "../hooks/useTenantDomain";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "../redux/feature/authSlice";
 import { useGetUserPermissionQuery } from "../redux/api/userApi";
+import swal from "sweetalert";
 
 const PermissionContext = createContext();
 
@@ -21,56 +22,78 @@ export const usePermissions = () => {
 export const PermissionProvider = ({ children }) => {
   const { tenantDomain } = useTenantDomain();
   const user = useSelector(selectCurrentUser);
-  console.log(user)
-  console.log(user)
+
   const { data: permissionData, isLoading, error, isError } = useGetUserPermissionQuery(
     { userId: user?.userId, tenantDomain },
     {
       skip: !user?.userId || !tenantDomain,
     }
   );
-  console.log
 
+  // ব্যাকএন্ড থেকে পাওয়া অনুমতি ডেটা ফরম্যাট করুন
   const permissions = permissionData?.data?.permissions || [];
-  console.log(permissions)
-  // check specific page permission
+  console.log('permission data check ', permissions)
+
+  // নির্দিষ্ট পৃষ্ঠা অনুমতি চেক করুন
   const checkPermission = (pagePath, action = "view") => {
     if (!permissions || permissions.length === 0) {
+      console.log('No permissions found');
       return false;
     }
 
     const permission = permissions.find((p) => {
-      // check different path 
+      // ডেটা স্ট্রাকচার অনুযায়ী pageId এর পরিবর্তে page ব্যবহার করুন
+      if (!p.page) {
+        return false;
+      }
+
+      const page = p.page;
+      if (!page) return false;
+
+      // বিভিন্ন পথ ফরম্যাট চেক করুন
       const possiblePaths = [
         pagePath,
         pagePath.endsWith("/") ? pagePath.slice(0, -1) : pagePath + "/",
         pagePath.startsWith("/") ? pagePath : "/" + pagePath,
       ];
 
-      return (
-        possiblePaths.includes(p.page?.path) ||
-        possiblePaths.includes(p.page?.route) ||
-        possiblePaths.includes(p.route)
-      );
+      const pathMatch = possiblePaths.includes(page.path) || possiblePaths.includes(page.route);
+
+      if (pathMatch) {
+        console.log(`Path match found for ${pagePath}:`, page.path, page.route);
+      }
+
+      return pathMatch;
     });
 
     if (!permission) {
+      console.log(`No permission found for ${pagePath}`);
       return false;
     }
 
-    return permission[action] || false;
+    const hasAction = permission[action] === true;
+    console.log(`Permission check for ${pagePath}, action ${action}:`, hasAction);
+
+    return hasAction;
   };
 
   const hasPageAccess = (pagePath) => {
     return checkPermission(pagePath, "view");
   };
 
-  // check before action
+  // ক্রিয়া সম্পাদনের আগে অনুমতি চেক করুন - SweetAlert সহ
   const performActionWithPermission = (pagePath, action, callback, alertMessage) => {
     if (checkPermission(pagePath, action)) {
       callback();
     } else {
-      alert(alertMessage || `You don't have permission to ${action} this item.`);
+      // SweetAlert ব্যবহার করে সুন্দর অ্যালার্ট দেখান
+      swal({
+        title: "Access Denied!",
+        text: `You don't have permission to ${action} this item.`,
+        icon: "error",
+        button: "OK",
+        className: "permission-alert",
+      });
     }
   };
 

@@ -1,18 +1,17 @@
 /* eslint-disable react/prop-types */
 import { usePermissions } from '../context/PermissionContext';
 
-const Can = ({ page, action, children, fallback = null, showAlert = false }) => {
+const Can = ({ page, action, children, fallback = null, showAlert = true }) => {
     const { checkPermission, performActionWithPermission } = usePermissions();
 
     const isAllowed = checkPermission(page, action);
-
     if (showAlert) {
         return (
             <div onClick={() => performActionWithPermission(
                 page,
                 action,
                 () => { },
-                `You don't have permission to ${action} this item.`
+                null
             )}>
                 {children}
             </div>

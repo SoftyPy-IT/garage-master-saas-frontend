@@ -15,18 +15,20 @@ import {
 import { toast } from "react-toastify";
 import EmptyData from "../../../components/EmptyData/EmptyData";
 import { useTenantDomain } from "../../../hooks/useTenantDomain";
+import { usePermissions } from "../../../context/PermissionContext";
+
+import Can from "../../../components/Can";
+
 const CustomerListTable = () => {
   const textInputRef = useRef(null);
   const location = useLocation();
   const search = new URLSearchParams(location.search).get("search");
   const [filterType, setFilterType] = useState("");
-
   const [currentPage, setCurrentPage] = useState(1);
-
   const navigate = useNavigate();
-
   const limit = 10;
   const { tenantDomain } = useTenantDomain();
+  const { checkPermission, performActionWithPermission } = usePermissions();
 
   const { data: customerData, isLoading: customerLoading } =
     useGetAllCustomersQuery({
@@ -41,31 +43,44 @@ const CustomerListTable = () => {
     moveRecycledCustomer,
     { isLoading: customerDeleteLoading, error: deleteError },
   ] = useMoveRecycledCustomerMutation();
-
   const handleIconPreview = async (e) => {
-    navigate(`/dashboard/customer-profile?id=${e}`);
+    performActionWithPermission(
+      "/dashboard/customer-list",
+      "view",
+      () => {
+        navigate(`/dashboard/customer-profile?id=${e}`);
+      },
+      "You don't have permission to view customer details."
+    );
   };
 
   const handleMoveToRecyled = async (id) => {
-    const willDelete = await swal({
-      title: "Are you sure?",
-      text: " You want to move  this Customer Recycle Bin?",
-      icon: "warning",
-      dangerMode: true,
-    });
+    performActionWithPermission(
+      "/dashboard/customer-list",
+      "delete",
+      async () => {
+        const willDelete = await swal({
+          title: "Are you sure?",
+          text: " You want to move  this Customer Recycle Bin?",
+          icon: "warning",
+          dangerMode: true,
+        });
 
-    if (willDelete) {
-      try {
-        await moveRecycledCustomer({ tenantDomain, id }).unwrap();
-        swal(
-          "Move to Recycle bin!",
-          "Move to Recycle bin successful.",
-          "success"
-        );
-      } catch (error) {
-        swal("Error", "An error occurred while deleting the card.", "error");
-      }
-    }
+        if (willDelete) {
+          try {
+            await moveRecycledCustomer({ tenantDomain, id }).unwrap();
+            swal(
+              "Move to Recycle bin!",
+              "Move to Recycle bin successful.",
+              "success"
+            );
+          } catch (error) {
+            swal("Error", "An error occurred while deleting the card.", "error");
+          }
+        }
+      },
+      "You don't have permission to delete customers."
+    );
   };
 
   if (deleteError) {
@@ -134,7 +149,7 @@ const CustomerListTable = () => {
                         <th colSpan={3}>Action</th>
                       </tr>
                     </thead>
-                    <tbody >
+                    <tbody>
                       {customerData?.data?.customers?.map((card, index) => {
                         const lastVehicle = card?.vehicles
                           ? [...card.vehicles].sort(
@@ -150,7 +165,6 @@ const CustomerListTable = () => {
                           <tr
                             key={card?._id}
                             className="transition-all duration-300 hover:bg-gradient-to-r hover:from-blue-300 hover:to-blue-100 hover:text-black text-xs"
-
                           >
                             <td style={{ fontSize: 15 }}>{globalIndex}</td>
                             <td style={{ fontSize: 15 }}>{card?.customerId}</td>
@@ -169,38 +183,47 @@ const CustomerListTable = () => {
 
                             <td>{lastVehicle?.vehicle_name}</td>
 
+                            {/* ভিউ অ্যাকশন - Can কম্পোনেন্ট ব্যবহার করে */}
                             <td>
-                              <div
-                                onClick={() => handleIconPreview(card?._id)}
-                                className="flex items-center justify-center cursor-pointer"
-                              >
-                                <FaUserTie size={25} className="" />
-                              </div>
-                            </td>
-
-                            <td>
-                              <div className="editIconWrap edit">
-                                <Link
-                                  to={`/dashboard/update-customer?id=${card?._id}`}
+                              <Can page="/dashboard/customer-list" action="view">
+                                <div
+                                  onClick={() => handleIconPreview(card?._id)}
+                                  className="flex items-center justify-center cursor-pointer"
                                 >
-                                  <FaEdit className="editIcon text-blue-500" />
-                                </Link>
-                              </div>
+                                  <FaUserTie size={25} className="" />
+                                </div>
+                              </Can>
                             </td>
-                            <td>
-                              <div
-                                onClick={() => handleMoveToRecyled(card?._id)}
-                                className="editIconWrap cursor-pointer "
-                                style={{
 
-                                  background: "white",
-                                  border: "none",
-                                  padding: 5,
-                                  borderRadius: "9999px"
-                                }}
-                              >
-                                <FaTrashAlt className="deleteIcon text-red-500" />
-                              </div>
+                            {/* এডিট অ্যাকশন - Can কম্পোনেন্ট ব্যবহার করে */}
+                            <td>
+                              <Can page="/dashboard/update-customer" action="edit">
+                                <div className="editIconWrap edit">
+                                  <Link
+                                    to={`/dashboard/update-customer?id=${card?._id}`}
+                                  >
+                                    <FaEdit className="editIcon text-blue-500" />
+                                  </Link>
+                                </div>
+                              </Can>
+                            </td>
+
+
+                            <td>
+                              <Can page="/dashboard/customer-list" action="delete">
+                                <div
+                                  onClick={() => handleMoveToRecyled(card?._id)}
+                                  className="editIconWrap cursor-pointer"
+                                  style={{
+                                    background: "white",
+                                    border: "none",
+                                    padding: 5,
+                                    borderRadius: "9999px"
+                                  }}
+                                >
+                                  <FaTrashAlt className="deleteIcon text-red-500" />
+                                </div>
+                              </Can>
                             </td>
                           </tr>
                         );

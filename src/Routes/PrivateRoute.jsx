@@ -1,8 +1,6 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable react/prop-types */
-
-
 import { usePermissions } from '../context/PermissionContext';
 import {
   Box,
@@ -12,9 +10,8 @@ import {
 } from '@mui/material';
 
 const ProtectedRoute = ({ children, pagePath, action = 'view' }) => {
-  const { hasPageAccess, loading, permissions } = usePermissions();
-
-  if (loading) {
+  const { checkPermission, loading, permissions } = usePermissions();
+  if (loading || permissions.length === 0) {
     return (
       <Box
         display="flex"
@@ -26,10 +23,9 @@ const ProtectedRoute = ({ children, pagePath, action = 'view' }) => {
       </Box>
     );
   }
-
-  // check page access 
-  const hasAccess = hasPageAccess(pagePath);
-  console.log('ProtectedRoute - hasAccess:', hasAccess, 'for page:', pagePath);
+  const hasAccess = checkPermission(pagePath, action);
+  console.log('ProtectedRoute - hasAccess:', hasAccess, 'for page:', pagePath, 'action:', action);
+  console.log('Available permissions:', permissions);
 
   if (!hasAccess) {
     return (
@@ -46,7 +42,7 @@ const ProtectedRoute = ({ children, pagePath, action = 'view' }) => {
           Access Denied
         </Typography>
         <Typography variant="body1" color="textSecondary" paragraph>
-          You don't have permission to view this page.
+          You don't have permission to {action} this page.
         </Typography>
         <Typography variant="body2" color="textSecondary" paragraph>
           Required permission: {action} for {pagePath}

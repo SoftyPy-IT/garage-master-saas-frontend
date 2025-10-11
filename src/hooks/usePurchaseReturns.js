@@ -13,7 +13,7 @@ import { useGetAllWarehousesQuery } from "../redux/api/warehouseApi";
 export const usePurchaseReturns = () => {
   const theme = useTheme();
   const navigate = useNavigate();
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain } = useTenantDomain();
 
   // State management
   const [searchTerm, setSearchTerm] = useState("");

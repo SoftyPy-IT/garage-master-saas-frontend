@@ -120,12 +120,11 @@ const supplierValidationSchema = z.object({
 });
 
 export const useSupplierForm = (id) => {
-  const [loading, setLoading] = useState(false);
   const [currentTab, setCurrentTab] = useState(0);
   const [countryCode, setCountryCode] = useState(countries[0]);
   const [phoneNumber, setPhoneNumber] = useState("");
   const navigate = useNavigate();
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain } = useTenantDomain();
 
   const { data: singleSupplier, isLoading: isSingleSupplierLoading } =
     useGetSingleSupplierQuery({

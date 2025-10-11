@@ -11,7 +11,7 @@ export const useStockTransactions = () => {
   const [orderBy, setOrderBy] = useState("date");
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("all");
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain } = useTenantDomain();
 
   const { data, error, isLoading, refetch } = useGetAllStockTransactionsQuery({
     tenantDomain,

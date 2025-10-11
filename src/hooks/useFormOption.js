@@ -8,7 +8,7 @@ import { useGetAllSuppliersQuery } from "../redux/api/supplier";
 import { useGetAllExpensesCategoryQuery } from "../redux/api/expense";
 
 export const useFormOptions = (initialFilterType = "") => {
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain } = useTenantDomain();
   const [filterType, setFilterType] = useState(initialFilterType);
   const [currentPage, setCurrentPage] = useState(1);
   const limit = 10;
@@ -38,7 +38,7 @@ export const useFormOptions = (initialFilterType = "") => {
     searchTerm: filterType,
     isRecycled: false,
   });
-  
+
   const { data } = useGetAllExpensesCategoryQuery({
     tenantDomain,
     limit: 99999999999,
@@ -104,7 +104,7 @@ export const useFormOptions = (initialFilterType = "") => {
     customerOption,
     vehicleOptions,
     invoiceOption,
-categoryOptions,
+    categoryOptions,
     // Loading states
     invoiceLoading,
     jobCardLoading,

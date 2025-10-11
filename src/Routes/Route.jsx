@@ -245,10 +245,12 @@ export const router = createBrowserRouter([
         "/dashboard/update-product",
         "edit"
       ),
+      // কাস্টমার লিস্ট রাউট - সঠিক পথ এবং অ্যাকশন নিশ্চিত করুন
       createProtectedRoute(
         "customer-list",
         <CustomerList />,
-        "/dashboard/customer-list"
+        "/dashboard/customer-list",
+        "view"
       ),
       createProtectedRoute(
         "update-customer",

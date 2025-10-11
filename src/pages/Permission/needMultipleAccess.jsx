@@ -236,7 +236,7 @@
 //                     tenantDomain,
 //                     permissionData: newPermissionsToCreate,
 //                 }).unwrap();
-//                 console.log('Create result:', result);
+// 
 //             }
 
 //             // Then, update existing permissions

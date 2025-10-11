@@ -26,11 +26,11 @@ export default function YearlyIncomeChart() {
   const [radius, setRadius] = React.useState(50);
   const [itemNb, setItemNb] = React.useState(12);
   const [skipAnimation, setSkipAnimation] = React.useState(false);
-  const tenantDomain = useTenantDomain();
-  
+  const { tenantDomain } = useTenantDomain();
+
   const { data: incomeData, isLoading: incomeLoading } = useGetAllIncomesQuery({
     tenantDomain,
-    limit: 100,  // Increased limit to get more data
+    limit: 100,
     page: 1,
   });
 
@@ -59,10 +59,10 @@ export default function YearlyIncomeChart() {
     // Use date field if available, fallback to createdAt
     const dateStr = income.date || income.createdAt;
     if (!dateStr) return;
-    
+
     const date = new Date(dateStr);
     if (isNaN(date)) return;
-    
+
     // Only process records from current year
     if (date.getFullYear() === currentYear) {
       const monthIndex = date.getMonth();
@@ -82,8 +82,8 @@ export default function YearlyIncomeChart() {
       <PieChart
         height={400}
         series={[
-          { 
-            data: dynamicData, 
+          {
+            data: dynamicData,
             outerRadius: radius,
             highlightScope: { faded: 'global', highlighted: 'item' },
             faded: { innerRadius: 30, additionalRadius: -30, color: 'gray' }
