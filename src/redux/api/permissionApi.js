@@ -38,15 +38,34 @@ const permissionApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["permission"],
     }),
+    updateMultiplePermissions: builder.mutation({
+      query: ({ tenantDomain, permissionUpdates }) => ({
+        url: `/permission/batch-update?tenantDomain=${tenantDomain}`,
+        method: 'PATCH',
+        body: permissionUpdates,
+      }),
+      invalidatesTags: ['Permission'],
+    }),
+
+    createMultiplePermissions: builder.mutation({
+      query: ({ tenantDomain, permissionData }) => ({
+        url: `/permission/batch-create?tenantDomain=${tenantDomain}`,
+        method: 'POST',
+        body: permissionData,
+      }),
+      invalidatesTags: ['Permission'],
+    }),
+
 
     deletePermission: builder.mutation({
-      query: ({ tenantDomain, id }) => ({
-        url: `/permission/${id}`,
+      query: ({ userId, tenantDomain, id }) => ({
+        url: `/permission/${userId}/${id}`,
         method: "DELETE",
         params: { tenantDomain },
       }),
       invalidatesTags: ["permission"],
     }),
+
   }),
 });
 
@@ -56,4 +75,6 @@ export const {
   useGetSinglePermissionQuery,
   useUpdatePermissionMutation,
   useDeletePermissionMutation,
+  useUpdateMultiplePermissionsMutation,
+  useCreateMultiplePermissionsMutation
 } = permissionApi;

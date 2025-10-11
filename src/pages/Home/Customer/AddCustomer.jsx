@@ -22,6 +22,7 @@ import { useTenantDomain } from "../../../hooks/useTenantDomain";
 
 const AddCustomer = () => {
   const [registrationError, setRegistrationError] = useState("");
+  const { tenantDomain } = useTenantDomain();
 
   const [countryCode, setCountryCode] = useState(countries[0]);
   const [driverCountryCode, setDriverCountryCode] = useState(countries[0]);
@@ -97,7 +98,6 @@ const AddCustomer = () => {
     });
   };
 
-  const tenantDomain = useTenantDomain();
 
   const {
     register,
@@ -154,13 +154,13 @@ const AddCustomer = () => {
     };
 
     const newData = {
-      tenantDomain,
       customer,
       vehicle,
     };
 
+
     try {
-      const res = await createCustomer(newData).unwrap();
+      const res = await createCustomer({ tenantDomain, customerInfo: newData }).unwrap();
       if (res.success) {
         navigate("/dashboard/customer-list");
         toast.success("Customer cretae to successfully.");
@@ -587,7 +587,7 @@ const AddCustomer = () => {
                         <Autocomplete
                           fullWidth
                           freeSolo
-                          onInputChange={(event, newValue) => {}}
+                          onInputChange={(event, newValue) => { }}
                           onChange={handleBrandChange}
                           options={carBrands.map((option) => option.label)}
                           value={selectedBrand}

@@ -28,7 +28,11 @@ const Login = () => {
         const accessToken = res?.data?.accessToken;
         const user = res?.data?.user;
 
+        // Redux এ সেট করা
         dispatch(setUser({ user, token: accessToken }));
+
+        // Browser cookie এ token সেট করো যাতে redirect পরেও access থাকে
+        document.cookie = `accessToken=${accessToken}; path=/; domain=.localhost; SameSite=Lax;`;
 
         toast.success(res.message || "Login successful!");
 
@@ -42,13 +46,12 @@ const Login = () => {
             ? "http://localhost:5173/dashboard"
             : "https://garage.trustautosolution.com/dashboard/all-tenant-list";
         } else {
-          if (isLocalhost) {
-            redirectURL = `http://trustautosolution.com.localhost:5173/dashboard`;
-          } else {
-                  redirectURL = `https://${tenantKey}/dashboard`;
-          }
+          redirectURL = isLocalhost
+            ? `http://${tenantKey}.localhost:5173/dashboard`
+            : `https://${tenantKey}/dashboard`;
         }
 
+        // Redirect করার আগে Redux persist state নিশ্চিতভাবে save হবে
         setTimeout(() => {
           window.location.href = redirectURL;
         }, 100);
@@ -62,6 +65,7 @@ const Login = () => {
       setLoading(false);
     }
   };
+
 
   return (
     <AuthLayout

@@ -11,8 +11,7 @@ const authApi = baseApi.injectEndpoints({
       invalidatesTags: ["tenant"],
     }),
 
-  
   }),
 });
 
-export const { useTenantLoginMutation } = authApi;
+export const { useTenantLoginMutation, useGetUserInfoQuery } = authApi;

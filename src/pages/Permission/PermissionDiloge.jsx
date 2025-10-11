@@ -29,7 +29,6 @@ const AddEditPermissionDialog = ({
   handleClose,
   permissionId,
   permissionType = "add",
-  handleSavePermission,
 }) => {
   const theme = useTheme();
   const { userOptions, pageOptions, tenantDomain, roleOptions } = usePermissionFormData();
@@ -57,6 +56,7 @@ const AddEditPermissionDialog = ({
         view: data.view || false,
         delete: data.delete || false,
       };
+      console.log('permission raw test', permissionData)
 
       let result;
       if (permissionType === "edit" && permissionId) {

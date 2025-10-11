@@ -778,9 +778,8 @@ export const StyledCardHeader = styled(CardHeader)(({ theme }) => ({
 
 export const GradientBox = styled(Box)(
   ({ theme, gradientColors = ["primary", "secondary"] }) => ({
-    background: `linear-gradient(135deg, ${
-      theme.palette[gradientColors[0]].main
-    }, ${theme.palette[gradientColors[1]].main})`,
+    background: `linear-gradient(135deg, ${theme.palette[gradientColors[0]].main
+      }, ${theme.palette[gradientColors[1]].main})`,
     color: theme.palette.common.white,
     borderRadius: 16,
     padding: theme.spacing(3),
@@ -969,10 +968,10 @@ export const ResponsiveCalendarContainer = styled(Box)(({ theme }) => ({
   justifyContent: "center",
   alignItems: "center",
   "& .MuiCalendarPicker-root, & .MuiPickersCalendarHeader-root, & .MuiDayPicker-header, & .MuiDayPicker-monthContainer":
-    {
-      width: "100%",
-      maxWidth: "100%",
-    },
+  {
+    width: "100%",
+    maxWidth: "100%",
+  },
   "& .MuiPickersDay-root": {
     margin: "1px",
     [theme.breakpoints.down("sm")]: {
@@ -989,11 +988,11 @@ export const ResponsiveCalendarContainer = styled(Box)(({ theme }) => ({
     },
   },
   "& .MuiPickersCalendarHeader-switchViewButton, & .MuiPickersArrowSwitcher-button":
-    {
-      [theme.breakpoints.down("sm")]: {
-        padding: "4px",
-      },
+  {
+    [theme.breakpoints.down("sm")]: {
+      padding: "4px",
     },
+  },
   "& .MuiDayPicker-weekDayLabel": {
     [theme.breakpoints.down("sm")]: {
       fontSize: "0.75rem",
@@ -1122,8 +1121,8 @@ export const StatusCard = styled(Card)(({ theme, status }) => ({
     status === "active"
       ? "linear-gradient(135deg, #4CAF50 0%, #45a049 100%)"
       : status === "expired"
-      ? "linear-gradient(135deg, #FF9800 0%, #F57C00 100%)"
-      : "linear-gradient(135deg, #f44336 0%, #d32f2f 100%)",
+        ? "linear-gradient(135deg, #FF9800 0%, #F57C00 100%)"
+        : "linear-gradient(135deg, #f44336 0%, #d32f2f 100%)",
   color: "white",
   boxShadow: "0 8px 32px rgba(0,0,0,0.2)",
 }));
@@ -1305,14 +1304,14 @@ export const PriorityTag = styled("span")(({ priority, theme }) => ({
     priority === "high"
       ? theme.palette.error.light
       : priority === "medium"
-      ? theme.palette.warning.light
-      : theme.palette.success.light,
+        ? theme.palette.warning.light
+        : theme.palette.success.light,
   color:
     priority === "high"
       ? theme.palette.error.contrastText
       : priority === "medium"
-      ? theme.palette.warning.contrastText
-      : theme.palette.success.contrastText,
+        ? theme.palette.warning.contrastText
+        : theme.palette.success.contrastText,
 }));
 
 export const inputStyle = {
@@ -1373,16 +1372,15 @@ export const SupplierScoreCard = styled(Box)(({ theme, score }) => ({
     score >= 80
       ? "rgba(46, 125, 50, 0.1)"
       : score >= 60
-      ? "rgba(237, 108, 2, 0.1)"
-      : "rgba(211, 47, 47, 0.1)",
+        ? "rgba(237, 108, 2, 0.1)"
+        : "rgba(211, 47, 47, 0.1)",
   color: score >= 80 ? "#2e7d32" : score >= 60 ? "#ed6c02" : "#d32f2f",
-  border: `1px solid ${
-    score >= 80
-      ? "rgba(46, 125, 50, 0.3)"
-      : score >= 60
+  border: `1px solid ${score >= 80
+    ? "rgba(46, 125, 50, 0.3)"
+    : score >= 60
       ? "rgba(237, 108, 2, 0.3)"
       : "rgba(211, 47, 47, 0.3)"
-  }`,
+    }`,
   boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)",
   transition: "transform 0.3s ease",
   "&:hover": {

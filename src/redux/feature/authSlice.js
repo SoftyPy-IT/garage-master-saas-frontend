@@ -1,4 +1,4 @@
-// authSlice.js
+// src/redux/feature/authSlice.js
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
@@ -25,5 +25,5 @@ export const { setUser, logout } = authSlice.actions;
 export default authSlice.reducer;
 
 // Selectors
-export const selectCurrentToken = (state) => state.auth.token;
 export const selectCurrentUser = (state) => state.auth.user;
+export const selectCurrentToken = (state) => state.auth.token;

@@ -44,12 +44,12 @@ const FormSelect = ({
           InputProps={
             Icon
               ? {
-                  [`${iconPosition}Adornment`]: (
-                    <InputAdornment position={iconPosition}>
-                      <Icon />
-                    </InputAdornment>
-                  ),
-                }
+                [`${iconPosition}Adornment`]: (
+                  <InputAdornment position={iconPosition}>
+                    <Icon />
+                  </InputAdornment>
+                ),
+              }
               : {}
           }
         >

@@ -1,15 +1,13 @@
 /* eslint-disable no-unused-vars */
-import { useState} from "react";
+import { useState } from "react";
 import {
   Container,
-  Fab,
   Menu,
   MenuItem,
   ListItemIcon,
   Typography,
 } from "@mui/material";
 import {
-  Add as AddIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
   Visibility as ViewIcon,
@@ -17,9 +15,11 @@ import {
 import PageHeader from "./PageHeader";
 import PageList from "./PageList";
 import PageForm from "./PageForm";
+import PageDetails from "./PageDetails"; // Import the new PageDetails component
 import { useTenantDomain } from "../../hooks/useTenantDomain";
 import { useGetAllPagesQuery, useDeletePageMutation } from "../../redux/api/pageApi";
 import Swal from "sweetalert2";
+
 const PageManagement = () => {
   const { tenantDomain } = useTenantDomain();
   const [searchTerm, setSearchTerm] = useState("");
@@ -54,13 +54,11 @@ const PageManagement = () => {
   const handleDialogClose = () => {
     setOpenDialog(false);
     setSelectedPage(null);
+    handleMenuClose();
   };
 
-
   const handleDeletePage = async (id) => {
-
     try {
-
       const result = await Swal.fire({
         title: "Are you sure?",
         text: "You won't be able to revert this!",
@@ -99,15 +97,16 @@ const PageManagement = () => {
 
   return (
     <Container maxWidth="xl" sx={{ mt: 4, mb: 8 }}>
-      <PageHeader pageData={pageData}/>
+      <PageHeader pageData={pageData} />
 
       <PageList
-      
+
         pageData={pageData}
         handleSearchChange={handleSearchChange}
         handleMenuClick={handleMenuClick}
         tenantDomain={tenantDomain}
         isLoading={isLoading}
+        handleCreatePage={handleCreatePage}
       />
       <Menu
         anchorEl={anchorEl}
@@ -133,22 +132,24 @@ const PageManagement = () => {
           <Typography color="error">Delete Page</Typography>
         </MenuItem>
       </Menu>
-      <Fab
-        color="primary"
-        aria-label="add"
-        sx={{ position: "fixed", bottom: 24, right: 24 }}
-        onClick={handleCreatePage}
-      >
-        <AddIcon />
-      </Fab>
-      <PageForm
-        open={openDialog}
-        onClose={handleDialogClose}
-        pageData={selectedPage}
-        mode={dialogType}
-        tenantDomain={tenantDomain}
-        refetch={refetch}
-      />
+
+
+      {dialogType === "view" ? (
+        <PageDetails
+          open={openDialog}
+          onClose={handleDialogClose}
+          pageData={selectedPage}
+        />
+      ) : (
+        <PageForm
+          open={openDialog}
+          onClose={handleDialogClose}
+          pageData={selectedPage}
+          mode={dialogType}
+          tenantDomain={tenantDomain}
+          refetch={refetch}
+        />
+      )}
     </Container>
   );
 };

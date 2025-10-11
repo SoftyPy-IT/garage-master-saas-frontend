@@ -28,6 +28,7 @@ const PageForm = ({ open, onClose, pageData, mode, tenantDomain }) => {
   const defaultValues = {
     name: pageData?.name || "",
     path: pageData?.path || "",
+    category: pageData?.category || '',
     route: pageData?.route || "",
     status: pageData?.status || "",
   };
@@ -97,6 +98,15 @@ const PageForm = ({ open, onClose, pageData, mode, tenantDomain }) => {
           )}
 
           <Grid container spacing={2}>
+
+            <Grid item xs={12}>
+              <FormInput
+                fullWidth
+                label="Page Category"
+                name="category"
+                defaultValue={isEditMode ? pageData.category : ""}
+              />
+            </Grid>
             <Grid item xs={12}>
               <FormInput
                 fullWidth
@@ -105,7 +115,6 @@ const PageForm = ({ open, onClose, pageData, mode, tenantDomain }) => {
                 defaultValue={isEditMode ? pageData.name : ""}
               />
             </Grid>
-
             <Grid item xs={12}>
               <FormInput
                 fullWidth
