@@ -81,11 +81,11 @@ export default function StockTransferPage() {
     limit: 100,
     searchTerm: searchTerm,
   };
-  
+
   const { data: stockTransferData, refetch } =
     useGetAllStockTransfersQuery(queryParams);
   const [deleteStockTransfer] = useDeleteStockTransferMutation();
-  
+
   // Get transfers from API data
   const transfers = stockTransferData?.data || [];
 
@@ -304,7 +304,8 @@ export default function StockTransferPage() {
       <Breadcrumbs
         separator={<NavigateNextIcon fontSize="small" />}
         aria-label="breadcrumb"
-        sx={{ mb: 3 }}
+        sx={{ mb: 3, mt: 3, p: 3 }}
+        className="shadow-lg"
       >
         <Link
           color="inherit"
@@ -522,15 +523,41 @@ export default function StockTransferPage() {
 
       <Box
         sx={{
-          display: "flex",
+          display: {sm:"flex"},
           justifyContent: "space-between",
           alignItems: "center",
           mb: 3,
         }}
       >
+        <div className="md:hidden flex justify-end">
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={handleClickOpen}
+            sx={{
+              borderRadius: 2,
+              py: 1,
+              px: 3,
+              boxShadow: `0 4px 14px ${alpha(theme.palette.primary.main, 0.4)}`,
+              background: `linear-gradient(45deg, ${theme.palette.primary.main} 30%, ${theme.palette.primary.light} 90%)`,
+              transition: "transform 0.2s",
+              "&:hover": {
+                transform: "translateY(-2px)",
+                boxShadow: `0 6px 20px ${alpha(
+                  theme.palette.primary.main,
+                  0.6
+                )}`,
+              },
+            }}
+          >
+            New Transfer
+          </Button>
+        </div>
+
         <Tabs
           value={tabValue}
           onChange={handleTabChange}
+          variant="scrollable"
           sx={{
             "& .MuiTabs-indicator": {
               backgroundColor: theme.palette.primary.main,
@@ -553,25 +580,31 @@ export default function StockTransferPage() {
           <Tab label="In-Transit" />
           <Tab label="Completed" />
         </Tabs>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={handleClickOpen}
-          sx={{
-            borderRadius: 2,
-            py: 1,
-            px: 3,
-            boxShadow: `0 4px 14px ${alpha(theme.palette.primary.main, 0.4)}`,
-            background: `linear-gradient(45deg, ${theme.palette.primary.main} 30%, ${theme.palette.primary.light} 90%)`,
-            transition: "transform 0.2s",
-            "&:hover": {
-              transform: "translateY(-2px)",
-              boxShadow: `0 6px 20px ${alpha(theme.palette.primary.main, 0.6)}`,
-            },
-          }}
-        >
-          New Transfer
-        </Button>
+
+        <div className="hidden md:flex">
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={handleClickOpen}
+            sx={{
+              borderRadius: 2,
+              py: 1,
+              px: 3,
+              boxShadow: `0 4px 14px ${alpha(theme.palette.primary.main, 0.4)}`,
+              background: `linear-gradient(45deg, ${theme.palette.primary.main} 30%, ${theme.palette.primary.light} 90%)`,
+              transition: "transform 0.2s",
+              "&:hover": {
+                transform: "translateY(-2px)",
+                boxShadow: `0 6px 20px ${alpha(
+                  theme.palette.primary.main,
+                  0.6
+                )}`,
+              },
+            }}
+          >
+            New Transfer
+          </Button>
+        </div>
       </Box>
 
       <Paper
@@ -672,132 +705,137 @@ export default function StockTransferPage() {
           <Typography>Loading...</Typography>
         </Paper>
       ) : (
-        <TableContainer
-          component={Paper}
+        <Paper
           sx={{
             borderRadius: 2,
             overflow: "hidden",
             boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
           }}
         >
-          <Table sx={{ minWidth: 650 }}>
-            <TableHead>
-              <TableRow
-                sx={{ backgroundColor: alpha(theme.palette.primary.main, 0.1) }}
-              >
-                <TableCell sx={{ fontWeight: "bold" }}>Date</TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>Batch Number</TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>Product</TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>From</TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>To</TableCell>
-                <TableCell align="right" sx={{ fontWeight: "bold" }}>
-                  Quantity
-                </TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
-                <TableCell align="center" sx={{ fontWeight: "bold" }}>
-                  Actions
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredTransfers.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={8} align="center" sx={{ py: 4 }}>
-                    <Typography variant="subtitle1" color="text.secondary">
-                      No transfers found
-                    </Typography>
+          <TableContainer>
+            <Table sx={{ minWidth: 650 }}>
+              <TableHead>
+                <TableRow
+                  sx={{
+                    backgroundColor: alpha(theme.palette.primary.main, 0.1),
+                  }}
+                >
+                  <TableCell sx={{ fontWeight: "bold" }}>Date</TableCell>
+                  <TableCell sx={{ fontWeight: "bold" }}>
+                    Batch Number
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: "bold" }}>Product</TableCell>
+                  <TableCell sx={{ fontWeight: "bold" }}>From</TableCell>
+                  <TableCell sx={{ fontWeight: "bold" }}>To</TableCell>
+                  <TableCell align="right" sx={{ fontWeight: "bold" }}>
+                    Quantity
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
+                  <TableCell align="center" sx={{ fontWeight: "bold" }}>
+                    Actions
                   </TableCell>
                 </TableRow>
-              ) : (
-                filteredTransfers.map((transfer) => (
-                  <TableRow
-                    key={transfer._id}
-                    sx={{
-                      "&:hover": {
-                        backgroundColor: alpha(
-                          theme.palette.primary.main,
-                          0.04
-                        ),
-                      },
-                      transition: "background-color 0.2s ease",
-                    }}
-                  >
-                    <TableCell>{formatDate(transfer.createdAt)}</TableCell>
-                    <TableCell>
-                      <Chip
-                        label={transfer.batchNumber}
-                        size="small"
-                        sx={{
-                          fontWeight: "medium",
-                          backgroundColor: alpha(
-                            theme.palette.primary.main,
-                            0.1
-                          ),
-                          color: theme.palette.primary.main,
-                        }}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Box>
-                        <Typography variant="body2" fontWeight="medium">
-                          {transfer.product?.product_name}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          {transfer.product?.product_code}
-                        </Typography>
-                      </Box>
-                    </TableCell>
-                    <TableCell>
-                      <Box>
-                        <Typography variant="body2" fontWeight="medium">
-                          {transfer.fromWarehouse?.name}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          {transfer.fromWarehouse?.code}
-                        </Typography>
-                      </Box>
-                    </TableCell>
-                    <TableCell>
-                      <Box>
-                        <Typography variant="body2" fontWeight="medium">
-                          {transfer.toWarehouse?.name}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          {transfer.toWarehouse?.code}
-                        </Typography>
-                      </Box>
-                    </TableCell>
-                    <TableCell align="right">{transfer.quantity}</TableCell>
-                    <TableCell>{getStatusChip(transfer.status)}</TableCell>
-                    <TableCell align="center">
-                      <Tooltip title="Delete" TransitionComponent={Zoom}>
-                        <IconButton
-                          size="small"
-                          onClick={() => handleDeleteTransfer(transfer._id)}
-                          sx={{
-                            color: theme.palette.error.main,
-                            backgroundColor: alpha(
-                              theme.palette.error.main,
-                              0.1
-                            ),
-                            "&:hover": {
-                              backgroundColor: alpha(
-                                theme.palette.error.main,
-                                0.2
-                              ),
-                            },
-                          }}
-                        >
-                          <DeleteIcon fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
+              </TableHead>
+              <TableBody>
+                {filteredTransfers.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={8} align="center" sx={{ py: 4 }}>
+                      <Typography variant="subtitle1" color="text.secondary">
+                        No transfers found
+                      </Typography>
                     </TableCell>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+                ) : (
+                  filteredTransfers.map((transfer) => (
+                    <TableRow
+                      key={transfer._id}
+                      sx={{
+                        "&:hover": {
+                          backgroundColor: alpha(
+                            theme.palette.primary.main,
+                            0.04
+                          ),
+                        },
+                        transition: "background-color 0.2s ease",
+                      }}
+                    >
+                      <TableCell>{formatDate(transfer.createdAt)}</TableCell>
+                      <TableCell>
+                        <Chip
+                          label={transfer.batchNumber}
+                          size="small"
+                          sx={{
+                            fontWeight: "medium",
+                            backgroundColor: alpha(
+                              theme.palette.primary.main,
+                              0.1
+                            ),
+                            color: theme.palette.primary.main,
+                          }}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Box>
+                          <Typography variant="body2" fontWeight="medium">
+                            {transfer.product?.product_name}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            {transfer.product?.product_code}
+                          </Typography>
+                        </Box>
+                      </TableCell>
+                      <TableCell>
+                        <Box>
+                          <Typography variant="body2" fontWeight="medium">
+                            {transfer.fromWarehouse?.name}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            {transfer.fromWarehouse?.code}
+                          </Typography>
+                        </Box>
+                      </TableCell>
+                      <TableCell>
+                        <Box>
+                          <Typography variant="body2" fontWeight="medium">
+                            {transfer.toWarehouse?.name}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            {transfer.toWarehouse?.code}
+                          </Typography>
+                        </Box>
+                      </TableCell>
+                      <TableCell align="right">{transfer.quantity}</TableCell>
+                      <TableCell>{getStatusChip(transfer.status)}</TableCell>
+                      <TableCell align="center">
+                        <Tooltip title="Delete" TransitionComponent={Zoom}>
+                          <IconButton
+                            size="small"
+                            onClick={() => handleDeleteTransfer(transfer._id)}
+                            sx={{
+                              color: theme.palette.error.main,
+                              backgroundColor: alpha(
+                                theme.palette.error.main,
+                                0.1
+                              ),
+                              "&:hover": {
+                                backgroundColor: alpha(
+                                  theme.palette.error.main,
+                                  0.2
+                                ),
+                              },
+                            }}
+                          >
+                            <DeleteIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Paper>
       )}
 
       <StockTransferModal

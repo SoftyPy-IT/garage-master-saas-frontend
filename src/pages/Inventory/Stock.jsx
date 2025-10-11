@@ -856,7 +856,6 @@ const tenantDomain = useTenantDomain();
                     >
                       <TableCell sx={{ fontWeight: "bold" }}>Picture</TableCell>
                       <TableCell sx={{ fontWeight: "bold" }}>Name</TableCell>
-                     
                       <TableCell sx={{ fontWeight: "bold" }}>
                         Purchase Price
                       </TableCell>

@@ -66,7 +66,7 @@ const TransactionTable = ({
     <>
       <Box
         sx={{
-          display: "flex",
+          display: { sm:"flex"},
           justifyContent: "space-between",
           alignItems: "center",
           mb: 3,
@@ -78,7 +78,7 @@ const TransactionTable = ({
           size="small"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          sx={{ width: 300 }}
+          sx={{ width: { sm:300} }}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -87,7 +87,7 @@ const TransactionTable = ({
             ),
           }}
         />
-        <Box sx={{ display: "flex", alignItems: "center" }}>
+        <Box sx={{ display:"flex", alignItems: "center" }}>
           <Chip
             label={`Filter: ${
               filterType === "all"
@@ -106,7 +106,7 @@ const TransactionTable = ({
             onClick={handleFilterClick}
             deleteIcon={<FilterIcon />}
             onDelete={handleFilterClick}
-            sx={{ mr: 1 }}
+            sx={{ mr: {sm:1 }}}
           />
           <Menu
             anchorEl={anchorEl}
@@ -129,103 +129,112 @@ const TransactionTable = ({
         </Box>
       </Box>
 
-      <TableContainer
-        component={Paper}
-        sx={{ borderRadius: 2, overflow: "hidden" }}
+      <Paper
+        sx={{
+          borderRadius: 2,
+          overflow: "hidden",
+          boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
+        }}
       >
-        <Table>
-          <TableHead sx={{ bgcolor: alpha(theme.palette.primary.main, 0.05) }}>
-            <TableRow>
-              {headCells.map((headCell) => (
-                <TableCell
-                  key={headCell.id}
-                  sortDirection={orderBy === headCell.id ? order : false}
-                  sx={{ fontWeight: 600 }}
-                >
-                  <TableSortLabel
-                    active={orderBy === headCell.id}
-                    direction={orderBy === headCell.id ? order : "asc"}
-                    onClick={() => handleRequestSort(headCell.id)}
-                    IconComponent={order === "asc" ? UpIcon : DownIcon}
-                  >
-                    {headCell.label}
-                  </TableSortLabel>
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {isLoading ? (
+        <TableContainer>
+          <Table>
+            <TableHead
+              sx={{ bgcolor: alpha(theme.palette.primary.main, 0.05) }}
+            >
               <TableRow>
-                <TableCell
-                  colSpan={headCells.length}
-                  align="center"
-                  sx={{ py: 4 }}
-                >
-                  <CircularProgress />
-                  <Typography variant="body2" sx={{ mt: 2 }}>
-                    Loading stock transactions...
-                  </Typography>
-                </TableCell>
+                {headCells.map((headCell) => (
+                  <TableCell
+                    key={headCell.id}
+                    sortDirection={orderBy === headCell.id ? order : false}
+                    sx={{ fontWeight: 600 }}
+                  >
+                    <TableSortLabel
+                      active={orderBy === headCell.id}
+                      direction={orderBy === headCell.id ? order : "asc"}
+                      onClick={() => handleRequestSort(headCell.id)}
+                      IconComponent={order === "asc" ? UpIcon : DownIcon}
+                    >
+                      {headCell.label}
+                    </TableSortLabel>
+                  </TableCell>
+                ))}
               </TableRow>
-            ) : paginatedTransactions.length > 0 ? (
-              paginatedTransactions.map((transaction) => (
-                <TableRow
-                  key={transaction._id}
-                  hover
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                >
-                  <TableCell>{transaction.productName}</TableCell>
-                  <TableCell>{transaction.warehouseName}</TableCell>
-                  <TableCell>
-                    <Box sx={{ display: "flex", alignItems: "center" }}>
-                      {transaction.type === "in" ? (
-                        <UpIcon color="success" sx={{ mr: 0.5 }} />
-                      ) : (
-                        <DownIcon color="error" sx={{ mr: 0.5 }} />
-                      )}
-                      {transaction.quantity}
-                    </Box>
-                  </TableCell>
-                  <TableCell>
-                    <Chip
-                      label={
-                        transaction.type === "in" ? "Stock In" : "Stock Out"
-                      }
-                      color={transaction.type === "in" ? "success" : "error"}
-                      size="small"
-                    />
-                  </TableCell>
-                  <TableCell>{transaction.referenceType}</TableCell>
-                  <TableCell>
-                    <Tooltip title={transaction.referenceId}>
-                      <span>{transaction.referenceId.substring(0, 8)}...</span>
-                    </Tooltip>
-                  </TableCell>
-                  <TableCell>
-                    {format(new Date(transaction.date), "MMM dd, yyyy HH:mm")}
+            </TableHead>
+            <TableBody>
+              {isLoading ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={headCells.length}
+                    align="center"
+                    sx={{ py: 4 }}
+                  >
+                    <CircularProgress />
+                    <Typography variant="body2" sx={{ mt: 2 }}>
+                      Loading stock transactions...
+                    </Typography>
                   </TableCell>
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={headCells.length}
-                  align="center"
-                  sx={{ py: 4 }}
-                >
-                  <Typography variant="h6" color="textSecondary">
-                    No transactions found
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    Try adjusting your filters or search terms
-                  </Typography>
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+              ) : paginatedTransactions.length > 0 ? (
+                paginatedTransactions.map((transaction) => (
+                  <TableRow
+                    key={transaction._id}
+                    hover
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  >
+                    <TableCell>{transaction.productName}</TableCell>
+                    <TableCell>{transaction.warehouseName}</TableCell>
+                    <TableCell>
+                      <Box sx={{ display: "flex", alignItems: "center" }}>
+                        {transaction.type === "in" ? (
+                          <UpIcon color="success" sx={{ mr: 0.5 }} />
+                        ) : (
+                          <DownIcon color="error" sx={{ mr: 0.5 }} />
+                        )}
+                        {transaction.quantity}
+                      </Box>
+                    </TableCell>
+                    <TableCell>
+                      <Chip
+                        label={
+                          transaction.type === "in" ? "Stock In" : "Stock Out"
+                        }
+                        color={transaction.type === "in" ? "success" : "error"}
+                        size="small"
+                      />
+                    </TableCell>
+                    <TableCell>{transaction.referenceType}</TableCell>
+                    <TableCell>
+                      <Tooltip title={transaction.referenceId}>
+                        <span>
+                          {transaction.referenceId.substring(0, 8)}...
+                        </span>
+                      </Tooltip>
+                    </TableCell>
+                    <TableCell>
+                      {format(new Date(transaction.date), "MMM dd, yyyy HH:mm")}
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={headCells.length}
+                    align="center"
+                    sx={{ py: 4 }}
+                  >
+                    <Typography variant="h6" color="textSecondary">
+                      No transactions found
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                      Try adjusting your filters or search terms
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Paper>
 
       <TablePagination
         rowsPerPageOptions={[5, 10, 25]}

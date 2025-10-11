@@ -44,7 +44,6 @@ export default function BrandList() {
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const tenantDomain = useTenantDomain();
 
-
   const { data, isLoading, refetch } = useGetAllIBrandQuery({
     tenantDomain,
     limit: pageSize,
@@ -86,109 +85,123 @@ export default function BrandList() {
   };
 
   return (
-    <Fade in timeout={500}>
-      <Box sx={{ p: 3 }}>
-        <Box sx={{ mb: 3 }}>
-          <Typography variant="h4" fontWeight={700} color="primary.main">
-            Brand Manager
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Create and manage brands for your inventory.
-          </Typography>
-        </Box>
+    <>
+      <div className="my-2">
+        <Fade in timeout={500}>
+          <Box sx={{ p: 3 }}>
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="h4" fontWeight={700} color="primary.main">
+                Brand Manager
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Create and manage brands for your inventory.
+              </Typography>
+            </Box>
 
-        <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
-          <TextField
-            placeholder="Search brands..."
-            size="small"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon fontSize="small" />
-                </InputAdornment>
-              ),
-            }}
-          />
-          <Button
-          sx={{color:'#fff'}}
-            variant="contained"
-            startIcon={<ControlPoint />}
-            onClick={() => setOpen(true)}
-          >
-            Create Brand
-          </Button>
-        </Box>
-
-        {isInitialLoad || isLoading ? (
-          <Typography>Loading...</Typography>
-        ) : brands.length === 0 ? (
-          <Typography>No brands found.</Typography>
-        ) : (
-          <Box>
-            {brands.map((brand) => (
-              <Box
-                key={brand._id}
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  p: 1.5,
-                  borderBottom: "1px solid #f1f5f9",
-                  '&:hover': { backgroundColor: "#f9fafb" },
-                }}
-              >
-                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                  <Avatar src={brand.image} variant="rounded" />
-                  <Typography fontWeight={600}>{brand.brand}</Typography>
-                </Box>
-                <Box>
-                  <Tooltip title="Edit">
-                    <IconButton onClick={() => setUpdateOpen(brand._id)}>
-                      <EditIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="Delete">
-                    <IconButton onClick={() => handleDeleteConfirm(brand._id)}>
-                      <DeleteIcon fontSize="small" color="error" />
-                    </IconButton>
-                  </Tooltip>
-                </Box>
-              </Box>
-            ))}
-          </Box>
-        )}
-
-        {open && <CreateBrandModal open={open} setOpen={setOpen} />}
-        {updateOpen && (
-          <UpdateBrand
-            open={Boolean(updateOpen)}
-            setOpen={() => setUpdateOpen(null)}
-            brandId={updateOpen}
-          />
-        )}
-
-        <Dialog open={confirmDelete.open} onClose={handleDeleteCancel}>
-          <DialogTitle>Confirm Deletion</DialogTitle>
-          <DialogContent>
-            <Typography>
-              Are you sure you want to delete this brand?
-            </Typography>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleDeleteCancel}>Cancel</Button>
-            <Button
-              onClick={handleDeleteBrand}
-              color="error"
-              variant="contained"
-              disabled={isDeleting}
+            <Box
+              sx={{
+                display: { sm: "flex" },
+                justifyContent: "space-between",
+                mb: 2,
+              }}
             >
-              {isDeleting ? "Deleting..." : "Delete"}
-            </Button>
-          </DialogActions>
-        </Dialog>
-      </Box>
-    </Fade>
+              <TextField
+                placeholder="Search brands..."
+                size="small"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon fontSize="small" />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <div className="mt-2 flex justify-end ">
+                <Button
+                  sx={{ color: "#fff" }}
+                  variant="contained"
+                  startIcon={<ControlPoint />}
+                  onClick={() => setOpen(true)}
+                >
+                  Create Brand
+                </Button>
+              </div>
+            </Box>
+
+            {isInitialLoad || isLoading ? (
+              <Typography>Loading...</Typography>
+            ) : brands.length === 0 ? (
+              <Typography>No brands found.</Typography>
+            ) : (
+              <Box>
+                {brands.map((brand) => (
+                  <Box
+                    key={brand._id}
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      p: 1.5,
+                      borderBottom: "1px solid #f1f5f9",
+                      "&:hover": { backgroundColor: "#f9fafb" },
+                    }}
+                  >
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                      <Avatar src={brand.image} variant="rounded" />
+                      <Typography fontWeight={600}>{brand.brand}</Typography>
+                    </Box>
+                    <Box>
+                      <Tooltip title="Edit">
+                        <IconButton onClick={() => setUpdateOpen(brand._id)}>
+                          <EditIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Delete">
+                        <IconButton
+                          onClick={() => handleDeleteConfirm(brand._id)}
+                        >
+                          <DeleteIcon fontSize="small" color="error" />
+                        </IconButton>
+                      </Tooltip>
+                    </Box>
+                  </Box>
+                ))}
+              </Box>
+            )}
+
+            {open && <CreateBrandModal open={open} setOpen={setOpen} />}
+            {updateOpen && (
+              <UpdateBrand
+                open={Boolean(updateOpen)}
+                setOpen={() => setUpdateOpen(null)}
+                brandId={updateOpen}
+              />
+            )}
+
+            <Dialog open={confirmDelete.open} onClose={handleDeleteCancel}>
+              <DialogTitle>Confirm Deletion</DialogTitle>
+              <DialogContent>
+                <Typography>
+                  Are you sure you want to delete this brand?
+                </Typography>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleDeleteCancel}>Cancel</Button>
+                <Button
+                  onClick={handleDeleteBrand}
+                  color="error"
+                  variant="contained"
+                  disabled={isDeleting}
+                >
+                  {isDeleting ? "Deleting..." : "Delete"}
+                </Button>
+              </DialogActions>
+            </Dialog>
+          </Box>
+        </Fade>
+      </div>
+    </>
   );
 }
