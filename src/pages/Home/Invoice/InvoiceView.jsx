@@ -13,10 +13,10 @@ import { useGetSingleInvoiceQuery } from "../../../redux/api/invoice";
 import { useGetCompanyProfileQuery } from "../../../redux/api/companyProfile";
 import { useTenantDomain } from "../../../hooks/useTenantDomain";
 
-const Detail = () => {
+const InvoiceView = () => {
   const componentRef = useRef();
   const { targetRef } = usePDF({ filename: "page.pdf" });
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain } = useTenantDomain();
 
   const { data: CompanyInfoData } = useGetCompanyProfileQuery({
     tenantDomain,
@@ -34,9 +34,9 @@ const Detail = () => {
   const location = useLocation();
   const id = new URLSearchParams(location.search).get("id");
 
-const handlePrint = useReactToPrint({
-  content: () => componentRef.current,
-  pageStyle: `
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+    pageStyle: `
     @page {
       size: A4;
       margin: 0; 
@@ -54,7 +54,7 @@ const handlePrint = useReactToPrint({
       padding: 0 !important;
     }
   `
-});
+  });
 
 
   const [invoicePreview, setInvoicePreview] = useState({});
@@ -200,46 +200,46 @@ const handlePrint = useReactToPrint({
                           {(invoicePreview?.customer?.customer_name ||
                             invoicePreview?.company?.company_name ||
                             invoicePreview?.showRoom?.showRoom_name) && (
-                            <>
-                              <span className="mr-1">:</span>
-                              {invoicePreview?.customer?.customer_name ||
-                                invoicePreview?.company?.company_name ||
-                                invoicePreview?.showRoom?.showRoom_name}
-                            </>
-                          )}
+                              <>
+                                <span className="mr-1">:</span>
+                                {invoicePreview?.customer?.customer_name ||
+                                  invoicePreview?.company?.company_name ||
+                                  invoicePreview?.showRoom?.showRoom_name}
+                              </>
+                            )}
                         </small>
                         {(invoicePreview?.customer?.company_name ||
                           invoicePreview?.company?.vehicle_username ||
                           invoicePreview?.showRoom?.vehicle_username) && (
-                          <small>
-                            <span className="mr-1">:</span>
-                            {invoicePreview?.customer?.company_name ||
-                              invoicePreview?.company?.vehicle_username ||
-                              invoicePreview?.showRoom?.vehicle_username}
-                          </small>
-                        )}
+                            <small>
+                              <span className="mr-1">:</span>
+                              {invoicePreview?.customer?.company_name ||
+                                invoicePreview?.company?.vehicle_username ||
+                                invoicePreview?.showRoom?.vehicle_username}
+                            </small>
+                          )}
 
                         {(invoicePreview?.customer?.fullCustomerNum ||
                           invoicePreview?.company?.fullCompanyNum ||
                           invoicePreview?.showRoom?.fullCompanyNum) && (
-                          <small>
-                            <span className="mr-1">:</span>
-                            {invoicePreview?.customer?.fullCustomerNum ||
-                              invoicePreview?.company?.fullCompanyNum ||
-                              invoicePreview?.showRoom?.fullCompanyNum}
-                          </small>
-                        )}
+                            <small>
+                              <span className="mr-1">:</span>
+                              {invoicePreview?.customer?.fullCustomerNum ||
+                                invoicePreview?.company?.fullCompanyNum ||
+                                invoicePreview?.showRoom?.fullCompanyNum}
+                            </small>
+                          )}
 
                         {(invoicePreview?.customer?.customer_address ||
                           invoicePreview?.company?.company_address ||
                           invoicePreview?.showRoom?.showRoom_address) && (
-                          <small>
-                            <span className="mr-1">:</span>
-                            {invoicePreview?.customer?.customer_address ||
-                              invoicePreview?.company?.company_address ||
-                              invoicePreview?.showRoom?.showRoom_address}
-                          </small>
-                        )}
+                            <small>
+                              <span className="mr-1">:</span>
+                              {invoicePreview?.customer?.customer_address ||
+                                invoicePreview?.company?.company_address ||
+                                invoicePreview?.showRoom?.showRoom_address}
+                            </small>
+                          )}
                       </div>
                     </div>
                   </div>
@@ -372,7 +372,7 @@ const handlePrint = useReactToPrint({
 
               <div className="flex justify-between items-end mt-3 border-b-[1px] pb-3 border-[#ddd]">
                 <div className="mt-5 text-[12px] invisible">
-                
+
                 </div>
                 <div className="flex netTotalAmounts">
                   <div>
@@ -458,11 +458,10 @@ const handlePrint = useReactToPrint({
           <Button sx={{ fontSize: "12px" }}>
             <a
               className="text-[10px]"
-              href={`${import.meta.env.VITE_API_URL}/invoices/invoice/${
-                invoicePreview._id
-              }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
-                JSON.stringify(companyProfileData)
-              )}`}
+              href={`${import.meta.env.VITE_API_URL}/invoices/invoice/${invoicePreview._id
+                }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
+                  JSON.stringify(companyProfileData)
+                )}`}
               target="_blank"
               rel="noreferrer"
             >
@@ -470,7 +469,7 @@ const handlePrint = useReactToPrint({
             </a>
           </Button>
           <Link
-            to={`/dashboard/money-receive?order_no=${invoicePreview.job_no}&id=${invoicePreview?._id}&net_total=${net_total}`}
+            to={`/dashboard/money-receive-create?order_no=${invoicePreview.job_no}&id=${invoicePreview?._id}&net_total=${net_total}`}
           >
             <button> Money </button>
           </Link>
@@ -480,4 +479,4 @@ const handlePrint = useReactToPrint({
   );
 };
 
-export default Detail;
+export default InvoiceView;

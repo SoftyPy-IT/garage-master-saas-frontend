@@ -89,7 +89,7 @@ export const PermissionProvider = ({ children }) => {
       // SweetAlert ব্যবহার করে সুন্দর অ্যালার্ট দেখান
       swal({
         title: "Access Denied!",
-        text: `You don't have permission to ${action} this item.`,
+        text: alertMessage || `You don't have permission to ${action} this item.`,
         icon: "error",
         button: "OK",
         className: "permission-alert",

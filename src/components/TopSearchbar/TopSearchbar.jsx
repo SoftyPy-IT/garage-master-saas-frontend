@@ -15,7 +15,7 @@ const TopSearchbar = () => {
     const routes = {
       "job-card": `/dashboard/jobcard-list`,
       quotation: `/dashboard/quotation-list`,
-      invoice: `/dashboard/invoice-list`,
+      invoice: `/dashboard/create-invoice-list`,
       "money-receipt": `/dashboard/money-receipt-list`,
       customer: `/dashboard/customer-list`,
       company: `/dashboard/company-list`,

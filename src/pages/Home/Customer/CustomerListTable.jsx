@@ -43,6 +43,8 @@ const CustomerListTable = () => {
     moveRecycledCustomer,
     { isLoading: customerDeleteLoading, error: deleteError },
   ] = useMoveRecycledCustomerMutation();
+
+
   const handleIconPreview = async (e) => {
     performActionWithPermission(
       "/dashboard/customer-list",
@@ -55,9 +57,7 @@ const CustomerListTable = () => {
   };
 
   const handleMoveToRecyled = async (id) => {
-    performActionWithPermission(
-      "/dashboard/customer-list",
-      "delete",
+    performActionWithPermission("/dashboard/customer-list", "delete",
       async () => {
         const willDelete = await swal({
           title: "Are you sure?",

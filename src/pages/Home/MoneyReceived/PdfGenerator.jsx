@@ -16,7 +16,7 @@ const PdfGenerator = () => {
   const location = useLocation();
   const id = new URLSearchParams(location.search).get("id");
 
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain } = useTenantDomain();
   const { data: CompanyInfoData } = useGetCompanyProfileQuery({
     tenantDomain,
   });
@@ -131,7 +131,7 @@ const PdfGenerator = () => {
               <div className=" payAdvance mt-2">
                 <div className="flex items-center justify-center  receivedField">
                   {singleMoneyReceipt?.data?.against_bill_no_method ===
-                  "Advance against bill no" ? (
+                    "Advance against bill no" ? (
                     <label className="advance2 capitalize">
                       {singleMoneyReceipt?.data?.against_bill_no_method} :
                     </label>
@@ -158,19 +158,19 @@ const PdfGenerator = () => {
                     {singleMoneyReceipt?.data?.payment_method === "Bkash"
                       ? "Bkash"
                       : singleMoneyReceipt?.data?.payment_method === "Nagad"
-                      ? "Nagad"
-                      : singleMoneyReceipt?.data?.payment_method === "Rocket"
-                      ? "Rocket"
-                      : singleMoneyReceipt?.data?.payment_method ===
-                        "Bank Transfer"
-                      ? "Bank Transfer"
-                      : singleMoneyReceipt?.data?.payment_method === "Check"
-                      ? "Cheque"
-                      : singleMoneyReceipt?.data?.payment_method === "Other"
-                      ? "Other"
-                      : singleMoneyReceipt?.data?.payment_method === "Cash"
-                      ? "Cash"
-                      : ""}
+                        ? "Nagad"
+                        : singleMoneyReceipt?.data?.payment_method === "Rocket"
+                          ? "Rocket"
+                          : singleMoneyReceipt?.data?.payment_method ===
+                            "Bank Transfer"
+                            ? "Bank Transfer"
+                            : singleMoneyReceipt?.data?.payment_method === "Check"
+                              ? "Cheque"
+                              : singleMoneyReceipt?.data?.payment_method === "Other"
+                                ? "Other"
+                                : singleMoneyReceipt?.data?.payment_method === "Cash"
+                                  ? "Cash"
+                                  : ""}
                   </span>
                 </div>
               </div>
@@ -207,11 +207,11 @@ const PdfGenerator = () => {
                     singleMoneyReceipt?.data?.payment_method === "Nagad" ||
                     singleMoneyReceipt?.data?.payment_method === "Rocket" ||
                     singleMoneyReceipt?.data?.payment_method ===
-                      "Bank Transfer") && (
-                    <span className="text-sm">
-                      {singleMoneyReceipt?.data?.account_number}
-                    </span>
-                  )}
+                    "Bank Transfer") && (
+                      <span className="text-sm">
+                        {singleMoneyReceipt?.data?.account_number}
+                      </span>
+                    )}
                   {singleMoneyReceipt?.data?.payment_method === "Cash" && (
                     <span className="text-sm ">
                       {singleMoneyReceipt?.data?.cash_by}
@@ -247,11 +247,11 @@ const PdfGenerator = () => {
                         singleMoneyReceipt?.data?.payment_method === "Nagad" ||
                         singleMoneyReceipt?.data?.payment_method === "Rocket" ||
                         singleMoneyReceipt?.data?.payment_method ===
-                          "Bank Transfer") && (
-                        <label className="transactionId capitalize">
-                          Transaction ID :
-                        </label>
-                      )}
+                        "Bank Transfer") && (
+                          <label className="transactionId capitalize">
+                            Transaction ID :
+                          </label>
+                        )}
                       {singleMoneyReceipt?.data?.payment_method === "Check" && (
                         <label className="bankName">Bank Name : </label>
                       )}
@@ -262,11 +262,11 @@ const PdfGenerator = () => {
                       singleMoneyReceipt?.data?.payment_method === "Nagad" ||
                       singleMoneyReceipt?.data?.payment_method === "Rocket" ||
                       singleMoneyReceipt?.data?.payment_method ===
-                        "Bank Transfer") && (
-                      <span className="text-sm ">
-                        {singleMoneyReceipt?.data?.transaction_id}
-                      </span>
-                    )}
+                      "Bank Transfer") && (
+                        <span className="text-sm ">
+                          {singleMoneyReceipt?.data?.transaction_id}
+                        </span>
+                      )}
                     {singleMoneyReceipt?.data?.payment_method === "Check" && (
                       <span className="text-sm">
                         {singleMoneyReceipt?.data?.bank_name}
@@ -295,7 +295,7 @@ const PdfGenerator = () => {
                 </div>
                 <>
                   {singleMoneyReceipt?.data?.against_bill_no_method ===
-                  "Advance against bill no" ? (
+                    "Advance against bill no" ? (
                     <>
                       {singleMoneyReceipt?.data?.advance && (
                         <div className="flex items-center justify-center receivedField">
@@ -310,7 +310,7 @@ const PdfGenerator = () => {
                       <div className="flex items-center justify-center receivedField">
                         <div className="flex">
                           {singleMoneyReceipt?.data?.against_bill_no_method ===
-                          "Advance against bill no" ? (
+                            "Advance against bill no" ? (
                             <label className="">Remaining :</label>
                           ) : (
                             <label className="">Paid :</label>
@@ -328,7 +328,7 @@ const PdfGenerator = () => {
                     <div className="flex items-center justify-center receivedField">
                       <label className="flex">
                         {singleMoneyReceipt?.data?.against_bill_no_method ===
-                        "Advance against bill no"
+                          "Advance against bill no"
                           ? "Remaining"
                           : "Paid"}{" "}
                         :
@@ -350,7 +350,7 @@ const PdfGenerator = () => {
               </div>
             </div>
 
-             <div className="flex justify-between mt-16 mb-5 text-[12px] ">
+            <div className="flex justify-between mt-16 mb-5 text-[12px] ">
               <div className="text-center signature">
                 <div className="border-t border-black pt-1 mx-auto w-48">
                   Client Signature
@@ -362,7 +362,7 @@ const PdfGenerator = () => {
                 </div>
               </div>
             </div>
-           
+
           </div>
         </div>
       </div>
@@ -371,11 +371,10 @@ const PdfGenerator = () => {
         {singleMoneyReceipt?.data?._id && (
           <a
             className="bg-[#82017F] text-white px-3 py-2 text-[12px] rounded-full mr-2"
-            href={`${import.meta.env.VITE_API_URL}/money-receipts/money/${
-              singleMoneyReceipt.data._id
-            }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
-              JSON.stringify(companyProfileData)
-            )}`}
+            href={`${import.meta.env.VITE_API_URL}/money-receipts/money/${singleMoneyReceipt.data._id
+              }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
+                JSON.stringify(companyProfileData)
+              )}`}
             target="_blank"
             rel="noreferrer"
           >

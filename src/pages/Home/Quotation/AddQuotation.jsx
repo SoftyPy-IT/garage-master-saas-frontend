@@ -18,6 +18,8 @@ import { suggestionStyles } from "../../../utils/customStyle";
 import { formatNumber } from "../../../utils/formateSemicolon";
 import { useGetCompanyProfileQuery } from "../../../redux/api/companyProfile";
 import { useTenantDomain } from "../../../hooks/useTenantDomain";
+import Can from "../../../components/Can";
+import { usePermissions } from "../../../context/PermissionContext";
 
 const AddQuotation = () => {
   const [getDataWithChassisNo, setGetDataWithChassisNo] = useState({});
@@ -31,7 +33,6 @@ const AddQuotation = () => {
   const job_no = new URLSearchParams(location.search).get("order_no");
   const [orderNumber, setOrderNumber] = useState(job_no);
   const navigate = useNavigate();
-  const textInputRef = useRef(null);
   const [filterType, setFilterType] = useState("");
   const [goOtherButton, setGoOtherButton] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
@@ -71,8 +72,8 @@ const AddQuotation = () => {
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(0);
   const [activeInputType, setActiveInputType] = useState(null);
   const [activeInputIndex, setActiveInputIndex] = useState(null);
-  const limit = 10;
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain } = useTenantDomain();
+  const { performActionWithPermission } = usePermissions();
 
   const {
     register,
@@ -329,12 +330,8 @@ const AddQuotation = () => {
     setServiceItems(newItems);
   };
 
-  // Fixed quantity change handlers to allow decimals
   const handleQuantityChange = (index, value) => {
-    // Allow decimal numbers by removing non-numeric characters except decimal point
     const numericValue = value.replace(/[^0-9.]/g, "");
-
-    // Prevent multiple decimal points
     const parts = numericValue.split(".");
     const cleanValue =
       parts.length > 2
@@ -343,7 +340,7 @@ const AddQuotation = () => {
 
     const newItems = [...items];
     const parsedValue = Number.parseFloat(cleanValue) || 0;
-    newItems[index].quantity = cleanValue; // Store as string to preserve decimal input
+    newItems[index].quantity = cleanValue;
     newItems[index].total =
       parsedValue * (Number.parseFloat(newItems[index].rate) || 0);
     newItems[index].total = Number.parseFloat(newItems[index].total.toFixed(2));
@@ -351,10 +348,7 @@ const AddQuotation = () => {
   };
 
   const handleServiceQuantityChange = (index, value) => {
-    // Allow decimal numbers by removing non-numeric characters except decimal point
     const numericValue = value.replace(/[^0-9.]/g, "");
-
-    // Prevent multiple decimal points
     const parts = numericValue.split(".");
     const cleanValue =
       parts.length > 2
@@ -372,10 +366,7 @@ const AddQuotation = () => {
 
   // Fixed rate change handlers to properly handle decimals without formatNumber interference
   const handleRateChange = (index, value) => {
-    // Allow decimal numbers by removing non-numeric characters except decimal point
     const numericValue = value.replace(/[^0-9.]/g, "");
-
-    // Prevent multiple decimal points
     const parts = numericValue.split(".");
     const cleanValue =
       parts.length > 2
@@ -385,7 +376,7 @@ const AddQuotation = () => {
     const newItems = [...items];
     const parsedRate = Number.parseFloat(cleanValue) || 0;
     newItems[index].rate = parsedRate;
-    newItems[index].rateDisplay = cleanValue; // Store raw input for display
+    newItems[index].rateDisplay = cleanValue;
     newItems[index].total =
       (Number.parseFloat(newItems[index].quantity) || 0) * parsedRate;
     newItems[index].total = Number.parseFloat(newItems[index].total.toFixed(2));
@@ -393,7 +384,6 @@ const AddQuotation = () => {
   };
 
   const handleServiceRateChange = (index, value) => {
-    // Allow decimal numbers by removing non-numeric characters except decimal point
     const numericValue = value.replace(/[^0-9.]/g, "");
 
     // Prevent multiple decimal points
@@ -406,7 +396,7 @@ const AddQuotation = () => {
     const newItems = [...serviceItems];
     const parsedRate = Number.parseFloat(cleanValue) || 0;
     newItems[index].rate = parsedRate;
-    newItems[index].rateDisplay = cleanValue; // Store raw input for display
+    newItems[index].rateDisplay = cleanValue;
     newItems[index].total =
       (Number.parseFloat(newItems[index].quantity) || 0) * parsedRate;
     newItems[index].total = Number.parseFloat(newItems[index].total.toFixed(2));
@@ -489,6 +479,7 @@ const AddQuotation = () => {
     return "Pcs";
   };
 
+
   const handleSelectSuggestion = (product) => {
     if (activeInputType === "service") {
       const newItems = [...serviceItems];
@@ -559,135 +550,139 @@ const AddQuotation = () => {
   };
 
   const onSubmit = async (data) => {
-    const toastId = toast.loading("Creating Quotation...");
-    const customer = {
-      company_name: data.company_name,
-      customer_name: data.customer_name,
-      customer_contact: data.customer_contact,
-      customer_country_code: data.company_country_code,
-      customer_address: data.customer_address,
-    };
+    performActionWithPermission('/dashboard/create-quotation', 'create',
+      async () => {
+        const toastId = toast.loading("Creating Quotation...");
+        const customer = {
+          company_name: data.company_name,
+          customer_name: data.customer_name,
+          customer_contact: data.customer_contact,
+          customer_country_code: data.company_country_code,
+          customer_address: data.customer_address,
+        };
+        const company = {
+          company_name: data.company_name,
+          vehicle_username: data.vehicle_username,
+          company_address: data.company_address,
+          company_contact: data.company_contact,
+          company_country_code: data.company_country_code,
+        };
+        const showRoom = {
+          showRoom_name: data.showRoom_name,
+          vehicle_username: data.vehicle_username,
+          company_name: data.company_name,
+          company_contact: data.company_contact,
+          company_country_code: data.company_country_code,
+          company_address: data.company_address,
+        };
+        data.mileage = Number(data.mileage);
+        const newMileageValue = Number(data.mileage);
 
-    const company = {
-      company_name: data.company_name,
-      vehicle_username: data.vehicle_username,
-      company_address: data.company_address,
-      company_contact: data.company_contact,
-      company_country_code: data.company_country_code,
-    };
+        const existingMileageHistory = getDataWithChassisNo?.mileageHistory || [];
+        const updatedMileageHistory = [...existingMileageHistory];
 
-    const showRoom = {
-      showRoom_name: data.showRoom_name,
-      vehicle_username: data.vehicle_username,
-      company_name: data.company_name,
-      company_contact: data.company_contact,
-      company_country_code: data.company_country_code,
-      company_address: data.company_address,
-    };
+        // Only add current mileage to history if it has changed
+        if (mileageChanged && currentMileage) {
+          const newMileageEntry = {
+            mileage: Number(currentMileage),
+            date: new Date().toISOString(),
+          };
 
-    data.mileage = Number(data.mileage);
-    const newMileageValue = Number(data.mileage);
-
-    const existingMileageHistory = getDataWithChassisNo?.mileageHistory || [];
-    const updatedMileageHistory = [...existingMileageHistory];
-
-    // Only add current mileage to history if it has changed
-    if (mileageChanged && currentMileage) {
-      const newMileageEntry = {
-        mileage: Number(currentMileage),
-        date: new Date().toISOString(),
-      };
-
-      // Check if this mileage value already exists in history
-      const mileageExists = updatedMileageHistory.some(
-        (entry) => entry.mileage === Number(currentMileage)
-      );
-
-      if (!mileageExists) {
-        updatedMileageHistory.push(newMileageEntry);
-      }
-    }
-
-    // Only add a new entry if it's a valid number and not already in the history
-    if (!isNaN(newMileageValue) && newMileageValue > 0) {
-      const mileageExists = updatedMileageHistory.some(
-        (entry) => entry.mileage === newMileageValue
-      );
-
-      if (!mileageExists) {
-        updatedMileageHistory.push({
-          mileage: newMileageValue,
-          date: new Date().toISOString(),
-        });
-      }
-    }
-
-    const vehicle = {
-      carReg_no: data.carReg_no,
-      car_registration_no: data.car_registration_no,
-      chassis_no: data.chassis_no,
-      engine_no: data.engine_no,
-      vehicle_brand: data.vehicle_brand,
-      vehicle_name: data.vehicle_name,
-      mileageHistory: updatedMileageHistory,
-    };
-
-    // Prepare items for submission
-    const preparedItems = prepareItemsForSubmission(items);
-    const preparedServiceItems = prepareItemsForSubmission(serviceItems);
-
-    const quotation = {
-      user_type: jobCardData?.data?.user_type,
-      Id: jobCardData?.data?.Id,
-      job_no: orderNumber,
-      date: selectedDate,
-      parts_total: partsTotal,
-      service_total: serviceTotal,
-      total_amount: grandTotal,
-      discount: discount,
-      vat: vat,
-      tax: tax, // New: Include tax in the quotation object
-      net_total: calculateFinalTotal(),
-      input_data: preparedItems,
-      service_input_data: preparedServiceItems,
-      logo,
-      mileage: data.mileage,
-    };
-
-    const values = {
-      tenantDomain,
-      customer,
-      company,
-      showRoom,
-      vehicle,
-      quotation,
-    };
-
-    try {
-      const res = await createQuotation(values).unwrap();
-      if (res.success) {
-        toast.success(res.message);
-        if (goOtherButton === "preview") {
-          navigate(`/dashboard/quotation-view?id=${res?.data?._id}`);
-          setGoOtherButton("");
-        } else if (goOtherButton === "invoice") {
-          navigate(
-            `/dashboard/invoice?order_no=${jobCardData?.data?.job_no}&id=${res?.data?._id}`
+          // Check if this mileage value already exists in history
+          const mileageExists = updatedMileageHistory.some(
+            (entry) => entry.mileage === Number(currentMileage)
           );
-          setGoOtherButton("");
-        } else {
-          navigate("/dashboard/quotation-list");
-          setGoOtherButton("");
+
+          if (!mileageExists) {
+            updatedMileageHistory.push(newMileageEntry);
+          }
         }
-        refetch();
-      }
-    } catch (err) {
-      const errorMessage =
-        err?.data?.message || err?.message || "Failed to create quotation";
-      toast.error(errorMessage);
-    } finally {
-      toast.dismiss(toastId);
-    }
+
+        // Only add a new entry if it's a valid number and not already in the history
+        if (!isNaN(newMileageValue) && newMileageValue > 0) {
+          const mileageExists = updatedMileageHistory.some(
+            (entry) => entry.mileage === newMileageValue
+          );
+
+          if (!mileageExists) {
+            updatedMileageHistory.push({
+              mileage: newMileageValue,
+              date: new Date().toISOString(),
+            });
+          }
+        }
+        const vehicle = {
+          carReg_no: data.carReg_no,
+          car_registration_no: data.car_registration_no,
+          chassis_no: data.chassis_no,
+          engine_no: data.engine_no,
+          vehicle_brand: data.vehicle_brand,
+          vehicle_name: data.vehicle_name,
+          mileageHistory: updatedMileageHistory,
+        };
+
+        // Prepare items for submission
+        const preparedItems = prepareItemsForSubmission(items);
+        const preparedServiceItems = prepareItemsForSubmission(serviceItems);
+
+        const quotation = {
+          user_type: jobCardData?.data?.user_type,
+          Id: jobCardData?.data?.Id,
+          job_no: orderNumber,
+          date: selectedDate,
+          parts_total: partsTotal,
+          service_total: serviceTotal,
+          total_amount: grandTotal,
+          discount: discount,
+          vat: vat,
+          tax: tax, // New: Include tax in the quotation object
+          net_total: calculateFinalTotal(),
+          input_data: preparedItems,
+          service_input_data: preparedServiceItems,
+          logo,
+          mileage: data.mileage,
+        };
+
+        const values = {
+          tenantDomain,
+          customer,
+          company,
+          showRoom,
+          vehicle,
+          quotation,
+        };
+
+        try {
+          const res = await createQuotation(values).unwrap();
+          if (res.success) {
+            toast.success(res.message);
+            if (goOtherButton === "preview") {
+              navigate(`/dashboard/quotation-view?id=${res?.data?._id}`);
+              setGoOtherButton("");
+            } else if (goOtherButton === "invoice") {
+              navigate(
+                `/dashboard/create-invoice?order_no=${jobCardData?.data?.job_no}&id=${res?.data?._id}`
+              );
+              setGoOtherButton("");
+            } else {
+              navigate("/dashboard/quotation-list");
+              setGoOtherButton("");
+            }
+            refetch();
+          }
+        } catch (err) {
+          const errorMessage =
+            err?.data?.message || err?.message || "Failed to create quotation";
+          toast.error(errorMessage);
+        } finally {
+          toast.dismiss(toastId);
+        }
+
+
+      }, "You don't permission to create quotation !"
+    )
+
+
   };
 
   useEffect(() => {
@@ -1513,9 +1508,15 @@ const AddQuotation = () => {
             </div>
 
             <div className="hidden  md:flex  justify-end md:justify-start submitQutationBtn order-2 md:order-3 ">
-              <button type="submit" disabled={createLoading}>
-                Add Quotation{" "}
-              </button>
+              <Can page="/dashboard/create-quotation" action="create">
+                <button type="submit" disabled={createLoading}>
+                  Add Quotation{" "}
+                </button>
+
+              </Can>
+
+
+
             </div>
           </div>
         </form>

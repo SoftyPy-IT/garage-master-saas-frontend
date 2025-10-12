@@ -17,7 +17,7 @@ const Detail = () => {
   const componentRef = useRef();
   const location = useLocation();
   const id = new URLSearchParams(location.search).get("id");
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain } = useTenantDomain();
   const { data: profileData } = useGetCompanyProfileQuery({
     tenantDomain,
   });
@@ -162,46 +162,46 @@ const Detail = () => {
                       {(quotationPreview?.customer?.customer_name ||
                         quotationPreview?.company?.company_name ||
                         quotationPreview?.showRoom?.showRoom_name) && (
-                        <small>
-                          <span className="mr-1">:</span>
-                          {quotationPreview?.customer?.customer_name ||
-                            quotationPreview?.company?.company_name ||
-                            quotationPreview?.showRoom?.showRoom_name}
-                        </small>
-                      )}
+                          <small>
+                            <span className="mr-1">:</span>
+                            {quotationPreview?.customer?.customer_name ||
+                              quotationPreview?.company?.company_name ||
+                              quotationPreview?.showRoom?.showRoom_name}
+                          </small>
+                        )}
 
                       {(quotationPreview?.customer?.company_name ||
                         quotationPreview?.company?.vehicle_username ||
                         quotationPreview?.showRoom?.vehicle_username) && (
-                        <small>
-                          <span className="mr-1">:</span>
-                          {quotationPreview?.customer?.company_name ||
-                            quotationPreview?.company?.vehicle_username ||
-                            quotationPreview?.showRoom?.vehicle_username}
-                        </small>
-                      )}
+                          <small>
+                            <span className="mr-1">:</span>
+                            {quotationPreview?.customer?.company_name ||
+                              quotationPreview?.company?.vehicle_username ||
+                              quotationPreview?.showRoom?.vehicle_username}
+                          </small>
+                        )}
 
                       {(quotationPreview?.customer?.fullCustomerNum ||
                         quotationPreview?.company?.fullCompanyNum ||
                         quotationPreview?.showRoom?.fullCompanyNum) && (
-                        <small>
-                          <span className="mr-1">:</span>
-                          {quotationPreview?.customer?.fullCustomerNum ||
-                            quotationPreview?.company?.fullCompanyNum ||
-                            quotationPreview?.showRoom?.fullCompanyNum}
-                        </small>
-                      )}
+                          <small>
+                            <span className="mr-1">:</span>
+                            {quotationPreview?.customer?.fullCustomerNum ||
+                              quotationPreview?.company?.fullCompanyNum ||
+                              quotationPreview?.showRoom?.fullCompanyNum}
+                          </small>
+                        )}
 
                       {(quotationPreview?.customer?.customer_address ||
                         quotationPreview?.company?.company_address ||
                         quotationPreview?.showRoom?.showRoom_address) && (
-                        <small>
-                          <span className="mr-1">:</span>
-                          {quotationPreview?.customer?.customer_address ||
-                            quotationPreview?.company?.company_address ||
-                            quotationPreview?.showRoom?.showRoom_address}
-                        </small>
-                      )}
+                          <small>
+                            <span className="mr-1">:</span>
+                            {quotationPreview?.customer?.customer_address ||
+                              quotationPreview?.company?.company_address ||
+                              quotationPreview?.showRoom?.showRoom_address}
+                          </small>
+                        )}
                     </div>
                   </div>
                   <div className="invoiceLine"></div>
@@ -315,7 +315,7 @@ const Detail = () => {
               <div>
                 <div className="flex justify-between items-end mt-3 border-b-[1px] pb-3 border-[#ddd]">
                   <div className="mt-5 text-[12px] invisible">
-                  
+
                   </div>
                   <div className="flex netTotalAmounts">
                     <div className="">
@@ -362,7 +362,7 @@ const Detail = () => {
               </div>
             </div>
           </div>
-          
+
         </div>
         <div>
           <div className="printInvoiceBtnGroup">
@@ -373,18 +373,17 @@ const Detail = () => {
             </Link>
             <a
               className="bg-[#42A0D9] text-white px-2 py-1  rounded-full "
-              href={`${import.meta.env.VITE_API_URL}/quotations/quotation/${
-                quotationPreview?._id
-              }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
-                JSON.stringify(companyProfileData)
-              )}`}
+              href={`${import.meta.env.VITE_API_URL}/quotations/quotation/${quotationPreview?._id
+                }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
+                  JSON.stringify(companyProfileData)
+                )}`}
               target="_blank"
               rel="noreferrer"
             >
               Download
             </a>
             <Link
-              to={`/dashboard/invoice?order_no=${quotationPreview?.job_no}&id=${id}`}
+              to={`/dashboard/create-invoice?order_no=${quotationPreview?.job_no}&id=${id}`}
             >
               <button> Invoice </button>
             </Link>

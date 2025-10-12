@@ -4,7 +4,6 @@ import Main from "../Layout/Main";
 import Home from "../pages/Home/Home";
 import JobCardList from "../pages/Home/AddJobCard/JobCardList";
 import AddEmployee from "../pages/Home/Employee/AddEmployee";
-import Detail from "../pages/Home/Invoice/Detail";
 import UpdateInvoice from "../pages/Home/Invoice/UpdateInvoice";
 import Invoice from "../pages/Home/Invoice/Invoice";
 import AddRole from "../pages/Home/Role/AddRole";
@@ -20,7 +19,6 @@ import PreviewJobCard from "../pages/Home/AddJobCard/PreviewJobCard/PreviewJobCa
 import UpdateProduct from "../pages/Home/Products/UpdateProduct";
 import UpdateRole from "../pages/Home/Role/UpdateRole";
 import DashboardLayout from "../Layout/DashboardLayout";
-import MoneyReceived from "../pages/Home/MoneyReceived/MoneyReceived";
 import MoneyReceiptList from "../pages/Home/MoneyReceived/MoneyReceiptList";
 import MoneyReceiptView from "../pages/Home/MoneyReceived/MoneyReceiptView";
 import UpdateMoneyReceipt from "../pages/Home/MoneyReceived/UpdateMoneyReceipt";
@@ -138,6 +136,8 @@ import PageManagement from "../pages/PageManagement/PageManagement";
 import RoleManagement from "../pages/RoleManagement";
 import Permission from "../pages/Permission/Permission";
 import Unauthorized from "../pages/UnAuthorized";
+import InvoiceView from "../pages/Home/Invoice/InvoiceView";
+import CreateMoneyReceived from "../pages/Home/MoneyReceived/CreateMoneyReceived";
 
 const createProtectedRoute = (path, element, pagePath, action = "view") => {
   return {
@@ -179,9 +179,9 @@ export const router = createBrowserRouter([
     children: [
       createProtectedRoute("", <Home />, "/dashboard"),
       createProtectedRoute(
-        "addjob",
+        "create-job-card",
         <AddJobCard />,
-        "/dashboard/addjob",
+        "/dashboard/create-job-card",
         "create"
       ),
       createProtectedRoute(
@@ -222,7 +222,7 @@ export const router = createBrowserRouter([
         "edit"
       ),
       createProtectedRoute("profile", <Profile />, "/dashboard/profile"),
-      createProtectedRoute("invoice", <Invoice />, "/dashboard/invoice"),
+      createProtectedRoute("create-invoice", <Invoice />, "/dashboard/create-invoice"),
       createProtectedRoute(
         "product-list",
         <ProductList />,
@@ -245,7 +245,6 @@ export const router = createBrowserRouter([
         "/dashboard/update-product",
         "edit"
       ),
-      // কাস্টমার লিস্ট রাউট - সঠিক পথ এবং অ্যাকশন নিশ্চিত করুন
       createProtectedRoute(
         "customer-list",
         <CustomerList />,
@@ -415,9 +414,9 @@ export const router = createBrowserRouter([
         "edit"
       ),
       createProtectedRoute(
-        "qutation",
+        "create-quotation",
         <AddQuotation />,
-        "/dashboard/qutation",
+        "/dashboard/create-quotation",
         "create"
       ),
       createProtectedRoute(
@@ -442,9 +441,10 @@ export const router = createBrowserRouter([
         "/dashboard/update-invoice",
         "edit"
       ),
-      createProtectedRoute("detail", <Detail />, "/dashboard/detail"),
+      createProtectedRoute("invoice-view", <InvoiceView />, "/dashboard/invoice-view"),
       createProtectedRoute(
         "invoice-list",
+
         <InvoiceList />,
         "/dashboard/invoice-list"
       ),
@@ -454,9 +454,9 @@ export const router = createBrowserRouter([
         "/dashboard/jobcard-list"
       ),
       createProtectedRoute(
-        "money-receive",
-        <MoneyReceived />,
-        "/dashboard/money-receive",
+        "money-receive-create",
+        <CreateMoneyReceived />,
+        "/dashboard/money-receive-create",
         "create"
       ),
       createProtectedRoute(

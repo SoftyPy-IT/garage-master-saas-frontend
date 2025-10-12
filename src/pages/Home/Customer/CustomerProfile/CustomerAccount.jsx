@@ -19,68 +19,68 @@ const CustomerAccount = ({ profileData, tenantDomain }) => {
   const lastVehicle =
     profileData?.data?.vehicles?.length > 0
       ? [...profileData.data.vehicles].sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        )[0]
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      )[0]
       : null;
   const beforeLastVehicle =
     profileData?.data?.vehicles?.length > 0
       ? [...profileData.data.vehicles].sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        )[1]
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      )[1]
       : null;
 
   const lastJobCard =
     profileData?.data?.jobCards?.length > 0
       ? [...profileData.data.jobCards].sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        )[0]
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      )[0]
       : null;
 
   const beforeLastJobCard =
     profileData?.data?.jobCards?.length > 0
       ? [...profileData.data.jobCards].sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        )[1]
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      )[1]
       : null;
   const lastQuotation =
     profileData?.data?.quotations?.length > 0
       ? [...profileData.data.quotations].sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        )[0]
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      )[0]
       : null;
 
   const beforeLastQuotation =
     profileData?.data?.quotations?.length > 0
       ? [...profileData.data.quotations].sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        )[1]
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      )[1]
       : null;
 
   const lastInvoice =
     profileData?.data?.invoices?.length > 0
       ? [...profileData.data.invoices].sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        )[0]
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      )[0]
       : null;
 
   const beforeLastInvoice =
     profileData?.data?.invoices?.length > 0
       ? [...profileData.data.invoices].sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        )[1]
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      )[1]
       : null;
   const lastMoneyReceipt =
     profileData?.data?.money_receipts?.length > 0
       ? [...profileData.data.money_receipts].sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        )[0]
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      )[0]
       : null;
 
   const beforeLastMoneyReceipt =
     profileData?.data?.money_receipts?.length > 0
       ? [...profileData.data.money_receipts].sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        )[1]
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      )[1]
       : null;
 
   return (
@@ -129,9 +129,9 @@ const CustomerAccount = ({ profileData, tenantDomain }) => {
                       <p className="text-[10px]">
                         {lastVehicle
                           ? `${new Date(lastVehicle?.createdAt).toLocaleString(
-                              "en-US",
-                              { month: "short" }
-                            )}`
+                            "en-US",
+                            { month: "short" }
+                          )}`
                           : "No Invoice"}
                       </p>
                     </div>
@@ -167,8 +167,8 @@ const CustomerAccount = ({ profileData, tenantDomain }) => {
                       <p className="text-[10px]">
                         {beforeLastVehicle
                           ? `${new Date(
-                              beforeLastVehicle?.createdAt
-                            ).toLocaleString("en-US", { month: "short" })}`
+                            beforeLastVehicle?.createdAt
+                          ).toLocaleString("en-US", { month: "short" })}`
                           : "No Vehicle"}
                       </p>
                     </div>
@@ -214,7 +214,7 @@ const CustomerAccount = ({ profileData, tenantDomain }) => {
                   <h3 className="text-[16px] md:text-xl font-semibold">
                     Recent Job Card{" "}
                   </h3>
-                  <Link to="/dashboard/addjob">
+                  <Link to="/dashboard/create-job-card">
                     {" "}
                     <FaRegEdit className="w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10" />
                   </Link>
@@ -225,9 +225,9 @@ const CustomerAccount = ({ profileData, tenantDomain }) => {
                       <p className="text-[10px]">
                         {lastJobCard
                           ? `${new Date(lastJobCard?.createdAt).toLocaleString(
-                              "en-US",
-                              { month: "short" }
-                            )}`
+                            "en-US",
+                            { month: "short" }
+                          )}`
                           : "No Job Card"}
                       </p>
 
@@ -264,8 +264,8 @@ const CustomerAccount = ({ profileData, tenantDomain }) => {
                       <p className="text-[10px]">
                         {beforeLastJobCard
                           ? `${new Date(
-                              beforeLastJobCard?.createdAt
-                            ).toLocaleString("en-US", { month: "short" })}`
+                            beforeLastJobCard?.createdAt
+                          ).toLocaleString("en-US", { month: "short" })}`
                           : "No Job Card"}
                       </p>
 
@@ -315,7 +315,7 @@ const CustomerAccount = ({ profileData, tenantDomain }) => {
                   <h3 className="text-[16px] md:text-xl font-semibold">
                     Recent Quotation{" "}
                   </h3>
-                  <Link to="/dashboard/qutation">
+                  <Link to="/dashboard/create-quotation">
                     {" "}
                     <FaRegEdit className="w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10" />
                   </Link>
@@ -326,8 +326,8 @@ const CustomerAccount = ({ profileData, tenantDomain }) => {
                       <p className="text-[10px]">
                         {lastQuotation
                           ? `${new Date(
-                              lastQuotation?.createdAt
-                            ).toLocaleString("en-US", { month: "short" })}`
+                            lastQuotation?.createdAt
+                          ).toLocaleString("en-US", { month: "short" })}`
                           : "No Quotation"}
                       </p>
 
@@ -378,8 +378,8 @@ const CustomerAccount = ({ profileData, tenantDomain }) => {
                       <p className="text-[10px]">
                         {beforeLastQuotation
                           ? `${new Date(
-                              beforeLastQuotation?.createdAt
-                            ).toLocaleString("en-US", { month: "short" })}`
+                            beforeLastQuotation?.createdAt
+                          ).toLocaleString("en-US", { month: "short" })}`
                           : "No Quotation"}
                       </p>
 
@@ -438,7 +438,7 @@ const CustomerAccount = ({ profileData, tenantDomain }) => {
               <>
                 <div className="flex items-center justify-between">
                   <h3 className="text-xl font-semibold">Recent Invoice </h3>
-                  <Link to="/dashboard/invoice">
+                  <Link to="/dashboard/create-invoice">
                     {" "}
                     <FaRegEdit className="w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10" />
                   </Link>
@@ -449,9 +449,9 @@ const CustomerAccount = ({ profileData, tenantDomain }) => {
                       <p className="text-[10px]">
                         {lastInvoice
                           ? `${new Date(lastInvoice?.createdAt).toLocaleString(
-                              "en-US",
-                              { month: "short" }
-                            )}`
+                            "en-US",
+                            { month: "short" }
+                          )}`
                           : "No Invoice"}
                       </p>
 
@@ -499,8 +499,8 @@ const CustomerAccount = ({ profileData, tenantDomain }) => {
                       <p className="text-[10px]">
                         {beforeLastInvoice
                           ? `${new Date(
-                              beforeLastInvoice?.createdAt
-                            ).toLocaleString("en-US", { month: "short" })}`
+                            beforeLastInvoice?.createdAt
+                          ).toLocaleString("en-US", { month: "short" })}`
                           : "No Invoice"}
                       </p>
 
@@ -557,7 +557,7 @@ const CustomerAccount = ({ profileData, tenantDomain }) => {
                   <h3 className="text-[16px] md:text-xl font-semibold">
                     Recent Money Receipt{" "}
                   </h3>
-                  <Link to="/dashboard/money-receive">
+                  <Link to="/dashboard/money-receive-create">
                     {" "}
                     <FaRegEdit className="w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10" />
                   </Link>
@@ -570,8 +570,8 @@ const CustomerAccount = ({ profileData, tenantDomain }) => {
                         <p className="text-[10px]">
                           {lastMoneyReceipt
                             ? `${new Date(
-                                lastMoneyReceipt?.createdAt
-                              ).toLocaleString("en-US", { month: "short" })}`
+                              lastMoneyReceipt?.createdAt
+                            ).toLocaleString("en-US", { month: "short" })}`
                             : "No Money Receipt"}
                         </p>
                         {lastMoneyReceipt && (
@@ -631,8 +631,8 @@ const CustomerAccount = ({ profileData, tenantDomain }) => {
                         <p className="text-[10px]">
                           {beforeLastMoneyReceipt
                             ? `${new Date(
-                                beforeLastMoneyReceipt?.createdAt
-                              ).toLocaleString("en-US", { month: "short" })}`
+                              beforeLastMoneyReceipt?.createdAt
+                            ).toLocaleString("en-US", { month: "short" })}`
                             : "No Money Receipt"}
                         </p>
                         {beforeLastMoneyReceipt && (

@@ -25,18 +25,15 @@ import { useGetAllStocksQuery } from "../../../redux/api/stocksApi"
 import { suggestionStyles } from "../../../utils/customStyle"
 import { useGetCompanyProfileQuery } from "../../../redux/api/companyProfile"
 import { useTenantDomain } from "../../../hooks/useTenantDomain"
+import { usePermissions } from "../../../context/PermissionContext"
+import Can from "../../../components/Can"
 
-// Function to format numbers with thousand separators
+
 const formatNumber = (num) => {
   if (num === undefined || num === null || num === "") return ""
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
 }
 
-// Function to parse formatted number back to numeric value
-const parseFormattedNumber = (formattedNum) => {
-  if (!formattedNum) return 0
-  return Number.parseFloat(formattedNum.toString().replace(/,/g, "")) || 0
-}
 
 const UpdateQuotation = () => {
   const [specificQuotation, setSpecificQuotation] = useState({})
@@ -58,7 +55,7 @@ const UpdateQuotation = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const id = new URLSearchParams(location.search).get("id")
-  const tenantDomain = useTenantDomain()
+  const { tenantDomain } = useTenantDomain()
 
   const { data: CompanyInfoData } = useGetCompanyProfileQuery({
     tenantDomain,
@@ -104,6 +101,7 @@ const UpdateQuotation = () => {
   const [activeInputIndex, setActiveInputIndex] = useState(null)
   const [currentMileage, setCurrentMileage] = useState("")
   const [mileageChanged, setMileageChanged] = useState(false)
+  const { performActionWithPermission } = usePermissions();
 
   const {
     register,
@@ -801,14 +799,6 @@ const UpdateQuotation = () => {
       setVAT(parsedValue)
     }
   }
-
-  const handleTaxChange = (value) => {
-    const parsedValue = Number(value)
-    if (!isNaN(parsedValue)) {
-      setTax(parsedValue)
-    }
-  }
-
   const calculateFinalTotal = () => {
     let currentPartsTotal = partsTotal
     let currentServiceTotal = serviceTotal
@@ -883,116 +873,120 @@ const UpdateQuotation = () => {
   ]
 
   const onSubmit = async (data) => {
-    setRemoveButton("")
-    try {
-      const customer = {
-        company_name: data.company_name,
-        customer_name: data.customer_name,
-        customer_contact: data.customer_contact,
-        customer_country_code: data.company_country_code,
-        customer_address: data.customer_address,
-      }
+    performActionWithPermission('/dashboard/update-quotation', 'edit',
+      async () => {
+        setRemoveButton("")
+        try {
+          const customer = {
+            company_name: data.company_name,
+            customer_name: data.customer_name,
+            customer_contact: data.customer_contact,
+            customer_country_code: data.company_country_code,
+            customer_address: data.customer_address,
+          }
 
-      const company = {
-        company_name: data.company_name,
-        vehicle_username: data.vehicle_username,
-        company_address: data.company_address,
-        company_contact: data.company_contact,
-        company_country_code: data.company_country_code,
-        company_email: data.company_email,
-        customer_address: data.company_address,
-      }
+          const company = {
+            company_name: data.company_name,
+            vehicle_username: data.vehicle_username,
+            company_address: data.company_address,
+            company_contact: data.company_contact,
+            company_country_code: data.company_country_code,
+            company_email: data.company_email,
+            customer_address: data.company_address,
+          }
 
-      const showRoom = {
-        showRoom_name: data.showRoom_name,
-        vehicle_username: data.vehicle_username,
-        company_name: data.company_name,
-        company_contact: data.company_contact,
-        company_country_code: data.company_country_code,
-        company_address: data.company_address,
-      }
+          const showRoom = {
+            showRoom_name: data.showRoom_name,
+            vehicle_username: data.vehicle_username,
+            company_name: data.company_name,
+            company_contact: data.company_contact,
+            company_country_code: data.company_country_code,
+            company_address: data.company_address,
+          }
 
-      data.vehicle_model = Number(data.vehicle_model)
-      data.mileage = Number(data.mileage)
+          data.vehicle_model = Number(data.vehicle_model)
+          data.mileage = Number(data.mileage)
 
-      const newMileageValue = Number(data.mileage)
-      const existingMileageHistory = specificQuotation?.vehicle?.mileageHistory || []
-      const updatedMileageHistory = [...existingMileageHistory]
+          const newMileageValue = Number(data.mileage)
+          const existingMileageHistory = specificQuotation?.vehicle?.mileageHistory || []
+          const updatedMileageHistory = [...existingMileageHistory]
 
-      if (mileageChanged && !isNaN(newMileageValue) && newMileageValue > 0) {
-        const mileageExists = updatedMileageHistory.some((entry) => entry.mileage === newMileageValue)
-        if (!mileageExists) {
-          updatedMileageHistory.push({
+          if (mileageChanged && !isNaN(newMileageValue) && newMileageValue > 0) {
+            const mileageExists = updatedMileageHistory.some((entry) => entry.mileage === newMileageValue)
+            if (!mileageExists) {
+              updatedMileageHistory.push({
+                mileage: newMileageValue,
+                date: new Date().toISOString(),
+              })
+            }
+          }
+
+          const vehicle = {
+            carReg_no: data.carReg_no,
+            car_registration_no: data.car_registration_no,
+            chassis_no: data.chassis_no,
+            engine_no: data.engine_no,
+            vehicle_brand: data.vehicle_brand,
+            vehicle_name: data.vehicle_name,
             mileage: newMileageValue,
-            date: new Date().toISOString(),
-          })
+            mileageHistory: updatedMileageHistory,
+          }
+
+          const quotation = {
+            user_type: specificQuotation?.user_type,
+            Id: specificQuotation?.Id,
+            job_no: specificQuotation?.job_no,
+            date: selectedDate || specificQuotation?.date,
+            parts_total: partsTotal || specificQuotation.parts_total,
+            service_total: serviceTotal || specificQuotation.serviceTotal,
+            total_amount: grandTotal || specificQuotation?.total_amount,
+            discount: discount === 0 || discount > 0 ? discount : specificQuotation?.discount,
+            vat: vat === 0 || vat > 0 ? vat : specificQuotation?.vat,
+            tax: tax === 0 || tax > 0 ? tax : specificQuotation?.tax,
+            net_total: calculateFinalTotal() || specificQuotation.net_total,
+            input_data: input_data,
+            service_input_data: service_input_data,
+          }
+
+          const values = {
+            tenantDomain,
+            customer,
+            company,
+            showRoom,
+            vehicle,
+            quotation,
+          }
+
+          const newValue = {
+            id: id,
+            data: {
+              ...values,
+            },
+          }
+
+          if (removeButton === "") {
+            const res = await updateQuotation(newValue).unwrap()
+            if (res.success) {
+              setReload(!reload)
+              toast.success("Quotation updated successfully")
+            }
+          }
+        } catch (error) {
+          console.error("Update error:", error)
+          if (error.response) {
+            setError(error?.response?.data?.message)
+          } else {
+            setError("An error occurred while updating the quotation")
+          }
         }
-      }
-
-      const vehicle = {
-        carReg_no: data.carReg_no,
-        car_registration_no: data.car_registration_no,
-        chassis_no: data.chassis_no,
-        engine_no: data.engine_no,
-        vehicle_brand: data.vehicle_brand,
-        vehicle_name: data.vehicle_name,
-        mileage: newMileageValue,
-        mileageHistory: updatedMileageHistory,
-      }
-
-      const quotation = {
-        user_type: specificQuotation?.user_type,
-        Id: specificQuotation?.Id,
-        job_no: specificQuotation?.job_no,
-        date: selectedDate || specificQuotation?.date,
-        parts_total: partsTotal || specificQuotation.parts_total,
-        service_total: serviceTotal || specificQuotation.serviceTotal,
-        total_amount: grandTotal || specificQuotation?.total_amount,
-        discount: discount === 0 || discount > 0 ? discount : specificQuotation?.discount,
-        vat: vat === 0 || vat > 0 ? vat : specificQuotation?.vat,
-        tax: tax === 0 || tax > 0 ? tax : specificQuotation?.tax,
-        net_total: calculateFinalTotal() || specificQuotation.net_total,
-        input_data: input_data,
-        service_input_data: service_input_data,
-      }
-
-      const values = {
-        tenantDomain,
-        customer,
-        company,
-        showRoom,
-        vehicle,
-        quotation,
-      }
-
-      const newValue = {
-        id: id,
-        data: {
-          ...values,
-        },
-      }
-
-      if (removeButton === "") {
-        const res = await updateQuotation(newValue).unwrap()
-        if (res.success) {
-          setReload(!reload)
-          toast.success("Quotation updated successfully")
-        }
-      }
-    } catch (error) {
-      console.error("Update error:", error)
-      if (error.response) {
-        setError(error?.response?.data?.message)
-      } else {
-        setError("An error occurred while updating the quotation")
-      }
-    }
+      }, "You don't have permission update quotation"
+    )
   }
 
   // Navigation handlers
   const handleGoInvoice = () => {
     handleSubmit(onSubmit)()
-    navigate(`/dashboard/invoice?order_no=${specificQuotation?.job_no}&id=${id}`)
+    navigate(`/dashboard/create-invoice?order_no=${specificQuotation?.job_no}&id=${id}`)
   }
 
   const handleGoPreview = () => {
@@ -1077,15 +1071,15 @@ const UpdateQuotation = () => {
         <div className="addJobCardHeads">
           <img src={CompanyInfoData?.data?.logo || "/placeholder.svg"} alt="logo" className="addJobLogoImg" />
           <div>
-          <div className="flex-1 text-center">
-                      <h2 className="trustAutoTitle">
-                        {CompanyInfoData?.data?.companyNameBN}
-                      </h2>
+            <div className="flex-1 text-center">
+              <h2 className="trustAutoTitle">
+                {CompanyInfoData?.data?.companyNameBN}
+              </h2>
 
-                      <h3 className="text-lg md:text-xl english-font mt-1 text-[#4671A1] font-bold ">
-                        ({CompanyInfoData?.data?.companyName})
-                      </h3>
-                    </div>
+              <h3 className="text-lg md:text-xl english-font mt-1 text-[#4671A1] font-bold ">
+                ({CompanyInfoData?.data?.companyName})
+              </h3>
+            </div>
             <span className="text-[12px] lg:text-xl mt-5 block">Office: {CompanyInfoData?.data?.address}</span>
           </div>
           <TrustAutoAddress />
@@ -2004,14 +1998,16 @@ const UpdateQuotation = () => {
 
         <div className="mt-10">
           <div className="flex justify-center align-items-center">
-            <Button
-              sx={{ background: "#42A1DA", color: "#fff" }}
-              onClick={handleOnSubmit}
-              className="addJobBtn"
-              disabled={updateLoading}
-            >
-              Update Quotation
-            </Button>
+            <Can page='/dashboard/update-quotation' action='edit'>
+              <Button
+                sx={{ background: "#42A1DA", color: "#fff" }}
+                onClick={handleOnSubmit}
+                className="addJobBtn"
+                disabled={updateLoading}
+              >
+                Update Quotation
+              </Button>
+            </Can>
           </div>
         </div>
         {error && <div className="pt-6 text-center text-red-400">{error}</div>}

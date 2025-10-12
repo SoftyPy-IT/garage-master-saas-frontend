@@ -39,7 +39,7 @@ const CustomerProfile = () => {
     localStorage.setItem(`customer-tab-${id}`, value.toString());
   }, [value, id]);
 
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain } = useTenantDomain();
 
   const {
     data: profileData,
@@ -187,7 +187,7 @@ const CustomerProfile = () => {
 
         <TabPanel value={value} index={2}>
           <CustomerJobCardList
-          companyProfileData={companyProfileData}
+            companyProfileData={companyProfileData}
             tenantDomain={tenantDomain}
             customerId={profileData?.data?.customerId}
             user_type={profileData?.data?.user_type}
@@ -196,7 +196,7 @@ const CustomerProfile = () => {
         </TabPanel>
         <TabPanel value={value} index={3}>
           <CustomerQoutationList
-          companyProfileData={companyProfileData}
+            companyProfileData={companyProfileData}
             tenantDomain={tenantDomain}
             id={id}
             user_type={profileData?.data?.user_type}
@@ -204,7 +204,7 @@ const CustomerProfile = () => {
         </TabPanel>
         <TabPanel value={value} index={4}>
           <CustomerInvoiceList
-          companyProfileData={companyProfileData}
+            companyProfileData={companyProfileData}
             tenantDomain={tenantDomain}
             id={id}
             user_type={profileData?.data?.user_type}
@@ -212,7 +212,7 @@ const CustomerProfile = () => {
         </TabPanel>
         <TabPanel value={value} index={5}>
           <CustomerMoneyList
-          companyProfileData={companyProfileData}
+            companyProfileData={companyProfileData}
             tenantDomain={tenantDomain}
             id={id}
             user_type={profileData?.data?.user_type}

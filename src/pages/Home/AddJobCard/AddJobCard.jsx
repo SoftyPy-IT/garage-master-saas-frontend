@@ -3,7 +3,6 @@
 
 import "./AddJobCard.css";
 import car from "../../../../public/assets/car2.jpeg";
-import logo from "../../../../public/assets/logo.png";
 import { useEffect, useRef, useState } from "react";
 import {
   Autocomplete,
@@ -41,17 +40,18 @@ import { useGetAllCompaniesQuery } from "../../../redux/api/companyApi";
 import { useGetAllShowRoomsQuery } from "../../../redux/api/showRoomApi";
 import {
   useCreateJobCardMutation,
-  useDeleteJobCardMutation,
   useGetAllJobCardsQuery,
   useGetUserDetailsForJobCardQuery,
 } from "../../../redux/api/jobCard";
 import { useGetCompanyProfileQuery } from "../../../redux/api/companyProfile";
 import { useTenantDomain } from "../../../hooks/useTenantDomain";
-import { labelStyle } from "../../../utils/customStyle";
 import JobCardTable from "./JobcardTable";
+import { usePermissions } from "../../../context/PermissionContext";
+import Can from "../../../components/Can";
 
 const AddJobCard = () => {
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain } = useTenantDomain();
+  const { performActionWithPermission } = usePermissions();
 
   const location = useLocation();
   const id = new URLSearchParams(location.search).get("id");
@@ -92,7 +92,6 @@ const AddJobCard = () => {
   const [getDataWithChassisNo, setGetDataWithChassisNo] = useState("");
 
   const formRef = useRef();
-  const textInputRef = useRef(null);
   const navigate = useNavigate();
   const limit = 10;
   const jobCardLimit = 500000;
@@ -111,9 +110,6 @@ const AddJobCard = () => {
     createJobCard,
     { isLoading: createJobCardLoading, error: jobCardCreateError },
   ] = useCreateJobCardMutation();
-
-  const [deleteJobCard, { isLoading: deleteLoading }] =
-    useDeleteJobCardMutation();
 
   const { data: customerData, isLoading: customerLoading } =
     useGetAllCustomersQuery({
@@ -152,8 +148,8 @@ const AddJobCard = () => {
 
   const lastJobCard = allJobCards?.data?.jobCards
     ? [...allJobCards.data.jobCards].sort(
-        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-      )[0]
+      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+    )[0]
     : null;
 
   const jobNumber =
@@ -316,146 +312,150 @@ const AddJobCard = () => {
   };
 
   const onSubmit = async (data) => {
-    const toastId = toast.loading("Creating Jobcard...");
-    if (!newId) {
-      return toast.error("Please add your Id.");
-    }
-
-    const customer = {
-      company_name: data.company_name,
-      vehicle_username: data.vehicle_username,
-      company_address: data.company_address,
-      customer_name: data.customer_name,
-      customer_contact: data.customer_contact,
-      customer_country_code: countryCode?.code,
-      customer_email: data.customer_email,
-      customer_address: data.customer_address,
-      driver_name: data.driver_name,
-      driver_contact: data.driver_contact,
-      driver_country_code: driverCountryCode?.code,
-      reference_name: data.reference_name,
-      customerOwnerPhone: data.customerOwnerPhone,
-      customerOwnerName: data.customerOwnerName,
-      customerOwnerCountryCode: customerOwnerCountryCode?.code,
-    };
-
-    const company = {
-      company_name: data.company_name,
-      vehicle_username: data.vehicle_username,
-      company_address: data.company_address,
-      company_contact: data.company_contact,
-      company_country_code: countryCode?.code,
-      company_email: data.company_email,
-      customer_address: data.customer_address,
-      driver_name: data.driver_name,
-      driver_contact: data.driver_contact,
-      driver_country_code: driverCountryCode?.code,
-      reference_name: data.reference_name,
-      companyOwnerPhone: data.companyOwnerPhone,
-      companyOwnerName: data.companyOwnerName,
-      companyOwnerCountryCode: companyOwnerCountryCode?.code,
-    };
-
-    const showroom = {
-      showRoom_name: data.showRoom_name,
-      vehicle_username: data.vehicle_username,
-      showRoom_address: data.showRoom_address,
-      company_name: data.company_name,
-      company_contact: data.company_contact,
-      company_country_code: countryCode?.code,
-      company_email: data.company_email,
-      company_address: data.company_address,
-      driver_name: data.driver_name,
-      driver_contact: data.driver_contact,
-      driver_country_code: driverCountryCode?.code,
-      reference_name: data.reference_name,
-    };
-
-    data.vehicle_model = Number(data.vehicle_model);
-    data.mileage = Number(data.mileage);
-
-    const existingMileageHistory = getDataWithChassisNo?.mileageHistory || [];
-    const updatedMileageHistory = [...existingMileageHistory];
-
-    // Only add current mileage to history if it has changed
-    if (mileageChanged && currentMileage) {
-      const newMileageEntry = {
-        mileage: Number(currentMileage),
-        date: new Date().toISOString(),
-      };
-
-      // Check if this mileage value already exists in history
-      const mileageExists = updatedMileageHistory.some(
-        (entry) => entry.mileage === Number(currentMileage)
-      );
-
-      if (!mileageExists) {
-        updatedMileageHistory.push(newMileageEntry);
-      }
-    }
-
-    const vehicle = {
-      carReg_no: data.carReg_no,
-      car_registration_no: data.car_registration_no,
-      chassis_no: data.chassis_no,
-      engine_no: data.engine_no,
-      vehicle_brand: data.vehicle_brand,
-      vehicle_name: data.vehicle_name,
-      vehicle_model: data.vehicle_model,
-      vehicle_category: data.vehicle_category,
-      color_code: data.color_code,
-      mileageHistory: updatedMileageHistory,
-      fuel_type: data.fuel_type,
-    };
-
-    const jobCard = {
-      Id: userId,
-      job_no: lastJobCard?.job_no,
-      user_type: newId,
-      date: formattedDate,
-      vehicle_interior_parts: data.vehicle_interior_parts,
-      reported_defect: data.reported_defect,
-      reported_action: data.reported_action,
-      note: data.note,
-      vehicle_body_report: data.vehicle_body_report,
-      technician_name: data.technician_name,
-      technician_signature: data.technician_signature,
-      technician_date: data.technician_date,
-      vehicle_owner: data.vehicle_owner,
-      mileage: data.mileage,
-    };
-
-    const newCard = {
-      tenantDomain: tenantDomain,
-      customer,
-      company,
-      showroom,
-      vehicle,
-      jobCard,
-    };
-
-    try {
-      const res = await createJobCard(newCard).unwrap();
-      if (res.success) {
-        toast.success(res?.message);
-        if (clickControl === "preview") {
-          navigate(`/dashboard/preview?id=${res?.data?._id}`);
+    performActionWithPermission('/dashboard/create-job-card', 'create',
+      async () => {
+        const toastId = toast.loading("Creating Jobcard...");
+        if (!newId) {
+          return toast.error("Please add your Id.");
         }
-        if (clickControl === "quotation") {
-          navigate(`/dashboard/qutation?order_no=${res?.data?.job_no}`);
+
+        const customer = {
+          company_name: data.company_name,
+          vehicle_username: data.vehicle_username,
+          company_address: data.company_address,
+          customer_name: data.customer_name,
+          customer_contact: data.customer_contact,
+          customer_country_code: countryCode?.code,
+          customer_email: data.customer_email,
+          customer_address: data.customer_address,
+          driver_name: data.driver_name,
+          driver_contact: data.driver_contact,
+          driver_country_code: driverCountryCode?.code,
+          reference_name: data.reference_name,
+          customerOwnerPhone: data.customerOwnerPhone,
+          customerOwnerName: data.customerOwnerName,
+          customerOwnerCountryCode: customerOwnerCountryCode?.code,
+        };
+
+        const company = {
+          company_name: data.company_name,
+          vehicle_username: data.vehicle_username,
+          company_address: data.company_address,
+          company_contact: data.company_contact,
+          company_country_code: countryCode?.code,
+          company_email: data.company_email,
+          customer_address: data.customer_address,
+          driver_name: data.driver_name,
+          driver_contact: data.driver_contact,
+          driver_country_code: driverCountryCode?.code,
+          reference_name: data.reference_name,
+          companyOwnerPhone: data.companyOwnerPhone,
+          companyOwnerName: data.companyOwnerName,
+          companyOwnerCountryCode: companyOwnerCountryCode?.code,
+        };
+
+        const showroom = {
+          showRoom_name: data.showRoom_name,
+          vehicle_username: data.vehicle_username,
+          showRoom_address: data.showRoom_address,
+          company_name: data.company_name,
+          company_contact: data.company_contact,
+          company_country_code: countryCode?.code,
+          company_email: data.company_email,
+          company_address: data.company_address,
+          driver_name: data.driver_name,
+          driver_contact: data.driver_contact,
+          driver_country_code: driverCountryCode?.code,
+          reference_name: data.reference_name,
+        };
+
+        data.vehicle_model = Number(data.vehicle_model);
+        data.mileage = Number(data.mileage);
+
+        const existingMileageHistory = getDataWithChassisNo?.mileageHistory || [];
+        const updatedMileageHistory = [...existingMileageHistory];
+
+        // Only add current mileage to history if it has changed
+        if (mileageChanged && currentMileage) {
+          const newMileageEntry = {
+            mileage: Number(currentMileage),
+            date: new Date().toISOString(),
+          };
+
+          // Check if this mileage value already exists in history
+          const mileageExists = updatedMileageHistory.some(
+            (entry) => entry.mileage === Number(currentMileage)
+          );
+
+          if (!mileageExists) {
+            updatedMileageHistory.push(newMileageEntry);
+          }
         }
-        if (clickControl === "invoice") {
-          navigate(`/dashboard/invoice?order_no=${res?.data?.job_no}`);
+
+        const vehicle = {
+          carReg_no: data.carReg_no,
+          car_registration_no: data.car_registration_no,
+          chassis_no: data.chassis_no,
+          engine_no: data.engine_no,
+          vehicle_brand: data.vehicle_brand,
+          vehicle_name: data.vehicle_name,
+          vehicle_model: data.vehicle_model,
+          vehicle_category: data.vehicle_category,
+          color_code: data.color_code,
+          mileageHistory: updatedMileageHistory,
+          fuel_type: data.fuel_type,
+        };
+
+        const jobCard = {
+          Id: userId,
+          job_no: lastJobCard?.job_no,
+          user_type: newId,
+          date: formattedDate,
+          vehicle_interior_parts: data.vehicle_interior_parts,
+          reported_defect: data.reported_defect,
+          reported_action: data.reported_action,
+          note: data.note,
+          vehicle_body_report: data.vehicle_body_report,
+          technician_name: data.technician_name,
+          technician_signature: data.technician_signature,
+          technician_date: data.technician_date,
+          vehicle_owner: data.vehicle_owner,
+          mileage: data.mileage,
+        };
+
+        const newCard = {
+          tenantDomain: tenantDomain,
+          customer,
+          company,
+          showroom,
+          vehicle,
+          jobCard,
+        };
+
+        try {
+          const res = await createJobCard(newCard).unwrap();
+          if (res.success) {
+            toast.success(res?.message);
+            if (clickControl === "preview") {
+              navigate(`/dashboard/preview?id=${res?.data?._id}`);
+            }
+            if (clickControl === "quotation") {
+              navigate(`/dashboard/create-quotation?order_no=${res?.data?.job_no}`);
+            }
+            if (clickControl === "invoice") {
+              navigate(`/dashboard/create-invoice?order_no=${res?.data?.job_no}`);
+            }
+            if (clickControl === null) {
+              navigate("/dashboard/jobcard-list");
+            }
+          }
+        } catch (err) {
+          toast.error(err | "Something went wrong!");
+        } finally {
+          toast.dismiss(toastId);
         }
-        if (clickControl === null) {
-          navigate("/dashboard/jobcard-list");
-        }
-      }
-    } catch (err) {
-      toast.error(err | "Something went wrong!");
-    } finally {
-      toast.dismiss(toastId);
-    }
+      }, "You don't have permission to create job card"
+    )
   };
 
   const sortedVehicleName = vehicleName.sort((a, b) => {
@@ -523,9 +523,6 @@ const AddJobCard = () => {
     }
   };
 
-  const handleIconPreview = async (e) => {
-    navigate(`/dashboard/preview?id=${e}`);
-  };
 
   useEffect(() => {
     const parsedDate = new Date();
@@ -558,8 +555,8 @@ const AddJobCard = () => {
     const defaultMileage =
       getDataWithChassisNo?.mileageHistory?.length > 0
         ? getDataWithChassisNo.mileageHistory[
-            getDataWithChassisNo.mileageHistory.length - 1
-          ].mileage
+          getDataWithChassisNo.mileageHistory.length - 1
+        ].mileage
         : getDataWithChassisNo?.mileage || "";
 
     setCurrentMileage(defaultMileage);
@@ -1201,8 +1198,8 @@ const AddJobCard = () => {
                       options={
                         userDetails?.data?.vehicles
                           ? userDetails?.data?.vehicles?.map(
-                              (option) => option?.chassis_no
-                            )
+                            (option) => option?.chassis_no
+                          )
                           : ""
                       }
                       renderInput={(params) => (
@@ -1322,7 +1319,7 @@ const AddJobCard = () => {
                   <Autocomplete
                     fullWidth
                     freeSolo
-                    onInputChange={(event, newValue) => {}}
+                    onInputChange={(event, newValue) => { }}
                     onChange={handleBrandChange}
                     value={getDataWithChassisNo?.vehicle_brand || ""}
                     options={carBrands.map((option) => option.label)}
@@ -1341,7 +1338,7 @@ const AddJobCard = () => {
                   <Autocomplete
                     fullWidth
                     freeSolo
-                    onInputChange={(event, newValue) => {}}
+                    onInputChange={(event, newValue) => { }}
                     value={getDataWithChassisNo?.vehicle_name || ""}
                     options={filteredVehicles.map((option) => option.value)}
                     renderInput={(params) => (
@@ -1569,7 +1566,7 @@ const AddJobCard = () => {
                     </Grid>
                   </Grid>
                 </Grid>
-               
+
               </Grid>
             </Box>
           </div>
@@ -1643,9 +1640,8 @@ const AddJobCard = () => {
             </div>
             <div>
               <input
-                className={`border h-14 w-60 px-3 rounded-sm ${
-                  errors.technician_date ? "border-red-500" : ""
-                }`}
+                className={`border h-14 w-60 px-3 rounded-sm ${errors.technician_date ? "border-red-500" : ""
+                  }`}
                 type="date"
                 {...register("technician_date", {
                   required: "Technician date is required!",
@@ -1674,13 +1670,16 @@ const AddJobCard = () => {
           </div>
 
           <div className="mt-5 flex justify-center ">
-            <Button
-              sx={{ color: "#fff", borderRadius: "20px" }}
-              disabled={createJobCardLoading}
-              type="submit"
-            >
-              Add To Job Card
-            </Button>
+            <Can page="/dashboard/create-job-card" action="create">
+              <Button
+                sx={{ color: "#fff", borderRadius: "20px" }}
+                disabled={createJobCardLoading}
+                type="submit"
+              >
+                Add To Job Card
+              </Button>
+            </Can>
+
           </div>
         </div>
       </form>

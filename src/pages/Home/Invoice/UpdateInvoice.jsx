@@ -30,6 +30,8 @@ import { unitOptions } from "../../../utils/options";
 import { formatNumber } from "../../../utils/formateSemicolon";
 import { useGetCompanyProfileQuery } from "../../../redux/api/companyProfile";
 import { useTenantDomain } from "../../../hooks/useTenantDomain";
+import { usePermissions } from "../../../context/PermissionContext";
+import Can from "../../../components/Can";
 
 const UpdateInvoice = () => {
   const [specificInvoice, setSpecificInvoice] = useState(null);
@@ -37,12 +39,12 @@ const UpdateInvoice = () => {
   const [partsTotal, setPartsTotal] = useState(0);
   const [serviceTotal, setServiceTotal] = useState(0);
   const [grandTotal, setGrandTotal] = useState(0);
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain } = useTenantDomain();
   const [currentMileage, setCurrentMileage] = useState("");
   const [mileageChanged, setMileageChanged] = useState(false);
   const [discount, setDiscount] = useState("");
   const [vat, setVAT] = useState("");
-  const [tax, setTax] = useState(""); // New state for Tax
+  const [tax, setTax] = useState("");
   const [advance, setAdvance] = useState("");
   const [error, setError] = useState("");
   const [selectedDate, setSelectedDate] = useState(null);
@@ -59,8 +61,8 @@ const UpdateInvoice = () => {
     "user_type"
   );
   const userFromProfile = new URLSearchParams(location.search).get("user");
+  const { performActionWithPermission } = usePermissions();
 
-  // country code set
   const [countryCode, setCountryCode] = useState(countries[0]);
   const [phoneNumber, setPhoneNumber] = useState("");
 
@@ -106,12 +108,11 @@ const UpdateInvoice = () => {
   useEffect(() => {
     if (data?.data) {
       setSpecificInvoice(data.data);
-      // Initialize discount, vat, tax, and advance from specificInvoice
       setDiscount(
         data.data.discount !== undefined ? Number(data.data.discount) : ""
       );
       setVAT(data.data.vat !== undefined ? Number(data.data.vat) : "");
-      setTax(data.data.tax !== undefined ? Number(data.data.tax) : ""); // Initialize tax
+      setTax(data.data.tax !== undefined ? Number(data.data.tax) : "");
       setAdvance(
         data.data.advance !== undefined ? Number(data.data.advance) : ""
       );
@@ -273,13 +274,6 @@ const UpdateInvoice = () => {
     specificInvoice?.input_data,
     specificInvoice?.service_input_data,
   ]);
-
-  const handleDateChange = (newValue) => {
-    if (newValue) {
-      const formattedDate = newValue.format("YYYY-MM-DD");
-      setSelectedDate(formattedDate);
-    }
-  };
 
   const handleDescriptionChange = (index, value) => {
     const newItems = [...(specificInvoice?.input_data || [])];
@@ -570,29 +564,29 @@ const UpdateInvoice = () => {
 
   const calculateFinalTotal = () => {
     let finalTotal;
-    let differenceExistAndNewGrandTotal = 0; // Initialize to 0
+    let differenceExistAndNewGrandTotal = 0;
     let vatAsPercentage = 0;
     let discountAsPercentage = 0;
-    let taxAsPercentage = 0; // New variable for tax
+    let taxAsPercentage = 0;
     let totalAfterDiscount = 0;
 
     // Calculate the difference between the grand total and the specific invoice's total amount
     if (grandTotal !== specificInvoice?.total_amount) {
       differenceExistAndNewGrandTotal =
-        grandTotal - (Number(specificInvoice?.total_amount) || 0); // Convert to number
+        grandTotal - (Number(specificInvoice?.total_amount) || 0);
     }
 
     // Determine the discount percentage
     if (discount > 0) {
       discountAsPercentage = discount;
     } else if (discount === 0) {
-      discountAsPercentage = 0; // If it's 0, we assign 0 but ensure it won't reduce the amount
+      discountAsPercentage = 0;
     } else if (discount === "") {
       discountAsPercentage = Number(specificInvoice?.discount) || 0;
     }
 
     // Convert specificInvoice?.total_amount to a number
-    const specificTotalAmount = Number(specificInvoice?.total_amount) || 0; // Ensure it's treated as a number
+    const specificTotalAmount = Number(specificInvoice?.total_amount) || 0;
     const differenceWithoutDiscount =
       specificTotalAmount + differenceExistAndNewGrandTotal;
 
@@ -617,8 +611,6 @@ const UpdateInvoice = () => {
     } else if (vat === "") {
       vatAsPercentage = Number(specificInvoice?.vat) || 0;
     }
-
-    // Calculate total after VAT
     const totalAfterVat =
       totalAfterDiscount + totalAfterDiscount * (vatAsPercentage / 100);
 
@@ -721,7 +713,6 @@ const UpdateInvoice = () => {
     }
   };
 
-  // Fixed function to handle mileage history deletion
   const handleMileageHistoryDelete = (indexToDelete) => {
     setSpecificInvoice((prevState) => ({
       ...prevState,
@@ -762,118 +753,122 @@ const UpdateInvoice = () => {
   ];
 
   const onSubmit = async (data) => {
-    setRemoveButton("");
-    try {
-      const customer = {
-        company_name: data.company_name,
-        customer_name: data.customer_name,
-        customer_contact: data.customer_contact,
-        customer_country_code: data.company_country_code,
-        customer_address: data.customer_address,
-      };
-
-      const company = {
-        company_name: data.company_name,
-        vehicle_username: data.vehicle_username,
-        company_address: data.company_address,
-        company_contact: data.company_contact,
-        company_country_code: data.company_country_code,
-      };
-
-      const showRoom = {
-        showRoom_name: data.showRoom_name,
-        vehicle_username: data.vehicle_username,
-        company_name: data.company_name,
-        company_contact: data.company_contact,
-        company_country_code: data.company_country_code,
-        company_address: data.company_address,
-      };
-
-      // Fixed mileage history logic
-      data.mileage = Number(data.mileage);
-      const newMileageValue = Number(data.mileage);
-
-      // Get existing mileage history or initialize empty array
-      const existingMileageHistory =
-        specificInvoice?.vehicle?.mileageHistory || [];
-      const updatedMileageHistory = [...existingMileageHistory];
-
-      // Only add new mileage to history if it's valid and different from the last entry
-      if (!isNaN(newMileageValue) && newMileageValue > 0) {
-        const lastMileage =
-          updatedMileageHistory.length > 0
-            ? updatedMileageHistory[updatedMileageHistory.length - 1].mileage
-            : null;
-
-        // Only add if it's different from the last mileage entry
-        if (lastMileage !== newMileageValue) {
-          const newMileageEntry = {
-            mileage: newMileageValue,
-            date: new Date().toISOString(),
+    performActionWithPermission('/dashboard/update-invoice', 'edit',
+      async () => {
+        setRemoveButton("");
+        try {
+          const customer = {
+            company_name: data.company_name,
+            customer_name: data.customer_name,
+            customer_contact: data.customer_contact,
+            customer_country_code: data.company_country_code,
+            customer_address: data.customer_address,
           };
-          updatedMileageHistory.push(newMileageEntry);
+
+          const company = {
+            company_name: data.company_name,
+            vehicle_username: data.vehicle_username,
+            company_address: data.company_address,
+            company_contact: data.company_contact,
+            company_country_code: data.company_country_code,
+          };
+
+          const showRoom = {
+            showRoom_name: data.showRoom_name,
+            vehicle_username: data.vehicle_username,
+            company_name: data.company_name,
+            company_contact: data.company_contact,
+            company_country_code: data.company_country_code,
+            company_address: data.company_address,
+          };
+
+          // Fixed mileage history logic
+          data.mileage = Number(data.mileage);
+          const newMileageValue = Number(data.mileage);
+
+          // Get existing mileage history or initialize empty array
+          const existingMileageHistory =
+            specificInvoice?.vehicle?.mileageHistory || [];
+          const updatedMileageHistory = [...existingMileageHistory];
+
+          // Only add new mileage to history if it's valid and different from the last entry
+          if (!isNaN(newMileageValue) && newMileageValue > 0) {
+            const lastMileage =
+              updatedMileageHistory.length > 0
+                ? updatedMileageHistory[updatedMileageHistory.length - 1].mileage
+                : null;
+
+            // Only add if it's different from the last mileage entry
+            if (lastMileage !== newMileageValue) {
+              const newMileageEntry = {
+                mileage: newMileageValue,
+                date: new Date().toISOString(),
+              };
+              updatedMileageHistory.push(newMileageEntry);
+            }
+          }
+
+          const vehicle = {
+            carReg_no: data.carReg_no,
+            car_registration_no: data.car_registration_no,
+            chassis_no: data.chassis_no,
+            engine_no: data.engine_no,
+            vehicle_brand: data.vehicle_brand,
+            vehicle_name: data.vehicle_name,
+            mileage: newMileageValue,
+            mileageHistory: updatedMileageHistory,
+          };
+
+          const invoice = {
+            user_type: specificInvoice?.user_type,
+            Id: specificInvoice?.Id,
+            job_no: specificInvoice?.job_no,
+            date: selectedDate || specificInvoice?.date,
+            parts_total: partsTotal || specificInvoice.parts_total,
+            service_total: serviceTotal || specificInvoice.serviceTotal,
+            total_amount: grandTotal || specificInvoice?.total_amount,
+            discount:
+              discount === 0 || discount > 0 ? discount : specificInvoice?.discount,
+            vat: vat === 0 || vat > 0 ? vat : specificInvoice?.vat,
+            tax: tax === 0 || tax > 0 ? tax : specificInvoice?.tax, // Include tax
+            net_total: calculateFinalTotal() || specificInvoice.net_total,
+            advance:
+              advance === 0 || advance > 0 ? advance : specificInvoice?.advance,
+            due: calculateDue() || specificInvoice.due,
+            input_data: input_data,
+            service_input_data: service_input_data,
+            mileage: newMileageValue,
+          };
+
+          const values = {
+            tenantDomain,
+            customer,
+            company,
+            showRoom,
+            vehicle,
+            invoice,
+          };
+
+          const newValue = {
+            id: id,
+            data: {
+              ...values,
+            },
+          };
+
+          if (removeButton === "") {
+            const res = await updateInvoice(newValue).unwrap();
+            if (res.success) {
+              setReload(!reload);
+            }
+          }
+        } catch (error) {
+          if (error.response) {
+            setError(error.response.data.message);
+          }
         }
-      }
-
-      const vehicle = {
-        carReg_no: data.carReg_no,
-        car_registration_no: data.car_registration_no,
-        chassis_no: data.chassis_no,
-        engine_no: data.engine_no,
-        vehicle_brand: data.vehicle_brand,
-        vehicle_name: data.vehicle_name,
-        mileage: newMileageValue,
-        mileageHistory: updatedMileageHistory,
-      };
-
-      const invoice = {
-        user_type: specificInvoice?.user_type,
-        Id: specificInvoice?.Id,
-        job_no: specificInvoice?.job_no,
-        date: selectedDate || specificInvoice?.date,
-        parts_total: partsTotal || specificInvoice.parts_total,
-        service_total: serviceTotal || specificInvoice.serviceTotal,
-        total_amount: grandTotal || specificInvoice?.total_amount,
-        discount:
-          discount === 0 || discount > 0 ? discount : specificInvoice?.discount,
-        vat: vat === 0 || vat > 0 ? vat : specificInvoice?.vat,
-        tax: tax === 0 || tax > 0 ? tax : specificInvoice?.tax, // Include tax
-        net_total: calculateFinalTotal() || specificInvoice.net_total,
-        advance:
-          advance === 0 || advance > 0 ? advance : specificInvoice?.advance,
-        due: calculateDue() || specificInvoice.due,
-        input_data: input_data,
-        service_input_data: service_input_data,
-        mileage: newMileageValue,
-      };
-
-      const values = {
-        tenantDomain,
-        customer,
-        company,
-        showRoom,
-        vehicle,
-        invoice,
-      };
-
-      const newValue = {
-        id: id,
-        data: {
-          ...values,
-        },
-      };
-
-      if (removeButton === "") {
-        const res = await updateInvoice(newValue).unwrap();
-        if (res.success) {
-          setReload(!reload);
-        }
-      }
-    } catch (error) {
-      if (error.response) {
-        setError(error.response.data.message);
-      }
-    }
+      }, "You don't have permission to edit this invoice !"
+    )
   };
 
   const handleOnSubmit = () => {
@@ -896,7 +891,7 @@ const UpdateInvoice = () => {
   const handleGoMoneyReceipt = () => {
     handleSubmit(onSubmit)();
     navigate(
-      `/dashboard/money-receive?order_no=${specificInvoice?.job_no}&id=${id}&net_total=${specificInvoice?.net_total}`
+      `/dashboard/money-receive-create?order_no=${specificInvoice?.job_no}&id=${id}&net_total=${specificInvoice?.net_total}`
     );
   };
 
@@ -1042,16 +1037,16 @@ const UpdateInvoice = () => {
                   )}
                   {(specificInvoice?.user_type === "company" ||
                     specificInvoice?.user_type === "showRoom") && (
-                    <TextField
-                      fullWidth
-                      label="Customer"
-                      focused={
-                        specificInvoice?.company?.vehicle_username ||
-                        specificInvoice?.showRoom?.vehicle_username
-                      }
-                      {...register("vehicle_username")}
-                    />
-                  )}
+                      <TextField
+                        fullWidth
+                        label="Customer"
+                        focused={
+                          specificInvoice?.company?.vehicle_username ||
+                          specificInvoice?.showRoom?.vehicle_username
+                        }
+                        {...register("vehicle_username")}
+                      />
+                    )}
                 </Grid>
                 <Grid item lg={12} md={12} sm={12} xs={12}>
                   <Grid container spacing={1}>
@@ -1116,24 +1111,24 @@ const UpdateInvoice = () => {
                       )}
                       {(specificInvoice?.user_type === "company" ||
                         specificInvoice?.user_type === "showRoom") && (
-                        <TextField
-                          {...register("company_contact")}
-                          variant="outlined"
-                          fullWidth
-                          type="tel"
-                          value={
-                            phoneNumber
-                              ? phoneNumber
-                              : specificInvoice?.customer?.customer_contact
-                          }
-                          onChange={handlePhoneNumberChange}
-                          placeholder="Company Contact No (N)"
-                          focused={
-                            specificInvoice?.company?.company_contact ||
-                            specificInvoice?.showRoom?.company_contact
-                          }
-                        />
-                      )}
+                          <TextField
+                            {...register("company_contact")}
+                            variant="outlined"
+                            fullWidth
+                            type="tel"
+                            value={
+                              phoneNumber
+                                ? phoneNumber
+                                : specificInvoice?.customer?.customer_contact
+                            }
+                            onChange={handlePhoneNumberChange}
+                            placeholder="Company Contact No (N)"
+                            focused={
+                              specificInvoice?.company?.company_contact ||
+                              specificInvoice?.showRoom?.company_contact
+                            }
+                          />
+                        )}
                     </Grid>
                   </Grid>
                 </Grid>
@@ -1904,9 +1899,8 @@ const UpdateInvoice = () => {
                 <button>
                   <a
                     className="bg-[#42A0D9] text-white px-3 py-5  rounded-full "
-                    href={`${import.meta.env.VITE_API_URL}/invoices/invoice/${
-                      specificInvoice?._id
-                    }`}
+                    href={`${import.meta.env.VITE_API_URL}/invoices/invoice/${specificInvoice?._id
+                      }`}
                     target="_blank"
                     rel="noreferrer"
                   >
@@ -1918,14 +1912,16 @@ const UpdateInvoice = () => {
             </div>
           </div>
           <div className="flex  justify-center align-items-center mt-5 ">
-            <Button
-              sx={{ background: "#42A1DA", color: "#fff" }}
-              onClick={handleOnSubmit}
-              className="addJobBtn"
-              disabled={updateLoading}
-            >
-              Update Invoice
-            </Button>
+            <Can page='/dashboard/update-invoice' action='edit'>
+              <Button
+                sx={{ background: "#42A1DA", color: "#fff" }}
+                onClick={handleOnSubmit}
+                className="addJobBtn"
+                disabled={updateLoading}
+              >
+                Update Invoice
+              </Button>
+            </Can>
           </div>
         </div>
       </div>

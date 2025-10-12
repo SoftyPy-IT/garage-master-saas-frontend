@@ -33,7 +33,7 @@ import Loading from "../../../components/Loading/Loading";
 import { useTenantDomain } from "../../../hooks/useTenantDomain";
 import AddIcon from "@mui/icons-material/Add";
 export default function CompanyProfileDisplay() {
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain } = useTenantDomain();
 
   const { data, isLoading, refetch } = useGetCompanyProfileQuery({
     tenantDomain,
@@ -148,7 +148,7 @@ export default function CompanyProfileDisplay() {
                 size="large"
                 sx={{
                   ...buttonStyle,
-                  backgroundColor: "#1976d2", 
+                  backgroundColor: "#1976d2",
                   "&:hover": { backgroundColor: "#115293" },
                 }}
               >

@@ -76,7 +76,7 @@ const CustomerInvoiceList = ({
   return (
     <div className=" mb-24 mt-10 w-full">
       <button className="bg-blue-500 g items-center hover:bg-blue-600 text-white font-bold py-3 px-4 rounded transition duration-300">
-        <Link className="flex gap-x-2 " to={`/dashboard/invoice?id=${id}`}>
+        <Link className="flex gap-x-2 " to={`/dashboard/create-invoice?id=${id}`}>
           Create Invoice <HiOutlinePlus size={20} />
         </Link>
       </button>
@@ -112,7 +112,7 @@ const CustomerInvoiceList = ({
                   transactions.
                 </p>
                 <Link
-                  to={`/dashboard/invoice?id=${id}`}
+                  to={`/dashboard/create-invoice?id=${id}`}
                   className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-full transition duration-300 flex items-center"
                 >
                   <AddCircleOutline sx={{ marginRight: "8px" }} />
@@ -182,7 +182,7 @@ const CustomerInvoiceList = ({
                             >
                               <a
                                 className="editIconWrap edit2"
-                                href={`/dashboard/money-receive?order_no=${card.job_no}&id=${card?._id}&net_total=${net_total}`}
+                                href={`/dashboard/money-receive-create?order_no=${card.job_no}&id=${card?._id}&net_total=${net_total}`}
                                 rel="noreferrer"
                               >
                                 <Money className="editIcon" />
@@ -219,13 +219,11 @@ const CustomerInvoiceList = ({
                             >
                               <a
                                 className="flex flex-col items-center edit2"
-                                href={`${
-                                  import.meta.env.VITE_API_URL
-                                }/invoices/invoice/${
-                                  card._id
-                                }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
-                                  JSON.stringify(companyProfileData)
-                                )}`}
+                                href={`${import.meta.env.VITE_API_URL
+                                  }/invoices/invoice/${card._id
+                                  }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
+                                    JSON.stringify(companyProfileData)
+                                  )}`}
                                 target="_blank"
                                 rel="noreferrer"
                               >
@@ -244,7 +242,7 @@ const CustomerInvoiceList = ({
                                     state: { redirectTo: "customer-profile" },
                                   }}
                                 >
-                                  <FaEdit className="editIcon text-blue-500" /> 
+                                  <FaEdit className="editIcon text-blue-500" />
                                 </Link>
                               </div>
                             </Tooltip>
@@ -266,12 +264,12 @@ const CustomerInvoiceList = ({
                                   handleMoveToRecycledbin(card._id)
                                 }
                                 className="editIconWrap cursor-pointer"
-                                style={{                                      
-                                      background: "white",
-                                      border: "none",
-                                      padding: 5,
-                                      borderRadius: "9999px"
-                                    }}
+                                style={{
+                                  background: "white",
+                                  border: "none",
+                                  padding: 5,
+                                  borderRadius: "9999px"
+                                }}
                                 aria-label="Move to Recycle Bin"
                               >
                                 <FaTrashAlt className="deleteIcon text-red-500" />

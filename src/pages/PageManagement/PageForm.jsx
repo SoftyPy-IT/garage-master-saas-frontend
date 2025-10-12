@@ -122,8 +122,9 @@ const PageForm = ({ open, onClose, pageData, mode, tenantDomain }) => {
                 name="path"
                 placeholder="/example-path"
                 required
-                defaultValue={isEditMode ? pageData.path : ""}
+                defaultValue={isEditMode ? pageData.path : "/"}
               />
+
             </Grid>
             <Grid item xs={12}>
               <FormInput

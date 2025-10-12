@@ -32,9 +32,12 @@ import {
 } from "../../../redux/api/jobCard";
 import { useGetCompanyProfileQuery } from "../../../redux/api/companyProfile";
 import { useTenantDomain } from "../../../hooks/useTenantDomain";
+import { usePermissions } from "../../../context/PermissionContext";
+import Can from "../../../components/Can";
 
 const UpdateJobCard = () => {
   const [inputValue, setInputValue] = useState("");
+  const { performActionWithPermission } = usePermissions();
 
   const [countryCode, setCountryCode] = useState(countries[0]);
   const [driverCountryCode, setDriverCountryCode] = useState(countries[0]);
@@ -48,9 +51,6 @@ const UpdateJobCard = () => {
     countries[0]
   );
   const [value, setValue] = useState("");
-  const [value2, setValue2] = useState("");
-  const [value3, setValue3] = useState("");
-
   const [selectedBrand, setSelectedBrand] = useState("");
   const [filteredVehicles, setFilteredVehicles] = useState([]);
 
@@ -69,8 +69,7 @@ const UpdateJobCard = () => {
   const [clickControl, setClickControl] = useState(null);
 
   const [dateChange, setDateChange] = useState(false);
-  const [techDateChange, setTechDateChange] = useState(false);
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain } = useTenantDomain();
 
   const formRef = useRef();
   const navigate = useNavigate();
@@ -304,152 +303,151 @@ const UpdateJobCard = () => {
 
   // Replace the onSubmit function with this improved version that properly handles mileage history
   const onSubmit = async (data) => {
-    const toastId = toast.loading("Updating Jobcard...");
-    const customer = {
-      company_name: data.company_name,
-      vehicle_username: data.vehicle_username,
-      company_address: data.company_address,
-      customer_name: data.customer_name,
-      customer_contact: data.customer_contact,
-      customer_country_code: countryCode.code,
-      customer_email: data.customer_email,
-      customer_address: data.customer_address,
-      driver_name: data.driver_name,
-      driver_contact: data.driver_contact,
-      driver_country_code: driverCountryCode.code,
-      reference_name: data.reference_name,
-    };
-    const company = {
-      company_name: data.company_name,
-      vehicle_username: data.vehicle_username,
-      company_address: data.company_address,
-      company_contact: data.company_contact,
-      company_country_code: countryCode.code,
-      company_email: data.company_email,
-      customer_address: data.customer_address,
-      driver_name: data.driver_name,
-      driver_contact: data.driver_contact,
-      driver_country_code: driverCountryCode.code,
-      reference_name: data.reference_name,
-    };
-    const showroom = {
-      showRoom_name: data.showRoom_name,
-      vehicle_username: data.vehicle_username,
-      showRoom_address: data.showRoom_address,
-      company_name: data.company_name,
-      company_contact: data.company_contact,
-      company_country_code: countryCode.code,
-      company_email: data.company_email,
-      company_address: data.company_address,
-      driver_name: data.driver_name,
-      driver_contact: data.driver_contact,
-      driver_country_code: driverCountryCode.code,
-      reference_name: data.reference_name,
-    };
+    performActionWithPermission('/dashboard/update-jobcard', 'edit',
+      async () => {
+        const toastId = toast.loading("Updating Jobcard...");
+        const customer = {
+          company_name: data.company_name,
+          vehicle_username: data.vehicle_username,
+          company_address: data.company_address,
+          customer_name: data.customer_name,
+          customer_contact: data.customer_contact,
+          customer_country_code: countryCode.code,
+          customer_email: data.customer_email,
+          customer_address: data.customer_address,
+          driver_name: data.driver_name,
+          driver_contact: data.driver_contact,
+          driver_country_code: driverCountryCode.code,
+          reference_name: data.reference_name,
+        };
+        const company = {
+          company_name: data.company_name,
+          vehicle_username: data.vehicle_username,
+          company_address: data.company_address,
+          company_contact: data.company_contact,
+          company_country_code: countryCode.code,
+          company_email: data.company_email,
+          customer_address: data.customer_address,
+          driver_name: data.driver_name,
+          driver_contact: data.driver_contact,
+          driver_country_code: driverCountryCode.code,
+          reference_name: data.reference_name,
+        };
+        const showroom = {
+          showRoom_name: data.showRoom_name,
+          vehicle_username: data.vehicle_username,
+          showRoom_address: data.showRoom_address,
+          company_name: data.company_name,
+          company_contact: data.company_contact,
+          company_country_code: countryCode.code,
+          company_email: data.company_email,
+          company_address: data.company_address,
+          driver_name: data.driver_name,
+          driver_contact: data.driver_contact,
+          driver_country_code: driverCountryCode.code,
+          reference_name: data.reference_name,
+        };
+        data.vehicle_model = Number(data.vehicle_model);
+        data.mileage = Number(data.mileage);
+        // Get existing mileage history
+        const existingMileageHistory = getDataWithChassisNo?.mileageHistory || [];
+        const updatedMileageHistory = [...existingMileageHistory];
 
-    data.vehicle_model = Number(data.vehicle_model);
-    data.mileage = Number(data.mileage);
+        // Only add current mileage to history if it has changed
+        if (mileageChanged && currentMileage) {
+          const newMileageEntry = {
+            mileage: Number(currentMileage),
+            date: new Date().toISOString(),
+          };
 
-    // Get existing mileage history
-    const existingMileageHistory = getDataWithChassisNo?.mileageHistory || [];
-    const updatedMileageHistory = [...existingMileageHistory];
+          // Check if this mileage value already exists in history
+          const mileageExists = updatedMileageHistory.some(
+            (entry) => entry.mileage === Number(currentMileage)
+          );
 
-    // Only add current mileage to history if it has changed
-    if (mileageChanged && currentMileage) {
-      const newMileageEntry = {
-        mileage: Number(currentMileage),
-        date: new Date().toISOString(),
-      };
-
-      // Check if this mileage value already exists in history
-      const mileageExists = updatedMileageHistory.some(
-        (entry) => entry.mileage === Number(currentMileage)
-      );
-
-      if (!mileageExists) {
-        updatedMileageHistory.push(newMileageEntry);
-      }
-    }
-
-    // Extract vehicle information - use the existing mileage history without modification
-    const vehicle = {
-      carReg_no: data.carReg_no,
-      car_registration_no: data.car_registration_no,
-      chassis_no: data.chassis_no,
-      engine_no: data.engine_no,
-      vehicle_brand: data.vehicle_brand,
-      vehicle_name: data.vehicle_name,
-      vehicle_model: data.vehicle_model,
-      vehicle_category: data.vehicle_category,
-      color_code: data.color_code,
-      fuel_type: data.fuel_type,
-      mileageHistory: updatedMileageHistory,
-    };
-
-    const jobCard = {
-      Id: singleCard.Id,
-      job_no: singleCard.job_no,
-      user_type: singleCard.user_type,
-      date: formattedDate,
-      vehicle_interior_parts: data.vehicle_interior_parts,
-      reported_defect: data.reported_defect,
-      reported_action: data.reported_action,
-      note: data.note,
-      vehicle_body_report: data.vehicle_body_report,
-      technician_name: data.technician_name,
-      technician_signature: data.technician_signature,
-      technician_date: data.technician_date,
-      vehicle_owner: data.vehicle_owner,
-      mileage: data.mileage,
-    };
-    const newCard = {
-      tenantDomain: tenantDomain,
-      customer,
-      company,
-      showroom,
-      vehicle,
-      jobCard,
-    };
-
-    const newData = {
-      tenantDomain: tenantDomain,
-      id,
-      data: newCard,
-    };
-
-    try {
-      const res = await updateJobCard(newData).unwrap();
-
-      if (res.success) {
-        toast.success(res.message);
-        if (clickControl === "preview") {
-          navigate(`/dashboard/preview?id=${res?.data?._id}`);
+          if (!mileageExists) {
+            updatedMileageHistory.push(newMileageEntry);
+          }
         }
-        if (clickControl === "quotation") {
-          navigate(`/dashboard/qutation?order_no=${res?.data?.job_no}`);
+        // Extract vehicle information - use the existing mileage history without modification
+        const vehicle = {
+          carReg_no: data.carReg_no,
+          car_registration_no: data.car_registration_no,
+          chassis_no: data.chassis_no,
+          engine_no: data.engine_no,
+          vehicle_brand: data.vehicle_brand,
+          vehicle_name: data.vehicle_name,
+          vehicle_model: data.vehicle_model,
+          vehicle_category: data.vehicle_category,
+          color_code: data.color_code,
+          fuel_type: data.fuel_type,
+          mileageHistory: updatedMileageHistory,
+        };
+        const jobCard = {
+          Id: singleCard.Id,
+          job_no: singleCard.job_no,
+          user_type: singleCard.user_type,
+          date: formattedDate,
+          vehicle_interior_parts: data.vehicle_interior_parts,
+          reported_defect: data.reported_defect,
+          reported_action: data.reported_action,
+          note: data.note,
+          vehicle_body_report: data.vehicle_body_report,
+          technician_name: data.technician_name,
+          technician_signature: data.technician_signature,
+          technician_date: data.technician_date,
+          vehicle_owner: data.vehicle_owner,
+          mileage: data.mileage,
+        };
+        const newCard = {
+          tenantDomain: tenantDomain,
+          customer,
+          company,
+          showroom,
+          vehicle,
+          jobCard,
+        };
+        const newData = {
+          tenantDomain: tenantDomain,
+          id,
+          data: newCard,
+        };
+
+        try {
+          const res = await updateJobCard(newData).unwrap();
+
+          if (res.success) {
+            toast.success(res.message);
+            if (clickControl === "preview") {
+              navigate(`/dashboard/preview?id=${res?.data?._id}`);
+            }
+            if (clickControl === "quotation") {
+              navigate(`/dashboard/create-quotation?order_no=${res?.data?.job_no}`);
+            }
+            if (clickControl === "invoice") {
+              navigate(`/dashboard/create-invoice?order_no=${res?.data?.job_no}`);
+            }
+            if (clickControl === null && !userTypeFromProfile) {
+              navigate("/dashboard/jobcard-list");
+            }
+            if (clickControl === null && userTypeFromProfile === "company") {
+              navigate(`/dashboard/company-profile?id=${userFromProfile}`);
+            }
+            if (clickControl === null && userTypeFromProfile === "customer") {
+              navigate(`/dashboard/customer-profile?id=${userFromProfile}`);
+            }
+            if (clickControl === null && userTypeFromProfile === "showRoom") {
+              navigate(`/dashboard/show-room-profile?id=${userFromProfile}`);
+            }
+            refetch();
+          }
+        } catch (err) {
+          toast.error(err || "Something went wrong!");
+        } finally {
+          toast.dismiss(toastId);
         }
-        if (clickControl === "invoice") {
-          navigate(`/dashboard/invoice?order_no=${res?.data?.job_no}`);
-        }
-        if (clickControl === null && !userTypeFromProfile) {
-          navigate("/dashboard/jobcard-list");
-        }
-        if (clickControl === null && userTypeFromProfile === "company") {
-          navigate(`/dashboard/company-profile?id=${userFromProfile}`);
-        }
-        if (clickControl === null && userTypeFromProfile === "customer") {
-          navigate(`/dashboard/customer-profile?id=${userFromProfile}`);
-        }
-        if (clickControl === null && userTypeFromProfile === "showRoom") {
-          navigate(`/dashboard/show-room-profile?id=${userFromProfile}`);
-        }
-        refetch();
-      }
-    } catch (err) {
-      toast.error(err || "Something went wrong!");
-    } finally {
-      toast.dismiss(toastId);
-    }
+      }, "You don't have permission to edit job card"
+    )
   };
 
   const sortedVehicleName = vehicleName.sort((a, b) => {
@@ -522,8 +520,8 @@ const UpdateJobCard = () => {
     const lastMileage =
       getDataWithChassisNo?.mileageHistory?.length > 0
         ? getDataWithChassisNo.mileageHistory[
-            getDataWithChassisNo.mileageHistory.length - 1
-          ].mileage
+          getDataWithChassisNo.mileageHistory.length - 1
+        ].mileage
         : singleCard?.mileage || "";
 
     setCurrentMileage(lastMileage);
@@ -533,7 +531,7 @@ const UpdateJobCard = () => {
     if (getDataWithChassisNo?.mileageHistory?.length > 0) {
       const last =
         getDataWithChassisNo.mileageHistory[
-          getDataWithChassisNo.mileageHistory.length - 1
+        getDataWithChassisNo.mileageHistory.length - 1
         ];
       return last.mileage;
     }
@@ -561,7 +559,7 @@ const UpdateJobCard = () => {
   }
 
   return (
-    <div className="addJobCardWraps">
+    <div className="addJobCardWraps my-10  ">
       <div className=" mb-5 pb-5 mx-auto text-center border-b-2 border-[#42A1DA]">
         <div className=" addJobCardHeads">
           <img
@@ -1142,7 +1140,7 @@ const UpdateJobCard = () => {
                     fullWidth
                     freeSolo
                     value={getDataWithChassisNo?.vehicle_brand || ""}
-                    onInputChange={(event, newValue) => {}}
+                    onInputChange={(event, newValue) => { }}
                     onChange={handleBrandChange}
                     options={carBrands.map((option) => option.label)}
                     renderInput={(params) => (
@@ -1469,13 +1467,16 @@ const UpdateJobCard = () => {
           </div>
 
           <div className="mt-12">
-            <button
-              disabled={updateJobCardLoading}
-              type="submit"
-              className="addJobBtn"
-            >
-              Update Job Card
-            </button>
+            <Can page="/dashboard/update-jobcard" action="edit">
+              <button
+                disabled={updateJobCardLoading}
+                type="submit"
+                className="addJobBtn"
+              >
+                Update Job Card
+              </button>
+            </Can>
+
           </div>
         </div>
       </form>

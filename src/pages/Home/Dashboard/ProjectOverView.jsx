@@ -65,25 +65,24 @@ const ProjectOverView = () => {
                   i == 0
                     ? `${`/dashboard/customer-list`}`
                     : i == 1
-                    ? `${`/dashboard/show-room-list`}`
-                    : i == 2
-                    ? `${`/dashboard/company-list`}`
-                    : i == 3
-                    ? `${`/dashboard/jobcard-list`}`
-                    : i == 4
-                    ? `${`/dashboard/quotation-list`}`
-                    : i == 5
-                    ? `${`/dashboard/invoice-list`}`
-                    : i == 2
-                    ? `${`/dashboard/company-list`}`
-                    : null
+                      ? `${`/dashboard/show-room-list`}`
+                      : i == 2
+                        ? `${`/dashboard/company-list`}`
+                        : i == 3
+                          ? `${`/dashboard/jobcard-list`}`
+                          : i == 4
+                            ? `${`/dashboard/quotation-list`}`
+                            : i == 5
+                              ? `${`/dashboard/create-invoice-list`}`
+                              : i == 2
+                                ? `${`/dashboard/company-list`}`
+                                : null
                 }
               >
                 <div
                   className="dashboardCard "
                   style={{
-                    background: `linear-gradient(to right, ${
-                      [
+                    background: `linear-gradient(to right, ${[
                         "#42a5f5",
                         "#478ed1",
                         "#66bb6a",
@@ -97,7 +96,7 @@ const ProjectOverView = () => {
                         "#26c6da",
                         "#00acc1",
                       ][i * 2]
-                    })`,
+                      })`,
                   }}
                 >
                   <div className="dashboardIconWrap">

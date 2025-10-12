@@ -204,7 +204,7 @@ const Sidebar = ({ toggle }) => {
             <Typography className="accordionTypoGrapy">
               <span className="flex items-center">
                 <Assignment className="mr-2" />
-                <NavLink to="/dashboard/addjob"> job card Add</NavLink>
+                <NavLink to="/dashboard/create-job-card"> job card Add</NavLink>
               </span>
             </Typography>
             <Typography className="accordionTypoGrapy">
@@ -241,7 +241,7 @@ const Sidebar = ({ toggle }) => {
             <Typography className="accordionTypoGrapy">
               <span className="flex items-center">
                 <HiOutlineDocumentText className="mr-2" />
-                <NavLink to="/dashboard/qutation"> Quotation Add </NavLink>
+                <NavLink to="/dashboard/create-quotation"> Quotation Add </NavLink>
               </span>
             </Typography>
             <Typography className="accordionTypoGrapy">
@@ -277,7 +277,7 @@ const Sidebar = ({ toggle }) => {
             <Typography className="accordionTypoGrapy">
               <span className="flex items-center">
                 <FaFileInvoice className="mr-2" />
-                <NavLink to="/dashboard/invoice"> Invoice Add </NavLink>
+                <NavLink to="/dashboard/create-invoice"> Invoice Add </NavLink>
               </span>
             </Typography>
             <Typography className="accordionTypoGrapy">
@@ -313,7 +313,7 @@ const Sidebar = ({ toggle }) => {
             <Typography className="accordionTypoGrapy">
               <span className="flex items-center">
                 <FaMoneyBillWave className="mr-2" />
-                <NavLink to="/dashboard/money-receive">
+                <NavLink to="/dashboard/money-receive-create">
                   Money Receipt Add
                 </NavLink>
               </span>

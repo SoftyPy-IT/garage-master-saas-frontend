@@ -11,68 +11,68 @@ const ShowRoomAccount = ({ profileData }) => {
   const lastVehicle =
     profileData?.data?.vehicles?.length > 0
       ? [...profileData.data.vehicles].sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        )[0]
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      )[0]
       : null;
   const beforeLastVehicle =
     profileData?.data?.vehicles?.length > 0
       ? [...profileData.data.vehicles].sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        )[1]
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      )[1]
       : null;
 
   const lastJobCard =
     profileData?.data?.jobCards?.length > 0
       ? [...profileData.data.jobCards].sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        )[0]
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      )[0]
       : null;
 
   const beforeLastJobCard =
     profileData?.data?.jobCards?.length > 0
       ? [...profileData.data.jobCards].sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        )[1]
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      )[1]
       : null;
   const lastQuotation =
     profileData?.data?.quotations?.length > 0
       ? [...profileData.data.quotations].sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        )[0]
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      )[0]
       : null;
 
   const beforeLastQuotation =
     profileData?.data?.quotations?.length > 0
       ? [...profileData.data.quotations].sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        )[1]
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      )[1]
       : null;
 
   const lastInvoice =
     profileData?.data?.invoices?.length > 0
       ? [...profileData.data.invoices].sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        )[0]
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      )[0]
       : null;
 
   const beforeLastInvoice =
     profileData?.data?.invoices?.length > 0
       ? [...profileData.data.invoices].sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        )[1]
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      )[1]
       : null;
   const lastMoneyReceipt =
     profileData?.data?.moneyReceipts?.length > 0
       ? [...profileData.data.moneyReceipts].sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        )[0]
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      )[0]
       : null;
 
   const beforeLastMoneyReceipt =
     profileData?.data?.moneyReceipts?.length > 0
       ? [...profileData.data.moneyReceipts].sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        )[1]
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      )[1]
       : null;
 
   return (
@@ -84,26 +84,26 @@ const ShowRoomAccount = ({ profileData }) => {
           </h3>
 
           <div className="flex flex-col md:flex-row md:justify-between gap-2">
-          <div className="flex ">
-                <div className="flex flex-col space-y-1 w-[120px]">
-                  <b>Show Room Name</b>
-                  <b>Company Phone</b>
-                  <b>Driver Name</b>
-                  <b>Driver Phone</b>
-                  <b> Address</b>
-                  <b>Reference Name</b>
-                  <b>Date</b>
-                </div>
-                <div className="flex flex-col space-y-1 capitalize">
-                  <span>: {profileData?.data?.showRoom_name}</span>
-                  <span>: 0{profileData?.data?.company_contact}</span>
-                  <span>: {profileData?.data?.driver_name}</span>
-                  <span>: 0{profileData?.data?.driver_contact}</span>
-                  <span>: {profileData?.data?.showRoom_address}</span>
-                  <span>: {profileData?.data?.reference_name}</span>
-                  <span>: {formatDate(profileData?.data?.createdAt)}</span>
-                </div>
+            <div className="flex ">
+              <div className="flex flex-col space-y-1 w-[120px]">
+                <b>Show Room Name</b>
+                <b>Company Phone</b>
+                <b>Driver Name</b>
+                <b>Driver Phone</b>
+                <b> Address</b>
+                <b>Reference Name</b>
+                <b>Date</b>
               </div>
+              <div className="flex flex-col space-y-1 capitalize">
+                <span>: {profileData?.data?.showRoom_name}</span>
+                <span>: 0{profileData?.data?.company_contact}</span>
+                <span>: {profileData?.data?.driver_name}</span>
+                <span>: 0{profileData?.data?.driver_contact}</span>
+                <span>: {profileData?.data?.showRoom_address}</span>
+                <span>: {profileData?.data?.reference_name}</span>
+                <span>: {formatDate(profileData?.data?.createdAt)}</span>
+              </div>
+            </div>
 
           </div>
         </Card>
@@ -118,9 +118,9 @@ const ShowRoomAccount = ({ profileData }) => {
                 <p className="text-[10px]">
                   {lastVehicle
                     ? `${new Date(lastVehicle?.createdAt).toLocaleString(
-                        "en-US",
-                        { month: "short" }
-                      )}`
+                      "en-US",
+                      { month: "short" }
+                    )}`
                     : "No Invoice"}
                 </p>
               </div>
@@ -146,9 +146,9 @@ const ShowRoomAccount = ({ profileData }) => {
                 <p className="text-[10px]">
                   {beforeLastVehicle
                     ? `${new Date(beforeLastVehicle?.createdAt).toLocaleString(
-                        "en-US",
-                        { month: "short" }
-                      )}`
+                      "en-US",
+                      { month: "short" }
+                    )}`
                     : "No Vehicle"}
                 </p>
               </div>
@@ -178,7 +178,7 @@ const ShowRoomAccount = ({ profileData }) => {
         <Card>
           <div className="flex items-center justify-between">
             <h3 className="text-[16px] md:text-xl font-semibold">Recent Job Card </h3>
-            <Link to="/dashboard/addjob">
+            <Link to="/dashboard/create-job-card">
               {" "}
               <FaRegEdit className="w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10" />
             </Link>
@@ -189,9 +189,9 @@ const ShowRoomAccount = ({ profileData }) => {
                 <p className="text-[10px]">
                   {lastJobCard
                     ? `${new Date(lastJobCard?.createdAt).toLocaleString(
-                        "en-US",
-                        { month: "short" }
-                      )}`
+                      "en-US",
+                      { month: "short" }
+                    )}`
                     : "No Job Card"}
                 </p>
 
@@ -226,9 +226,9 @@ const ShowRoomAccount = ({ profileData }) => {
                 <p className="text-[10px]">
                   {beforeLastJobCard
                     ? `${new Date(beforeLastJobCard?.createdAt).toLocaleString(
-                        "en-US",
-                        { month: "short" }
-                      )}`
+                      "en-US",
+                      { month: "short" }
+                    )}`
                     : "No Job Card"}
                 </p>
 
@@ -264,7 +264,7 @@ const ShowRoomAccount = ({ profileData }) => {
         <Card>
           <div className="flex items-center justify-between">
             <h3 className="text-[16px] md:text-xl font-semibold">Recent Quotation </h3>
-            <Link to="/dashboard/qutation">
+            <Link to="/dashboard/create-quotation">
               {" "}
               <FaRegEdit className="w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10" />
             </Link>
@@ -275,9 +275,9 @@ const ShowRoomAccount = ({ profileData }) => {
                 <p className="text-[10px]">
                   {lastQuotation
                     ? `${new Date(lastQuotation?.createdAt).toLocaleString(
-                        "en-US",
-                        { month: "short" }
-                      )}`
+                      "en-US",
+                      { month: "short" }
+                    )}`
                     : "No Quotation"}
                 </p>
 
@@ -312,7 +312,7 @@ const ShowRoomAccount = ({ profileData }) => {
             </div>
             <Link to={`/dashboard/quotation-view?id=${lastQuotation?._id}`}>
               <b className="cursor-pointer">
-              <HiOutlineEye className="w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10" />
+                <HiOutlineEye className="w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10" />
               </b>
             </Link>
           </div>
@@ -322,8 +322,8 @@ const ShowRoomAccount = ({ profileData }) => {
                 <p className="text-[10px]">
                   {beforeLastQuotation
                     ? `${new Date(
-                        beforeLastQuotation?.createdAt
-                      ).toLocaleString("en-US", { month: "short" })}`
+                      beforeLastQuotation?.createdAt
+                    ).toLocaleString("en-US", { month: "short" })}`
                     : "No Quotation"}
                 </p>
 
@@ -364,7 +364,7 @@ const ShowRoomAccount = ({ profileData }) => {
               to={`/dashboard/quotation-view?id=${beforeLastQuotation?._id}`}
             >
               <b className="cursor-pointer">
-              <HiOutlineEye className="w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10" />
+                <HiOutlineEye className="w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10" />
               </b>
             </Link>
           </div>
@@ -374,7 +374,7 @@ const ShowRoomAccount = ({ profileData }) => {
         <Card>
           <div className="flex items-center justify-between">
             <h3 className="text-[16px] md:text-xl font-semibold">Recent Invoice </h3>
-            <Link to="/dashboard/invoice">
+            <Link to="/dashboard/create-invoice">
               {" "}
               <FaRegEdit className="w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10" />
             </Link>
@@ -385,9 +385,9 @@ const ShowRoomAccount = ({ profileData }) => {
                 <p className="text-[10px]">
                   {lastInvoice
                     ? `${new Date(lastInvoice?.createdAt).toLocaleString(
-                        "en-US",
-                        { month: "short" }
-                      )}`
+                      "en-US",
+                      { month: "short" }
+                    )}`
                     : "No Invoice"}
                 </p>
 
@@ -422,7 +422,7 @@ const ShowRoomAccount = ({ profileData }) => {
             </div>
             <Link to={`/dashboard/detail?id=${lastInvoice?._id}`}>
               <b className="cursor-pointer">
-              <HiOutlineEye className="w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10" />
+                <HiOutlineEye className="w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10" />
               </b>
             </Link>
           </div>
@@ -432,9 +432,9 @@ const ShowRoomAccount = ({ profileData }) => {
                 <p className="text-[10px]">
                   {beforeLastInvoice
                     ? `${new Date(beforeLastInvoice?.createdAt).toLocaleString(
-                        "en-US",
-                        { month: "short" }
-                      )}`
+                      "en-US",
+                      { month: "short" }
+                    )}`
                     : "No Invoice"}
                 </p>
 
@@ -471,7 +471,7 @@ const ShowRoomAccount = ({ profileData }) => {
             </div>
             <Link to={`/dashboard/detail?id=${beforeLastInvoice?._id}`}>
               <b className="cursor-pointer">
-              <HiOutlineEye className="w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10" />
+                <HiOutlineEye className="w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10" />
               </b>
             </Link>
           </div>
@@ -479,8 +479,8 @@ const ShowRoomAccount = ({ profileData }) => {
         <Card>
           <div className="flex items-center justify-between">
             <h3 className="text-[16px] md:text-xl font-semibold">Recent Money Receipt </h3>
-            <Link to="/dashboard/money-receive">
-            <FaRegEdit className="w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10" />
+            <Link to="/dashboard/money-receive-create">
+              <FaRegEdit className="w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10" />
             </Link>
           </div>
           <div className="flex items-center justify-between">
@@ -491,9 +491,9 @@ const ShowRoomAccount = ({ profileData }) => {
                   <p className="text-[10px]">
                     {lastMoneyReceipt
                       ? `${new Date(lastMoneyReceipt?.createdAt).toLocaleString(
-                          "en-US",
-                          { month: "short" }
-                        )}`
+                        "en-US",
+                        { month: "short" }
+                      )}`
                       : "No Money Receipt"}
                   </p>
                   {lastMoneyReceipt && (
@@ -541,7 +541,7 @@ const ShowRoomAccount = ({ profileData }) => {
               to={`/dashboard/money-receipt-view?id=${lastMoneyReceipt?._id}`}
             >
               <b className="cursor-pointer">
-              <HiOutlineEye className="w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10" />
+                <HiOutlineEye className="w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10" />
               </b>
             </Link>
           </div>
@@ -553,8 +553,8 @@ const ShowRoomAccount = ({ profileData }) => {
                   <p className="text-[10px]">
                     {beforeLastMoneyReceipt
                       ? `${new Date(
-                          beforeLastMoneyReceipt?.createdAt
-                        ).toLocaleString("en-US", { month: "short" })}`
+                        beforeLastMoneyReceipt?.createdAt
+                      ).toLocaleString("en-US", { month: "short" })}`
                       : "No Money Receipt"}
                   </p>
                   {beforeLastMoneyReceipt && (
@@ -600,7 +600,7 @@ const ShowRoomAccount = ({ profileData }) => {
             </div>
             <Link to={`/dashboard/detail?id=${beforeLastMoneyReceipt?._id}`}>
               <b className="cursor-pointer">
-              <HiOutlineEye className="w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10" />
+                <HiOutlineEye className="w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10" />
               </b>
             </Link>
           </div>

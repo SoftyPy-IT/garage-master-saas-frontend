@@ -17,7 +17,7 @@ const PreviewJobCard = () => {
   const [vehicleInterior, setVehicleInterior] = useState("");
   const [reportedDefect, setReportedDefect] = useState("");
   const [reportedAction, setReportedAction] = useState("");
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain } = useTenantDomain();
 
   const location = useLocation();
   const id = new URLSearchParams(location.search).get("id");
@@ -92,7 +92,7 @@ const PreviewJobCard = () => {
   return (
     <main className="jobCardViewWrap">
       <div ref={componentRef}>
-        <div  className="jobCardPrint flex flex-col justify-between">
+        <div className="jobCardPrint flex flex-col justify-between">
           <div className="headerContainer">
             <div className="mx-auto text-center border-b-[2px] ">
               <div className="mx-auto text-center border-b-[2px] border-[#110255] py-2">
@@ -159,11 +159,9 @@ const PreviewJobCard = () => {
                         <label className="block">Car Registration No</label>
                         <input
                           type="text"
-                          defaultValue={`${
-                            previewData?.vehicle?.carReg_no || "N/A"
-                          } ${
-                            previewData?.vehicle?.car_registration_no || "N/A"
-                          }`}
+                          defaultValue={`${previewData?.vehicle?.carReg_no || "N/A"
+                            } ${previewData?.vehicle?.car_registration_no || "N/A"
+                            }`}
                           disabled
                         />
                       </div>
@@ -417,7 +415,7 @@ const PreviewJobCard = () => {
                   defaultValue={previewData?.technician_name || "N/A"}
                   disabled
                   type="text"
-                  // placeholder="Technician Name"
+                // placeholder="Technician Name"
                 />
               </div>
               <div>
@@ -426,7 +424,7 @@ const PreviewJobCard = () => {
                   // defaultValue={previewData.technician_signature}
                   disabled
                   type="text"
-                  // placeholder="Technician Signature"
+                // placeholder="Technician Signature"
                 />
               </div>
               <div>
@@ -479,11 +477,10 @@ const PreviewJobCard = () => {
         </Button>
         <a
           className="bg-[#42A0D9] text-white px-3 py-2  rounded-full mx-2 "
-          href={`${import.meta.env.VITE_API_URL}/jobCards/jobcard/${
-            previewData?._id
-          }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
-            JSON.stringify(companyProfileData)
-          )}`}
+          href={`${import.meta.env.VITE_API_URL}/jobCards/jobcard/${previewData?._id
+            }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
+              JSON.stringify(companyProfileData)
+            )}`}
           target="_blank"
           rel="noreferrer"
         >
@@ -498,7 +495,7 @@ const PreviewJobCard = () => {
             marginRight: "5px",
           }}
           component={Link}
-          href={`/dashboard/qutation?order_no=${previewData?.job_no}`}
+          href={`/dashboard/create-quotation?order_no=${previewData?.job_no}`}
         >
           Quotation
         </Button>

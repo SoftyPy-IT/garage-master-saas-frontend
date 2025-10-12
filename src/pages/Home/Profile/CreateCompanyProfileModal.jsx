@@ -35,7 +35,7 @@ import { useTenantDomain } from "../../../hooks/useTenantDomain";
 import TASTimePicker from "../../../components/form/TimePicker";
 
 export default function CompanyProfileModal({ profileData, open, onClose }) {
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain } = useTenantDomain();
 
   const [createCompanyProfile] = useCreateCompanyProfileMutation();
   const [updateCompanyProfile] = useUpdateCompanyProfileMutation();
@@ -96,7 +96,7 @@ export default function CompanyProfileModal({ profileData, open, onClose }) {
     phone: profileData?.phone || "",
     website: profileData?.website || "",
     whatsapp: profileData?.whatsapp || "",
-    officeTime: profileData?.officeTime || 10.00 ,
+    officeTime: profileData?.officeTime || 10.00,
   };
 
   return (

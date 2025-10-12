@@ -20,9 +20,11 @@ import { formatNumber } from "../../../utils/formateSemicolon";
 import { useGetSingleQuotationQuery } from "../../../redux/api/quotation";
 import { useGetCompanyProfileQuery } from "../../../redux/api/companyProfile";
 import { useTenantDomain } from "../../../hooks/useTenantDomain";
+import Can from "../../../components/Can";
+import { usePermissions } from "../../../context/PermissionContext";
 
 const Invoice = () => {
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain } = useTenantDomain();
   const [getDataWithChassisNo, setGetDataWithChassisNo] = useState({});
   const [specificQuotation, setSpecificQuotation] = useState({});
   const [value, setValue] = useState(getDataWithChassisNo?.vehicle?.carReg_no);
@@ -49,6 +51,8 @@ const Invoice = () => {
   const [partsTotal, setPartsTotal] = useState(0);
   const [serviceTotal, setServiceTotal] = useState(0);
   const [goOtherButton, setGoOtherButton] = useState("");
+  const { performActionWithPermission } = usePermissions();
+
   const { data: CompanyInfoData } = useGetCompanyProfileQuery({
     tenantDomain,
   });
@@ -543,128 +547,131 @@ const Invoice = () => {
   ];
 
   const onSubmit = async (data) => {
-    const toastId = toast.loading("Creating Company...");
-    // const tenantDomain = getTenantName();
-    const customer = {
-      company_name: data.company_name,
-      customer_name: data.customer_name,
-      customer_contact: data.customer_contact,
-      customer_country_code: data.company_country_code,
-      customer_address: data.customer_address,
-    };
-    const company = {
-      company_name: data.company_name,
-      vehicle_username: data.vehicle_username,
-      company_address: data.company_address,
-      company_contact: data.company_contact,
-      company_country_code: data.company_country_code,
-      company_email: data.company_email,
-    };
-    const showRoom = {
-      showRoom_name: data.showRoom_name,
-      vehicle_username: data.vehicle_username,
-      company_name: data.company_name,
-      company_contact: data.company_contact,
-      company_country_code: data.company_country_code,
-      company_address: data.company_address,
-    };
-    data.mileage = Number(data.mileage);
-    const newMileageValue = Number(data.mileage);
+    performActionWithPermission('/dashboard/create-quotation', 'create',
+      async () => {
+        const toastId = toast.loading("Creating Company...");
+        // const tenantDomain = getTenantName();
+        const customer = {
+          company_name: data.company_name,
+          customer_name: data.customer_name,
+          customer_contact: data.customer_contact,
+          customer_country_code: data.company_country_code,
+          customer_address: data.customer_address,
+        };
+        const company = {
+          company_name: data.company_name,
+          vehicle_username: data.vehicle_username,
+          company_address: data.company_address,
+          company_contact: data.company_contact,
+          company_country_code: data.company_country_code,
+          company_email: data.company_email,
+        };
+        const showRoom = {
+          showRoom_name: data.showRoom_name,
+          vehicle_username: data.vehicle_username,
+          company_name: data.company_name,
+          company_contact: data.company_contact,
+          company_country_code: data.company_country_code,
+          company_address: data.company_address,
+        };
+        data.mileage = Number(data.mileage);
+        const newMileageValue = Number(data.mileage);
 
-    const existingMileageHistory = getDataWithChassisNo?.mileageHistory || [];
-    const updatedMileageHistory = [...existingMileageHistory];
+        const existingMileageHistory = getDataWithChassisNo?.mileageHistory || [];
+        const updatedMileageHistory = [...existingMileageHistory];
+        // Only add current mileage to history if it has changed
+        if (mileageChanged && currentMileage) {
+          const newMileageEntry = {
+            mileage: Number(currentMileage),
+            date: new Date().toISOString(),
+          };
 
-    // Only add current mileage to history if it has changed
-    if (mileageChanged && currentMileage) {
-      const newMileageEntry = {
-        mileage: Number(currentMileage),
-        date: new Date().toISOString(),
-      };
-
-      // Check if this mileage value already exists in history
-      const mileageExists = updatedMileageHistory.some(
-        (entry) => entry.mileage === Number(currentMileage)
-      );
-
-      if (!mileageExists) {
-        updatedMileageHistory.push(newMileageEntry);
-      }
-    }
-
-    // Only add a new entry if it's a valid number and not already in the history
-    if (!isNaN(newMileageValue) && newMileageValue > 0) {
-      const mileageExists = updatedMileageHistory.some(
-        (entry) => entry.mileage === newMileageValue
-      );
-
-      if (!mileageExists) {
-        updatedMileageHistory.push({
-          mileage: newMileageValue,
-          date: new Date().toISOString(),
-        });
-      }
-    }
-    const vehicle = {
-      carReg_no: data.carReg_no,
-      car_registration_no: data.car_registration_no,
-      chassis_no: data.chassis_no,
-      engine_no: data.engine_no,
-      vehicle_brand: data.vehicle_brand,
-      vehicle_name: data.vehicle_name,
-      mileageHistory: updatedMileageHistory,
-    };
-    const invoice = {
-      user_type: jobCardData?.data?.user_type,
-      Id: jobCardData?.data?.Id,
-      job_no: orderNumber,
-      date: selectedDate,
-      parts_total: partsTotal,
-      service_total: serviceTotal,
-      total_amount: grandTotal,
-      discount: discount,
-      vat: vat,
-      tax: tax,
-      net_total: calculateFinalTotal(),
-      input_data: inputData,
-      service_input_data: serviceInputData,
-      advance: advance,
-      due: calculateDue(),
-      mileage: data.mileage,
-    };
-    const values = {
-      tenantDomain,
-      customer,
-      company,
-      showRoom,
-      vehicle,
-      invoice,
-    };
-    try {
-      const res = await createInvoice(values).unwrap();
-      if (res.success) {
-        toast.success(res.message);
-        setReload(!reload);
-        refetch();
-        if (goOtherButton === "preview") {
-          navigate(`/dashboard/detail?id=${res?.data?._id}`);
-          setGoOtherButton("");
-        } else if (goOtherButton === "money-receipt") {
-          navigate(
-            `/dashboard/money-receive?order_no=${jobCardData?.data?.job_no}&id=${res?.data?._id}&net_total=${res?.net_total}`
+          // Check if this mileage value already exists in history
+          const mileageExists = updatedMileageHistory.some(
+            (entry) => entry.mileage === Number(currentMileage)
           );
-          setGoOtherButton("");
-        } else {
-          navigate("/dashboard/invoice-list");
-          setGoOtherButton("");
+
+          if (!mileageExists) {
+            updatedMileageHistory.push(newMileageEntry);
+          }
         }
-      }
-    } catch (err) {
-      const errorMessage =
-        err?.data?.message || err?.error || "Failed to create invoice!";
-      toast.error(errorMessage);
-    } finally {
-      toast.dismiss(toastId);
-    }
+        // Only add a new entry if it's a valid number and not already in the history
+        if (!isNaN(newMileageValue) && newMileageValue > 0) {
+          const mileageExists = updatedMileageHistory.some(
+            (entry) => entry.mileage === newMileageValue
+          );
+
+          if (!mileageExists) {
+            updatedMileageHistory.push({
+              mileage: newMileageValue,
+              date: new Date().toISOString(),
+            });
+          }
+        }
+        const vehicle = {
+          carReg_no: data.carReg_no,
+          car_registration_no: data.car_registration_no,
+          chassis_no: data.chassis_no,
+          engine_no: data.engine_no,
+          vehicle_brand: data.vehicle_brand,
+          vehicle_name: data.vehicle_name,
+          mileageHistory: updatedMileageHistory,
+        };
+        const invoice = {
+          user_type: jobCardData?.data?.user_type,
+          Id: jobCardData?.data?.Id,
+          job_no: orderNumber,
+          date: selectedDate,
+          parts_total: partsTotal,
+          service_total: serviceTotal,
+          total_amount: grandTotal,
+          discount: discount,
+          vat: vat,
+          tax: tax,
+          net_total: calculateFinalTotal(),
+          input_data: inputData,
+          service_input_data: serviceInputData,
+          advance: advance,
+          due: calculateDue(),
+          mileage: data.mileage,
+        };
+        const values = {
+          tenantDomain,
+          customer,
+          company,
+          showRoom,
+          vehicle,
+          invoice,
+        };
+        try {
+          const res = await createInvoice(values).unwrap();
+          if (res.success) {
+            toast.success(res.message);
+            setReload(!reload);
+            refetch();
+            if (goOtherButton === "preview") {
+              navigate(`/dashboard/detail?id=${res?.data?._id}`);
+              setGoOtherButton("");
+            } else if (goOtherButton === "money-receipt") {
+              navigate(
+                `/dashboard/money-receive-create?order_no=${jobCardData?.data?.job_no}&id=${res?.data?._id}&net_total=${res?.net_total}`
+              );
+              setGoOtherButton("");
+            } else {
+              navigate("/dashboard/invoice-list");
+              setGoOtherButton("");
+            }
+          }
+        } catch (err) {
+          const errorMessage =
+            err?.data?.message || err?.error || "Failed to create invoice!";
+          toast.error(errorMessage);
+        } finally {
+          toast.dismiss(toastId);
+        }
+
+      }, "You don't have permission to create invoice"
+    )
   };
   const handleIconPreview = async (e) => {
     navigate(`/dashboard/detail?id=${e}`);
@@ -776,16 +783,16 @@ const Invoice = () => {
                   )}
                   {(jobCardData?.data?.user_type === "company" ||
                     jobCardData?.data?.user_type === "showRoom") && (
-                    <TextField
-                      fullWidth
-                      label="Customer"
-                      focused={
-                        jobCardData?.data?.company?.vehicle_username ||
-                        jobCardData?.data?.showRoom?.vehicle_username
-                      }
-                      {...register("vehicle_username")}
-                    />
-                  )}
+                      <TextField
+                        fullWidth
+                        label="Customer"
+                        focused={
+                          jobCardData?.data?.company?.vehicle_username ||
+                          jobCardData?.data?.showRoom?.vehicle_username
+                        }
+                        {...register("vehicle_username")}
+                      />
+                    )}
                 </Grid>
                 <Grid item lg={12} md={12} sm={12} xs={12}>
                   <Grid container spacing={1}>
@@ -850,24 +857,24 @@ const Invoice = () => {
                       )}
                       {(jobCardData?.data?.user_type === "company" ||
                         jobCardData?.data?.user_type === "showRoom") && (
-                        <TextField
-                          {...register("company_contact")}
-                          variant="outlined"
-                          fullWidth
-                          type="tel"
-                          value={
-                            phoneNumber
-                              ? phoneNumber
-                              : jobCardData?.data?.customer?.customer_contact
-                          }
-                          onChange={handlePhoneNumberChange}
-                          placeholder="Company Contact No (N)"
-                          focused={
-                            jobCardData?.data?.company?.company_contact ||
-                            jobCardData?.data?.showRoom?.company_contact
-                          }
-                        />
-                      )}
+                          <TextField
+                            {...register("company_contact")}
+                            variant="outlined"
+                            fullWidth
+                            type="tel"
+                            value={
+                              phoneNumber
+                                ? phoneNumber
+                                : jobCardData?.data?.customer?.customer_contact
+                            }
+                            onChange={handlePhoneNumberChange}
+                            placeholder="Company Contact No (N)"
+                            focused={
+                              jobCardData?.data?.company?.company_contact ||
+                              jobCardData?.data?.showRoom?.company_contact
+                            }
+                          />
+                        )}
                     </Grid>
                   </Grid>
                 </Grid>
@@ -948,7 +955,7 @@ const Invoice = () => {
                             {...params}
                             label="Vehicle Reg No (New field)"
                             {...register("carReg_no")}
-                            // focused={getDataWithChassisNo?.carReg_no}
+                          // focused={getDataWithChassisNo?.carReg_no}
                           />
                         )}
                       />
@@ -1092,9 +1099,8 @@ const Invoice = () => {
                               autoComplete="off"
                               type="text"
                               placeholder="SL No "
-                              defaultValue={`${
-                                i + 1 < 10 ? `0${i + 1}` : i + 1
-                              }`}
+                              defaultValue={`${i + 1 < 10 ? `0${i + 1}` : i + 1
+                                }`}
                               required
                             />
                           </div>
@@ -1583,20 +1589,7 @@ const Invoice = () => {
                 <span>{formatNumber(calculateFinalTotal())}</span>
               </div>
             </div>
-            {/* <div>
-              <b className="mr-2">Advance: </b>
-              <input
-                className="text-center"
-                onChange={(e) => {
-                  const rawValue = e.target.value.replace(/,/g, "");
-                  handleAdvance(rawValue);
-                }}
-                value={formatNumber(advance)}
-                autoComplete="off"
-                type="text"
-                placeholder="Advance"
-              />
-            </div> */}
+
             <div>
               <div className="flex items-center ml-3 ">
                 <b className="mr-2">Due:</b>
@@ -1614,9 +1607,11 @@ const Invoice = () => {
               </button>
             </div>
             <div className="flex justify-end submitQutationBtn order-2 md:order-3 ">
-              <button type="submit" disabled={createLoading}>
-                Add To Invoice
-              </button>
+              <Can page='/dashboard/create-invoice' action='create'>
+                <button type="submit" disabled={createLoading}>
+                  Add To Invoice
+                </button>
+              </Can>
             </div>
             <div className=" md:hidden order-3 md:order-2 mt-4">
               <button type="submit" onClick={() => setGoOtherButton("preview")}>

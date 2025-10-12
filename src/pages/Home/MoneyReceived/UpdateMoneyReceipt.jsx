@@ -24,11 +24,14 @@ import {
 import { HiOutlineUserGroup } from "react-icons/hi";
 import { useGetCompanyProfileQuery } from "../../../redux/api/companyProfile";
 import { useTenantDomain } from "../../../hooks/useTenantDomain";
+import { usePermissions } from "../../../context/PermissionContext";
+import Can from "../../../components/Can";
 
 const UpdateMoneyReceipt = () => {
   const location = useLocation();
   const id = new URLSearchParams(location.search).get("id");
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain } = useTenantDomain();
+  const { performActionWithPermission } = usePermissions();
 
   const userTypeFromProfile = new URLSearchParams(location.search).get(
     "user_type"
@@ -262,9 +265,6 @@ const UpdateMoneyReceipt = () => {
 
   const totalAmountInWords = amountInWords(advance ? advance : remaining);
 
-  const handleDateChange = (newDate) => {
-    setSelectedDate(formatDate(newDate));
-  };
 
   useEffect(() => {
     if (typeof totalAmount === "string") {
@@ -297,45 +297,49 @@ const UpdateMoneyReceipt = () => {
   };
 
   const onSubmit = async (data) => {
-    const toastId = toast.loading("Updating Money Reciept...");
-    if (typeof data.total_amount === "string") {
-      const cleanedValue = data.total_amount.replace(/,/g, "");
-      data.total_amount = Number(cleanedValue);
-    }
-    if (typeof data.remaining === "string") {
-      const cleanedValue = data.remaining.replace(/,/g, "");
-      data.remaining = Number(cleanedValue);
-    }
+    performActionWithPermission('/dashboard/', 'edit',
+      async () => {
+        const toastId = toast.loading("Updating Money Reciept...");
+        if (typeof data.total_amount === "string") {
+          const cleanedValue = data.total_amount.replace(/,/g, "");
+          data.total_amount = Number(cleanedValue);
+        }
+        if (typeof data.remaining === "string") {
+          const cleanedValue = data.remaining.replace(/,/g, "");
+          data.remaining = Number(cleanedValue);
+        }
 
-    const dateOne = formatDate(data.date);
-    const dateTwo = formatDate(data.payment_date);
-    const checkDate = formatDate(data.check_date);
+        const dateOne = formatDate(data.date);
+        const dateTwo = formatDate(data.payment_date);
+        const checkDate = formatDate(data.check_date);
 
-    data.default_date = selectedDate || singleMoneyReceipt?.data?.default_date;
-    data.payment_method = data.payment_method;
+        data.default_date = selectedDate || singleMoneyReceipt?.data?.default_date;
+        data.payment_method = data.payment_method;
 
-    data.date = dateOne;
-    data.check_date = checkDate;
-    data.payment_date = dateTwo;
+        data.date = dateOne;
+        data.check_date = checkDate;
+        data.payment_date = dateTwo;
 
-    data.advance = Number(data.advance);
-    data.remaining = remaining || getRemaining();
+        data.advance = Number(data.advance);
+        data.remaining = remaining || getRemaining();
 
-    data.taka_in_word =
-      totalAmountInWords || singleMoneyReceipt?.data?.taka_in_word;
+        data.taka_in_word =
+          totalAmountInWords || singleMoneyReceipt?.data?.taka_in_word;
 
-    try {
-      const values = {
-        tenantDomain,
-        id,
-        data,
-      };
-      const res = await updateMoneyReceipt(values).unwrap();
-    } catch (error) {
-      toast.error(error.message);
-    } finally {
-      toast.dismiss(toastId);
-    }
+        try {
+          const values = {
+            tenantDomain,
+            id,
+            data,
+          };
+          const res = await updateMoneyReceipt(values).unwrap();
+        } catch (error) {
+          toast.error(error.message);
+        } finally {
+          toast.dismiss(toastId);
+        }
+      }, "You don't have permission to edit money receive !"
+    )
   };
 
   const handleChange = (event) => {
@@ -576,8 +580,8 @@ const UpdateMoneyReceipt = () => {
                 </Select>
               </FormControl>
               {payment_method === "Bkash" ||
-              payment_method === "Nagad" ||
-              payment_method === "Rocket" ? (
+                payment_method === "Nagad" ||
+                payment_method === "Rocket" ? (
                 <div className="flex flex-wrap md:flex-nowrap gap-2 md:gap-0 mt-3 md:mt-0 items-center ">
                   <div>
                     <input
@@ -817,13 +821,15 @@ const UpdateMoneyReceipt = () => {
           </div>
 
           <div className="my-5 receivedBtn">
-            <Button
-              onClick={handleOnSubmit}
-              type="submit"
-              disabled={updateLoading}
-            >
-              Update
-            </Button>
+            <Can page='/dashboard/money-receipt-update' action='edit'>
+              <Button
+                onClick={handleOnSubmit}
+                type="submit"
+                disabled={updateLoading}
+              >
+                Update
+              </Button>
+            </Can>
           </div>
         </form>
 
@@ -838,9 +844,8 @@ const UpdateMoneyReceipt = () => {
           {singleMoneyReceipt?.data?._id && (
             <a
               className="bg-[#42A0D9] text-white px-3 py-3 text-[12px] rounded-full mr-2"
-              href={`${import.meta.env.VITE_API_URL}/money-receipts/money/${
-                singleMoneyReceipt.data._id
-              }`}
+              href={`${import.meta.env.VITE_API_URL}/money-receipts/money/${singleMoneyReceipt.data._id
+                }`}
               target="_blank"
               rel="noreferrer"
             >

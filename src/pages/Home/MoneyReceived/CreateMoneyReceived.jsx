@@ -22,9 +22,10 @@ import { FaLocationDot } from "react-icons/fa6";
 import { useGetSingleJobCardWithJobNoQuery } from "../../../redux/api/jobCard";
 import { useCreateMoneyReceiptMutation } from "../../../redux/api/money-receipt";
 import MoneyReceiptTable from "./MoneyReceiptTable";
-import { HiOutlineUserGroup } from "react-icons/hi";
 import { useGetCompanyProfileQuery } from "../../../redux/api/companyProfile";
 import { useTenantDomain } from "../../../hooks/useTenantDomain";
+import Can from "../../../components/Can";
+import { usePermissions } from "../../../context/PermissionContext";
 
 const formatBangladeshiNumber = (num) => {
   if (!num) return "";
@@ -71,17 +72,18 @@ const parseFormattedNumber = (formattedNum) => {
   return Number.parseFloat(formattedNum.toString().replace(/,/g, ""));
 };
 
-const MoneyReceiptView = () => {
+const CreateMoneyReceived = () => {
   const location = useLocation();
   const jobNo = new URLSearchParams(location.search).get("order_no");
   const net_total = new URLSearchParams(location.search).get("net_total");
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain } = useTenantDomain();
 
   const parsedDate = new Date();
   const day = parsedDate.getDate().toString().padStart(2, "0");
   const month = (parsedDate.getMonth() + 1).toString().padStart(2, "0");
   const year = parsedDate.getFullYear();
   const formattedDate = `${day}-${month}-${year}`;
+  const { performActionWithPermission } = usePermissions();
 
   const [advance, setAdvance] = useState(0);
   const [remaining, setRemaining] = useState(0);
@@ -305,74 +307,79 @@ const MoneyReceiptView = () => {
   };
 
   const onSubmit = async (data) => {
-    // Parse the formatted values back to numbers for submission
-    const numTotalAmount = parseFormattedNumber(totalAmount);
-    const numAdvance = parseFormattedNumber(advance);
-    const numRemaining = parseFormattedNumber(remaining);
+    performActionWithPermission('/dashboard/money-receive-create', 'create',
+      async () => {
+        // Parse the formatted values back to numbers for submission
+        const numTotalAmount = parseFormattedNumber(totalAmount);
+        const numAdvance = parseFormattedNumber(advance);
+        const numRemaining = parseFormattedNumber(remaining);
 
-    if (numTotalAmount < 1) {
-      toast.error(
-        "The total payment amount exceeds the remaining balance. This money receipt cannot be created due to insufficient funds."
-      );
-      return;
-    }
-    const toastId = toast.loading("Creating Money Receipt...");
-    const dateTwo = formatDate(data.payment_date);
-    const checkDate = formatDate(data.check_date);
-
-    // Use the numeric values for submission
-    data.total_amount = numTotalAmount;
-    data.advance = numAdvance;
-    data.remaining = numRemaining;
-
-    const values = {
-      tenantDomain,
-      Id: jobCard?.data?.Id,
-      user_type: jobCard?.data?.user_type,
-      job_no: job_no,
-      default_date: data?.default_date,
-      thanks_from: data.thanks_from,
-      against_bill_no_method: data.against_bill_no_method,
-      vehicle_no: data.vehicle_no,
-      chassis_no: jobCard?.data?.vehicle?.chassis_no,
-      cash_by: data.cash_by,
-      payment_method: data.payment_method,
-      account_number: data.account_number,
-      transaction_id: data.transaction_id,
-      check_number: data.check_number,
-      bank_name: data.bank_name,
-      date: data.date,
-      check_date: checkDate,
-      payment_date: dateTwo,
-      total_amount: data.total_amount,
-      advance:
-        data.against_bill_no_method === "Final payment against bill no"
-          ? Number(data.total_amount)
-          : Number(data.advance),
-      remaining:
-        data.against_bill_no_method === "Advance against bill no"
-          ? numRemaining
-          : 0 || 0,
-      taka_in_word: totalAmountInWords,
-    };
-
-    try {
-      const response = await createMoneyReceipt(values).unwrap();
-      if (response.success) {
-        toast.success(response.message);
-        if (preview === "preview") {
-          navigate(`/dashboard/money-receipt-view?id=${response?.data?._id}`);
-          setPreview("");
-        } else {
-          navigate("/dashboard/money-receipt-list");
-          setPreview("");
+        if (numTotalAmount < 1) {
+          toast.error(
+            "The total payment amount exceeds the remaining balance. This money receipt cannot be created due to insufficient funds."
+          );
+          return;
         }
-      }
-    } catch (error) {
-      toast.error(error?.message);
-    } finally {
-      toast.dismiss(toastId);
-    }
+        const toastId = toast.loading("Creating Money Receipt...");
+        const dateTwo = formatDate(data.payment_date);
+        const checkDate = formatDate(data.check_date);
+
+        // Use the numeric values for submission
+        data.total_amount = numTotalAmount;
+        data.advance = numAdvance;
+        data.remaining = numRemaining;
+
+        const values = {
+          tenantDomain,
+          Id: jobCard?.data?.Id,
+          user_type: jobCard?.data?.user_type,
+          job_no: job_no,
+          default_date: data?.default_date,
+          thanks_from: data.thanks_from,
+          against_bill_no_method: data.against_bill_no_method,
+          vehicle_no: data.vehicle_no,
+          chassis_no: jobCard?.data?.vehicle?.chassis_no,
+          cash_by: data.cash_by,
+          payment_method: data.payment_method,
+          account_number: data.account_number,
+          transaction_id: data.transaction_id,
+          check_number: data.check_number,
+          bank_name: data.bank_name,
+          date: data.date,
+          check_date: checkDate,
+          payment_date: dateTwo,
+          total_amount: data.total_amount,
+          advance:
+            data.against_bill_no_method === "Final payment against bill no"
+              ? Number(data.total_amount)
+              : Number(data.advance),
+          remaining:
+            data.against_bill_no_method === "Advance against bill no"
+              ? numRemaining
+              : 0 || 0,
+          taka_in_word: totalAmountInWords,
+        };
+
+        try {
+          const response = await createMoneyReceipt(values).unwrap();
+          if (response.success) {
+            toast.success(response.message);
+            if (preview === "preview") {
+              navigate(`/dashboard/money-receipt-view?id=${response?.data?._id}`);
+              setPreview("");
+            } else {
+              navigate("/dashboard/money-receipt-list");
+              setPreview("");
+            }
+          }
+        } catch (error) {
+          toast.error(error?.message);
+        } finally {
+          toast.dismiss(toastId);
+        }
+
+      }, "Yout don't have permission to create money receive !"
+    )
   };
 
   const handleChange = (event) => {
@@ -605,8 +612,8 @@ const MoneyReceiptView = () => {
                 </Select>
               </FormControl>
               {payment_method === "Bkash" ||
-              payment_method === "Nagad" ||
-              payment_method === "Rocket" ? (
+                payment_method === "Nagad" ||
+                payment_method === "Rocket" ? (
                 <div className="flex  gap-2 flex-wrap xl:flex-nowrap items-center ">
                   <div>
                     <input
@@ -868,7 +875,7 @@ const MoneyReceiptView = () => {
                       value={formattedAdvance}
                       onChange={(e) => handleAdvanceChange(e.target.value)}
                     />
-                    
+
                   </div>
                 </div>
                 <div className="flex lg:flex-row  flex-col ">
@@ -890,9 +897,12 @@ const MoneyReceiptView = () => {
           </div>
 
           <div className="my-5 receivedBtn">
-            <Button type="submit" disabled={createLoading}>
-              Submit
-            </Button>
+
+            <Can page='/dashboard/money-receive-create' action='create'>
+              <Button type="submit" disabled={createLoading}>
+                Submit
+              </Button>
+            </Can>
           </div>
           <div className="gap-2 hidden md:block ">
             <Button
@@ -915,4 +925,4 @@ const MoneyReceiptView = () => {
   );
 };
 
-export default MoneyReceiptView;
+export default CreateMoneyReceived;

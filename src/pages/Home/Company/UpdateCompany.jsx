@@ -24,10 +24,12 @@ import {
 } from "../../../redux/api/companyApi";
 import Loading from "../../../components/Loading/Loading";
 import { useTenantDomain } from "../../../hooks/useTenantDomain";
+import Can from "../../../components/Can";
+import { usePermissions } from "../../../context/PermissionContext";
 
 const UpdateCompany = () => {
   const [filteredVehicles, setFilteredVehicles] = useState([]);
-
+  const { performActionWithPermission } = usePermissions();
   const [filteredOptions, setFilteredOptions] = useState([]);
   const [yearSelectInput, setYearSelectInput] = useState("");
   const [countryCode, setCountryCode] = useState(countries[0]);
@@ -44,7 +46,7 @@ const UpdateCompany = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const id = new URLSearchParams(location.search).get("id");
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain } = useTenantDomain();
 
   const handleBrandChange = (event, newValue) => {
     const filtered = vehicleName.filter(
@@ -175,89 +177,98 @@ const UpdateCompany = () => {
   ]);
 
   const onSubmit = async (data) => {
-    const toastId = toast.loading("Updating Company...");
-    const company = {
-      company_name: data.company_name,
-      vehicle_username: data.vehicle_username,
-      company_address: data.company_address,
-      company_contact: data.company_contact,
-      company_country_code: countryCode.code,
-      company_email: data.company_email,
-      customer_address: data.customer_address,
-      driver_name: data.driver_name,
-      whatsappNumber: data.whatsappNumber,
-      driver_contact: data.driver_contact,
-      driver_country_code: driverCountryCode.code,
-      reference_name: data.reference_name,
-      companyOwnerPhone: data.companyOwnerPhone,
-      companyOwnerName: data.companyOwnerName,
-      companyOwnerCountryCode: companyOwnerCountryCode.code,
-    };
 
-    data.vehicle_model = Number(data.vehicle_model);
-    data.mileage = Number(data.mileage);
+    performActionWithPermission(
+      "/dashboard/update-company",
+      "edit",
+      async () => {
+        const toastId = toast.loading("Updating Company...");
+        const company = {
+          company_name: data.company_name,
+          vehicle_username: data.vehicle_username,
+          company_address: data.company_address,
+          company_contact: data.company_contact,
+          company_country_code: countryCode.code,
+          company_email: data.company_email,
+          customer_address: data.customer_address,
+          driver_name: data.driver_name,
+          whatsappNumber: data.whatsappNumber,
+          driver_contact: data.driver_contact,
+          driver_country_code: driverCountryCode.code,
+          reference_name: data.reference_name,
+          companyOwnerPhone: data.companyOwnerPhone,
+          companyOwnerName: data.companyOwnerName,
+          companyOwnerCountryCode: companyOwnerCountryCode.code,
+        };
 
-    // Get the current mileage value
-    const newMileageValue = Number(data.mileage);
+        data.vehicle_model = Number(data.vehicle_model);
+        data.mileage = Number(data.mileage);
 
-    // Check if we need to add a new mileage entry
-    const updatedMileageHistory = [
-      ...(getDataWithChassisNo.mileageHistory || []),
-    ];
+        // Get the current mileage value
+        const newMileageValue = Number(data.mileage);
 
-    // Only add a new entry if it's a valid number and not already in the history
-    if (!isNaN(newMileageValue) && newMileageValue > 0) {
-      const mileageExists = updatedMileageHistory.some(
-        (entry) => entry.mileage === newMileageValue
-      );
+        // Check if we need to add a new mileage entry
+        const updatedMileageHistory = [
+          ...(getDataWithChassisNo.mileageHistory || []),
+        ];
 
-      if (!mileageExists) {
-        updatedMileageHistory.push({
-          mileage: newMileageValue,
-          date: new Date().toISOString(),
-        });
-      }
-    }
+        // Only add a new entry if it's a valid number and not already in the history
+        if (!isNaN(newMileageValue) && newMileageValue > 0) {
+          const mileageExists = updatedMileageHistory.some(
+            (entry) => entry.mileage === newMileageValue
+          );
 
-    // Extract vehicle information
-    const vehicle = {
-      carReg_no: data.carReg_no,
-      car_registration_no: data.car_registration_no,
-      chassis_no: data.chassis_no,
-      engine_no: data.engine_no,
-      vehicle_brand: data.vehicle_brand,
-      vehicle_name: data.vehicle_name,
-      vehicle_model: data.vehicle_model,
-      vehicle_category: data.vehicle_category,
-      color_code: data.color_code,
-      mileageHistory: updatedMileageHistory,
-      fuel_type: data.fuel_type,
-    };
+          if (!mileageExists) {
+            updatedMileageHistory.push({
+              mileage: newMileageValue,
+              date: new Date().toISOString(),
+            });
+          }
+        }
 
-    const newData = {
-      company,
-      vehicle,
-    };
+        // Extract vehicle information
+        const vehicle = {
+          carReg_no: data.carReg_no,
+          car_registration_no: data.car_registration_no,
+          chassis_no: data.chassis_no,
+          engine_no: data.engine_no,
+          vehicle_brand: data.vehicle_brand,
+          vehicle_name: data.vehicle_name,
+          vehicle_model: data.vehicle_model,
+          vehicle_category: data.vehicle_category,
+          color_code: data.color_code,
+          mileageHistory: updatedMileageHistory,
+          fuel_type: data.fuel_type,
+        };
 
-    const updateData = {
-      tenantDomain,
-      ...newData,
-    };
-    try {
-      const res = await updateCompany({ id: id, data: updateData }).unwrap();
+        const newData = {
+          company,
+          vehicle,
+        };
 
-      if (res.success) {
-        toast.success(res.message);
-        navigate("/dashboard/company-list");
-        refetch();
-        reset();
-      }
-    } catch (err) {
-      toast.error("Failed to update customer");
-    } finally {
-      toast.dismiss(toastId);
-    }
+        const updateData = {
+          tenantDomain,
+          ...newData,
+        };
+        try {
+          const res = await updateCompany({ id: id, data: updateData }).unwrap();
+
+          if (res.success) {
+            toast.success(res.message);
+            navigate("/dashboard/company-list");
+            refetch();
+            reset();
+          }
+        } catch (err) {
+          toast.error("Failed to update customer");
+        } finally {
+          toast.dismiss(toastId);
+        }
+      },
+      "You don't have permission to update company information."
+    );
   };
+
 
   const handleChassisChange = (_, newValue) => {
     const filtered = singleCard?.data?.vehicles?.find(
@@ -730,19 +741,19 @@ const UpdateCompany = () => {
 
                       {(!getDataWithChassisNo?.mileageHistory ||
                         getDataWithChassisNo.mileageHistory.length === 0) && (
-                        <TextField
-                          type="number"
-                          fullWidth
-                          label="Mileage (N)"
-                          {...register("mileage", {
-                            pattern: {
-                              value: /^\d+$/,
-                              message: "Please enter a valid number.",
-                            },
-                          })}
-                          focused={getDataWithChassisNo?.mileage || ""}
-                        />
-                      )}
+                          <TextField
+                            type="number"
+                            fullWidth
+                            label="Mileage (N)"
+                            {...register("mileage", {
+                              pattern: {
+                                value: /^\d+$/,
+                                message: "Please enter a valid number.",
+                              },
+                            })}
+                            focused={getDataWithChassisNo?.mileage || ""}
+                          />
+                        )}
                     </Box>
                   </Grid>
                   <Grid item lg={12} md={12} sm={12} xs={12}>
@@ -824,13 +835,15 @@ const UpdateCompany = () => {
             </div>
 
             <div className="mt-5   flex justify-center ">
-              <Button
-                type="submit"
-                sx={{ color: "white" }}
-                disabled={isLoading}
-              >
-                Update Company
-              </Button>
+              <Can page="/dashboard/update-company" action="edit">
+                <Button
+                  type="submit"
+                  sx={{ color: "white" }}
+                  disabled={isLoading}
+                >
+                  Update Company
+                </Button>
+              </Can>
             </div>
           </form>
         </div>

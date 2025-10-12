@@ -443,10 +443,10 @@
 //           navigate(`/dashboard/preview?id=${res?.data?._id}`);
 //         }
 //         if (clickControl === "quotation") {
-//           navigate(`/dashboard/qutation?order_no=${res?.data?.job_no}`);
+//           navigate(`/dashboard/create-quotation?order_no=${res?.data?.job_no}`);
 //         }
 //         if (clickControl === "invoice") {
-//           navigate(`/dashboard/invoice?order_no=${res?.data?.job_no}`);
+//           navigate(`/dashboard/create-invoice?order_no=${res?.data?.job_no}`);
 //         }
 //         if (clickControl === null) {
 //           navigate("/dashboard/jobcard-list");

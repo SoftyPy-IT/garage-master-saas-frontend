@@ -76,7 +76,7 @@ const CustomerJobCardList = ({
       <button className="bg-blue-500 items-center hover:bg-blue-600 text-white font-bold py-3 px-4 rounded transition duration-300">
         <Link
           className="flex gap-x-2 "
-          to={`/dashboard/addjob?id=${customerId}&user_type=${user_type}`}
+          to={`/dashboard/create-job-card?id=${customerId}&user_type=${user_type}`}
         >
           Create Job Card <HiOutlinePlus size={20} />
         </Link>
@@ -112,7 +112,7 @@ const CustomerJobCardList = ({
                 title="Your Garage Awaits!"
                 subtitle="Rev up your productivity! Start by creating your first job card and watch your garage come to life."
                 buttonText="Create Your First Job Card"
-                link={`/dashboard/addjob?id=${customerId}&user_type=${user_type}`}
+                link={`/dashboard/create-job-card?id=${customerId}&user_type=${user_type}`}
                 image={car}
               />
             ) : (
@@ -158,7 +158,7 @@ const CustomerJobCardList = ({
                           <td>{card?.date}</td>
                           <td className="text-center">
                             <Link
-                              to={`/dashboard/qutation?order_no=${card?.job_no}`}
+                              to={`/dashboard/create-quotation?order_no=${card?.job_no}`}
                               className="inline-flex items-center space-x-2 text-purple-600 hover:text-purple-800 transition-colors group relative"
                             >
                               <span className="relative inline-block">
@@ -199,13 +199,11 @@ const CustomerJobCardList = ({
                           <td>
                             <a
                               className="flex flex-col items-center edit2 group relative"
-                              href={`${
-                                import.meta.env.VITE_API_URL
-                              }/jobCards/jobcard/${
-                                card._id
-                              }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
-                                JSON.stringify(companyProfileData)
-                              )}`}
+                              href={`${import.meta.env.VITE_API_URL
+                                }/jobCards/jobcard/${card._id
+                                }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
+                                  JSON.stringify(companyProfileData)
+                                )}`}
                               target="_blank"
                               rel="noreferrer"
                             >
@@ -221,7 +219,7 @@ const CustomerJobCardList = ({
                               <Link
                                 to={`/dashboard/update-jobcard?id=${card._id}&user_type=${user_type}&user=${id}`}
                               >
-                                <FaEdit className="editIcon text-blue-500" /> 
+                                <FaEdit className="editIcon text-blue-500" />
                               </Link>
                               <span className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity">
                                 Edit Job Card
@@ -235,12 +233,12 @@ const CustomerJobCardList = ({
                               onClick={() => deletePackage(card?._id)}
                               className="editIconWrap"
                               style={{
-                                      
-                                      background: "white",
-                                      border: "none",
-                                      padding: 5,
-                                      borderRadius: "9999px"
-                                    }}
+
+                                background: "white",
+                                border: "none",
+                                padding: 5,
+                                borderRadius: "9999px"
+                              }}
                             >
                               <FaTrashAlt className="deleteIcon text-red-500" />
                             </button>

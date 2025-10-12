@@ -14,7 +14,6 @@ import {
   vehicleName,
   vehicleTypes,
 } from "../../../constant";
-import { HiOutlineUserGroup } from "react-icons/hi";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
@@ -22,6 +21,8 @@ import { ArrowBack } from "@mui/icons-material";
 import { useCreateCompanyMutation } from "../../../redux/api/companyApi";
 import CompanyListTable from "./CompanyListTable";
 import { useTenantDomain } from "../../../hooks/useTenantDomain";
+import { usePermissions } from "../../../context/PermissionContext";
+import Can from "../../../components/Can";
 
 const AddCompany = () => {
   const [registrationError, setRegistrationError] = useState("");
@@ -32,7 +33,8 @@ const AddCompany = () => {
   const [yearSelectInput, setYearSelectInput] = useState("");
   const [countryCode, setCountryCode] = useState(countries[0]);
   const [driverCountryCode, setDriverCountryCode] = useState(countries[0]);
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain } = useTenantDomain();
+  const { performActionWithPermission } = usePermissions();
 
   const [phoneNumber, setPhoneNumber] = useState("");
   const [driverPhoneNumber, setDriverPhoneNumber] = useState("");
@@ -134,73 +136,75 @@ const AddCompany = () => {
   };
 
   const onSubmit = async (data) => {
-    const toastId = toast.loading("Creating Company...");
+    performActionWithPermission(
+      "/dashboard/add-company",
+      "create",
+      async () => {
+        const toastId = toast.loading("Creating Company...");
+        const company = {
+          company_name: data.company_name,
+          vehicle_username: data.vehicle_username,
+          company_address: data.company_address,
+          company_contact: data.company_contact,
+          company_country_code: countryCode.code,
+          company_email: data.company_email,
+          customer_address: data.customer_address,
+          driver_name: data.driver_name,
+          driver_contact: data.driver_contact,
+          driver_country_code: driverCountryCode.code,
+          companyOwnerPhone: data.companyOwnerPhone,
+          companyOwnerName: data.companyOwnerName,
+          companyOwnerCountryCode: companyOwnerCountryCode.code,
+          reference_name: data.reference_name,
+          whatsappNumber: data.whatsappNumber,
+        };
+        data.vehicle_model = Number(data.vehicle_model);
+        data.mileage = Number(data.mileage);
+        const vehicle = {
+          carReg_no: data.carReg_no,
+          car_registration_no: data.car_registration_no,
+          chassis_no: data.chassis_no,
+          engine_no: data.engine_no,
+          vehicle_brand: data.vehicle_brand,
+          vehicle_name: data.vehicle_name,
+          vehicle_model: data.vehicle_model,
+          vehicle_category: data.vehicle_category,
+          color_code: data.color_code,
+          mileageHistory: [
+            {
+              mileage: Number(data.mileage),
+              date: new Date(),
+            },
+          ],
+          fuel_type: data.fuel_type,
+        };
+        const newData = {
+          tenantDomain,
+          company,
+          vehicle,
+        };
 
-    const company = {
-      company_name: data.company_name,
-      vehicle_username: data.vehicle_username,
-      company_address: data.company_address,
-      company_contact: data.company_contact,
-      company_country_code: countryCode.code,
-      company_email: data.company_email,
-      customer_address: data.customer_address,
-      driver_name: data.driver_name,
-      driver_contact: data.driver_contact,
-      driver_country_code: driverCountryCode.code,
-      companyOwnerPhone: data.companyOwnerPhone,
-      companyOwnerName: data.companyOwnerName,
-      companyOwnerCountryCode: companyOwnerCountryCode.code,
-      reference_name: data.reference_name,
-      whatsappNumber: data.whatsappNumber,
-    };
+        try {
+          const res = await createCompany(newData).unwrap();
 
-    data.vehicle_model = Number(data.vehicle_model);
-    data.mileage = Number(data.mileage);
-
-    // Extract vehicle information
-    const vehicle = {
-      carReg_no: data.carReg_no,
-      car_registration_no: data.car_registration_no,
-      chassis_no: data.chassis_no,
-      engine_no: data.engine_no,
-      vehicle_brand: data.vehicle_brand,
-      vehicle_name: data.vehicle_name,
-      vehicle_model: data.vehicle_model,
-      vehicle_category: data.vehicle_category,
-      color_code: data.color_code,
-      mileageHistory: [
-        {
-          mileage: Number(data.mileage),
-          date: new Date(),
-        },
-      ],
-      fuel_type: data.fuel_type,
-    };
-
-    const newData = {
-      tenantDomain,
-      company,
-      vehicle,
-    };
-
-    try {
-      const res = await createCompany(newData).unwrap();
-
-      if (res.success) {
-        toast.success("Successfully add to company post");
-        navigate("/dashboard/company-list");
-      }
-    } catch (err) {
-      if (err.data && err.data.errorSources) {
-        err.data.errorSources.forEach((error) => {
-          toast.error(`${error.path}: ${error.message}`);
-        });
-      } else {
-        toast.error(err.data?.message || "Failed to creating the customer.");
-      }
-    } finally {
-      toast.dismiss(toastId);
-    }
+          if (res.success) {
+            toast.success("Successfully add to company post");
+            navigate("/dashboard/company-list");
+          }
+        } catch (err) {
+          if (err.data && err.data.errorSources) {
+            err.data.errorSources.forEach((error) => {
+              toast.error(`${error.path}: ${error.message}`);
+            });
+          } else {
+            toast.error(err.data?.message || "Failed to creating the company.");
+          }
+        } finally {
+          toast.dismiss(toastId);
+        }
+      },
+      "You don't have permission to create companies."
+    );
   };
 
   const handleBack = () => {
@@ -514,7 +518,7 @@ const AddCompany = () => {
                     <Autocomplete
                       fullWidth
                       freeSolo
-                      onInputChange={(event, newValue) => {}}
+                      onInputChange={(event, newValue) => { }}
                       onChange={handleBrandChange}
                       options={carBrands.map((option) => option.label)}
                       value={selectedBrand}
@@ -723,13 +727,15 @@ const AddCompany = () => {
             </div>
 
             <div className="mt-5 justify-center flex ">
-              <Button
-                type="submit"
-                sx={{ color: "white" }}
-                disabled={isLoading}
-              >
-                Add Company{" "}
-              </Button>
+              <Can page="/dashboard/add-company" action="create">
+                <Button
+                  type="submit"
+                  sx={{ color: "white" }}
+                  disabled={isLoading}
+                >
+                  Add Company{" "}
+                </Button>
+              </Can>
             </div>
           </form>
         </div>

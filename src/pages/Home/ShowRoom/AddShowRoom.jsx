@@ -16,16 +16,18 @@ import {
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import { HiOutlineUserGroup } from "react-icons/hi";
 import { ArrowBack } from "@mui/icons-material";
 import { useCreateShowRoomMutation } from "../../../redux/api/showRoomApi";
 import ShowRoomListTable from "./ShowRoomListTable";
 import { useTenantDomain } from "../../../hooks/useTenantDomain";
+import Can from "../../../components/Can";
+import { usePermissions } from "../../../context/PermissionContext";
 
 const AddShowRoom = () => {
   const [registrationError, setRegistrationError] = useState("");
   const [selectedBrand, setSelectedBrand] = useState("");
   const [filteredVehicles, setFilteredVehicles] = useState([]);
+  const { performActionWithPermission } = usePermissions();
 
   const [filteredOptions, setFilteredOptions] = useState([]);
   const [yearSelectInput, setYearSelectInput] = useState("");
@@ -35,14 +37,10 @@ const AddShowRoom = () => {
 
   const [phoneNumber, setPhoneNumber] = useState("");
   const [driverPhoneNumber, setDriverPhoneNumber] = useState("");
-  const [companyOwnerCountryCode, setCompanyOwnerCountryCode] = useState(
-    countries[0]
-  );
-  const [ownerPhoneNumber, setOwnerPhoneNumber] = useState("");
-  const tenantDomain = useTenantDomain();
+
+  const { tenantDomain } = useTenantDomain();
 
   const navigate = useNavigate();
-  const limit = 10;
 
   const {
     register,
@@ -129,71 +127,78 @@ const AddShowRoom = () => {
   };
 
   const onSubmit = async (data) => {
-    const toastId = toast.loading("Creating Show Room...");
+    performActionWithPermission('/dashboard/add-show-room', 'create',
+      async () => {
+        const toastId = toast.loading("Creating Show Room...");
 
-    const showroom = {
-      showRoom_name: data.showRoom_name,
-      vehicle_username: data.vehicle_username,
-      showRoom_address: data.showRoom_address,
-      company_name: data.company_name,
-      company_contact: data.company_contact,
-      company_country_code: countryCode.code,
-      company_email: data.company_email,
-      whatsappNumber: data.whatsappNumber,
-      company_address: data.company_address,
-      driver_name: data.driver_name,
-      driver_contact: data.driver_contact,
-      driver_country_code: driverCountryCode.code,
-      reference_name: data.reference_name,
-    };
+        const showroom = {
+          showRoom_name: data.showRoom_name,
+          vehicle_username: data.vehicle_username,
+          showRoom_address: data.showRoom_address,
+          company_name: data.company_name,
+          company_contact: data.company_contact,
+          company_country_code: countryCode.code,
+          company_email: data.company_email,
+          whatsappNumber: data.whatsappNumber,
+          company_address: data.company_address,
+          driver_name: data.driver_name,
+          driver_contact: data.driver_contact,
+          driver_country_code: driverCountryCode.code,
+          reference_name: data.reference_name,
+        };
 
-    data.vehicle_model = Number(data.vehicle_model);
-    data.mileage = Number(data.mileage);
+        data.vehicle_model = Number(data.vehicle_model);
+        data.mileage = Number(data.mileage);
 
-    // Extract vehicle information
-    const vehicle = {
-      carReg_no: data.carReg_no,
-      car_registration_no: data.car_registration_no,
-      chassis_no: data.chassis_no,
-      engine_no: data.engine_no,
-      vehicle_brand: data.vehicle_brand,
-      vehicle_name: data.vehicle_name,
-      vehicle_model: data.vehicle_model,
-      vehicle_category: data.vehicle_category,
-      color_code: data.color_code,
-      mileageHistory: [
-        {
-          mileage: Number(data.mileage),
-          date: new Date(),
-        },
-      ],
-      fuel_type: data.fuel_type,
-    };
+        // Extract vehicle information
+        const vehicle = {
+          carReg_no: data.carReg_no,
+          car_registration_no: data.car_registration_no,
+          chassis_no: data.chassis_no,
+          engine_no: data.engine_no,
+          vehicle_brand: data.vehicle_brand,
+          vehicle_name: data.vehicle_name,
+          vehicle_model: data.vehicle_model,
+          vehicle_category: data.vehicle_category,
+          color_code: data.color_code,
+          mileageHistory: [
+            {
+              mileage: Number(data.mileage),
+              date: new Date(),
+            },
+          ],
+          fuel_type: data.fuel_type,
+        };
 
-    const newData = {
-      tenantDomain,
-      showroom,
-      vehicle,
-    };
+        const newData = {
+          tenantDomain,
+          showroom,
+          vehicle,
+        };
 
-    try {
-      const res = await createShowroom(newData).unwrap();
+        try {
+          const res = await createShowroom(newData).unwrap();
 
-      if (res.success) {
-        navigate("/dashboard/show-room-list");
-        toast.success("Successfully add to customer post");
-      }
-    } catch (err) {
-      if (err.data && err.data.errorSources) {
-        err.data.errorSources.forEach((error) => {
-          toast.error(`${error.path}: ${error.message}`);
-        });
-      } else {
-        toast.error(err.data?.message || "Failed to creating the show room.");
-      }
-    } finally {
-      toast.dismiss(toastId);
-    }
+          if (res.success) {
+            navigate("/dashboard/show-room-list");
+            toast.success(res.message || 'Successfully add to show room');
+          }
+        } catch (err) {
+          if (err.data && err.data.errorSources) {
+            err.data.errorSources.forEach((error) => {
+              toast.error(`${error.path}: ${error.message}`);
+            });
+          } else {
+            toast.error(err.data?.message || "Failed to creating the show room.");
+          }
+        } finally {
+          toast.dismiss(toastId);
+        }
+
+      }, "You do not have permission to create show room"
+    )
+
+
   };
 
   const handleBack = () => {
@@ -457,7 +462,7 @@ const AddShowRoom = () => {
                     <Autocomplete
                       fullWidth
                       freeSolo
-                      onInputChange={(event, newValue) => {}}
+                      onInputChange={(event, newValue) => { }}
                       onChange={handleBrandChange}
                       options={carBrands.map((option) => option.label)}
                       value={selectedBrand}
@@ -666,14 +671,17 @@ const AddShowRoom = () => {
             </div>
 
             <div className="mt-8  flex justify-center  ">
-              <Button
-                type="submit"
-                sx={{ color: "white" }}
-                disabled={isLoading}
-              >
-                Add Show Room{" "}
-              </Button>
+              <Can page="/dashboard/add-show-room" action="create">
+                <Button
+                  type="submit"
+                  sx={{ color: "white" }}
+                  disabled={isLoading}
+                >
+                  Add Show Room{" "}
+                </Button>
+              </Can>
             </div>
+
           </form>
         </div>
       </div>

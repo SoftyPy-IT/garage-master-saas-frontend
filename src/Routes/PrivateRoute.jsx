@@ -1,6 +1,8 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable react/prop-types */
+// src/components/ProtectedRoute.js
+
 import { usePermissions } from '../context/PermissionContext';
 import {
   Box,
@@ -11,6 +13,8 @@ import {
 
 const ProtectedRoute = ({ children, pagePath, action = 'view' }) => {
   const { checkPermission, loading, permissions } = usePermissions();
+
+  // যদি লোডিং চলছে বা পারমিশন ডেটা এখনও লোড হয়নি
   if (loading || permissions.length === 0) {
     return (
       <Box
@@ -23,7 +27,9 @@ const ProtectedRoute = ({ children, pagePath, action = 'view' }) => {
       </Box>
     );
   }
-  const hasAccess = checkPermission(pagePath, action);
+
+  // শুধুমাত্র "view" অ্যাকশনের জন্য অ্যাক্সেস চেক করুন
+  const hasAccess = checkPermission(pagePath, "view");
   console.log('ProtectedRoute - hasAccess:', hasAccess, 'for page:', pagePath, 'action:', action);
   console.log('Available permissions:', permissions);
 
@@ -42,10 +48,10 @@ const ProtectedRoute = ({ children, pagePath, action = 'view' }) => {
           Access Denied
         </Typography>
         <Typography variant="body1" color="textSecondary" paragraph>
-          You don't have permission to {action} this page.
+          You don't have permission to view this page.
         </Typography>
         <Typography variant="body2" color="textSecondary" paragraph>
-          Required permission: {action} for {pagePath}
+          Required permission: view for {pagePath}
         </Typography>
         <Button
           variant="contained"

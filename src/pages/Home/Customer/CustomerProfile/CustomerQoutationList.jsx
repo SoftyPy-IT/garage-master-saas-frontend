@@ -78,7 +78,7 @@ const CustomerQoutationList = ({ id, customerId, user_type, tenantDomain, compan
   return (
     <div className=" mb-24 mt-10 w-full">
       <button className="bg-blue-500 items-center hover:bg-blue-600 text-white font-bold py-3 px-4 rounded transition duration-300">
-        <Link className="flex gap-x-2 " to={`/dashboard/qutation?id=${id}`}>
+        <Link className="flex gap-x-2 " to={`/dashboard/create-quotation?id=${id}`}>
           Create Quotation <HiOutlinePlus size={20} />
         </Link>
       </button>
@@ -115,7 +115,7 @@ const CustomerQoutationList = ({ id, customerId, user_type, tenantDomain, compan
                   process.
                 </p>
                 <Link
-                  to={`/dashboard/qutation?id=${id}`}
+                  to={`/dashboard/create-quotation?id=${id}`}
                   className="group relative inline-flex items-center overflow-hidden rounded-full bg-blue-600 px-8 py-3 text-white focus:outline-none focus:ring active:bg-blue-500 hover:bg-blue-700 transition duration-300"
                 >
                   <span className="absolute right-0 translate-x-full transition-transform group-hover:-translate-x-4">
@@ -219,7 +219,7 @@ const CustomerQoutationList = ({ id, customerId, user_type, tenantDomain, compan
                             <Tooltip title="Create Invoice" arrow placement="top">
                               <a
                                 className="flex flex-col items-center edit2"
-                                href={`/dashboard/invoice?order_no=${card?.job_no}&id=${card._id}`}
+                                href={`/dashboard/create-invoice?order_no=${card?.job_no}&id=${card._id}`}
                                 rel="noreferrer"
                               >
                                 <FaFileInvoice className="editIcon text-purple-600" />
@@ -235,9 +235,8 @@ const CustomerQoutationList = ({ id, customerId, user_type, tenantDomain, compan
                             >
                               <a
                                 className="flex flex-col items-center edit2"
-                                href={`${
-                                  import.meta.env.VITE_API_URL
-                                }/quotations/quotation/${card._id}?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
+                                href={`${import.meta.env.VITE_API_URL
+                                  }/quotations/quotation/${card._id}?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
                                     JSON.stringify(companyProfileData)
                                   )}`}
                                 target="_blank"
@@ -258,7 +257,7 @@ const CustomerQoutationList = ({ id, customerId, user_type, tenantDomain, compan
                                 <Link
                                   to={`/dashboard/update-quotation?id=${card._id}&user_type=${user_type}&user=${id}`}
                                 >
-                                  <FaEdit className="editIcon text-blue-500" /> 
+                                  <FaEdit className="editIcon text-blue-500" />
                                 </Link>
                               </div>
                             </Tooltip>
@@ -278,13 +277,13 @@ const CustomerQoutationList = ({ id, customerId, user_type, tenantDomain, compan
                                 disabled={deleteLoading}
                                 onClick={() => deletePackage(card._id)}
                                 className="editIconWrap cursor-pointer"
-                               style={{
-                                      
-                                      background: "white",
-                                      border: "none",
-                                      padding: 5,
-                                      borderRadius: "9999px"
-                                    }}
+                                style={{
+
+                                  background: "white",
+                                  border: "none",
+                                  padding: 5,
+                                  borderRadius: "9999px"
+                                }}
                                 aria-label="Delete Quotation"
                               >
                                 <FaTrashAlt className="deleteIcon text-red-500" />

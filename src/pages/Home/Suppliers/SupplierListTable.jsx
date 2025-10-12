@@ -59,7 +59,7 @@ const WorldClassSupplierList = () => {
 
   const itemsPerPage = 5;
   const limit = 15;
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain } = useTenantDomain();
   const [moveRecycledSupplier] = useMoveRecycledSupplierMutation();
   const {
     data: allSuppliers,
