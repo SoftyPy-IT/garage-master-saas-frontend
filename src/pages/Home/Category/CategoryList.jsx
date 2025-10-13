@@ -8,27 +8,17 @@ import {
   Box,
   Container,
   Typography,
-  Paper,
   Button,
   TextField,
-  Grid,
-  Card,
-  CardContent,
-  IconButton,
   Chip,
-  Menu,
-  MenuItem,
   InputAdornment,
   Tooltip,
-  Dialog,
-  DialogContent,
   CircularProgress,
   alpha,
-  Stack,
-  Skeleton,
   Avatar,
-  ListItemIcon,
   Pagination,
+  useTheme,
+  IconButton,
 } from "@mui/material";
 import {
   Add as AddIcon,
@@ -37,7 +27,6 @@ import {
   Delete as DeleteIcon,
   Refresh as RefreshIcon,
   Category as CategoryIcon,
-  CloudDownload as CloudDownloadIcon,
 } from "@mui/icons-material";
 import Swal from "sweetalert2";
 import {
@@ -49,16 +38,17 @@ import { CreateCategoryModal } from "./CreateCategoryModal";
 import { useTenantDomain } from "../../../hooks/useTenantDomain";
 import { usePermissions } from "../../../context/PermissionContext";
 import Can from "../../../components/Can";
+
 export default function CategoryList() {
   const [open, setOpen] = useState(false);
   const [updateOpen, setUpdateOpen] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [categoryToDelete, setCategoryToDelete] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const { tenantDomain } = useTenantDomain();
   const { performActionWithPermission } = usePermissions();
+  const theme = useTheme();
+
   const { data, isLoading, refetch } = useGetAllICategoryQuery({
     tenantDomain,
     limit: 10,
@@ -68,7 +58,6 @@ export default function CategoryList() {
   const [deleteCategory] = useDeleteCategoryMutation();
   const categories = data?.data?.categories || [];
 
-
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
   };
@@ -76,47 +65,59 @@ export default function CategoryList() {
   const handlePageChange = (event, page) => {
     setCurrentPage(page);
   };
-  const handleOpen = () => setOpen(true);
-  const handleUpdateOpen = (id) => setUpdateOpen(id);
-  const handleClose = () => setOpen(false);
+
+  const handleOpen = () => {
+    setUpdateOpen(null);
+    setOpen(true);
+  };
+
+  const handleUpdateOpen = (id) => {
+    setUpdateOpen(id);
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setUpdateOpen(null);
+  };
+
   const handleDeleteClick = (id) => {
+    performActionWithPermission('/dashboard/category', 'delete',
+      async () => {
+        Swal.fire({
+          title: "Are you sure?",
+          text: "You won't be able to revert this!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Yes, delete it!",
 
-    setCategoryToDelete(id);
-    setIsDeleteDialogOpen(true);
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            try {
+              await deleteCategory({ tenantDomain, id }).unwrap();
+              Swal.fire({
+                icon: "success",
+                title: "Deleted!",
+                text: "The category has been deleted successfully.",
+                showConfirmButton: false,
+                timer: 2000,
+                background: "#fff",
+
+              });
+            } catch (error) {
+              Swal.fire({
+                icon: "error",
+                title: "Error!",
+                text: "An error occurred while deleting the category.",
+                confirmButtonColor: theme.palette.error.main,
+              });
+            }
+          }
+        });
+      }, "You don't have permission to delete category"
+    )
   };
 
-  const handleDeleteConfirm = async () => {
-    try {
-      await deleteCategory({ tenantDomain, id: categoryToDelete }).unwrap();
-      Swal.fire({
-        icon: "success",
-        title: "Deleted!",
-        text: "The category has been deleted successfully.",
-        showConfirmButton: false,
-        timer: 2000,
-        background: "#fff",
-        customClass: {
-          title: "text-purple-800 font-medium",
-          content: "text-gray-600",
-        },
-      });
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Error!",
-        text: "An error occurred while deleting the category.",
-        confirmButtonColor: "#6a1b9a",
-      });
-    } finally {
-      setIsDeleteDialogOpen(false);
-      setCategoryToDelete(null);
-    }
-  };
-
-  const handleDeleteCancel = () => {
-    setIsDeleteDialogOpen(false);
-    setCategoryToDelete(null);
-  };
   const handleRefresh = () => {
     setIsRefreshing(true);
     refetch().then(() => {
@@ -143,10 +144,10 @@ export default function CategoryList() {
             width: 50,
             height: 50,
             borderRadius: 2,
-            bgcolor: alpha("#6a1b9a", 0.1),
+            bgcolor: alpha("#42A1DA", 0.1),
           }}
         >
-          <CategoryIcon sx={{ color: alpha("#6a1b9a", 0.7) }} />
+          <CategoryIcon sx={{ color: alpha("#42A1DA", 0.7) }} />
         </Avatar>
       ),
     },
@@ -171,8 +172,8 @@ export default function CategoryList() {
           label={params.value}
           size="small"
           sx={{
-            bgcolor: alpha("#6a1b9a", 0.1),
-            color: "#6a1b9a",
+            bgcolor: alpha("#42A1DA", 0.1),
+            color: "#42A1DA",
             fontWeight: 500,
             fontSize: "0.75rem",
           }}
@@ -190,31 +191,33 @@ export default function CategoryList() {
               size="small"
               onClick={() => handleUpdateOpen(params.row.id)}
               sx={{
-                bgcolor: alpha("#6a1b9a", 0.1),
-                color: "#6a1b9a",
+                bgcolor: alpha("#42A1DA", 0.1),
+                color: "#42A1DA",
                 "&:hover": {
-                  bgcolor: alpha("#6a1b9a", 0.2),
+                  bgcolor: alpha("#42A1DA", 0.2),
                 },
               }}
             >
               <EditIcon fontSize="small" />
             </IconButton>
           </Tooltip>
-          <Tooltip title="Delete">
-            <IconButton
-              size="small"
-              onClick={() => handleDeleteClick(params.id)}
-              sx={{
-                bgcolor: alpha("#d32f2f", 0.1),
-                color: "#d32f2f",
-                "&:hover": {
-                  bgcolor: alpha("#d32f2f", 0.2),
-                },
-              }}
-            >
-              <DeleteIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
+          <Can page='/dashboard/category' action='delete'>
+            <Tooltip title="Delete">
+              <IconButton
+                size="small"
+                onClick={() => handleDeleteClick(params.id)}
+                sx={{
+                  bgcolor: alpha("#d32f2f", 0.1),
+                  color: "#d32f2f",
+                  "&:hover": {
+                    bgcolor: alpha("#d32f2f", 0.2),
+                  },
+                }}
+              >
+                <DeleteIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          </Can>
         </Box>
       ),
     },
@@ -227,7 +230,6 @@ export default function CategoryList() {
     sub_category: category.sub_category,
   }));
 
-
   return (
     <Box
       sx={{
@@ -238,15 +240,14 @@ export default function CategoryList() {
       }}
     >
       {/* Header */}
-      <div className="bg-[#42A1DA] to-[#42A1DA] text-white py-6 mb-6 rounded-b-[20px] shadow-[0_4px_20px_rgba(106,27,154,0.4)]">
+      <div className="bg-[#42A1DA] text-white py-6 mb-6 rounded-b-[20px] shadow-[0_4px_20px_rgba(66,161,218,0.4)]">
         <Container maxWidth="xl">
           <div className="flex items-center mb-4">
             <CategoryIcon className="text-[40px] mr-4" />
             <h1 className="md:text-3xl font-bold">Category Management</h1>
           </div>
-          <p className="opacity-90 max-w-[700px] mb-6">
-            Manage your product categories to better organize your inventory and
-            improve searchability.
+          <p className="opacity-90 max-w-[700px]">
+            Manage your product categories to better organize your inventory and improve searchability.
           </p>
         </Container>
       </div>
@@ -254,7 +255,7 @@ export default function CategoryList() {
       <Container maxWidth="xl" sx={{ p: { xs: 0, md: 2 } }}>
         {/* Search and Actions */}
         <div className="md:flex items-center justify-between p-4 mb-4 rounded-xl shadow-md bg-white">
-          <div className="mb-2 md:mb-0">
+          <div className="mb-2 md:mb-0 flex-1 mr-4">
             <TextField
               fullWidth
               placeholder="Search categories by name..."
@@ -274,17 +275,17 @@ export default function CategoryList() {
                     borderColor: "rgba(0, 0, 0, 0.1)",
                   },
                   "&:hover fieldset": {
-                    borderColor: "rgba(106, 27, 154, 0.3)",
+                    borderColor: "rgba(66, 161, 218, 0.3)",
                   },
                   "&.Mui-focused fieldset": {
-                    borderColor: "#6a1b9a",
+                    borderColor: "#42A1DA",
                   },
                 },
               }}
             />
           </div>
 
-          <div className="space-x-2">
+          <div className="flex items-center space-x-2">
             <Button
               variant="contained"
               startIcon={<AddIcon />}
@@ -292,9 +293,12 @@ export default function CategoryList() {
               sx={{
                 borderRadius: 100,
                 background: "#42A1DA",
-                boxShadow: "0 4px 10px rgba(106, 27, 154, 0.3)",
-                px: 2,
+                boxShadow: "0 4px 10px rgba(66, 161, 218, 0.3)",
+                px: 3,
                 color: "white",
+                "&:hover": {
+                  background: "#2a8fc7",
+                },
               }}
             >
               Create Category
@@ -312,31 +316,43 @@ export default function CategoryList() {
                 }}
               >
                 {isRefreshing ? (
-                  <CircularProgress size={20} sx={{ color: "#6a1b9a" }} />
+                  <CircularProgress size={20} sx={{ color: "#42A1DA" }} />
                 ) : (
                   <RefreshIcon />
                 )}
               </IconButton>
             </Tooltip>
-
           </div>
         </div>
 
+        {/* Data Grid */}
         <Box
           sx={{
             width: "100%",
             overflow: "auto",
             "& .MuiDataGrid-root": {
               minWidth: "800px",
+              borderRadius: 2,
+              boxShadow: "0 2px 12px rgba(0,0,0,0.05)",
+              border: 0,
             },
             "& .MuiDataGrid-columnHeaders": {
               position: "sticky",
               top: 0,
               zIndex: 1,
               backgroundColor: "white",
+              borderRadius: 2,
             },
-            "& .MuiDataGrid-virtualScroller": {
-              overflow: "visible",
+            "& .MuiDataGrid-cell:focus": {
+              outline: "none",
+            },
+            "& .MuiDataGrid-footerContainer": {
+              borderRadius: 2,
+            },
+            "& .MuiDataGrid-row": {
+              "&:hover": {
+                backgroundColor: alpha("#42A1DA", 0.04),
+              },
             },
           }}
         >
@@ -357,6 +373,7 @@ export default function CategoryList() {
           />
         </Box>
 
+        {/* Pagination */}
         {categories.length > 0 && (
           <Box
             sx={{
@@ -374,10 +391,10 @@ export default function CategoryList() {
                 "& .MuiPaginationItem-root": {
                   borderRadius: 2,
                   "&.Mui-selected": {
-                    bgcolor: "#6a1b9a",
+                    bgcolor: "#42A1DA",
                     color: "white",
                     "&:hover": {
-                      bgcolor: "#42A1DA",
+                      bgcolor: "#2a8fc7",
                     },
                   },
                 },
@@ -386,52 +403,14 @@ export default function CategoryList() {
           </Box>
         )}
 
-        <Dialog open={isDeleteDialogOpen} onClose={handleDeleteCancel}>
-          <DialogContent sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom>
-              Confirm Delete
-            </Typography>
-            <Typography variant="body1">
-              Are you sure you want to delete this category?
-            </Typography>
-            <Box
-              sx={{
-                mt: 3,
-                display: "flex",
-                justifyContent: "flex-end",
-                gap: 2,
-              }}
-            >
-              <Button
-                onClick={handleDeleteCancel}
-                sx={{
-                  borderRadius: 100,
-                  px: 3,
-                  color: "text.secondary",
-                }}
-              >
-                Cancel
-              </Button>
-              <Can page='/dashboard/category' action='delete'>
-                <Button
-                  onClick={handleDeleteConfirm}
-                  color="error"
-                  variant="contained"
-                  sx={{
-                    borderRadius: 100,
-                    px: 3,
-                  }}
-                  autoFocus
-                >
-                  Delete
-                </Button>
-              </Can>
-            </Box>
-          </DialogContent>
-        </Dialog>
-
-        {open && <CreateCategoryModal categoryId={updateOpen} open={open} setOpen={handleClose} />}
-
+        {/* Create/Edit Modal */}
+        {open && (
+          <CreateCategoryModal
+            categoryId={updateOpen}
+            open={open}
+            setOpen={handleClose}
+          />
+        )}
       </Container>
     </Box>
   );

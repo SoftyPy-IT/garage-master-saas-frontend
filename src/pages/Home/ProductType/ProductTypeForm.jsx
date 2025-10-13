@@ -9,7 +9,6 @@ import { useCreateProductTypeMutation, useUpdateProductTypeMutation } from "../.
 import { useTenantDomain } from "../../../hooks/useTenantDomain";
 import Can from "../../../components/Can";
 import { usePermissions } from "../../../context/PermissionContext";
-import Loading from "../../../components/Loading/Loading";
 
 const ProductTypeForm = ({ editingProductType, onSuccess }) => {
   const [createProductType, { isLoading: isCreating }] = useCreateProductTypeMutation();
@@ -20,7 +19,6 @@ const ProductTypeForm = ({ editingProductType, onSuccess }) => {
   const { performActionWithPermission } = usePermissions();
   useEffect(() => {
     if (editingProductType) {
-      console.log('Setting form key for editing:', editingProductType);
       setFormKey(prev => prev + 1);
     }
   }, [editingProductType]);

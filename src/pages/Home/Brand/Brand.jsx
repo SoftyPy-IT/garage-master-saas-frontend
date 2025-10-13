@@ -11,10 +11,6 @@ import {
   TextField,
   InputAdornment,
   Tooltip,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   Fade,
 } from "@mui/material";
 import {
@@ -24,32 +20,30 @@ import {
   Search as SearchIcon,
 } from "@mui/icons-material";
 import Swal from "sweetalert2";
-import { motion } from "framer-motion";
-
 import {
   useDeleteBrandMutation,
   useGetAllIBrandQuery,
 } from "../../../redux/api/brandApi";
 import { CreateBrandModal } from "./CreateBrandModal";
-import { UpdateBrand } from "./UpdateBrand";
 import { useTenantDomain } from "../../../hooks/useTenantDomain";
+import { usePermissions } from "../../../context/PermissionContext";
 
 export default function BrandList() {
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
   const [pageSize, setPageSize] = useState(12);
-  const [confirmDelete, setConfirmDelete] = useState({ open: false, id: null });
   const [open, setOpen] = useState(false);
   const [updateOpen, setUpdateOpen] = useState(null);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
-  const tenantDomain = useTenantDomain();
-
-  const { data, isLoading, refetch } = useGetAllIBrandQuery({
+  const { tenantDomain } = useTenantDomain();
+  const { performActionWithPermission } = usePermissions();
+  const { data, isLoading } = useGetAllIBrandQuery({
     tenantDomain,
     limit: pageSize,
     page: currentPage,
     searchTerm: search,
   });
+
 
   const [deleteBrand, { isLoading: isDeleting }] = useDeleteBrandMutation();
   const brands = data?.data?.brands || [];
@@ -64,24 +58,34 @@ export default function BrandList() {
     return () => clearTimeout(timer);
   }, []);
 
-  const handleDeleteConfirm = (id) => {
-    setConfirmDelete({ open: true, id });
+  const handleDeleteBrand = async (id) => {
+    performActionWithPermission('/dashboard/brand', 'delete',
+      async () => {
+        const result = await Swal.fire({
+          title: "Are you sure?",
+          text: "You won't be able to revert this!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#d33",
+          cancelButtonColor: "#3085d6",
+          confirmButtonText: "Yes, delete it!",
+          cancelButtonText: "Cancel",
+        });
+
+        if (result.isConfirmed) {
+          try {
+            await deleteBrand({ tenantDomain, id }).unwrap();
+            Swal.fire("Deleted!", "Brand deleted successfully.", "success");
+          } catch {
+            Swal.fire("Error!", "Failed to delete brand.", "error");
+          }
+        }
+      }, "You don't have permission to delete this brand !"
+    )
   };
 
-  const handleDeleteCancel = () => {
-    setConfirmDelete({ open: false, id: null });
-  };
-
-  const handleDeleteBrand = async () => {
-    if (!confirmDelete.id) return;
-    try {
-      await deleteBrand({ tenantDomain, id: confirmDelete.id }).unwrap();
-      Swal.fire("Deleted!", "Brand deleted successfully.", "success");
-    } catch {
-      Swal.fire("Error!", "Failed to delete brand.", "error");
-    } finally {
-      setConfirmDelete({ open: false, id: null });
-    }
+  const handleCloseUpdateModal = () => {
+    setUpdateOpen(null);
   };
 
   return (
@@ -160,7 +164,7 @@ export default function BrandList() {
                       </Tooltip>
                       <Tooltip title="Delete">
                         <IconButton
-                          onClick={() => handleDeleteConfirm(brand._id)}
+                          onClick={() => handleDeleteBrand(brand._id)}
                         >
                           <DeleteIcon fontSize="small" color="error" />
                         </IconButton>
@@ -171,34 +175,16 @@ export default function BrandList() {
               </Box>
             )}
 
-            {open && <CreateBrandModal open={open} setOpen={setOpen} />}
-            {updateOpen && (
-              <UpdateBrand
-                open={Boolean(updateOpen)}
-                setOpen={() => setUpdateOpen(null)}
-                brandId={updateOpen}
-              />
-            )}
+            <CreateBrandModal
+              open={open}
+              setOpen={setOpen}
+            />
 
-            <Dialog open={confirmDelete.open} onClose={handleDeleteCancel}>
-              <DialogTitle>Confirm Deletion</DialogTitle>
-              <DialogContent>
-                <Typography>
-                  Are you sure you want to delete this brand?
-                </Typography>
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={handleDeleteCancel}>Cancel</Button>
-                <Button
-                  onClick={handleDeleteBrand}
-                  color="error"
-                  variant="contained"
-                  disabled={isDeleting}
-                >
-                  {isDeleting ? "Deleting..." : "Delete"}
-                </Button>
-              </DialogActions>
-            </Dialog>
+            <CreateBrandModal
+              brandId={updateOpen}
+              open={Boolean(updateOpen)}
+              setOpen={handleCloseUpdateModal}
+            />
           </Box>
         </Fade>
       </div>
