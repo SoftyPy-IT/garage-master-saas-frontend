@@ -16,7 +16,7 @@ import {
   Select,
   TextField,
 } from "@mui/material";
-import "react-quill/dist/quill.snow.css";
+// import "react-quill/dist/quill.snow.css";
 import InputMask from "react-input-mask";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
