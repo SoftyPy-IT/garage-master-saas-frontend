@@ -15,9 +15,7 @@ import { StyledModal } from "../../../utils/customStyle";
 
 const CreateExpenseCategoryModal = ({ open, setOpen, categoryId }) => {
   const tenantDomain = useTenantDomain();
-
-  // Query single category only if editing (categoryId present)
-  const { data:singleCategory, isLoading } = useGetSingleExpenseCategoryQuery({
+  const { data: singleCategory, isLoading } = useGetSingleExpenseCategoryQuery({
     tenantDomain,
     id: categoryId,
   });
@@ -59,7 +57,7 @@ const CreateExpenseCategoryModal = ({ open, setOpen, categoryId }) => {
     } catch (error) {
       toast.error(
         "Error: " +
-          (error.data?.message || error.message || "Something went wrong!")
+        (error.data?.message || error.message || "Something went wrong!")
       );
     } finally {
       toast.dismiss(toastId);
@@ -80,7 +78,7 @@ const CreateExpenseCategoryModal = ({ open, setOpen, categoryId }) => {
           }
         >
           <Box padding="24px">
-            {/* Pass defaultValues and handleSubmit to StyledForm */}
+
             <GarageForm onSubmit={handleSubmit} defaultValues={defaultValues}>
               <Grid container spacing={3}>
                 <Grid item xs={12}>

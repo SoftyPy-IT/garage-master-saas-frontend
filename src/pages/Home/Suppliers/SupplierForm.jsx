@@ -101,6 +101,7 @@ const SupplierForm = ({ id }) => {
   const { performActionWithPermission } = usePermissions();
   const [createSupplier, { isLoading: createLoading }] =
     useCreateSupplierMutation();
+
   const [updateSupplier, { isLoading: updateLoading }] =
     useUpdateSupplierMutation();
   const { tenantDomain } = useTenantDomain();
@@ -146,70 +147,64 @@ const SupplierForm = ({ id }) => {
     }
   };
 
-  const handleFormSubmission = async (data) => {
-    const values = {
-      ...data,
-      country_code: countryCode.code,
-    };
+  const handleSubmit = async (data) => {
+    performActionWithPermission('/dashboard/add-supplier', 'create',
+      async () => {
+        const values = {
+          ...data,
+          country_code: countryCode.code,
+        };
 
-    try {
-      let response;
+        try {
+          let response;
 
-      if (isEditing) {
-        const hasPermission = await new Promise((resolve) => {
-          performActionWithPermission(
-            '/dashboard/update-supplier',
-            'edit',
-            async () => {
-              response = await updateSupplier({
-                id: id,
-                data: { ...values, tenantDomain },
-              });
-              resolve(true);
-            },
-            "You don't have permission to update suppliers!"
-          )?.catch(() => {
-            resolve(false);
+          response = await createSupplier({
+            ...values,
+            tenantDomain,
           });
-        });
-        if (!hasPermission) {
-          return;
+
+          if (response?.data?.success) {
+            toast.success(response?.data?.message || `Supplier created successfully!`);
+            navigate("/dashboard/supplier-list");
+          }
+        } catch (error) {
+          toast.error(
+            error.message ||
+            `Failed to ${isEditing ? "update" : "create"} supplier.`
+          );
         }
-      } else {
-        const hasPermission = await new Promise((resolve) => {
-          performActionWithPermission(
-            '/dashboard/add-supplier',
-            'create',
-            async () => {
-              response = await createSupplier({
-                ...values,
-                tenantDomain,
-              });
-              resolve(true);
-            },
-            "You don't have permission to create suppliers!"
-          )?.catch(() => {
-            resolve(false);
+      }, "You don't have permission to create supplier"
+    )
+  };
+  const handleUpdate = async (data) => {
+    performActionWithPermission('/dashboard/update-supplier', 'edit',
+      async () => {
+        const values = {
+          ...data,
+          country_code: countryCode.code,
+        };
+
+        try {
+          let response;
+          response = await updateSupplier({
+            id: id,
+            data: { ...values, tenantDomain },
           });
-        });
-        if (!hasPermission) {
-          return;
+          if (response?.data?.success) {
+            toast.success(
+              response?.data?.message ||
+              `Supplier update successfully!`
+            );
+            navigate("/dashboard/supplier-list");
+          }
+        } catch (error) {
+          toast.error(
+            error.message ||
+            `Failed to ${isEditing ? "update" : "create"} supplier.`
+          );
         }
       }
-
-      if (response?.data?.success) {
-        toast.success(
-          response?.data?.message ||
-          `Supplier ${isEditing ? "updated" : "created"} successfully!`
-        );
-        navigate("/dashboard/supplier-list");
-      }
-    } catch (error) {
-      toast.error(
-        error.message ||
-        `Failed to ${isEditing ? "update" : "create"} supplier.`
-      );
-    }
+    )
   };
 
   return (
@@ -260,7 +255,7 @@ const SupplierForm = ({ id }) => {
             <div className="bg-white rounded-lg shadow-lg overflow-hidden">
               <CardContent sx={{ p: { sm: 0, lg: 3 } }}>
                 <GarageForm
-                  onSubmit={handleFormSubmission}
+                  onSubmit={id ? handleUpdate : handleSubmit}
                   defaultValues={defaultSupplierValues}
                 >
                   {/* Basic Information Section */}
@@ -443,44 +438,43 @@ const SupplierForm = ({ id }) => {
                       gap: 2,
                     }}
                   >
-                    {isEditing && (
-                      <Can page="/dashboard/update-supplier" action="edit">
+                    {
+                      id ? <Can page='/dashboard/update-supplier' action='edit'>
                         <Button
                           type="submit"
                           variant="contained"
                           startIcon={
-                            updateLoading ? (
+                            createLoading || updateLoading ? (
                               <CircularProgress size={20} color="inherit" />
                             ) : (
                               <Save />
                             )
                           }
                           sx={{ minWidth: 150 }}
-                          disabled={updateLoading}
                         >
-                          {updateLoading ? "Processing..." : "Update"}
+                          {updateLoading
+                            ? "Processing..."
+                            : `${isEditing ? "Update" : "Create"}`}
+                        </Button>
+                      </Can> : <Can page='/dashboard/add-supplier' action='create'>
+                        <Button
+                          type="submit"
+                          variant="contained"
+                          startIcon={
+                            createLoading || updateLoading ? (
+                              <CircularProgress size={20} color="inherit" />
+                            ) : (
+                              <Save />
+                            )
+                          }
+                          sx={{ minWidth: 150 }}
+                        >
+                          {createLoading
+                            ? "Processing..."
+                            : `${isEditing ? "Update" : "Create"}`}
                         </Button>
                       </Can>
-                    )}
-
-                    <Can page="/dashboard/add-supplier" action="create">
-                      <Button
-                        type="submit"
-                        variant="contained"
-                        startIcon={
-                          createLoading ? (
-                            <CircularProgress size={20} color="inherit" />
-                          ) : (
-                            <Save />
-                          )
-                        }
-                        sx={{ minWidth: 150 }}
-                        disabled={createLoading}
-                      >
-                        {createLoading ? "Processing..." : "Create"}
-                      </Button>
-                    </Can>
-
+                    }
                   </Box>
                 </GarageForm>
               </CardContent>

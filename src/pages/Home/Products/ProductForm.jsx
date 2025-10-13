@@ -80,6 +80,9 @@ import { CreateUnitModal } from "../Unit/CreateUnitModal";
 import { useTenantDomain } from "../../../hooks/useTenantDomain";
 import { useGetAllWarrantyQuery } from "../../../redux/api/warrantyApi";
 import CreateWarrantyModal from "../../Inventory/WarrandyModal";
+import { usePermissions } from "../../../context/PermissionContext";
+import Loading from "../../../components/Loading/Loading";
+import Can from "../../../components/Can";
 
 export default function ProductForm({ id }) {
   const navigate = useNavigate();
@@ -88,11 +91,7 @@ export default function ProductForm({ id }) {
   const [previewImage, setPreviewImage] = useState(null);
   const [selectedTags, setSelectedTags] = useState([]);
   const [productStatus, setProductStatus] = useState("active");
-  const [snackbar, setSnackbar] = useState({
-    open: false,
-    message: "",
-    severity: "success",
-  });
+  const { performActionWithPermission } = usePermissions();
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [expiryDateType, setExpiryDateType] = useState("fixed");
@@ -118,7 +117,7 @@ export default function ProductForm({ id }) {
   const handleSupplierClose = () => setSupplierOpen(false);
   const handleUnitOpen = () => setUnitOpen(true);
   const handleUnitClose = () => setUnitOpen(false);
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain } = useTenantDomain();
 
   const { data: singleProduct, isLoading: singleProductLoading } =
     useGetSingleProductQuery({ tenantDomain, id });
@@ -235,12 +234,15 @@ export default function ProductForm({ id }) {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
-  const handleCloseSnackbar = () => {
-    setSnackbar({
-      ...snackbar,
-      open: false,
-    });
-  };
+  const buttonStyle = {
+    borderRadius: 100,
+    background:
+      "linear-gradient(135deg, #6a1b9a 0%, #4a148c 100%)",
+    boxShadow:
+      "0 4px 10px rgba(106, 27, 154, 0.3)",
+    px: 3,
+    color: "white",
+  }
 
   const handleReset = () => {
     setPreviewImage(null);
@@ -280,53 +282,53 @@ export default function ProductForm({ id }) {
       expiryAlertDays: singleProduct.data.expiryAlertDays || 30,
       category: singleProduct.data.category
         ? [
-            categoryOptions.find(
-              (cat) => cat.value === singleProduct.data.category._id
-            )?.label || "",
-          ]
+          categoryOptions.find(
+            (cat) => cat.value === singleProduct.data.category._id
+          )?.label || "",
+        ]
         : [],
       brand: singleProduct.data.brand
         ? [
-            brandOptions.find(
-              (brand) => brand.value === singleProduct.data.brand._id
-            )?.label || "",
-          ]
+          brandOptions.find(
+            (brand) => brand.value === singleProduct.data.brand._id
+          )?.label || "",
+        ]
         : [],
       unit: singleProduct.data.unit
         ? [
-            unitOptions.find(
-              (unit) => unit.value === singleProduct.data.unit._id
-            )?.label || "",
-          ]
+          unitOptions.find(
+            (unit) => unit.value === singleProduct.data.unit._id
+          )?.label || "",
+        ]
         : [],
       warehouse: singleProduct.data.warehouse
         ? [
-            warehouseOptions.find(
-              (warehouse) =>
-                warehouse.value === singleProduct.data.warehouse._id
-            )?.label || "",
-          ]
+          warehouseOptions.find(
+            (warehouse) =>
+              warehouse.value === singleProduct.data.warehouse._id
+          )?.label || "",
+        ]
         : [],
       product_type: singleProduct.data.product_type
         ? [
-            productTypeOptions.find(
-              (type) => type.value === singleProduct.data.product_type._id
-            )?.label || "",
-          ]
+          productTypeOptions.find(
+            (type) => type.value === singleProduct.data.product_type._id
+          )?.label || "",
+        ]
         : [],
       suppliers: singleProduct.data.suppliers
         ? [
-            suppliersOptions.find(
-              (supplier) => supplier.value === singleProduct.data.suppliers._id
-            )?.label || "",
-          ]
+          suppliersOptions.find(
+            (supplier) => supplier.value === singleProduct.data.suppliers._id
+          )?.label || "",
+        ]
         : [],
       warranties: singleProduct.data.warranties
         ? [
-            warrantyOptions.find(
-              (war) => war.value === singleProduct.data.warranties._id
-            )?.label || "",
-          ]
+          warrantyOptions.find(
+            (war) => war.value === singleProduct.data.warranties._id
+          )?.label || "",
+        ]
         : [],
       initialStock: singleProduct.data.initialStock || 0,
       stock: singleProduct.data.stock || 0,
@@ -381,130 +383,241 @@ export default function ProductForm({ id }) {
   }
 
   const handleSubmit = async (data) => {
-    try {
-      const imageUrl =
-        data.image && data.image.length > 0 ? data.image[0] : data?.data?.image;
+    performActionWithPermission('/dashboard/add-product', 'create',
+      async () => {
+        try {
+          const imageUrl =
+            data.image && data.image.length > 0 ? data.image[0] : data?.data?.image;
 
-      const modifyValues = {
-        ...data,
-        image: imageUrl,
-        suppliers:
-          data.suppliers?.[0] &&
-          suppliersOptions.find((cat) => cat.label === data.suppliers[0])?.value
-            ? [
-                suppliersOptions.find((cat) => cat.label === data.suppliers[0])
-                  .value,
-              ]
-            : [],
-        category:
-          data.category?.[0] &&
-          categoryOptions.find((cat) => cat.label === data.category[0])?.value
-            ? [
-                categoryOptions.find((cat) => cat.label === data.category[0])
-                  .value,
-              ]
-            : [],
-        warehouse:
-          data.warehouse?.[0] &&
-          warehouseOptions.find((cat) => cat.label === data.warehouse[0])?.value
-            ? [
-                warehouseOptions.find((cat) => cat.label === data.warehouse[0])
-                  .value,
-              ]
-            : [],
-        warranties:
-          data.warranties?.[0] &&
-          warrantyOptions.find((cat) => cat.label === data.warranties[0])?.value
-            ? [
-                warrantyOptions.find((cat) => cat.label === data.warranties[0])
-                  .value,
-              ]
-            : [],
-        brand:
-          data.brand?.[0] &&
-          brandOptions.find((brand) => brand.label === data.brand[0])?.value
-            ? [
-                brandOptions.find((brand) => brand.label === data.brand[0])
-                  .value,
-              ]
-            : [],
-        unit:
-          data.unit?.[0] &&
-          unitOptions.find((unit) => unit.label === data.unit[0])?.value
-            ? [unitOptions.find((unit) => unit.label === data.unit[0]).value]
-            : [],
-        product_type:
-          data.product_type?.[0] &&
-          productTypeOptions.find((type) => type.label === data.product_type[0])
-            ?.value
-            ? [
-                productTypeOptions.find(
-                  (type) => type.label === data.product_type[0]
-                ).value,
-              ]
-            : [],
-        minimumSalePrice: Number(data.minimumSalePrice),
-        purchasePrice: Number(data.purchasePrice),
-        sellingPrice: Number(data.sellingPrice),
-        discount: Number(data.discount),
-        expense: Number(data.expense),
-        product_tax: Number(data.product_tax),
-        stock_alert: Number(data.stock_alert),
-        product_quantity: Number(data.product_quantity),
-        unit_price: Number(data.unit_price),
-        shipping: Number(data.shipping),
-        tags: data.tags,
-        productStatus: data.productStatus,
-        expiryDateType: expiryDateType,
-        expiryDate: data.expiryDate,
-        shelfLife: Number(data.shelfLife),
-        shelfLifeUnit: data.shelfLifeUnit,
-        manufacturingDate: data.manufacturingDate,
-        batchNumber: data.batchNumber,
-        expiryAlertDays: Number(data.expiryAlertDays),
-        initialStock: Number(data.initialStock || 0),
-        stock: Number(data.stock || 0),
-        stockIn: Number(data.stockIn || 0),
-        stockOut: Number(data.stockOut || 0),
-        reorderLevel: Number(data.reorderLevel || 0),
-        lastPurchaseDate: data.lastPurchaseDate,
-        lastSoldDate: data.lastSoldDate,
-        isDeleted: data.isDeleted || false,
-      };
-      if (!id) {
-        const res = await createProduct({
-          tenantDomain,
-          ...modifyValues,
-        }).unwrap();
-        if (res.success) {
-          toast.success("Product create successfully!");
-          navigate("/dashboard/product-list");
+          const modifyValues = {
+            ...data,
+            image: imageUrl,
+            suppliers:
+              data.suppliers?.[0] &&
+                suppliersOptions.find((cat) => cat.label === data.suppliers[0])?.value
+                ? [
+                  suppliersOptions.find((cat) => cat.label === data.suppliers[0])
+                    .value,
+                ]
+                : [],
+            category:
+              data.category?.[0] &&
+                categoryOptions.find((cat) => cat.label === data.category[0])?.value
+                ? [
+                  categoryOptions.find((cat) => cat.label === data.category[0])
+                    .value,
+                ]
+                : [],
+            warehouse:
+              data.warehouse?.[0] &&
+                warehouseOptions.find((cat) => cat.label === data.warehouse[0])?.value
+                ? [
+                  warehouseOptions.find((cat) => cat.label === data.warehouse[0])
+                    .value,
+                ]
+                : [],
+            warranties:
+              data.warranties?.[0] &&
+                warrantyOptions.find((cat) => cat.label === data.warranties[0])?.value
+                ? [
+                  warrantyOptions.find((cat) => cat.label === data.warranties[0])
+                    .value,
+                ]
+                : [],
+            brand:
+              data.brand?.[0] &&
+                brandOptions.find((brand) => brand.label === data.brand[0])?.value
+                ? [
+                  brandOptions.find((brand) => brand.label === data.brand[0])
+                    .value,
+                ]
+                : [],
+            unit:
+              data.unit?.[0] &&
+                unitOptions.find((unit) => unit.label === data.unit[0])?.value
+                ? [unitOptions.find((unit) => unit.label === data.unit[0]).value]
+                : [],
+            product_type:
+              data.product_type?.[0] &&
+                productTypeOptions.find((type) => type.label === data.product_type[0])
+                  ?.value
+                ? [
+                  productTypeOptions.find(
+                    (type) => type.label === data.product_type[0]
+                  ).value,
+                ]
+                : [],
+            minimumSalePrice: Number(data.minimumSalePrice),
+            purchasePrice: Number(data.purchasePrice),
+            sellingPrice: Number(data.sellingPrice),
+            discount: Number(data.discount),
+            expense: Number(data.expense),
+            product_tax: Number(data.product_tax),
+            stock_alert: Number(data.stock_alert),
+            product_quantity: Number(data.product_quantity),
+            unit_price: Number(data.unit_price),
+            shipping: Number(data.shipping),
+            tags: data.tags,
+            productStatus: data.productStatus,
+            expiryDateType: expiryDateType,
+            expiryDate: data.expiryDate,
+            shelfLife: Number(data.shelfLife),
+            shelfLifeUnit: data.shelfLifeUnit,
+            manufacturingDate: data.manufacturingDate,
+            batchNumber: data.batchNumber,
+            expiryAlertDays: Number(data.expiryAlertDays),
+            initialStock: Number(data.initialStock || 0),
+            stock: Number(data.stock || 0),
+            stockIn: Number(data.stockIn || 0),
+            stockOut: Number(data.stockOut || 0),
+            reorderLevel: Number(data.reorderLevel || 0),
+            lastPurchaseDate: data.lastPurchaseDate,
+            lastSoldDate: data.lastSoldDate,
+            isDeleted: data.isDeleted || false,
+          };
+          if (!id) {
+            const res = await createProduct({
+              tenantDomain,
+              ...modifyValues,
+            }).unwrap();
+            if (res.success) {
+              toast.success("Product create successfully!");
+              navigate("/dashboard/product-list");
+            }
+          }
+        } catch (error) {
+          const apiError = error?.data || error;
+          if (apiError?.errorSources?.length > 0) {
+            apiError.errorSources.forEach((source) => {
+              toast.error(`${source.path}: ${source.message}`);
+            });
+          } else if (apiError?.message) {
+            toast.error(apiError.message);
+          } else {
+            toast.error("Failed to create product");
+          }
         }
-      } else {
-        const res = await updateProduct({
-          tenantDomain,
-          id,
-          ...modifyValues,
-        }).unwrap();
-        if (res.success) {
-          toast.success("Product update successfully!");
-          navigate("/dashboard/product-list");
-        }
-      }
-    } catch (error) {
-      const apiError = error?.data || error;
+      }, "You don't have permission to create product ! "
+    )
+  };
+  const handleFormSubmit = async (data) => {
+    performActionWithPermission('/dashboard/update-product', 'edit',
+      async () => {
+        try {
+          const imageUrl =
+            data.image && data.image.length > 0 ? data.image[0] : data?.data?.image;
 
-      // Show specific Zod validation error if available
-      if (apiError?.errorSources?.length > 0) {
-        apiError.errorSources.forEach((source) => {
-          toast.error(`${source.path}: ${source.message}`);
-        });
-      } else if (apiError?.message) {
-        toast.error(apiError.message);
-      } else {
-        toast.error("Failed to create product");
-      }
-    }
+          const modifyValues = {
+            ...data,
+            image: imageUrl,
+            suppliers:
+              data.suppliers?.[0] &&
+                suppliersOptions.find((cat) => cat.label === data.suppliers[0])?.value
+                ? [
+                  suppliersOptions.find((cat) => cat.label === data.suppliers[0])
+                    .value,
+                ]
+                : [],
+            category:
+              data.category?.[0] &&
+                categoryOptions.find((cat) => cat.label === data.category[0])?.value
+                ? [
+                  categoryOptions.find((cat) => cat.label === data.category[0])
+                    .value,
+                ]
+                : [],
+            warehouse:
+              data.warehouse?.[0] &&
+                warehouseOptions.find((cat) => cat.label === data.warehouse[0])?.value
+                ? [
+                  warehouseOptions.find((cat) => cat.label === data.warehouse[0])
+                    .value,
+                ]
+                : [],
+            warranties:
+              data.warranties?.[0] &&
+                warrantyOptions.find((cat) => cat.label === data.warranties[0])?.value
+                ? [
+                  warrantyOptions.find((cat) => cat.label === data.warranties[0])
+                    .value,
+                ]
+                : [],
+            brand:
+              data.brand?.[0] &&
+                brandOptions.find((brand) => brand.label === data.brand[0])?.value
+                ? [
+                  brandOptions.find((brand) => brand.label === data.brand[0])
+                    .value,
+                ]
+                : [],
+            unit:
+              data.unit?.[0] &&
+                unitOptions.find((unit) => unit.label === data.unit[0])?.value
+                ? [unitOptions.find((unit) => unit.label === data.unit[0]).value]
+                : [],
+            product_type:
+              data.product_type?.[0] &&
+                productTypeOptions.find((type) => type.label === data.product_type[0])
+                  ?.value
+                ? [
+                  productTypeOptions.find(
+                    (type) => type.label === data.product_type[0]
+                  ).value,
+                ]
+                : [],
+            minimumSalePrice: Number(data.minimumSalePrice),
+            purchasePrice: Number(data.purchasePrice),
+            sellingPrice: Number(data.sellingPrice),
+            discount: Number(data.discount),
+            expense: Number(data.expense),
+            product_tax: Number(data.product_tax),
+            stock_alert: Number(data.stock_alert),
+            product_quantity: Number(data.product_quantity),
+            unit_price: Number(data.unit_price),
+            shipping: Number(data.shipping),
+            tags: data.tags,
+            productStatus: data.productStatus,
+            expiryDateType: expiryDateType,
+            expiryDate: data.expiryDate,
+            shelfLife: Number(data.shelfLife),
+            shelfLifeUnit: data.shelfLifeUnit,
+            manufacturingDate: data.manufacturingDate,
+            batchNumber: data.batchNumber,
+            expiryAlertDays: Number(data.expiryAlertDays),
+            initialStock: Number(data.initialStock || 0),
+            stock: Number(data.stock || 0),
+            stockIn: Number(data.stockIn || 0),
+            stockOut: Number(data.stockOut || 0),
+            reorderLevel: Number(data.reorderLevel || 0),
+            lastPurchaseDate: data.lastPurchaseDate,
+            lastSoldDate: data.lastSoldDate,
+            isDeleted: data.isDeleted || false,
+          };
+          if (!id) {
+            const res = await updateProduct({
+              tenantDomain,
+              id,
+              ...modifyValues,
+            }).unwrap();
+            if (res.success) {
+              toast.success("Product update successfully!");
+              navigate("/dashboard/product-list");
+            }
+          }
+        } catch (error) {
+          const apiError = error?.data || error;
+          if (apiError?.errorSources?.length > 0) {
+            apiError.errorSources.forEach((source) => {
+              toast.error(`${source.path}: ${source.message}`);
+            });
+          } else if (apiError?.message) {
+            toast.error(apiError.message);
+          } else {
+            toast.error("Failed to create product");
+          }
+        }
+      }, "You don't have permission to edit product !"
+    )
   };
 
   const steps = [
@@ -542,8 +655,6 @@ export default function ProductForm({ id }) {
               iconPosition="start"
             />
           </Grid>
-
-          {/* Category with Add Button */}
           <Grid item xs={12} md={6}>
             <Grid container spacing={1} alignItems="center">
               <Grid item xs={8.5} lg={11}>
@@ -575,8 +686,6 @@ export default function ProductForm({ id }) {
               </Grid>
             </Grid>
           </Grid>
-
-          {/* Warehouse with Add Button */}
           <Grid item xs={12} md={6}>
             <Grid container spacing={1} alignItems="center">
               <Grid item xs={8.5} lg={11}>
@@ -1227,7 +1336,7 @@ export default function ProductForm({ id }) {
   ];
 
   return singleProductLoading ? (
-    <h4>Loading</h4>
+    <Loading />
   ) : (
     <>
       <Box
@@ -1288,7 +1397,7 @@ export default function ProductForm({ id }) {
               mb: 4,
             }}
           >
-            <GarageForm onSubmit={handleSubmit} defaultValues={defaultValues}>
+            <GarageForm onSubmit={id ? handleFormSubmit : handleSubmit} defaultValues={defaultValues}>
               <Box sx={{ p: { xs: 0, md: 4 } }}>
                 <Stepper activeStep={activeStep} orientation="vertical">
                   {steps.map((step, index) => (
@@ -1324,23 +1433,31 @@ export default function ProductForm({ id }) {
                               Back
                             </Button>
                             {index === steps.length - 1 ? (
-                              <Button
-                                variant="contained"
-                                type="submit"
-                                startIcon={<SaveIcon />}
-                                disabled={submitting}
-                                sx={{
-                                  borderRadius: 100,
-                                  background:
-                                    "linear-gradient(135deg, #6a1b9a 0%, #4a148c 100%)",
-                                  boxShadow:
-                                    "0 4px 10px rgba(106, 27, 154, 0.3)",
-                                  px: 3,
-                                  color: "white",
-                                }}
-                              >
-                                {id ? "Update Product " : "Create Product"}
-                              </Button>
+                              <>
+                                {
+                                  id ? <Can page='/dashboard/update-product' action='edit'>
+                                    <Button
+                                      variant="contained"
+                                      type="submit"
+                                      startIcon={<SaveIcon />}
+                                      disabled={submitting}
+                                      sx={buttonStyle}
+                                    >
+                                      Update Product
+                                    </Button>    </Can> : <Can page='/dashboard/add-product' action='create'>
+                                    <Button
+                                      variant="contained"
+                                      type="submit"
+                                      startIcon={<SaveIcon />}
+                                      disabled={submitting}
+                                      sx={buttonStyle}
+                                    >
+                                      Create Product
+                                    </Button>
+                                  </Can>
+
+                                }
+                              </>
                             ) : (
                               <Button
                                 variant="contained"
@@ -1382,93 +1499,9 @@ export default function ProductForm({ id }) {
               </Box>
             </GarageForm>
           </Paper>
-          {/* Help Card */}
-          <Paper
-            elevation={2}
-            sx={{
-              p: 3,
-              borderRadius: 4,
-              background: "linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%)",
-              display: "flex",
-              alignItems: "flex-start",
-              gap: 2,
-            }}
-          >
-            <HelpIcon sx={{ color: "#2e7d32", mt: 0.5 }} />
-            <Box>
-              <Typography
-                variant="subtitle1"
-                sx={{ color: "#2e7d32", fontWeight: 600 }}
-              >
-                Need Help?
-              </Typography>
-              <Typography variant="body2" sx={{ color: "#1b5e20" }}>
-                Creating a product is the first step in managing your inventory.
-                After creating a product, it will be available in quotations and
-                invoices. Make sure to fill in all required fields for optimal
-                results and easy searchability.
-              </Typography>
-            </Box>
-          </Paper>
+
         </Container>
-        {/* Success Backdrop */}
-        <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={success}
-        >
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              bgcolor: "white",
-              p: 4,
-              borderRadius: 4,
-              maxWidth: 400,
-              textAlign: "center",
-            }}
-          >
-            <Box
-              sx={{
-                width: 80,
-                height: 80,
-                borderRadius: "50%",
-                bgcolor: "#e8f5e9",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                mb: 2,
-              }}
-            >
-              <CheckCircle sx={{ fontSize: 50, color: "#2e7d32" }} />
-            </Box>
-            <Typography
-              variant="h5"
-              sx={{ color: "#2e7d32", fontWeight: 600, mb: 1 }}
-            >
-              Success!
-            </Typography>
-            <Typography variant="body1" sx={{ color: "text.secondary", mb: 3 }}>
-              Your product has been created successfully. Redirecting to product
-              list...
-            </Typography>
-            <CircularProgress size={24} sx={{ color: "#6a1b9a" }} />
-          </Box>
-        </Backdrop>
-        {/* Snackbar for notifications */}
-        <Snackbar
-          open={snackbar.open}
-          autoHideDuration={6000}
-          onClose={handleCloseSnackbar}
-        >
-          <Alert
-            onClose={handleCloseSnackbar}
-            severity={snackbar.severity}
-            sx={{ width: "100%" }}
-          >
-            {snackbar.message}
-          </Alert>
-        </Snackbar>
+
       </Box>
 
       {warrantyOpen && (

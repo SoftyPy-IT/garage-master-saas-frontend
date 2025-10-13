@@ -46,8 +46,9 @@ import {
 } from "../../../redux/api/categoryApi";
 import { DataGrid } from "@mui/x-data-grid";
 import { CreateCategoryModal } from "./CreateCategoryModal";
-import { UpdateCategoryModal } from "./UpdateCategoryModal";
 import { useTenantDomain } from "../../../hooks/useTenantDomain";
+import { usePermissions } from "../../../context/PermissionContext";
+import Can from "../../../components/Can";
 export default function CategoryList() {
   const [open, setOpen] = useState(false);
   const [updateOpen, setUpdateOpen] = useState(null);
@@ -55,12 +56,9 @@ export default function CategoryList() {
   const [search, setSearch] = useState("");
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState(null);
-  const [isExporting, setIsExporting] = useState(false);
-  const [isPrinting, setIsPrinting] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null);
-  const tenantDomain = useTenantDomain();
-
+  const { tenantDomain } = useTenantDomain();
+  const { performActionWithPermission } = usePermissions();
   const { data, isLoading, refetch } = useGetAllICategoryQuery({
     tenantDomain,
     limit: 10,
@@ -81,16 +79,15 @@ export default function CategoryList() {
   const handleOpen = () => setOpen(true);
   const handleUpdateOpen = (id) => setUpdateOpen(id);
   const handleClose = () => setOpen(false);
-  const handleUpdateClose = () => setUpdateOpen(null);
   const handleDeleteClick = (id) => {
- 
+
     setCategoryToDelete(id);
     setIsDeleteDialogOpen(true);
   };
 
   const handleDeleteConfirm = async () => {
     try {
-      await deleteCategory({ tenantDomain, id:categoryToDelete }).unwrap();
+      await deleteCategory({ tenantDomain, id: categoryToDelete }).unwrap();
       Swal.fire({
         icon: "success",
         title: "Deleted!",
@@ -120,8 +117,6 @@ export default function CategoryList() {
     setIsDeleteDialogOpen(false);
     setCategoryToDelete(null);
   };
-
-  // Handle refresh
   const handleRefresh = () => {
     setIsRefreshing(true);
     refetch().then(() => {
@@ -131,11 +126,9 @@ export default function CategoryList() {
     });
   };
 
-  // Prepare data for rendering
   const { meta } = data?.data || { meta: {} };
   const { totalPage = 10 } = meta || {};
 
-  // DataGrid columns
   const columns = [
     {
       field: "image",
@@ -227,7 +220,6 @@ export default function CategoryList() {
     },
   ];
 
-  // Prepare rows for DataGrid
   const rows = categories.map((category) => ({
     id: category._id,
     image: category.image,
@@ -326,22 +318,22 @@ export default function CategoryList() {
                 )}
               </IconButton>
             </Tooltip>
-            
+
           </div>
         </div>
 
         <Box
           sx={{
-            width: "100%", 
-            overflow: "auto", 
+            width: "100%",
+            overflow: "auto",
             "& .MuiDataGrid-root": {
-              minWidth: "800px", 
+              minWidth: "800px",
             },
             "& .MuiDataGrid-columnHeaders": {
               position: "sticky",
               top: 0,
               zIndex: 1,
-              backgroundColor: "white", 
+              backgroundColor: "white",
             },
             "& .MuiDataGrid-virtualScroller": {
               overflow: "visible",
@@ -420,30 +412,26 @@ export default function CategoryList() {
               >
                 Cancel
               </Button>
-              <Button
-                onClick={handleDeleteConfirm}
-                color="error"
-                variant="contained"
-                sx={{
-                  borderRadius: 100,
-                  px: 3,
-                }}
-                autoFocus
-              >
-                Delete
-              </Button>
+              <Can page='/dashboard/category' action='delete'>
+                <Button
+                  onClick={handleDeleteConfirm}
+                  color="error"
+                  variant="contained"
+                  sx={{
+                    borderRadius: 100,
+                    px: 3,
+                  }}
+                  autoFocus
+                >
+                  Delete
+                </Button>
+              </Can>
             </Box>
           </DialogContent>
         </Dialog>
 
-        {open && <CreateCategoryModal open={open} setOpen={handleClose} />}
-        {updateOpen && (
-          <UpdateCategoryModal
-            open={Boolean(updateOpen)}
-            setOpen={handleUpdateClose}
-            categoryId={updateOpen}
-          />
-        )}
+        {open && <CreateCategoryModal categoryId={updateOpen} open={open} setOpen={handleClose} />}
+
       </Container>
     </Box>
   );

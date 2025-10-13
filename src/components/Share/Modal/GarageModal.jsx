@@ -21,7 +21,7 @@ export default function GarageModal({
       {/* Header */}
       <Box
         sx={{
-          background: "linear-gradient(135deg, #6a1b9a 0%, #42A1DA 100%)",
+          background: "linear-gradient(135deg, #499ccc 0%, #499ccc 100%)",
           py: 2,
           px: 3,
           display: "flex",

@@ -45,6 +45,8 @@ import {
   SupplierAvatar,
 } from "../../../utils/customStyle";
 import swal from "sweetalert";
+import { usePermissions } from "../../../context/PermissionContext";
+import Can from "../../../components/Can";
 
 const WorldClassSupplierList = () => {
   const theme = useTheme();
@@ -56,7 +58,7 @@ const WorldClassSupplierList = () => {
   const [selectedRows, setSelectedRows] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-
+  const { performActionWithPermission } = usePermissions();
   const itemsPerPage = 5;
   const limit = 15;
   const { tenantDomain } = useTenantDomain();
@@ -107,25 +109,29 @@ const WorldClassSupplierList = () => {
   };
 
   const handleDeleteSupplier = async (id) => {
-    const willDelete = await swal({
-      title: "Are you sure?",
-      text: " You want to move  this supplier recycle bin?",
-      icon: "warning",
-      dangerMode: true,
-    });
+    performActionWithPermission('/dashboard', 'delete',
+      async () => {
+        const willDelete = await swal({
+          title: "Are you sure?",
+          text: " You want to move  this supplier recycle bin?",
+          icon: "warning",
+          dangerMode: true,
+        });
 
-    if (willDelete) {
-      try {
-        await moveRecycledSupplier({ tenantDomain, id }).unwrap();
-        swal(
-          "Move to Recycle bin!",
-          "Move to Recycle bin successful.",
-          "success"
-        );
-      } catch (error) {
-        swal("Error", "An error occurred while deleting the card.", "error");
-      }
-    }
+        if (willDelete) {
+          try {
+            await moveRecycledSupplier({ tenantDomain, id }).unwrap();
+            swal(
+              "Move to Recycle bin!",
+              "Move to Recycle bin successful.",
+              "success"
+            );
+          } catch (error) {
+            swal("Error", "An error occurred while deleting the card.", "error");
+          }
+        }
+      }, "You don't have permission to delete supplier !"
+    )
   };
 
   const handleRowSelect = (id) => {
@@ -150,8 +156,6 @@ const WorldClassSupplierList = () => {
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
   };
-
-  // Get status icon
   const getStatusIcon = (status) => {
     switch (status?.toLowerCase()) {
       case "active":
@@ -458,22 +462,26 @@ const WorldClassSupplierList = () => {
                             </AnimatedIconButton>
                           </Tooltip>
                           <Tooltip title="Edit Supplier">
-                            <AnimatedIconButton
-                              to={`/dashboard/update-supplier?id=${supplier._id}`}
-                              component={Link}
-                              size="small"
-                            >
-                              <EditIcon fontSize="small" />
-                            </AnimatedIconButton>
+                            <Can page='/dashboard/update-supplier' action='edit'>
+                              <AnimatedIconButton
+                                to={`/dashboard/update-supplier?id=${supplier._id}`}
+                                component={Link}
+                                size="small"
+                              >
+                                <EditIcon fontSize="small" />
+                              </AnimatedIconButton>
+                            </Can>
                           </Tooltip>
                           <Tooltip title="Delete Supplier">
-                            <AnimatedIconButton
-                              size="small"
-                              onClick={() => handleDeleteSupplier(supplier._id)}
-                              sx={{ color: theme.palette.error.main }}
-                            >
-                              <DeleteIcon fontSize="small" />
-                            </AnimatedIconButton>
+                            <Can page='/dashboard/supplier-list' action='delete'>
+                              <AnimatedIconButton
+                                size="small"
+                                onClick={() => handleDeleteSupplier(supplier._id)}
+                                sx={{ color: theme.palette.error.main }}
+                              >
+                                <DeleteIcon fontSize="small" />
+                              </AnimatedIconButton>
+                            </Can>
                           </Tooltip>
                         </td>
                       </tr>
@@ -534,7 +542,7 @@ const WorldClassSupplierList = () => {
         )}
       </GlassCard>
 
-      {/* Snackbar for notifications */}
+
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={6000}
