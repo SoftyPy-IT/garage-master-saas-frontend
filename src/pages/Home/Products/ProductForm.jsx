@@ -76,13 +76,13 @@ import { CreateBrandModal } from "../Brand/CreateBrandModal";
 import AddWarehouseModal from "../../Inventory/Warehouse/AddWarehouse";
 import { CreateProductTypeModal } from "../ProductType/CreateProductTypeModal";
 import { AddSupplierModal } from "../Suppliers/AddSupplierModal";
-import { CreateUnitModal } from "../Unit/CreateUnitModal";
 import { useTenantDomain } from "../../../hooks/useTenantDomain";
 import { useGetAllWarrantyQuery } from "../../../redux/api/warrantyApi";
 import CreateWarrantyModal from "../../Inventory/WarrandyModal";
 import { usePermissions } from "../../../context/PermissionContext";
 import Loading from "../../../components/Loading/Loading";
 import Can from "../../../components/Can";
+import { UnitModal } from "../Unit/UnitModal";
 
 export default function ProductForm({ id }) {
   const navigate = useNavigate();
@@ -1536,7 +1536,7 @@ export default function ProductForm({ id }) {
         <AddSupplierModal open={supplierOpen} setOpen={handleSupplierClose} />
       )}
       {unitOpen && (
-        <CreateUnitModal open={unitOpen} setOpen={handleUnitClose} />
+        <UnitModal open={unitOpen} setOpen={handleUnitClose} />
       )}
     </>
   );

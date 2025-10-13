@@ -16,21 +16,18 @@ import {
   NavigateNext as NavigateNextIcon,
 } from "@mui/icons-material";
 import UnitTable from "./UnitTable";
-import { CreateUnitModal } from "./CreateUnitModal";
-import { UpdateUnitModal } from "./UpdateUnitModal";
+import { UnitModal } from "./UnitModal";
 const Unit = () => {
   const [open, setOpen] = useState(false);
   const [updateOpen, setUpdateOpen] = useState(null);
   const handleOpen = () => setOpen(true);
   const handleUpdateOpen = (id) => setUpdateOpen(id);
-  const handleClose = () => setOpen(false);
   const handleUpdateClose = () => setUpdateOpen(null);
 
   return (
     <div
       className="py-6 md:px-4"
     >
-      {/* Header Section */}
       <Box sx={{ mb: 4 }}>
         <Typography
           variant="h4"
@@ -86,8 +83,6 @@ const Unit = () => {
           </Typography>
         </Breadcrumbs>
       </Box>
-
-      {/* Main Content */}
       <Paper
         elevation={0}
         sx={{
@@ -113,19 +108,13 @@ const Unit = () => {
             onClick={handleOpen}
             sx={{
               borderRadius: "12px",
-              backgroundColor: "#6366f1",
               px: 2,
               py: 1,
-              boxShadow: "0 10px 15px -3px rgba(99, 102, 241, 0.3)",
-              "&:hover": {
-                backgroundColor: "#4f46e5",
-                boxShadow: "0 15px 20px -3px rgba(99, 102, 241, 0.4)",
-                transform: "translateY(-2px)",
-              },
-              transition: "all 0.2s ease",
+              color: '#fff'
+
             }}
           >
-           + Add New Unit
+            + Add New Unit
           </Button>
         </Box>
 
@@ -143,10 +132,9 @@ const Unit = () => {
         </Box>
       </Paper>
 
-      {/* Create Unit Modal */}
-      <CreateUnitModal open={open} setOpen={setOpen} />
+      <UnitModal open={open} setOpen={setOpen} />
       {updateOpen && (
-        <UpdateUnitModal
+        <UnitModal
           open={Boolean(updateOpen)}
           setOpen={handleUpdateClose}
           unitId={updateOpen}
