@@ -49,7 +49,6 @@ import {
 } from "../../redux/api/warehouseApi";
 import swal from "sweetalert";
 import ViewWarehouseDetails from "./Warehouse/WarehouseDetailsModal";
-import AddWarehouseModal from "./Warehouse/AddWarehouse";
 import { useTenantDomain } from "../../hooks/useTenantDomain";
 import {
   wareHouseButton,
@@ -57,6 +56,7 @@ import {
   wareHouseInput,
 } from "../../utils/customStyle";
 import { warehouseTypes } from "../../data";
+import WarehouseModal from "./Warehouse/WarehouseModal";
 
 export default function WarehouseManagement() {
   const theme = useTheme();
@@ -572,7 +572,7 @@ export default function WarehouseManagement() {
       )}
 
       {/* Add/Edit Warehouse Dialog */}
-      <AddWarehouseModal
+      <WarehouseModal
         open={open}
         onClose={handleClose}
         warehouseId={editWarehouseId}

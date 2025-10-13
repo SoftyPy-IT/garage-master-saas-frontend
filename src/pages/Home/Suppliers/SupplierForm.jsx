@@ -53,6 +53,7 @@ import GarageForm from "../../../components/form/Form";
 import { useTenantDomain } from "../../../hooks/useTenantDomain";
 import { usePermissions } from "../../../context/PermissionContext";
 import Can from "../../../components/Can";
+import { useAppOptions } from "../../../hooks/useAppOptions";
 
 const FormSection = ({ children }) => (
   <div className="mb-6 p-4 border rounded-lg shadow-sm">{children}</div>
@@ -98,12 +99,13 @@ const SupplierForm = ({ id }) => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [showHelpTips, setShowHelpTips] = useState(true);
   const isEditing = !!id;
-  const { performActionWithPermission } = usePermissions();
-  const [createSupplier, { isLoading: createLoading }] =
-    useCreateSupplierMutation();
-
-  const [updateSupplier, { isLoading: updateLoading }] =
-    useUpdateSupplierMutation();
+  const {
+    createSupplier,
+    updateSupplier,
+    performActionWithPermission,
+    createLoading,
+    updateSupplierLoading
+  } = useAppOptions();
   const { tenantDomain } = useTenantDomain();
   const { data: singleSupplier, isLoading: isSingleSupplierLoading } =
     useGetSingleSupplierQuery({
@@ -444,7 +446,7 @@ const SupplierForm = ({ id }) => {
                           type="submit"
                           variant="contained"
                           startIcon={
-                            createLoading || updateLoading ? (
+                            createLoading || updateSupplierLoading ? (
                               <CircularProgress size={20} color="inherit" />
                             ) : (
                               <Save />
@@ -452,7 +454,7 @@ const SupplierForm = ({ id }) => {
                           }
                           sx={{ minWidth: 150 }}
                         >
-                          {updateLoading
+                          {updateSupplierLoading
                             ? "Processing..."
                             : `${isEditing ? "Update" : "Create"}`}
                         </Button>
@@ -461,7 +463,7 @@ const SupplierForm = ({ id }) => {
                           type="submit"
                           variant="contained"
                           startIcon={
-                            createLoading || updateLoading ? (
+                            createLoading || updateSupplierLoading ? (
                               <CircularProgress size={20} color="inherit" />
                             ) : (
                               <Save />

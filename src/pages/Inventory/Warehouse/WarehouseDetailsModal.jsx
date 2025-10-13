@@ -33,14 +33,12 @@ const ViewWarehouseDetails = ({
   isLoaded,
   getTypeChip,
   getStatusChip,
-  // formatBDT,
   onEdit,
 }) => {
   const theme = useTheme()
 
   if (!warehouse) return null
 
-  // Parse latitude and longitude, with fallbacks to Dhaka coordinates if invalid
   const getValidCoordinate = (value, defaultValue) => {
     const parsed = Number.parseFloat(value)
     return !isNaN(parsed) ? parsed : defaultValue
@@ -48,8 +46,6 @@ const ViewWarehouseDetails = ({
 
   const latitude = getValidCoordinate(warehouse.latitude, 23.8103)
   const longitude = getValidCoordinate(warehouse.longitude, 90.4125)
-
-  // Use parsed coordinates instead of mapCenter prop
   const validMapCenter = {
     lat: latitude,
     lng: longitude,
@@ -189,7 +185,7 @@ const ViewWarehouseDetails = ({
                       {warehouse.totalItems ? warehouse.totalItems.toLocaleString() : "0"}
                     </Typography>
                   </Grid>
-                  
+
                 </Grid>
               </CardContent>
             </Card>
@@ -314,7 +310,7 @@ const ViewWarehouseDetails = ({
         >
           Close
         </Button>
-        <Button 
+        <Button
           onClick={() => {
             onClose()
             onEdit(warehouse._id)
