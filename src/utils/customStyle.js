@@ -1396,3 +1396,46 @@ export const GlassCard2 = styled(Paper)(({ theme }) => ({
   border: "1px solid rgba(255, 255, 255, 0.18)",
   padding: theme.spacing(3),
 }));
+
+export const modalStyle = {
+  border: "none",
+  "& .MuiDataGrid-cell": {
+    borderColor: alpha("#6a1b9a", 0.1),
+    whiteSpace: "nowrap",
+  },
+  "& .MuiDataGrid-columnHeaders": {
+    bgcolor: alpha("#6a1b9a", 0.05),
+  },
+  "& .MuiDataGrid-toolbarContainer": {
+    bgcolor: alpha("#6a1b9a", 0.02),
+    borderRadius: 1,
+    p: 1,
+    mb: 1,
+  },
+  "& .MuiDataGrid-row:hover": {
+    bgcolor: alpha("#6a1b9a", 0.05),
+  },
+  "& .MuiCheckbox-root.Mui-checked": {
+    color: "#6a1b9a",
+  },
+  "& .MuiDataGrid-columnHeaderCheckbox .MuiCheckbox-root": {
+    color: alpha("#6a1b9a", 0.7),
+  },
+}
+
+export const modalBox = {
+  width: "100%",
+  overflow: "auto",
+  "& .MuiDataGrid-root": {
+    minWidth: "800px",
+  },
+  "& .MuiDataGrid-columnHeaders": {
+    position: "sticky",
+    top: 0,
+    zIndex: 1,
+    backgroundColor: "white",
+  },
+  "& .MuiDataGrid-virtualScroller": {
+    overflow: "visible",
+  },
+}

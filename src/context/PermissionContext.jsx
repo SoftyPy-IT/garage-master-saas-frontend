@@ -30,27 +30,19 @@ export const PermissionProvider = ({ children }) => {
     }
   );
 
-  // ব্যাকএন্ড থেকে পাওয়া অনুমতি ডেটা ফরম্যাট করুন
   const permissions = permissionData?.data?.permissions || [];
-  console.log('permission data check ', permissions)
-
-  // নির্দিষ্ট পৃষ্ঠা অনুমতি চেক করুন
   const checkPermission = (pagePath, action = "view") => {
     if (!permissions || permissions.length === 0) {
-      console.log('No permissions found');
       return false;
     }
 
     const permission = permissions.find((p) => {
-      // ডেটা স্ট্রাকচার অনুযায়ী pageId এর পরিবর্তে page ব্যবহার করুন
       if (!p.page) {
         return false;
       }
 
       const page = p.page;
       if (!page) return false;
-
-      // বিভিন্ন পথ ফরম্যাট চেক করুন
       const possiblePaths = [
         pagePath,
         pagePath.endsWith("/") ? pagePath.slice(0, -1) : pagePath + "/",
@@ -67,12 +59,10 @@ export const PermissionProvider = ({ children }) => {
     });
 
     if (!permission) {
-      console.log(`No permission found for ${pagePath}`);
       return false;
     }
 
     const hasAction = permission[action] === true;
-    console.log(`Permission check for ${pagePath}, action ${action}:`, hasAction);
 
     return hasAction;
   };
@@ -81,12 +71,10 @@ export const PermissionProvider = ({ children }) => {
     return checkPermission(pagePath, "view");
   };
 
-  // ক্রিয়া সম্পাদনের আগে অনুমতি চেক করুন - SweetAlert সহ
   const performActionWithPermission = (pagePath, action, callback, alertMessage) => {
     if (checkPermission(pagePath, action)) {
       callback();
     } else {
-      // SweetAlert ব্যবহার করে সুন্দর অ্যালার্ট দেখান
       swal({
         title: "Access Denied!",
         text: alertMessage || `You don't have permission to ${action} this item.`,

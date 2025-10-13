@@ -51,8 +51,6 @@ const AddUserModal = ({ open, onClose, onSuccess }) => {
         role: data.role?.[0]?.label || data.role?.label,
       };
 
-      console.log('Final submit data:', submitData);
-
       const result = await createUser(submitData).unwrap();
 
       if (result.success) {

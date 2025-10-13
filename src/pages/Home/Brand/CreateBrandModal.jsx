@@ -2,144 +2,141 @@
 /* eslint-disable react/prop-types */
 import { toast } from "react-toastify";
 import {
-  Box,
-  Typography,
   Button,
   Grid,
-  IconButton,
-  Dialog,
-  DialogContent,
   CircularProgress,
 } from "@mui/material";
 
 import {
-  Category as CategoryIcon,
-  CheckCircle as CheckCircleIcon,
-  PhotoCamera as PhotoCameraIcon,
   Save as SaveIcon,
-  Close as CloseIcon,
   BrandingWatermark,
 } from "@mui/icons-material";
 import GarageForm from "../../../components/form/Form";
 import TASInput from "../../../components/form/Input";
-import { useCreateBrandMutation } from "../../../redux/api/brandApi";
+import { useCreateBrandMutation, useGetSingleBrandQuery, useUpdateBrandMutation } from "../../../redux/api/brandApi";
 import { useTenantDomain } from "../../../hooks/useTenantDomain";
+import GarageModal from "../../../components/Share/Modal/GarageModal";
+import { usePermissions } from "../../../context/PermissionContext";
+import Can from "../../../components/Can";
+import Loading from "../../../components/Loading/Loading";
 
-export const CreateBrandModal = ({ open, setOpen, categoryId }) => {
-  const [createBrand, { isLoading, isSuccess }] = useCreateBrandMutation();
-  const tenantDomain = useTenantDomain();
+export const CreateBrandModal = ({ open, setOpen, brandId }) => {
+  const [createBrand, { isLoading }] = useCreateBrandMutation();
+  const [UpdateBrand, { isLoading: updateLoading }] = useUpdateBrandMutation();
+  const { performActionWithPermission } = usePermissions();
+  const { tenantDomain } = useTenantDomain();
 
+  const { data, isLoading: singleBrandLoading } = useGetSingleBrandQuery(
+    { tenantDomain, id: brandId },
+    { skip: !brandId }
+  );
+  console.log('single brand', data)
   const handleSubmit = async (data) => {
-
-    try {
-
-      const res = await createBrand({
-        ...data,
-        tenantDomain
-      }).unwrap();
-      if (res.success) {
-        toast.success("Brand created successfully!");
-        setOpen();
-      }
-    } catch (error) {
-      toast.error(
-        "Error creating brand: " + (error.message || "Something went wrong")
-      );
-    }
+    performActionWithPermission('/dashboard/brand', brandId ? 'edit' : 'create',
+      async () => {
+        try {
+          let res;
+          if (brandId) {
+            res = await UpdateBrand({
+              ...data,
+              id: brandId,
+              tenantDomain,
+            }).unwrap();
+          } else {
+            res = await createBrand({
+              ...data,
+              tenantDomain
+            }).unwrap();
+          }
+          if (res.success) {
+            toast.success(`Brand ${brandId ? 'update' : 'create'} successfully!`);
+            setOpen();
+          }
+        } catch (error) {
+          toast.error(
+            (error.message || "Something went wrong")
+          );
+        }
+      }, `You don't have permission to ${brandId ? 'edit' : 'create'} brand ! `
+    )
   };
 
   if (isLoading) {
     return <p>Loading...</p>;
   }
 
+  const title = `${brandId ? 'Update' : 'Create'} Brand`
+
+  const defaultValues = {
+    brand: data?.data?.brand || "",
+  }
+
   return (
-    <Dialog
-      open={open}
-      onClose={() => !isLoading && !isSuccess && setOpen(false)}
-      maxWidth="sm"
-      fullWidth
-      PaperProps={{ sx: { borderRadius: 3, overflow: "hidden" } }}
-    >
-      
-
-      <Box
-        sx={{
-          background: "linear-gradient(135deg, #6a1b9a 0%, #42A1DA 100%)",
-          py: 2,
-          px: 3,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          <CategoryIcon sx={{ color: "white", mr: 1.5, fontSize: 28 }} />
-          <Typography
-            variant="h6"
-            component="h2"
-            sx={{ color: "white", fontWeight: 600 }}
+    <>
+      {
+        singleBrandLoading ? (
+          <Loading />
+        ) : (
+          <GarageModal
+            open={open}
+            setOpen={setOpen}
+            title={title}
+            maxWidth="sm"
           >
-            Create Brand
-          </Typography>
-        </Box>
-        <IconButton
-          onClick={() => !isLoading && !isSuccess && setOpen(false)}
-          sx={{
-            color: "white",
-            "&:hover": { bgcolor: "rgba(255,255,255,0.1)" },
-          }}
-        >
-          <CloseIcon />
-        </IconButton>
-      </Box>
+            <GarageForm onSubmit={handleSubmit} defaultValues={defaultValues}>
+              <Grid container spacing={3}>
 
-      <DialogContent sx={{ p: 0 }}>
-        <Box sx={{ p: 3 }}>
-          <GarageForm onSubmit={handleSubmit}>
-            <Grid container spacing={3}>
-             
 
-              <Grid item xs={12}>
-                <TASInput
-                  name="brand"
-                  label="Brand Name "
-                  placeholder="Brand Name"
-                  required
-                  icon={BrandingWatermark}
-                  iconPosition="start"
-                />
+                <Grid item xs={12}>
+                  <TASInput
+                    name="brand"
+                    label="Brand Name "
+                    placeholder="Brand Name"
+                    required
+                    icon={BrandingWatermark}
+                    iconPosition="start"
+                  />
+                </Grid>
+
+                <Grid item xs={12} sx={{ mt: 2 }}>
+                  <Can
+                    action={brandId ? 'edit' : 'create'}
+                    page="/dashboard/brand"
+                  >
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      fullWidth
+                      startIcon={
+                        isLoading ? (
+                          <CircularProgress size={20} color="inherit" />
+                        ) : (
+                          <SaveIcon />
+                        )
+                      }
+                      sx={{
+                        borderRadius: 100,
+
+                        boxShadow: "0 4px 10px rgba(106, 27, 154, 0.3)",
+                        py: 1.5,
+                        textTransform: "none",
+                        fontSize: "1rem",
+                        color: "white",
+                      }}
+                    >
+                      {brandId ? 'Update' : 'Create'} Brand
+                    </Button>
+                  </Can>
+
+                </Grid>
               </Grid>
+            </GarageForm>
 
-              <Grid item xs={12} sx={{ mt: 2 }}>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  fullWidth
-                  startIcon={
-                    isLoading ? (
-                      <CircularProgress size={20} color="inherit" />
-                    ) : (
-                      <SaveIcon />
-                    )
-                  }
-                  sx={{
-                    borderRadius: 100,
-                    background:
-                      "linear-gradient(135deg, #6a1b9a 0%, #42A1DA 100%)",
-                    boxShadow: "0 4px 10px rgba(106, 27, 154, 0.3)",
-                    py: 1.5,
-                    textTransform: "none",
-                    fontSize: "1rem",
-                    color: "white",
-                  }}
-                >
-                  Create Brand
-                </Button>
-              </Grid>
-            </Grid>
-          </GarageForm>
-        </Box>
-      </DialogContent>
-    </Dialog>
+
+          </GarageModal>
+        )
+      }
+
+    </>
   );
 };

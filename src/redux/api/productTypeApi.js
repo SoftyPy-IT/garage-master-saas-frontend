@@ -3,24 +3,20 @@ import { baseApi } from "./baseApi";
 const productTypeApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     createProductType: builder.mutation({
-      query: ({tenantDomain, data}) => ({
+      query: ({ tenantDomain, data }) => ({
         url: "/product-type",
         method: "POST",
-        body:data,
-        params:{tenantDomain}
+        body: data,
+        params: { tenantDomain }
       }),
       invalidatesTags: ["productType"],
     }),
     getAllIProductType: builder.query({
-      query: ({tenantDomain}) => ({
-        url:'/product-type',
+      query: ({ tenantDomain }) => ({
+        url: '/product-type',
         method: "GET",
-     headers: {
-          "x-tenant-domain": tenantDomain,
-        },
+        params: { tenantDomain }
       }),
-
-
       providesTags: ["productType"],
     }),
 
@@ -33,10 +29,11 @@ const productTypeApi = baseApi.injectEndpoints({
       providesTags: ["productType"],
     }),
     updateProductType: builder.mutation({
-      query: ({ id, ...data }) => ({
+      query: ({ id, data, tenantDomain }) => ({
         url: `/product-type/${id}`,
         method: "PATCH",
         body: data,
+        params: { tenantDomain }
       }),
       invalidatesTags: ["productType"],
     }),

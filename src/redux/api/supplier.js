@@ -11,11 +11,11 @@ const supplierApi = baseApi.injectEndpoints({
       invalidatesTags: ["supplier"],
     }),
     recordPayment: builder.mutation({
-      query: ({data, tenantDomain }) => ({
+      query: ({ data, tenantDomain }) => ({
         url: "/suppliers/payments",
         method: "POST",
         body: data,
-        params: {tenantDomain, }
+        params: { tenantDomain, }
       }),
       invalidatesTags: ["supplier"],
     }),
@@ -23,15 +23,13 @@ const supplierApi = baseApi.injectEndpoints({
       query: ({ tenantDomain, limit, page, searchTerm, isRecycled }) => ({
         url: `/suppliers`,
         method: "GET",
-        params: { limit, page, searchTerm, isRecycled },
-         headers: {
-          "x-tenant-domain": tenantDomain,
-        },
+        params: { limit, page, searchTerm, isRecycled, tenantDomain },
+
       }),
       providesTags: ["supplier"],
     }),
 
-    
+
     getSingleSupplier: builder.query({
       query: ({ tenantDomain, id }) => ({
         url: `/suppliers/${id}`,

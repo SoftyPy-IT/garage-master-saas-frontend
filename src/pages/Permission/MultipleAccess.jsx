@@ -215,8 +215,6 @@ const MultipleAccess = ({ handleDialogOpen, handleDeletePermission, getRoleColor
                 permissionData: allPermissionsData,
             }).unwrap();
 
-            console.log('Permissions processed:', result);
-
             Swal.fire({
                 icon: "success",
                 title: "Success!",

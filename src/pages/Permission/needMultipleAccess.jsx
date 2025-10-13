@@ -247,7 +247,6 @@
 //                     tenantDomain,
 //                     permissionUpdates
 //                 }).unwrap();
-//                 console.log('Update result:', result);
 //             }
 
 //             Swal.fire({

@@ -56,8 +56,6 @@ const AddEditPermissionDialog = ({
         view: data.view || false,
         delete: data.delete || false,
       };
-      console.log('permission raw test', permissionData)
-
       let result;
       if (permissionType === "edit" && permissionId) {
         result = await updatePermission({
@@ -73,8 +71,6 @@ const AddEditPermissionDialog = ({
           data: permissionData,
         }).unwrap();
       }
-
-      console.log('result', result)
       if (result.success) {
         toast.success(result.message || 'Permission successfully !')
         handleClose();
