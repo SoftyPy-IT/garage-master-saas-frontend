@@ -11,7 +11,6 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  IconButton,
   Breadcrumbs,
   Link,
   Chip,
@@ -20,12 +19,8 @@ import {
   Card,
   CardContent,
   Avatar,
-  Tooltip,
-  Zoom,
   LinearProgress,
   useTheme,
-  Alert,
-  Snackbar,
   TextField,
 } from "@mui/material";
 import {
@@ -46,17 +41,20 @@ import { alpha } from "@mui/material/styles";
 import {
   useDeleteWarehouseMutation,
   useGetAllWarehousesQuery,
-} from "../../redux/api/warehouseApi";
+} from "../../../redux/api/warehouseApi";
 import swal from "sweetalert";
-import ViewWarehouseDetails from "./Warehouse/WarehouseDetailsModal";
-import { useTenantDomain } from "../../hooks/useTenantDomain";
+import ViewWarehouseDetails from "./WarehouseDetailsModal";
 import {
   wareHouseButton,
   wareHouseCard,
   wareHouseInput,
-} from "../../utils/customStyle";
-import { warehouseTypes } from "../../data";
-import WarehouseModal from "./Warehouse/WarehouseModal";
+} from "../../../utils/customStyle";
+import { warehouseTypes } from "../../../data";
+import WarehouseModal from "./WarehouseModal";
+import { useAppOptions } from "../../../hooks/useAppOptions";
+import Can from "../../../components/Can";
+import ActionIconButton from "../../../components/ActionIconButton";
+import { formatDate } from "../../../utils/formateDate";
 
 export default function WarehouseManagement() {
   const theme = useTheme();
@@ -65,8 +63,7 @@ export default function WarehouseManagement() {
   const [editWarehouseId, setEditWarehouseId] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
-
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain, performActionWithPermission } = useAppOptions()
 
   const {
     data: warehouseData,
@@ -75,11 +72,7 @@ export default function WarehouseManagement() {
   } = useGetAllWarehousesQuery({ tenantDomain });
 
   const [deleteWarehouse] = useDeleteWarehouseMutation();
-  const [snackbar, setSnackbar] = useState({
-    open: false,
-    message: "",
-    severity: "success",
-  });
+
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
   const [viewDetailsOpen, setViewDetailsOpen] = useState(false);
 
@@ -119,35 +112,37 @@ export default function WarehouseManagement() {
   };
 
   const handleDeleteWarehouse = async (id) => {
-    const willDelete = await swal({
-      title: "Are you sure?",
-      text: "You want to move this warehouse to Recycle bin?",
-      icon: "warning",
-      dangerMode: true,
-    });
+    performActionWithPermission('/dashboard/warehouse', 'delete',
+      async () => {
+        const willDelete = await swal({
+          title: "Are you sure?",
+          text: "You want to move this warehouse to Recycle bin?",
+          icon: "warning",
+          dangerMode: true,
+        });
 
-    if (willDelete) {
-      try {
-        await deleteWarehouse({ tenantDomain, id }).unwrap();
-        swal(
-          "Move to Recycle bin!",
-          "Move to Recycle bin successful.",
-          "success"
-        );
-        refetch();
-      } catch (error) {
-        swal(
-          "Error",
-          "An error occurred while deleting the warehouse.",
-          "error"
-        );
-      }
-    }
+        if (willDelete) {
+          try {
+            await deleteWarehouse({ tenantDomain, id }).unwrap();
+            swal(
+              "Move to Recycle bin!",
+              "Move to Recycle bin successful.",
+              "success"
+            );
+            refetch();
+          } catch (error) {
+            swal(
+              "Error",
+              "An error occurred while deleting the warehouse.",
+              "error"
+            );
+          }
+        }
+
+      }, `You don't have permission to delete warehouse`
+    )
   };
 
-  const handleCloseSnackbar = () => {
-    setSnackbar({ ...snackbar, open: false });
-  };
 
   const getStatusChip = (status) => {
     switch (status) {
@@ -224,13 +219,6 @@ export default function WarehouseManagement() {
     }
 
     return <Chip label={typeObj.label} color={color} size="small" />;
-  };
-
-  // Format date in a readable format
-  const formatDate = (dateString) => {
-    if (!dateString) return "N/A";
-    const options = { year: "numeric", month: "long", day: "numeric" };
-    return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
   return (
@@ -497,71 +485,30 @@ export default function WarehouseManagement() {
                     </TableCell>
                     <TableCell>{getStatusChip(warehouse?.status)}</TableCell>
                     <TableCell align="center">
-                      <Tooltip title="View Details" TransitionComponent={Zoom}>
-                        <IconButton
-                          size="small"
-                          onClick={() => handleViewDetails(warehouse)}
-                          sx={{
-                            color: theme.palette.primary.main,
-                            backgroundColor: alpha(
-                              theme.palette.primary.main,
-                              0.1
-                            ),
-                            mr: 1,
-                            "&:hover": {
-                              backgroundColor: alpha(
-                                theme.palette.primary.main,
-                                0.2
-                              ),
-                            },
-                          }}
-                        >
-                          <VisibilityIcon fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title="Edit" TransitionComponent={Zoom}>
-                        <IconButton
-                          size="small"
-                          onClick={() => handleEditOpen(warehouse._id)}
-                          sx={{
-                            color: theme.palette.warning.main,
-                            backgroundColor: alpha(
-                              theme.palette.warning.main,
-                              0.1
-                            ),
-                            mr: 1,
-                            "&:hover": {
-                              backgroundColor: alpha(
-                                theme.palette.warning.main,
-                                0.2
-                              ),
-                            },
-                          }}
-                        >
-                          <EditIcon fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title="Delete" TransitionComponent={Zoom}>
-                        <IconButton
-                          size="small"
-                          onClick={() => handleDeleteWarehouse(warehouse._id)}
-                          sx={{
-                            color: theme.palette.error.main,
-                            backgroundColor: alpha(
-                              theme.palette.error.main,
-                              0.1
-                            ),
-                            "&:hover": {
-                              backgroundColor: alpha(
-                                theme.palette.error.main,
-                                0.2
-                              ),
-                            },
-                          }}
-                        >
-                          <DeleteIcon fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
+                      <ActionIconButton
+                        title="View Details"
+                        colorVariant="primary"
+                        icon={<VisibilityIcon fontSize="small" />}
+                        onClick={() => handleViewDetails(warehouse)}
+                      />
+
+                      <ActionIconButton
+                        title="Edit"
+                        colorVariant="warning"
+                        icon={<EditIcon fontSize="small" />}
+                        onClick={() => handleEditOpen(warehouse._id)}
+                      />
+
+                      <ActionIconButton
+                        title="Delete"
+                        colorVariant="error"
+                        icon={
+                          <Can page="/dashboard/warehouse" action="delete">
+                            <DeleteIcon fontSize="small" />
+                          </Can>
+                        }
+                        onClick={() => handleDeleteWarehouse(warehouse._id)}
+                      />
                     </TableCell>
                   </TableRow>
                 ))}
@@ -588,21 +535,8 @@ export default function WarehouseManagement() {
         onEdit={handleEditOpen}
       />
 
-      {/* Snackbar for notifications */}
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={6000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-      >
-        <Alert
-          onClose={handleCloseSnackbar}
-          severity={snackbar.severity}
-          sx={{ width: "100%" }}
-        >
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
+
+
     </Box>
   );
 }
