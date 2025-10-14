@@ -1,9 +1,10 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useMemo, useEffect } from "react";
 import {
   Box,
   Container,
@@ -46,17 +47,9 @@ import {
   AccessTime,
   Notifications,
 } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
 import {
-  useCreateProductMutation,
   useGetSingleProductQuery,
-  useUpdateProductMutation,
 } from "../../../redux/api/productApi";
-import { useGetAllICategoryQuery } from "../../../redux/api/categoryApi";
-import { useGetAllIBrandQuery } from "../../../redux/api/brandApi";
-import { useGetAllIUnitQuery } from "../../../redux/api/unitApi";
-import { useGetAllIProductTypeQuery } from "../../../redux/api/productTypeApi";
-import { useGetAllSuppliersQuery } from "../../../redux/api/supplier";
 import GarageForm from "../../../components/form/Form";
 import TASInput from "../../../components/form/Input";
 import TASAutocomplete from "../../../components/form/Autocomplete";
@@ -67,164 +60,70 @@ import ProductStatusSelector from "../../../components/form/Status";
 import { toast } from "react-toastify";
 import TASSelect from "../../../components/form/Select";
 import FormDatePicker from "../../../components/form/Datepicker";
-import { useGetAllWarehousesQuery } from "../../../redux/api/warehouseApi";
 import { Tooltip } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { addButtonStyle } from "../../../utils/customStyle";
 import { CreateCategoryModal } from "../Category/CreateCategoryModal";
 import { CreateBrandModal } from "../Brand/CreateBrandModal";
-import AddWarehouseModal from "../../Inventory/Warehouse/AddWarehouse";
 import { CreateProductTypeModal } from "../ProductType/CreateProductTypeModal";
 import { AddSupplierModal } from "../Suppliers/AddSupplierModal";
-import { CreateUnitModal } from "../Unit/CreateUnitModal";
 import { useTenantDomain } from "../../../hooks/useTenantDomain";
-import { useGetAllWarrantyQuery } from "../../../redux/api/warrantyApi";
-import CreateWarrantyModal from "../../Inventory/WarrandyModal";
-import { usePermissions } from "../../../context/PermissionContext";
 import Loading from "../../../components/Loading/Loading";
 import Can from "../../../components/Can";
+import { UnitModal } from "../Unit/UnitModal";
+import { useAppOptions } from "../../../hooks/useAppOptions";
+import { useFormController } from "../../../hooks/useFormController";
+import WarrantyModal from "../../Inventory/Warranty/WarrantyModal";
+import WarehouseModal from "../../Inventory/Warehouse/WarehouseModal";
 
 export default function ProductForm({ id }) {
-  const navigate = useNavigate();
-  const [activeStep, setActiveStep] = useState(0);
-  const [errors, setErrors] = useState({});
-  const [previewImage, setPreviewImage] = useState(null);
-  const [selectedTags, setSelectedTags] = useState([]);
-  const [productStatus, setProductStatus] = useState("active");
-  const { performActionWithPermission } = usePermissions();
-  const [submitting, setSubmitting] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [expiryDateType, setExpiryDateType] = useState("fixed");
-  const [unitOpen, setUnitOpen] = useState(false);
-  const [brandOpen, setBrandOpen] = useState(false);
-  const [supplierOpen, setSupplierOpen] = useState(false);
-  const [categoryOpen, setCategoryOpen] = useState(false);
-  const [warehouseOpen, setWarehouseOpen] = useState(false);
-  const [productTypeOpen, setproductTypeOpen] = useState(false);
-  const [warrantyOpen, setWarrantyOpen] = useState(false);
-
-  const handleWarrantyOpen = () => setWarrantyOpen(true);
-  const handleWarrantyClose = () => setWarrantyOpen(false);
-  const handleCategoryOpen = () => setCategoryOpen(true);
-  const handleCategoryClose = () => setCategoryOpen(false);
-  const handleBrandOpen = () => setBrandOpen(true);
-  const handleBrandClose = () => setBrandOpen(false);
-  const handleWarehouseOpen = () => setWarehouseOpen(true);
-  const handleWarehouseClose = () => setWarehouseOpen(false);
-  const handleProductTypeOpen = () => setproductTypeOpen(true);
-  const handleProductTypeClose = () => setproductTypeOpen(false);
-  const handleSupplierOpen = () => setSupplierOpen(true);
-  const handleSupplierClose = () => setSupplierOpen(false);
-  const handleUnitOpen = () => setUnitOpen(true);
-  const handleUnitClose = () => setUnitOpen(false);
+  const {
+    activeStep,
+    setActiveStep,
+    setPreviewImage,
+    setProductStatus,
+    categoryOpen,
+    handleCategoryOpen,
+    handleCategoryClose,
+    brandOpen,
+    handleBrandOpen,
+    handleBrandClose,
+    warehouseOpen,
+    handleWarehouseOpen,
+    handleWarehouseClose,
+    unitOpen,
+    handleUnitOpen,
+    handleUnitClose,
+    setSelectedTags,
+    navigate,
+    setErrors,
+    expiryDateType,
+    setExpiryDateType,
+    handleProductTypeClose,
+    handleProductTypeOpen,
+    handleWarrantyClose,
+    handleWarrantyOpen,
+    AccessTime,
+    warrantyOpen,
+    handleSupplierOpen,
+    handleSupplierClose,
+    submitting,
+    productTypeOpen,
+    supplierOpen,
+  } = useFormController();
   const { tenantDomain } = useTenantDomain();
+
+  const { productTypeLoading, supplierLoading, unitLoading, brandLoading,
+    warehouseLoading, categoryOptions, supplierOptions, unitOptions, brandOptions,
+    warehouseOptions, productTypeOptions, warrantyOptions, updateProduct, createProduct
+    ,
+  } = useAppOptions()
 
   const { data: singleProduct, isLoading: singleProductLoading } =
     useGetSingleProductQuery({ tenantDomain, id });
-  const [updateProduct] = useUpdateProductMutation();
-  const [createProduct] = useCreateProductMutation();
-  const { data } = useGetAllICategoryQuery({
-    tenantDomain,
-    limit: 99999999999,
-    page: 1,
-    searchTerm: "",
-  });
-  const { data: brandData, isLoading: brandLoading } = useGetAllIBrandQuery({
-    tenantDomain,
-    limit: 99999999999,
-    page: 1,
-    searchTerm: "",
-  });
-  const { data: unitData, isLoading: unitLoading } = useGetAllIUnitQuery({
-    tenantDomain,
-    limit: 99999999999,
-    page: 1,
-    searchTerm: "",
-  });
-  const { data: productTypeData, isLoading: productTypeLoading } =
-    useGetAllIProductTypeQuery({
-      tenantDomain,
-      limit: 99999999999,
-      page: 1,
-      searchTerm: "",
-    });
-  const { data: supplierData, isLoading: supplierLoading } =
-    useGetAllSuppliersQuery({
-      tenantDomain,
-      limit: 1000000,
-      page: 1,
-      searchTerm: "",
-    });
-  const { data: wareHouseData, isLoading: warehouseLoading } =
-    useGetAllWarehousesQuery({
-      tenantDomain,
-      limit: 1000000,
-      page: 1,
-      searchTerm: "",
-    });
-  const { data: warrantyData } = useGetAllWarrantyQuery({
-    tenantDomain,
-    limit: 1000000,
-    page: 1,
-    searchTerm: "",
-  });
-
-  // Options for dropdowns
-  const warrantyOptions = useMemo(() => {
-    if (!warrantyData?.data?.data) return [];
-    return warrantyData.data?.data.map((war) => ({
-      label: war.name,
-      value: war._id,
-    }));
-  }, [warrantyData?.data]);
-  // Options for dropdowns
-  const warehouseOptions = useMemo(() => {
-    if (!wareHouseData?.data?.warehouses) return [];
-    return wareHouseData.data.warehouses.map((war) => ({
-      label: war.name,
-      value: war._id,
-    }));
-  }, [wareHouseData?.data?.warehouses]);
-
-  const categoryOptions = useMemo(() => {
-    if (!data?.data?.categories) return [];
-    return data.data.categories.map((category) => ({
-      label: category.main_category,
-      value: category._id,
-    }));
-  }, [data]);
-
-  const brandOptions = useMemo(() => {
-    if (!brandData?.data?.brands) return [];
-    return brandData.data.brands.map((brand) => ({
-      label: brand.brand,
-      value: brand._id,
-    }));
-  }, [brandData?.data?.brands]);
-
-  const unitOptions = useMemo(() => {
-    if (!unitData?.data?.units) return [];
-    return unitData.data.units.map((unit) => ({
-      label: unit.unit,
-      value: unit._id,
-    }));
-  }, [unitData?.data?.units]);
-
-  const productTypeOptions = useMemo(() => {
-    if (!productTypeData?.data?.productTypes) return [];
-    return productTypeData.data.productTypes.map((productType) => ({
-      label: productType.product_type,
-      value: productType._id,
-    }));
-  }, [productTypeData?.data?.productTypes]);
-
-  const suppliersOptions = useMemo(() => {
-    if (!supplierData?.data?.suppliers) return [];
-    return supplierData.data.suppliers.map((supplier) => ({
-      label: supplier.full_name,
-      value: supplier._id,
-    }));
-  }, [supplierData?.data?.suppliers]);
+  const {
+    performActionWithPermission,
+  } = useAppOptions();
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -318,7 +217,7 @@ export default function ProductForm({ id }) {
         : [],
       suppliers: singleProduct.data.suppliers
         ? [
-          suppliersOptions.find(
+          supplierOptions.find(
             (supplier) => supplier.value === singleProduct.data.suppliers._id
           )?.label || "",
         ]
@@ -338,12 +237,12 @@ export default function ProductForm({ id }) {
       isDeleted: singleProduct.data.isDeleted || false,
     };
   }, [
-    singleProduct?.data,
+
     categoryOptions,
     brandOptions,
     unitOptions,
     productTypeOptions,
-    suppliersOptions,
+    supplierOptions,
     warehouseOptions,
     warrantyOptions,
   ]);
@@ -394,9 +293,9 @@ export default function ProductForm({ id }) {
             image: imageUrl,
             suppliers:
               data.suppliers?.[0] &&
-                suppliersOptions.find((cat) => cat.label === data.suppliers[0])?.value
+                supplierOptions.find((cat) => cat.label === data.suppliers[0])?.value
                 ? [
-                  suppliersOptions.find((cat) => cat.label === data.suppliers[0])
+                  supplierOptions.find((cat) => cat.label === data.suppliers[0])
                     .value,
                 ]
                 : [],
@@ -512,9 +411,9 @@ export default function ProductForm({ id }) {
             image: imageUrl,
             suppliers:
               data.suppliers?.[0] &&
-                suppliersOptions.find((cat) => cat.label === data.suppliers[0])?.value
+                supplierOptions.find((cat) => cat.label === data.suppliers[0])?.value
                 ? [
-                  suppliersOptions.find((cat) => cat.label === data.suppliers[0])
+                  supplierOptions.find((cat) => cat.label === data.suppliers[0])
                     .value,
                 ]
                 : [],
@@ -800,7 +699,7 @@ export default function ProductForm({ id }) {
                   placeholder="Choose Supplier"
                   icon={Category}
                   iconPosition="start"
-                  options={suppliersOptions}
+                  options={supplierOptions}
                 />
               </Grid>
               <Grid item lg={1} display="flex" justifyContent="center">
@@ -1505,7 +1404,7 @@ export default function ProductForm({ id }) {
       </Box>
 
       {warrantyOpen && (
-        <CreateWarrantyModal
+        <WarrantyModal
           open={warrantyOpen}
           onClose={handleWarrantyClose}
         />
@@ -1521,7 +1420,7 @@ export default function ProductForm({ id }) {
         <CreateBrandModal open={brandOpen} setOpen={handleBrandClose} />
       )}
       {warehouseOpen && (
-        <AddWarehouseModal
+        <WarehouseModal
           open={warehouseOpen}
           onClose={handleWarehouseClose}
         />
@@ -1536,7 +1435,7 @@ export default function ProductForm({ id }) {
         <AddSupplierModal open={supplierOpen} setOpen={handleSupplierClose} />
       )}
       {unitOpen && (
-        <CreateUnitModal open={unitOpen} setOpen={handleUnitClose} />
+        <UnitModal open={unitOpen} setOpen={handleUnitClose} />
       )}
     </>
   );

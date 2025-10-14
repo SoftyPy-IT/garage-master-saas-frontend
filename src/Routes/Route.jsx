@@ -106,8 +106,7 @@ import LowStockReportPage from "../pages/Reports/LowStockReport";
 import ProductStockReportPage from "../pages/Reports/ProductStockReport";
 import DailyStockMovementReportPage from "../pages/Reports/DailyStockReport";
 import ReportsPage from "../pages/Reports/Report";
-import PurchaseReturnUpdate from "../pages/Inventory/PurchaseReturnUpdate";
-import WarehouseManagement from "../pages/Inventory/WarehouseManagement";
+import PurchaseReturnUpdate from "../pages/Inventory/PurchaseReturnUpdate"
 import StockAdjustment from "../pages/Inventory/Adjustment/AdjustmentList";
 import AddAdjustment from "../pages/Inventory/Adjustment/AddAdjustment";
 import QuantityAdjustment from "../pages/Inventory/Adjustment/AdjustmentList";
@@ -138,6 +137,7 @@ import Permission from "../pages/Permission/Permission";
 import Unauthorized from "../pages/UnAuthorized";
 import InvoiceView from "../pages/Home/Invoice/InvoiceView";
 import CreateMoneyReceived from "../pages/Home/MoneyReceived/CreateMoneyReceived";
+import WarehouseManagement from "../pages/Inventory/Warehouse/WarehouseManagement";
 
 const createProtectedRoute = (path, element, pagePath, action = "view") => {
   return {
