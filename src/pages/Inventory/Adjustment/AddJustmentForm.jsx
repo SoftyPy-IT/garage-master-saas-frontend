@@ -1,7 +1,7 @@
 "use client"
 
 /* eslint-disable no-unused-vars */
-import { useState, useMemo } from "react"
+import { useState } from "react"
 import TASForm from "../../../components/form/Form"
 import {
   Autocomplete,
@@ -24,7 +24,6 @@ import {
 import TASInput from "../../../components/form/Input"
 import TASDatepicker from "../../../components/form/Datepicker"
 import AddjustmentFileUpload from "../../../components/form/AddjustmentFileUpload"
-import { useGetAllIProductQuery } from "../../../redux/api/productApi"
 import TASSelect from "../../../components/form/Select"
 import TASTextarea from "../../../components/form/Textarea"
 import { toast } from "react-toastify"
@@ -48,14 +47,12 @@ import {
   Delete as DeleteIcon,
 } from "@mui/icons-material"
 import TASAutocomplete from "../../../components/form/Autocomplete"
-import { outlinedInputWrapperSx } from "../../../utils/customStyle"
+import { outlinedInputWrapperSx, purchaseBtn } from "../../../utils/customStyle"
 import { StoreIcon } from "lucide-react"
-import { useGetAllWarehousesQuery } from "../../../redux/api/warehouseApi"
 import { useGetAllStocksQuery } from "../../../redux/api/stocksApi"
-import { useTenantDomain } from "../../../hooks/useTenantDomain"
+import { useAppOptions } from "../../../hooks/useAppOptions"
+import Can from "../../../components/Can"
 
-const MotionBox = motion(Box)
-const MotionCard = motion(Card)
 
 const AddAdjustmentForm = () => {
   const theme = useTheme()
@@ -63,30 +60,12 @@ const AddAdjustmentForm = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [searchTerm, setSearchTerm] = useState("")
   const navigate = useNavigate()
-   const tenantDomain = useTenantDomain();
-  
-  const {
-    data: productsData,
-    isLoading: productsLoading,
-    isFetching: productsFetching,
-  } = useGetAllIProductQuery([...params])
-  const { data: warehouseData } = useGetAllWarehousesQuery({
-    tenantDomain, 
-    limit: 1000000,
-    page: 1,
-    searchTerm: "",
-  })
+  const { tenantDomain, performActionWithPermission, productData, productOptions, warehouseOptions } = useAppOptions()
+
+
   const queryParams = { tenantDomain, page: currentPage, limit: 100, searchTerm: searchTerm }
 
   const { data: stockData, isLoading } = useGetAllStocksQuery(queryParams)
-
-  const wareHouseOptions = useMemo(() => {
-    if (!warehouseData?.data?.warehouses) return []
-    return warehouseData.data.warehouses.map((warehouse) => ({
-      label: warehouse.name,
-      value: warehouse._id,
-    }))
-  }, [warehouseData?.data?.warehouses])
 
   const [createAdjustment, { isLoading: isSubmitting }] = useCreateAdjustmentMutation()
   const [selectedProduct, setSelectedProduct] = useState(null)
@@ -94,26 +73,6 @@ const AddAdjustmentForm = () => {
   const [productFields, setProductFields] = useState([])
   const [fileList, setFileList] = useState([])
 
-  const productOptions = useMemo(() => {
-    if (!productsData?.data?.products) return []
-    return productsData.data.products.map((product) => ({
-      label: product.product_name,
-      value: product._id,
-      product,
-    }))
-  }, [productsData?.data?.products])
-
-  const handleProductChange = (newValue) => {
-    setSelectedProduct(newValue?.value || null)
-  }
-
-  const handleQuantityChange = (action) => {
-    setQuantity((prev) => {
-      if (action === "increase") return prev + 1
-      if (action === "decrease") return prev > 1 ? prev - 1 : 1
-      return prev
-    })
-  }
 
   const onAddProductField = (product) => {
     // Check if product already exists
@@ -160,95 +119,100 @@ const AddAdjustmentForm = () => {
   }
 
   const handleSubmit = async (data) => {
-    if (productFields.length === 0) {
-      toast.error("Please add at least one product", {
-        position: "top-right",
-        autoClose: 3000,
-      })
-      return
-    }
+    performActionWithPermission('/dashboard/add-adjustment', 'create',
+      async () => {
+        if (productFields.length === 0) {
+          toast.error("Please add at least one product", {
+            position: "top-right",
+            autoClose: 3000,
+          })
+          return
+        }
 
-    const imageUrl = Array.isArray(data.image) ? data.image[0] : data.image
-    const modifyData = {
-      image: imageUrl,
-      ...data,
-      warehouse:
-        data.warehouse && data.warehouse[0] && wareHouseOptions.find((cat) => cat.label === data.warehouse[0])?.value
-          ? [wareHouseOptions.find((cat) => cat.label === data.warehouse[0]).value]
-          : [],
-      products: productFields.map((product) => ({
-        productId: product.productId,
-        productName: product.productName,
-        productCode: product.productCode || "N/A",
-        type: product.type,
-        quantity: Number(product.quantity),
-        warehouse: product.warehouse,
-        currentStock: product.currentStock,
-        avgPurchasePrice: product.avgPurchasePrice,
-      })),
-    }
+        const imageUrl = Array.isArray(data.image) ? data.image[0] : data.image
+        const modifyData = {
+          image: imageUrl,
+          ...data,
+          warehouse:
+            data.warehouse && data.warehouse[0] && warehouseOptions.find((cat) => cat.label === data.warehouse[0])?.value
+              ? [warehouseOptions.find((cat) => cat.label === data.warehouse[0]).value]
+              : [],
+          products: productFields.map((product) => ({
+            productId: product.productId,
+            productName: product.productName,
+            productCode: product.productCode || "N/A",
+            type: product.type,
+            quantity: Number(product.quantity),
+            warehouse: product.warehouse,
+            currentStock: product.currentStock,
+            avgPurchasePrice: product.avgPurchasePrice,
+          })),
+        }
 
-    const formData = new FormData()
+        const formData = new FormData()
 
-    for (const key in modifyData) {
-      if (key === "products") {
-        modifyData.products.forEach((product, index) => {
-          for (const productKey in product) {
-            formData.append(`products[${index}][${productKey}]`, product[productKey].toString())
+        for (const key in modifyData) {
+          if (key === "products") {
+            modifyData.products.forEach((product, index) => {
+              for (const productKey in product) {
+                formData.append(`products[${index}][${productKey}]`, product[productKey].toString())
+              }
+            })
+          } else {
+            formData.append(key, modifyData[key]?.toString())
           }
-        })
-      } else {
-        formData.append(key, modifyData[key]?.toString())
-      }
-    }
+        }
 
-    if (fileList.length > 0) {
-      formData.append("attachDocument", fileList[0].originFileObj)
-    }
+        if (fileList.length > 0) {
+          formData.append("attachDocument", fileList[0].originFileObj)
+        }
 
-    try {
-      const res = await createAdjustment(formData).unwrap()
+        try {
+          const res = await createAdjustment(formData).unwrap()
 
-      if (res.success) {
-        toast.success("Adjustment created successfully", {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          style: {
-            background: "#10b981",
-            color: "#fff",
-            borderRadius: "10px",
-            boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
-          },
-        })
-      }
-      navigate("/dashboard/quantity-adjustment")
-    } catch (error) {
-        const errorMessage =
-        error.data?.errorSources?.[0]?.message ||
-        error.data?.err?.issues?.[0]?.message ||
-        error.data?.message ||
-        'Failed to create adjustment'
+          if (res.success) {
+            toast.success("Adjustment created successfully", {
+              position: "top-right",
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              style: {
+                background: "#10b981",
+                color: "#fff",
+                borderRadius: "10px",
+                boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
+              },
+            })
+          }
+          navigate("/dashboard/quantity-adjustment")
+        } catch (error) {
+          const errorMessage =
+            error.data?.errorSources?.[0]?.message ||
+            error.data?.err?.issues?.[0]?.message ||
+            error.data?.message ||
+            'Failed to create adjustment'
 
-      toast.error(errorMessage, {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        style: {
-          background: "#ef4444",
-          color: "#fff",
-          borderRadius: "10px",
-          boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
-        },
-      });
-    }
+          toast.error(errorMessage, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            style: {
+              background: "#ef4444",
+              color: "#fff",
+              borderRadius: "10px",
+              boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
+            },
+          });
+        }
+
+      }, "You don't have permission to create adjustment !"
+    )
   }
 
   const handleChange = (_value, option) => {
@@ -307,11 +271,8 @@ const AddAdjustmentForm = () => {
       <Grid container spacing={4}>
         {/* Left Column - Document Upload */}
         <Grid item xs={12} md={3}>
-          <MotionCard
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            elevation={0}
+          <Card
+
             sx={{
               borderRadius: "20px",
               border: "1px solid rgba(226, 232, 240, 0.8)",
@@ -358,16 +319,13 @@ const AddAdjustmentForm = () => {
                 <AddjustmentFileUpload name="attachDocument" label="Attach Document" fullWidth sx={{ width: "100%" }} />
               </Box>
             </CardContent>
-          </MotionCard>
+          </Card>
         </Grid>
 
         {/* Right Column - Basic Info */}
         <Grid item xs={12} md={9}>
-          <MotionCard
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            elevation={0}
+          <Card
+
             sx={{
               borderRadius: "20px",
               border: "1px solid rgba(226, 232, 240, 0.8)",
@@ -455,7 +413,7 @@ const AddAdjustmentForm = () => {
                 </Grid>
                 <Grid item xs={12} md={6}>
                   <TASAutocomplete
-                    options={wareHouseOptions}
+                    options={warehouseOptions}
                     size="medium"
                     fullWidth
                     name="warehouse"
@@ -472,16 +430,13 @@ const AddAdjustmentForm = () => {
                 </Grid>
               </Grid>
             </CardContent>
-          </MotionCard>
+          </Card>
         </Grid>
       </Grid>
 
       {/* Product Search */}
-      <MotionCard
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.4 }}
-        elevation={0}
+      <Card
+
         sx={{
           borderRadius: "20px",
           border: "1px solid rgba(226, 232, 240, 0.8)",
@@ -601,13 +556,13 @@ const AddAdjustmentForm = () => {
             )}
           />
         </CardContent>
-      </MotionCard>
+      </Card>
 
       {/* Product List */}
       <Box sx={{ mt: 4 }}>
         <AnimatePresence>
           {productFields.length === 0 ? (
-            <MotionBox
+            <Box
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
@@ -640,10 +595,10 @@ const AddAdjustmentForm = () => {
               <Typography variant="body2" color="#64748b" textAlign="center" sx={{ mt: 1, maxWidth: "400px" }}>
                 Search for products above and add them to make inventory adjustments
               </Typography>
-            </MotionBox>
+            </Box>
           ) : (
             productFields.map((field, index) => (
-              <MotionCard
+              <Card
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -887,18 +842,15 @@ const AddAdjustmentForm = () => {
                     </Grid>
                   </Grid>
                 </Box>
-              </MotionCard>
+              </Card>
             ))
           )}
         </AnimatePresence>
       </Box>
 
       {/* Notes Section */}
-      <MotionCard
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.6 }}
-        elevation={0}
+      <Card
+
         sx={{
           borderRadius: "20px",
           border: "1px solid rgba(226, 232, 240, 0.8)",
@@ -957,31 +909,21 @@ const AddAdjustmentForm = () => {
             }}
           />
         </CardContent>
-      </MotionCard>
+      </Card>
 
-      {/* Submit Button */}
       <Box sx={{ mt: 4, display: "flex", justifyContent: "flex-end" }}>
-        <Button
-          type="submit"
-          variant="contained"
-          disabled={isSubmitting}
-          startIcon={isSubmitting ? <CircularProgress size={20} color="inherit" /> : <SaveIcon />}
-          sx={{
-            borderRadius: "12px",
-            background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)",
-            px: 4,
-            py: 1.5,
-            boxShadow: "0 10px 15px -3px rgba(99, 102, 241, 0.3)",
-            "&:hover": {
-              background: "linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)",
-              boxShadow: "0 15px 20px -3px rgba(99, 102, 241, 0.4)",
-              transform: "translateY(-2px)",
-            },
-            transition: "all 0.3s ease",
-          }}
-        >
-          {isSubmitting ? "Creating Adjustment..." : "Create Adjustment"}
-        </Button>
+        <Can page='/dashboard/add-adjustment' action='create'>
+          <Button
+            type="submit"
+            variant="contained"
+            disabled={isSubmitting}
+            startIcon={isSubmitting ? <CircularProgress size={20} color="inherit" /> : <SaveIcon />}
+            sx={purchaseBtn}
+          >
+            {isSubmitting ? "Creating Adjustment..." : "Create Adjustment"}
+          </Button>
+        </Can>
+
       </Box>
     </TASForm>
   )

@@ -27,6 +27,7 @@ import {
   Select,
   MenuItem,
   FormHelperText,
+  Tooltip,
 } from "@mui/material";
 import {
   Save as SaveIcon,
@@ -47,9 +48,8 @@ import {
   AccessTime,
   Notifications,
 } from "@mui/icons-material";
-import {
-  useGetSingleProductQuery,
-} from "../../../redux/api/productApi";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import { useGetSingleProductQuery } from "../../../redux/api/productApi";
 import GarageForm from "../../../components/form/Form";
 import TASInput from "../../../components/form/Input";
 import TASAutocomplete from "../../../components/form/Autocomplete";
@@ -60,9 +60,7 @@ import ProductStatusSelector from "../../../components/form/Status";
 import { toast } from "react-toastify";
 import TASSelect from "../../../components/form/Select";
 import FormDatePicker from "../../../components/form/Datepicker";
-import { Tooltip } from "@mui/material";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import { addButtonStyle } from "../../../utils/customStyle";
+import { addButtonStyle, pBtnStyle } from "../../../utils/customStyle";
 import { CreateCategoryModal } from "../Category/CreateCategoryModal";
 import { CreateBrandModal } from "../Brand/CreateBrandModal";
 import { CreateProductTypeModal } from "../ProductType/CreateProductTypeModal";
@@ -103,7 +101,6 @@ export default function ProductForm({ id }) {
     handleProductTypeOpen,
     handleWarrantyClose,
     handleWarrantyOpen,
-    AccessTime,
     warrantyOpen,
     handleSupplierOpen,
     handleSupplierClose,
@@ -111,19 +108,28 @@ export default function ProductForm({ id }) {
     productTypeOpen,
     supplierOpen,
   } = useFormController();
-  const { tenantDomain } = useTenantDomain();
 
-  const { productTypeLoading, supplierLoading, unitLoading, brandLoading,
-    warehouseLoading, categoryOptions, supplierOptions, unitOptions, brandOptions,
-    warehouseOptions, productTypeOptions, warrantyOptions, updateProduct, createProduct
-    ,
-  } = useAppOptions()
+  const {
+    productTypeLoading,
+    supplierLoading,
+    unitLoading,
+    brandLoading,
+    warehouseLoading,
+    categoryOptions,
+    supplierOptions,
+    unitOptions,
+    brandOptions,
+    warehouseOptions,
+    productTypeOptions,
+    warrantyOptions,
+    updateProduct,
+    createProduct,
+    performActionWithPermission,
+    tenantDomain
+  } = useAppOptions();
 
   const { data: singleProduct, isLoading: singleProductLoading } =
     useGetSingleProductQuery({ tenantDomain, id });
-  const {
-    performActionWithPermission,
-  } = useAppOptions();
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -132,16 +138,6 @@ export default function ProductForm({ id }) {
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
-
-  const buttonStyle = {
-    borderRadius: 100,
-    background:
-      "linear-gradient(135deg, #6a1b9a 0%, #4a148c 100%)",
-    boxShadow:
-      "0 4px 10px rgba(106, 27, 154, 0.3)",
-    px: 3,
-    color: "white",
-  }
 
   const handleReset = () => {
     setPreviewImage(null);
@@ -158,7 +154,7 @@ export default function ProductForm({ id }) {
       product_code: singleProduct.data.product_code || "",
       purchasePrice: singleProduct.data.purchasePrice || "",
       minimumSalePrice: singleProduct.data.minimumSalePrice || "",
-      sellingPrice: singleProduct.data.purchasePrice || "",
+      sellingPrice: singleProduct.data.sellingPrice || "",
       unit_price: singleProduct.data.unit_price || "",
       expense: singleProduct.data.expense || "",
       discount: singleProduct.data.discount || "",
@@ -237,7 +233,7 @@ export default function ProductForm({ id }) {
       isDeleted: singleProduct.data.isDeleted || false,
     };
   }, [
-
+    singleProduct?.data,
     categoryOptions,
     brandOptions,
     unitOptions,
@@ -251,42 +247,45 @@ export default function ProductForm({ id }) {
     if (singleProduct?.data?.productStatus) {
       setProductStatus(singleProduct.data.productStatus);
     }
-  }, [singleProduct?.data]);
+  }, [singleProduct?.data, setProductStatus]);
 
   useEffect(() => {
     if (singleProduct?.data?.tags && Array.isArray(singleProduct.data.tags)) {
       setSelectedTags(singleProduct.data.tags);
     }
-  }, [singleProduct?.data]);
+  }, [singleProduct?.data, setSelectedTags]);
 
   useEffect(() => {
     if (singleProduct?.data?.image) {
       setPreviewImage(singleProduct.data.image);
     }
-  }, [singleProduct?.data]);
+  }, [singleProduct?.data, setPreviewImage]);
 
   useEffect(() => {
     if (singleProduct?.data?.expiryDateType) {
       setExpiryDateType(singleProduct.data.expiryDateType);
     }
-  }, [singleProduct?.data]);
+  }, [singleProduct?.data, setExpiryDateType]);
 
   if (
-    productTypeLoading |
-    brandLoading |
-    unitLoading |
-    warehouseLoading |
+    productTypeLoading ||
+    brandLoading ||
+    unitLoading ||
+    warehouseLoading ||
     supplierLoading
   ) {
-    return <h4>Loading.........</h4>;
+    return <Loading />;
   }
 
   const handleSubmit = async (data) => {
-    performActionWithPermission('/dashboard/add-product', 'create',
+    performActionWithPermission(
+      '/dashboard/add-product',
+      id ? 'edit' : 'create',
       async () => {
         try {
+          let res;
           const imageUrl =
-            data.image && data.image.length > 0 ? data.image[0] : data?.data?.image;
+            data.image && data.image.length > 0 ? data.image[0] : data?.image;
 
           const modifyValues = {
             ...data,
@@ -374,132 +373,24 @@ export default function ProductForm({ id }) {
             lastSoldDate: data.lastSoldDate,
             isDeleted: data.isDeleted || false,
           };
-          if (!id) {
-            const res = await createProduct({
-              tenantDomain,
-              ...modifyValues,
-            }).unwrap();
-            if (res.success) {
-              toast.success("Product create successfully!");
-              navigate("/dashboard/product-list");
-            }
-          }
-        } catch (error) {
-          const apiError = error?.data || error;
-          if (apiError?.errorSources?.length > 0) {
-            apiError.errorSources.forEach((source) => {
-              toast.error(`${source.path}: ${source.message}`);
-            });
-          } else if (apiError?.message) {
-            toast.error(apiError.message);
-          } else {
-            toast.error("Failed to create product");
-          }
-        }
-      }, "You don't have permission to create product ! "
-    )
-  };
-  const handleFormSubmit = async (data) => {
-    performActionWithPermission('/dashboard/update-product', 'edit',
-      async () => {
-        try {
-          const imageUrl =
-            data.image && data.image.length > 0 ? data.image[0] : data?.data?.image;
 
-          const modifyValues = {
-            ...data,
-            image: imageUrl,
-            suppliers:
-              data.suppliers?.[0] &&
-                supplierOptions.find((cat) => cat.label === data.suppliers[0])?.value
-                ? [
-                  supplierOptions.find((cat) => cat.label === data.suppliers[0])
-                    .value,
-                ]
-                : [],
-            category:
-              data.category?.[0] &&
-                categoryOptions.find((cat) => cat.label === data.category[0])?.value
-                ? [
-                  categoryOptions.find((cat) => cat.label === data.category[0])
-                    .value,
-                ]
-                : [],
-            warehouse:
-              data.warehouse?.[0] &&
-                warehouseOptions.find((cat) => cat.label === data.warehouse[0])?.value
-                ? [
-                  warehouseOptions.find((cat) => cat.label === data.warehouse[0])
-                    .value,
-                ]
-                : [],
-            warranties:
-              data.warranties?.[0] &&
-                warrantyOptions.find((cat) => cat.label === data.warranties[0])?.value
-                ? [
-                  warrantyOptions.find((cat) => cat.label === data.warranties[0])
-                    .value,
-                ]
-                : [],
-            brand:
-              data.brand?.[0] &&
-                brandOptions.find((brand) => brand.label === data.brand[0])?.value
-                ? [
-                  brandOptions.find((brand) => brand.label === data.brand[0])
-                    .value,
-                ]
-                : [],
-            unit:
-              data.unit?.[0] &&
-                unitOptions.find((unit) => unit.label === data.unit[0])?.value
-                ? [unitOptions.find((unit) => unit.label === data.unit[0]).value]
-                : [],
-            product_type:
-              data.product_type?.[0] &&
-                productTypeOptions.find((type) => type.label === data.product_type[0])
-                  ?.value
-                ? [
-                  productTypeOptions.find(
-                    (type) => type.label === data.product_type[0]
-                  ).value,
-                ]
-                : [],
-            minimumSalePrice: Number(data.minimumSalePrice),
-            purchasePrice: Number(data.purchasePrice),
-            sellingPrice: Number(data.sellingPrice),
-            discount: Number(data.discount),
-            expense: Number(data.expense),
-            product_tax: Number(data.product_tax),
-            stock_alert: Number(data.stock_alert),
-            product_quantity: Number(data.product_quantity),
-            unit_price: Number(data.unit_price),
-            shipping: Number(data.shipping),
-            tags: data.tags,
-            productStatus: data.productStatus,
-            expiryDateType: expiryDateType,
-            expiryDate: data.expiryDate,
-            shelfLife: Number(data.shelfLife),
-            shelfLifeUnit: data.shelfLifeUnit,
-            manufacturingDate: data.manufacturingDate,
-            batchNumber: data.batchNumber,
-            expiryAlertDays: Number(data.expiryAlertDays),
-            initialStock: Number(data.initialStock || 0),
-            stock: Number(data.stock || 0),
-            stockIn: Number(data.stockIn || 0),
-            stockOut: Number(data.stockOut || 0),
-            reorderLevel: Number(data.reorderLevel || 0),
-            lastPurchaseDate: data.lastPurchaseDate,
-            lastSoldDate: data.lastSoldDate,
-            isDeleted: data.isDeleted || false,
-          };
-          if (!id) {
-            const res = await updateProduct({
+          if (id) {
+            res = await updateProduct({
               tenantDomain,
               id,
               ...modifyValues,
             }).unwrap();
             if (res.success) {
-              toast.success("Product update successfully!");
+              toast.success('Product updated successfully!');
+              navigate("/dashboard/product-list");
+            }
+          } else {
+            res = await createProduct({
+              tenantDomain,
+              ...modifyValues,
+            }).unwrap();
+            if (res.success) {
+              toast.success('Product created successfully!');
               navigate("/dashboard/product-list");
             }
           }
@@ -512,11 +403,12 @@ export default function ProductForm({ id }) {
           } else if (apiError?.message) {
             toast.error(apiError.message);
           } else {
-            toast.error("Failed to create product");
+            toast.error(`Failed to ${id ? 'update' : 'create'} product`);
           }
         }
-      }, "You don't have permission to edit product !"
-    )
+      },
+      `You don't have permission to ${id ? 'update' : 'create'} product!`
+    );
   };
 
   const steps = [
@@ -729,7 +621,7 @@ export default function ProductForm({ id }) {
                 />
               </Grid>
               <Grid item lg={1} display="flex" justifyContent="center">
-                <Tooltip title="Add Supplier" arrow>
+                <Tooltip title="Add Warranty" arrow>
                   <Button
                     onClick={handleWarrantyOpen}
                     variant="contained"
@@ -1261,12 +1153,11 @@ export default function ProductForm({ id }) {
             <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
               <ShoppingBag sx={{ fontSize: 40, mr: 2 }} />
               <span className="font-[700] text-[30px] md:text-[35px]">
-                Create New Product
+                {id ? 'Edit Product' : 'Create New Product'}
               </span>
             </Box>
             <Typography variant="body1" sx={{ opacity: 0.9, maxWidth: 700 }}>
-              Create a new product by filling in the required information.
-              Follow the steps to complete the process.
+              {id ? 'Edit the product information.' : 'Create a new product by filling in the required information. Follow the steps to complete the process.'}
             </Typography>
           </Container>
         </Box>
@@ -1296,7 +1187,7 @@ export default function ProductForm({ id }) {
               mb: 4,
             }}
           >
-            <GarageForm onSubmit={id ? handleFormSubmit : handleSubmit} defaultValues={defaultValues}>
+            <GarageForm onSubmit={handleSubmit} defaultValues={defaultValues}>
               <Box sx={{ p: { xs: 0, md: 4 } }}>
                 <Stepper activeStep={activeStep} orientation="vertical">
                   {steps.map((step, index) => (
@@ -1332,31 +1223,17 @@ export default function ProductForm({ id }) {
                               Back
                             </Button>
                             {index === steps.length - 1 ? (
-                              <>
-                                {
-                                  id ? <Can page='/dashboard/update-product' action='edit'>
-                                    <Button
-                                      variant="contained"
-                                      type="submit"
-                                      startIcon={<SaveIcon />}
-                                      disabled={submitting}
-                                      sx={buttonStyle}
-                                    >
-                                      Update Product
-                                    </Button>    </Can> : <Can page='/dashboard/add-product' action='create'>
-                                    <Button
-                                      variant="contained"
-                                      type="submit"
-                                      startIcon={<SaveIcon />}
-                                      disabled={submitting}
-                                      sx={buttonStyle}
-                                    >
-                                      Create Product
-                                    </Button>
-                                  </Can>
-
-                                }
-                              </>
+                              <Button
+                                variant="contained"
+                                type="submit"
+                                startIcon={<SaveIcon />}
+                                disabled={submitting}
+                                sx={pBtnStyle}
+                              >
+                                <Can page='/dashboard/update-product' action={id ? 'edit' : 'create'}>
+                                  {id ? 'Update' : 'Create'} Product
+                                </Can>
+                              </Button>
                             ) : (
                               <Button
                                 variant="contained"

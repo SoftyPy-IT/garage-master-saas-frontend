@@ -5,32 +5,30 @@ import TASInput from "../../../components/form/Input";
 import TASAutocomplete from "../../../components/form/Autocomplete";
 import TASTextarea from "../../../components/form/Textarea";
 import { toast } from "react-toastify";
-import { useState } from "react";
 import { useAppOptions } from '../../../hooks/useAppOptions.js'
 const BarcodeForm = () => {
   const { productOptions,
-    createBarcode
+    createBarcode,
+    tenantDomain
   } = useAppOptions()
 
 
   const handleSubmit = async (data) => {
+    const mappedProduct =
+      Array.isArray(data.product_id) && data.product_id.length > 0
+        ? productOptions.find((opt) => opt.label === data.product_id[0])
+        : null;
 
     const modifyValues = {
       ...data,
       product_id:
-        data.product_id &&
-          data.product_id[0] &&
-          productOptions.find((cat) => cat.label === data.product_id[0])?.value
-          ? [
-            productOptions.find((cat) => cat.label === data.product_id[0]).value,
-          ]
-          : [],
+        mappedProduct?.value || data.product_id?.[0] || data.product_id || null,
     };
 
     const toastId = toast.loading("Creating Barcode...");
-    let res;
     try {
-      res = await createBarcode(modifyValues).unwrap();
+      const res = await createBarcode({ tenantDomain, data: modifyValues }).unwrap();
+
       if (res.success) {
         toast.update(toastId, {
           render: "Barcode created successfully!",
@@ -38,12 +36,18 @@ const BarcodeForm = () => {
           isLoading: false,
           autoClose: 3000,
         });
+      } else {
+        toast.update(toastId, {
+          render: res.message || "Failed to create barcode",
+          type: "error",
+          isLoading: false,
+          autoClose: 3000,
+        });
       }
-
     } catch (error) {
-
+      console.error("❌ Barcode create error:", error);
       toast.update(toastId, {
-        render: ` ${error.message || "Something went wrong!"}`,
+        render: error?.data?.message || error.message || "Something went wrong!",
         type: "error",
         isLoading: false,
         autoClose: 3000,
@@ -73,7 +77,7 @@ const BarcodeForm = () => {
 
         <Grid item lg={12} md={12} sm={12} xs={12}>
           <Button type="submit" sx={{ color: "white" }}>
-            Genrate Barcode{" "}
+            Generate Barcode{" "}
           </Button>
         </Grid>
       </Grid>

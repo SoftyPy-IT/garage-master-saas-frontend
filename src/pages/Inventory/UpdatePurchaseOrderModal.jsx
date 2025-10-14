@@ -16,9 +16,9 @@ import {
   Close as CloseIcon,
   Inventory as InventoryIcon,
 } from "@mui/icons-material";
-import PurchaseOrderForm from "./PurchaseOrderForm";
+import PurchaseOrderForm from "./PurchaseOrder/PurchaseOrderForm";
 
-const UpdatePurchaseOrderModal = ({tenantDomain, open, onClose, orderId }) => {
+const UpdatePurchaseOrderModal = ({ tenantDomain, open, onClose, orderId }) => {
   const theme = useTheme();
 
   return (

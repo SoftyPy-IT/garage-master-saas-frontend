@@ -18,7 +18,7 @@ const ActionIconButton = ({
     return (
         <Tooltip title={title} TransitionComponent={Zoom}>
             <span>
-                {/* span wrapper so tooltip works on disabled buttons */}
+
                 <IconButton
                     size={size}
                     onClick={onClick}

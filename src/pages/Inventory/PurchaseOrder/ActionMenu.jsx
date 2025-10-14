@@ -2,6 +2,7 @@
 import { CheckCircle, Delete, Edit, Visibility } from "@mui/icons-material";
 import { Menu, MenuItem } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import Can from "../../../components/Can";
 
 const ActionMenu = ({
   anchorEl,
@@ -33,11 +34,13 @@ const ActionMenu = ({
         View
       </MenuItem>
       <MenuItem onClick={onEditOrder} sx={{ py: 1.5 }}>
-        <Edit
-          fontSize="small"
-          sx={{ mr: 1, color: theme.palette.warning.main }}
-        />
-        Edit
+        <Can page='/dashboard/purchase-order' action='edit'>
+          <Edit
+            fontSize="small"
+            sx={{ mr: 1, color: theme.palette.warning.main }}
+          />
+          Edit
+        </Can>
       </MenuItem>
       <MenuItem
         onClick={onOpenReceiveDialog}
@@ -48,18 +51,23 @@ const ActionMenu = ({
         }
         sx={{ py: 1.5 }}
       >
-        <CheckCircle
-          fontSize="small"
-          sx={{ mr: 1, color: theme.palette.success.main }}
-        />
-        Receive
+        <Can page='/dashboard/purchase-order' action='edit'>
+          <CheckCircle
+            fontSize="small"
+            sx={{ mr: 1, color: theme.palette.success.main }}
+          />
+          Receive
+        </Can>
       </MenuItem>
       <MenuItem onClick={onDeleteOrder} sx={{ py: 1.5 }}>
-        <Delete
-          fontSize="small"
-          sx={{ mr: 1, color: theme.palette.error.main }}
-        />
-        Delete
+        <Can page='/dashboard/purchase-order' action='delete'>
+          <Delete
+            fontSize="small"
+            sx={{ mr: 1, color: theme.palette.error.main }}
+          />
+          Delete
+        </Can>
+
       </MenuItem>
     </Menu>
   );

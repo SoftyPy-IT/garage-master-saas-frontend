@@ -55,6 +55,8 @@ import {
 import Swal from "sweetalert2";
 import { useTenantDomain } from "../../hooks/useTenantDomain";
 import StockTransferModal from "./StockManagement/StockTransfer/StockTransferModal";
+import { useAppOptions } from "../../hooks/useAppOptions";
+import Can from "../../components/Can";
 
 const employees = [
   "John Smith",
@@ -73,7 +75,8 @@ export default function StockTransferPage() {
   const [showFilters, setShowFilters] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain, performActionWithPermission } = useAppOptions()
+
 
   const queryParams = {
     tenantDomain,
@@ -132,41 +135,45 @@ export default function StockTransferPage() {
   };
 
   const handleDeleteTransfer = async (id) => {
-    const result = await Swal.fire({
-      title: "Are you sure?",
-      text: "This will permanently delete the stock transfer record.",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: "Yes, delete it!",
-      cancelButtonText: "Cancel",
-    });
+    performActionWithPermission('/dashboard/stock-transfer', 'delete',
+      async () => {
+        const result = await Swal.fire({
+          title: "Are you sure?",
+          text: "This will permanently delete the stock transfer record.",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#d33",
+          cancelButtonColor: "#3085d6",
+          confirmButtonText: "Yes, delete it!",
+          cancelButtonText: "Cancel",
+        });
 
-    if (result.isConfirmed) {
-      try {
-        await deleteStockTransfer({ tenantDomain, id }).unwrap();
-        Swal.fire({
-          icon: "success",
-          title: "Deleted!",
-          text: "Stock transfer has been deleted successfully.",
-          showConfirmButton: false,
-          timer: 2000,
-          background: "#fff",
-          customClass: {
-            title: "text-purple-800 font-medium",
-            content: "text-gray-600",
-          },
-        });
-      } catch (error) {
-        Swal.fire({
-          icon: "error",
-          title: "Error!",
-          text: "An error occurred while deleting the stock transfer.",
-          confirmButtonColor: "#6a1b9a",
-        });
-      }
-    }
+        if (result.isConfirmed) {
+          try {
+            await deleteStockTransfer({ tenantDomain, id }).unwrap();
+            Swal.fire({
+              icon: "success",
+              title: "Deleted!",
+              text: "Stock transfer has been deleted successfully.",
+              showConfirmButton: false,
+              timer: 2000,
+              background: "#fff",
+              customClass: {
+                title: "text-purple-800 font-medium",
+                content: "text-gray-600",
+              },
+            });
+          } catch (error) {
+            Swal.fire({
+              icon: "error",
+              title: "Error!",
+              text: "An error occurred while deleting the stock transfer.",
+              confirmButtonColor: "#6a1b9a",
+            });
+          }
+        }
+      }, "You don't have permission to delete stock transfer"
+    )
   };
 
   const getStatusChip = (status) => {
@@ -523,7 +530,7 @@ export default function StockTransferPage() {
 
       <Box
         sx={{
-          display: {sm:"flex"},
+          display: { sm: "flex" },
           justifyContent: "space-between",
           alignItems: "center",
           mb: 3,
@@ -807,27 +814,29 @@ export default function StockTransferPage() {
                       <TableCell align="right">{transfer.quantity}</TableCell>
                       <TableCell>{getStatusChip(transfer.status)}</TableCell>
                       <TableCell align="center">
-                        <Tooltip title="Delete" TransitionComponent={Zoom}>
-                          <IconButton
-                            size="small"
-                            onClick={() => handleDeleteTransfer(transfer._id)}
-                            sx={{
-                              color: theme.palette.error.main,
-                              backgroundColor: alpha(
-                                theme.palette.error.main,
-                                0.1
-                              ),
-                              "&:hover": {
+                        <Can page='/dashboard/stock-transfer' action='delete'>
+                          <Tooltip title="Delete" TransitionComponent={Zoom}>
+                            <IconButton
+                              size="small"
+                              onClick={() => handleDeleteTransfer(transfer._id)}
+                              sx={{
+                                color: theme.palette.error.main,
                                 backgroundColor: alpha(
                                   theme.palette.error.main,
-                                  0.2
+                                  0.1
                                 ),
-                              },
-                            }}
-                          >
-                            <DeleteIcon fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
+                                "&:hover": {
+                                  backgroundColor: alpha(
+                                    theme.palette.error.main,
+                                    0.2
+                                  ),
+                                },
+                              }}
+                            >
+                              <DeleteIcon fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
+                        </Can>
                       </TableCell>
                     </TableRow>
                   ))
@@ -844,6 +853,8 @@ export default function StockTransferPage() {
         onSubmit={handleSubmit}
         employees={employees}
         products={products}
+        tenantDomain={tenantDomain}
+        performActionWithPermission={performActionWithPermission}
       />
     </Box>
   );

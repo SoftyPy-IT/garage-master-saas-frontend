@@ -3,9 +3,9 @@ import { Menu, MenuItem } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import PrintIcon from "@mui/icons-material/Print";
+import Can from "../../../components/Can";
 
- const ActionMenu = ({ anchorEl, onClose, onView, onEdit, onDelete, onPrint }) => (
+const ActionMenu = ({ anchorEl, onClose, onView, onEdit, onDelete }) => (
   <Menu
     anchorEl={anchorEl}
     open={Boolean(anchorEl)}
@@ -25,26 +25,25 @@ import PrintIcon from "@mui/icons-material/Print";
       View Details
     </MenuItem>
     <MenuItem onClick={onEdit} sx={{ py: 1.5 }}>
-      <EditIcon
-        fontSize="small"
-        sx={{ mr: 1, color: theme => theme.palette.warning.main }}
-      />
-      Edit
+      <Can page='/dashboard/purchase-return' action='edit'>
+        <EditIcon
+          fontSize="small"
+          sx={{ mr: 1, color: theme => theme.palette.warning.main }}
+        />
+        Edit
+      </Can>
+
     </MenuItem>
     <MenuItem onClick={onDelete} sx={{ py: 1.5 }}>
-      <DeleteIcon
-        fontSize="small"
-        sx={{ mr: 1, color: theme => theme.palette.error.main }}
-      />
-      Delete
+      <Can page='/dashboard/purchase-return' action='delete'>
+        <DeleteIcon
+          fontSize="small"
+          sx={{ mr: 1, color: theme => theme.palette.error.main }}
+        />
+        Delete
+      </Can>
     </MenuItem>
-    <MenuItem onClick={onPrint} sx={{ py: 1.5 }}>
-      <PrintIcon
-        fontSize="small"
-        sx={{ mr: 1, color: theme => theme.palette.info.main }}
-      />
-      Print
-    </MenuItem>
+
   </Menu>
 );
 export default ActionMenu

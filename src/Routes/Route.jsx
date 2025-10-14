@@ -388,6 +388,7 @@ export const router = createBrowserRouter([
         "/dashboard/add-purchase",
         "create"
       ),
+
       createProtectedRoute(
         "update-purchase",
         <UpdatePurchase />,

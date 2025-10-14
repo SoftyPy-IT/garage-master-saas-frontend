@@ -1,6 +1,4 @@
 "use client";
-
-import { motion } from "framer-motion";
 import { Box, Typography, Breadcrumbs, Link, Paper } from "@mui/material";
 import {
   Home as HomeIcon,
@@ -13,10 +11,8 @@ const AddAdjustment = () => {
   return (
     <Box sx={{ py: 4, px: { xs: 2, md: 4 } }}>
       {/* Header with animated elements */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+      <div
+
       >
         <Box sx={{ mb: 4 }}>
           <Typography
@@ -86,13 +82,10 @@ const AddAdjustment = () => {
             </Typography>
           </Breadcrumbs>
         </Box>
-      </motion.div>
+      </div>
 
-      {/* Main content with animation */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
+      <div
+
       >
         <Paper
           elevation={0}
@@ -110,7 +103,7 @@ const AddAdjustment = () => {
             <AddAdjustmentForm />
           </Box>
         </Paper>
-      </motion.div>
+      </div>
     </Box>
   );
 };

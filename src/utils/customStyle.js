@@ -1439,3 +1439,33 @@ export const modalBox = {
     overflow: "visible",
   },
 }
+export const pBtnStyle = {
+  borderRadius: 100,
+  background:
+    "linear-gradient(135deg, #6a1b9a 0%, #4a148c 100%)",
+  boxShadow:
+    "0 4px 10px rgba(106, 27, 154, 0.3)",
+  px: 3,
+  color: "white",
+}
+
+
+export const cardStyle = {
+  borderRadius: 2,
+  transition: "all 0.3s ease",
+  height: "100%",
+  display: "flex",
+  flexDirection: "column",
+  position: "relative",
+  overflow: "visible",
+  "&:hover": {
+    transform: "translateY(-5px)",
+  },
+}
+
+export const purchaseBtn = {
+  color: '#fff',
+  borderRadius: 2,
+
+  boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
+}

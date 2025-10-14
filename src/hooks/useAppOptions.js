@@ -141,12 +141,22 @@ export function useAppOptions(limit = 10, initialSearch = "") {
         })) || [];
     }, [warrantyData]);
 
+    // const productOptions = useMemo(() => {
+    //     return productData?.data?.products?.map((item) => ({
+    //         label: item.product_name,
+    //         value: item._id,
+    //     })) || [];
+    // }, [productData]);
+
+
     const productOptions = useMemo(() => {
-        return productData?.data?.products?.map((item) => ({
-            label: item.product_name,
-            value: item._id,
-        })) || [];
-    }, [productData]);
+        if (!productData?.data?.products) return [];
+        return productData.data.products.map((product) => ({
+            label: product.product_name,
+            value: product._id,
+            product,
+        }));
+    }, [productData?.data?.products]);
 
     // ===== Return All Exports =====
     return {
