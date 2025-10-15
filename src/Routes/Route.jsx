@@ -73,7 +73,6 @@ import ExpenseList from "../pages/Home/Expense/ExpenseList";
 import ProductType from "../pages/Home/ProductType/ProductType";
 import CategoryList from "../pages/Home/Category/CategoryList";
 import DuemoneyReceiptList from "../pages/Home/MoneyReceived/DuemoneyReceiptList";
-import RecyclebinJobcardList from "../pages/Home/Recyclebin/RecyclebinJobcardList";
 import RecycledQuotationList from "../pages/Home/Recyclebin/RecycledQuotationList";
 import RecycledMoneyReceipt from "../pages/Home/Recyclebin/RecycledMoneyReceipt";
 import RecycledbinCustomerList from "../pages/Home/Recyclebin/RecycledbinCustomerList";
@@ -138,6 +137,7 @@ import Unauthorized from "../pages/UnAuthorized";
 import InvoiceView from "../pages/Home/Invoice/InvoiceView";
 import CreateMoneyReceived from "../pages/Home/MoneyReceived/CreateMoneyReceived";
 import WarehouseManagement from "../pages/Inventory/Warehouse/WarehouseManagement";
+import RecycleBinJobCardList from "../pages/Home/Recyclebin/RecycleBinJobCardList";
 
 const createProtectedRoute = (path, element, pagePath, action = "view") => {
   return {
@@ -734,7 +734,7 @@ export const router = createBrowserRouter([
       createProtectedRoute("stock", <StockPage />, "/dashboard/stock"),
       createProtectedRoute(
         "recycle-bin-jobcard-list",
-        <RecyclebinJobcardList />,
+        <RecycleBinJobCardList />,
         "/dashboard/recycle-bin-jobcard-list"
       ),
       createProtectedRoute(

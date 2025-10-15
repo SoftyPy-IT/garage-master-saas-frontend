@@ -28,6 +28,7 @@ import { StyledPaper } from "../../../../utils";
 import { useTenantDomain } from "../../../../hooks/useTenantDomain";
 import EmployeeProfileHeader from "./EmployeeProfileHeader";
 import EmployeeHeaderStyle from "./EmployeeHeaderStyle";
+import { useAppOptions } from "../../../../hooks/useAppOptions";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -47,10 +48,8 @@ const TabPanel = (props) => {
 const EmployeeProfile = () => {
   const [value, setValue] = useState(0);
   const location = useLocation();
-  const theme = useTheme();
   const id = new URLSearchParams(location.search).get("id");
-  const tenantDomain = useTenantDomain();
-
+  const { tenantDomain, performActionWithPermission } = useAppOptions()
   const { data, isLoading, error } = useGetSingleEmployeeQuery({
     tenantDomain,
     id,
@@ -118,8 +117,7 @@ const EmployeeProfile = () => {
       <StyledPaper
         elevation={24}
         sx={{
-          background: "rgba(255, 255, 255, 0.95)",
-          backdropFilter: "blur(20px)",
+
           borderRadius: "24px",
           border: "1px solid rgba(255, 255, 255, 0.3)",
           overflow: "hidden",
@@ -184,7 +182,7 @@ const EmployeeProfile = () => {
             />
           </TabPanel>
           <TabPanel value={value} index={2}>
-            <SingleEmployeeLeaveList tenantDomain={tenantDomain} id={id} />
+            <SingleEmployeeLeaveList tenantDomain={tenantDomain} id={id} performActionWithPermission={performActionWithPermission} />
           </TabPanel>
           <TabPanel value={value} index={3}>
             <EmployeeSalary tenantDomain={tenantDomain} id={id} />

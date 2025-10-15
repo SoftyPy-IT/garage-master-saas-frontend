@@ -9,45 +9,47 @@ import { useCreateRoleMutation, useUpdateRoleMutation } from "../../redux/api/ro
 import { useTenantDomain } from "../../hooks/useTenantDomain";
 import { toast } from "react-toastify";
 
-const AddRoleModal = ({ open, onClose, roleData, isLoading }) => {
+const AddRoleModal = ({ open, onClose, roleData, isLoading, performActionWithPermission }) => {
     const [createRole] = useCreateRoleMutation();
     const [updateRole] = useUpdateRoleMutation();
     const { tenantDomain } = useTenantDomain();
 
     const handleSubmit = async (data) => {
+        performActionWithPermission('/dashboard/role-management', 'create', async () => {
 
-        try {
-            let res;
-            if (roleData) {
-                res = await updateRole({
-                    id: roleData,
-                    data: { data, tenantDomain },
-                }).unwrap();
+            try {
+                let res;
+                if (roleData) {
+                    res = await updateRole({
+                        id: roleData,
+                        data: { data, tenantDomain },
+                    }).unwrap();
 
-            } else {
-                res = await createRole({
-                    tenantDomain,
-                    data,
-                }).unwrap();
+                } else {
+                    res = await createRole({
+                        tenantDomain,
+                        data,
+                    }).unwrap();
 
+                }
+
+                if (res?.success) {
+                    toast.success(`Role ${roleData ? "updated" : "created"} successfully`);
+                    onClose();
+                }
+            } catch (error) {
+                const apiError = error?.data || error;
+                if (apiError?.errorSources?.length > 0) {
+                    apiError.errorSources.forEach((source) => {
+                        toast.error(`${source.path}: ${source.message}`);
+                    });
+                } else if (apiError?.message) {
+                    toast.error(apiError.message);
+                } else {
+                    toast.error("Failed to save warehouse");
+                }
             }
-
-            if (res?.success) {
-                toast.success(`Role ${roleData ? "updated" : "created"} successfully`);
-                onClose();
-            }
-        } catch (error) {
-            const apiError = error?.data || error;
-            if (apiError?.errorSources?.length > 0) {
-                apiError.errorSources.forEach((source) => {
-                    toast.error(`${source.path}: ${source.message}`);
-                });
-            } else if (apiError?.message) {
-                toast.error(apiError.message);
-            } else {
-                toast.error("Failed to save warehouse");
-            }
-        }
+        }, "You don't have permission to create a role")
     };
 
     const defaultValues = {

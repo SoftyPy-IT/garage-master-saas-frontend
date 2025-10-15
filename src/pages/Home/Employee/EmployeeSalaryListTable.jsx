@@ -56,6 +56,7 @@ import PartialPaymentModal from "./PartialSalaryPaymentModal";
 import { allMonths } from "../../../utils/month";
 import PaymentHistoryModal from "./EmployeeProfile/PaymentHistoryModal";
 import Swal from "sweetalert2";
+import Can from "../../../components/Can";
 
 // Generate years from 2020 to 2030
 const generateYears = () => {
@@ -69,7 +70,7 @@ const generateYears = () => {
 
 const years = generateYears();
 
-const EnhancedEmployeeSalaryListTable = ({ tenantDomain }) => {
+const EnhancedEmployeeSalaryListTable = ({ tenantDomain, performActionWithPermission }) => {
   const theme = useTheme();
   const [filterMonth, setFilterMonth] = useState("");
   const [filterYear, setFilterYear] = useState("");
@@ -85,21 +86,6 @@ const EnhancedEmployeeSalaryListTable = ({ tenantDomain }) => {
   const currentMonth = currentDate.toLocaleString("default", { month: "long" });
   const currentYear = currentDate.getFullYear();
   const [deleteSalary] = useDeleteSalaryMutation();
-
-  const buildFilterParams = () => {
-    const params = {};
-
-    if (filterMonth) params.month = filterMonth;
-    if (filterYear) params.year = filterYear;
-    if (filterDay) {
-      params.day = filterDay.getDate();
-      if (!filterMonth)
-        params.month = filterDay.toLocaleString("default", { month: "long" });
-      if (!filterYear) params.year = filterDay.getFullYear().toString();
-    }
-
-    return params;
-  };
 
   const {
     data: getAllSalary,
@@ -225,29 +211,33 @@ const EnhancedEmployeeSalaryListTable = ({ tenantDomain }) => {
   };
 
   const handleSalaryDelete = async (id) => {
-    const result = await Swal.fire({
-      title: "Are you sure?",
-      text: "You want to delete this salary record?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
-    });
+    performActionWithPermission('/dashboard/employee-salary', 'delete',
+      async () => {
+        const result = await Swal.fire({
+          title: "Are you sure?",
+          text: "You want to delete this salary record?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Yes, delete it!",
+        });
 
-    if (result.isConfirmed) {
-      try {
-        await deleteSalary({ id, tenantDomain }).unwrap();
-        await Swal.fire(
-          "Deleted!",
-          "Salary record has been deleted.",
-          "success"
-        );
-        refetch();
-      } catch (error) {
-        Swal.fire("Error!", "Failed to delete salary record.", "error");
-      }
-    }
+        if (result.isConfirmed) {
+          try {
+            await deleteSalary({ id, tenantDomain }).unwrap();
+            await Swal.fire(
+              "Deleted!",
+              "Salary record has been deleted.",
+              "success"
+            );
+            refetch();
+          } catch (error) {
+            Swal.fire("Error!", "Failed to delete salary record.", "error");
+          }
+        }
+      }, "You don't have permission to delete salary record."
+    )
   };
 
   if (salaryLoading) {
@@ -288,9 +278,8 @@ const EnhancedEmployeeSalaryListTable = ({ tenantDomain }) => {
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   {hasActiveFilters()
-                    ? `${filterMonth || "All Months"} ${filterYear || ""} ${
-                        filterDay ? `- Day: ${filterDay.getDate()}` : ""
-                      }`
+                    ? `${filterMonth || "All Months"} ${filterYear || ""} ${filterDay ? `- Day: ${filterDay.getDate()}` : ""
+                    }`
                     : `${currentMonth} ${currentYear}`}{" "}
                   - Manage partial payments
                 </Typography>
@@ -771,22 +760,24 @@ const EnhancedEmployeeSalaryListTable = ({ tenantDomain }) => {
                                 </Tooltip>
 
                                 <Tooltip title="Delete Salary">
-                                  <IconButton
-                                    onClick={() =>
-                                      handleSalaryDelete(salary._id)
-                                    }
-                                    size="small"
-                                    color="error"
-                                    sx={{
-                                      bgcolor: theme.palette.error.light + "20",
-                                      "&:hover": {
-                                        bgcolor:
-                                          theme.palette.error.light + "40",
-                                      },
-                                    }}
-                                  >
-                                    <Delete fontSize="small" />
-                                  </IconButton>
+                                  <Can page='/dashboard/employee-salary' action='delete'>
+                                    <IconButton
+                                      onClick={() =>
+                                        handleSalaryDelete(salary._id)
+                                      }
+                                      size="small"
+                                      color="error"
+                                      sx={{
+                                        bgcolor: theme.palette.error.light + "20",
+                                        "&:hover": {
+                                          bgcolor:
+                                            theme.palette.error.light + "40",
+                                        },
+                                      }}
+                                    >
+                                      <Delete fontSize="small" />
+                                    </IconButton>
+                                  </Can>
                                 </Tooltip>
                               </Box>
                             </TableCell>
@@ -803,6 +794,7 @@ const EnhancedEmployeeSalaryListTable = ({ tenantDomain }) => {
           {/* Partial Payment Modal */}
           {selectedSalary && (
             <PartialPaymentModal
+              performActionWithPermission={performActionWithPermission}
               tenantDomain={tenantDomain}
               open={modalOpen}
               onClose={handleCloseModal}

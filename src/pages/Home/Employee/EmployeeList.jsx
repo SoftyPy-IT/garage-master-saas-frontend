@@ -14,14 +14,15 @@ import {
 } from "../../../redux/api/employee";
 import Loading from "../../../components/Loading/Loading";
 import { Pagination } from "@mui/material";
-import { useTenantDomain } from "../../../hooks/useTenantDomain";
+import { useAppOptions } from "../../../hooks/useAppOptions";
+import Can from "../../../components/Can";
 
 const EmployeeList = () => {
   const [filterType, setFilterType] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const textInputRef = useRef(null);
   const limit = 20;
-const tenantDomain = useTenantDomain();
+  const { tenantDomain, performActionWithPermission } = useAppOptions();
   const {
     data: employeeData,
     isLoading: employeesLoading,
@@ -36,30 +37,35 @@ const tenantDomain = useTenantDomain();
   const [moveRecycledEmployee] = useMoveRecycledEmployeeMutation();
 
   const deleteEmployee = async (id) => {
-    const willDelete = await swal({
-      title: "Are you sure?",
-      text: "You want to move this Employee to the Recycle Bin?",
-      icon: "warning",
-      buttons: true,
-      dangerMode: true,
-    });
+    performActionWithPermission('/dashboard/employee-list', 'delete',
+      async () => {
+        const willDelete = await swal({
+          title: "Are you sure?",
+          text: "You want to move this Employee to the Recycle Bin?",
+          icon: "warning",
+          buttons: true,
+          dangerMode: true,
+        });
 
-    if (willDelete) {
-      try {
-        await moveRecycledEmployee({ tenantDomain, id }).unwrap();
-        swal(
-          "Success!",
-          "Employee moved to Recycle Bin successfully.",
-          "success"
-        );
-      } catch (error) {
-        swal(
-          "Error!",
-          "An error occurred while deleting the employee.",
-          "error"
-        );
-      }
-    }
+        if (willDelete) {
+          try {
+            await moveRecycledEmployee({ tenantDomain, id }).unwrap();
+            swal(
+              "Success!",
+              "Employee moved to Recycle Bin successfully.",
+              "success"
+            );
+          } catch (error) {
+            swal(
+              "Error!",
+              "An error occurred while deleting the employee.",
+              "error"
+            );
+          }
+        }
+
+      }, "You don't have permission to delete employee."
+    )
   };
 
   const handleAllEmployee = () => {
@@ -159,17 +165,21 @@ const tenantDomain = useTenantDomain();
                           </div>
                         </Link>
                         <div className="flex items-center justify-center gap-x-2 my-2">
-                          <Link
-                            to={`/dashboard/update-employee?id=${employee._id}`}
-                          >
-                            <EditNote sx={{ fontSize: "35px" }} size={30} />
-                          </Link>
-                          <button
-                            onClick={() => deleteEmployee(employee._id)}
-                            className="deleteButton "
-                          >
-                            <FaTrash size={20} />
-                          </button>
+                          <Can page="/dashboard/update-employee" action="edit">
+                            <Link
+                              to={`/dashboard/update-employee?id=${employee._id}`}
+                            >
+                              <EditNote sx={{ fontSize: "35px" }} size={30} />
+                            </Link>
+                          </Can>
+                          <Can page="/dashboard/employee-list" action="delete">
+                            <button
+                              onClick={() => deleteEmployee(employee._id)}
+                              className="deleteButton "
+                            >
+                              <FaTrash size={20} />
+                            </button>
+                          </Can>
                         </div>
                       </div>
                     </div>

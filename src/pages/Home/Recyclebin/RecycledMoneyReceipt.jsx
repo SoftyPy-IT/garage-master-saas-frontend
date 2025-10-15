@@ -11,7 +11,7 @@ import {
 import { Pagination } from "@mui/material";
 import Loading from "../../../components/Loading/Loading";
 import { ArrowForwardIos } from "@mui/icons-material";
-import { useTenantDomain } from "../../../hooks/useTenantDomain";
+import { useAppOptions } from "../../../hooks/useAppOptions";
 
 const RecycledMoneyReceipt = () => {
   const location = useLocation();
@@ -21,8 +21,7 @@ const RecycledMoneyReceipt = () => {
   const limit = 10;
   const navigate = useNavigate();
   const textInputRef = useRef(null);
-const tenantDomain = useTenantDomain();
-
+  const { tenantDomain } = useAppOptions()
 
   useEffect(() => {
     if (search) {
@@ -30,14 +29,14 @@ const tenantDomain = useTenantDomain();
     }
   }, [search]);
 
-  
+
   const { data: allMoneyReceipts, isLoading: moneyReceiptLoading } =
     useGetAllMoneyReceiptsQuery({
       tenantDomain,
       limit,
       page: currentPage,
       searchTerm: filterType,
-      isRecycled:true,
+      isRecycled: true,
     });
 
   const [
@@ -75,7 +74,7 @@ const tenantDomain = useTenantDomain();
 
     if (result === "restore") {
       try {
-        await restoreFromRecycledMoneyReceipt({tenantDomain, id}).unwrap();
+        await restoreFromRecycledMoneyReceipt({ tenantDomain, id }).unwrap();
         swal({
           title: "Restored!",
           text: "Money Receipt has been restored successfully.",
@@ -92,7 +91,7 @@ const tenantDomain = useTenantDomain();
       }
     } else if (result === "delete") {
       try {
-      await permanantlyDeleteMoneyReceipt({tenantDomain, id}).unwrap();
+        await permanantlyDeleteMoneyReceipt({ tenantDomain, id }).unwrap();
         swal({
           title: "Deleted!",
           text: "Money Receipt has been permanently deleted.",
@@ -222,9 +221,8 @@ const tenantDomain = useTenantDomain();
                   <td>
                     <a
                       className="bg-[#42A0D9] text-white px-3 py-2 text-[12px] rounded-full mr-2"
-                      href={`${
-                        import.meta.env.VITE_API_URL
-                      }/money-receipts/money/${card._id}`}
+                      href={`${import.meta.env.VITE_API_URL
+                        }/money-receipts/money/${card._id}`}
                       target="_blank"
                       rel="noreferrer"
                     >
@@ -236,7 +234,7 @@ const tenantDomain = useTenantDomain();
                       <Link
                         to={`/dashboard/money-receipt-update?id=${card._id}`}
                       >
-                        <FaEdit className="editIcon text-blue-500" /> 
+                        <FaEdit className="editIcon text-blue-500" />
                       </Link>
                     </div>
                   </td>
@@ -246,14 +244,14 @@ const tenantDomain = useTenantDomain();
                       onClick={() => handleDeleteOrRestore(card._id)}
                       className="editIconWrap"
                       style={{
-                                      cursor: deleteLoading
-                                        ? "not-allowed"
-                                        : "pointer",
-                                      background: "white",
-                                      border: "none",
-                                      padding: 5,
-                                      borderRadius: "9999px"
-                                    }}
+                        cursor: deleteLoading
+                          ? "not-allowed"
+                          : "pointer",
+                        background: "white",
+                        border: "none",
+                        padding: 5,
+                        borderRadius: "9999px"
+                      }}
                     >
                       <FaTrashAlt className="deleteIcon text-red-500" />
                     </button>
@@ -264,13 +262,13 @@ const tenantDomain = useTenantDomain();
           </tbody>
         </table>
         <div className="flex justify-center mt-4">
-            <Pagination
-              count={allMoneyReceipts?.data?.meta?.totalPages}
-              page={currentPage}
-              color="primary"
-              onChange={(_, page) => setCurrentPage(page)}
-            />
-          </div>
+          <Pagination
+            count={allMoneyReceipts?.data?.meta?.totalPages}
+            page={currentPage}
+            color="primary"
+            onChange={(_, page) => setCurrentPage(page)}
+          />
+        </div>
       </div>
     </div>
   );

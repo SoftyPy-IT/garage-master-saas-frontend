@@ -27,10 +27,10 @@ import EmployeeRow from "./EmployeeRow";
 // API Hooks
 import { useGetAllEmployeesQuery } from "../../../redux/api/employee";
 import { useCreateAttendanceMutation } from "../../../redux/api/attendance";
-import { useTenantDomain } from "../../../hooks/useTenantDomain";
 import { useGetCompanyProfileQuery } from "../../../redux/api/companyProfile";
 import SubmitButton from "./SubmitButton";
-
+import { useAppOptions } from "../../../hooks/useAppOptions";
+import Can from "../../../components/Can";
 export const columns = [
   "SL No",
   "Employee",
@@ -50,10 +50,7 @@ const AddAttendance = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const limit = 9999;
-  const tenantDomain = useTenantDomain();
-  const navigate = useNavigate();
-
-  // API Calls
+  const { tenantDomain, performActionWithPermission } = useAppOptions()
   const {
     data: getAllEmployee,
     isLoading: employeesLoading,
@@ -75,7 +72,7 @@ const AddAttendance = () => {
   const [outTime, setOutTime] = useState([]);
   const [overtime, setOvertime] = useState([]);
   const [lateStatus, setLateStatus] = useState([]);
-  const [selectedDates, setSelectedDates] = useState([]); // Store selected dates for each employee
+  const [selectedDates, setSelectedDates] = useState([]);
 
   // Initialize states when employees data is available
   useEffect(() => {
@@ -87,7 +84,7 @@ const AddAttendance = () => {
       setOutTime(new Array(employeeCount).fill(null));
       setOvertime(new Array(employeeCount).fill(null));
       setLateStatus(new Array(employeeCount).fill(false));
-      
+
       // Initialize all dates to today
       setSelectedDates(new Array(employeeCount).fill(dayjs()));
     }
@@ -162,36 +159,40 @@ const AddAttendance = () => {
   };
 
   const handleSubmitAttendance = async () => {
-    const attendanceData = getAllEmployee.data.employees.map(
-      (employee, index) => ({
-        employee: employee._id,
-        full_name: employee.full_name,
-        employeeId: employee.employeeId,
-        status: employee.status,
-        designation: employee.designation,
-        date: selectedDates[index] ? selectedDates[index].format("DD-MM-YYYY") : dayjs().format("DD-MM-YYYY"),
-        office_time: profileData?.data?.officeTime || "10.00",
-        present: presentState[index],
-        absent: absentState[index],
-        in_time: inTime[index],
-        out_time: outTime[index],
-        overtime: overtime[index],
-        late_status: lateStatus[index],
-      })
-    );
-    try {
-      const response = await createAttendance({
-        tenantDomain,
-        payload: attendanceData,
-      }).unwrap();
+    performActionWithPermission('/dashboard/add-attendance', 'create',
+      async () => {
+        const attendanceData = getAllEmployee.data.employees.map(
+          (employee, index) => ({
+            employee: employee._id,
+            full_name: employee.full_name,
+            employeeId: employee.employeeId,
+            status: employee.status,
+            designation: employee.designation,
+            date: selectedDates[index] ? selectedDates[index].format("DD-MM-YYYY") : dayjs().format("DD-MM-YYYY"),
+            office_time: profileData?.data?.officeTime || "10.00",
+            present: presentState[index],
+            absent: absentState[index],
+            in_time: inTime[index],
+            out_time: outTime[index],
+            overtime: overtime[index],
+            late_status: lateStatus[index],
+          })
+        );
+        try {
+          const response = await createAttendance({
+            tenantDomain,
+            payload: attendanceData,
+          }).unwrap();
 
-      if (response.success) {
-        toast.success(response.message);
-        // navigate("/dashboard/attendance-list");
-      }
-    } catch (error) {
-      toast.error(error.message || "Something went wrong");
-    }
+          if (response.success) {
+            toast.success(response.message);
+            // navigate("/dashboard/attendance-list");
+          }
+        } catch (error) {
+          toast.error(error.message || "Something went wrong");
+        }
+      }, "You don't have permission to create attendance."
+    )
   };
 
   // Calculate statistics
@@ -299,10 +300,12 @@ const AddAttendance = () => {
             </TableContainer>
           </div>
 
-          <SubmitButton
-            isLoading={createLoading}
-            onSubmit={handleSubmitAttendance}
-          />
+          <Can page="/dashboard/add-attendance" action="create">
+            <SubmitButton
+              isLoading={createLoading}
+              onSubmit={handleSubmitAttendance}
+            />
+          </Can>
         </div>
       </div>
     </div>

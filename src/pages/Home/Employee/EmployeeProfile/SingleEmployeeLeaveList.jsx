@@ -28,25 +28,24 @@ import {
   tableStyle,
 } from "../../../../style/tableStyle";
 
-const SingleEmployeeLeaveList = ({ tenantDomain, id }) => {
+const SingleEmployeeLeaveList = ({ tenantDomain, id, performActionWithPermission }) => {
 
-  
+
   const [currentPage, setCurrentPage] = useState(1);
   const [search, SetSearch] = useState("");
   const [selectedLeaveRequestId, setSelectedLeaveRequestId] = useState(null)
-
   const { data, isLoading } = useGetLeaveRequestByEmployeeIdQuery({
     tenantDomain,
-    employeeId:id,
+    employeeId: id,
   });
 
 
   const [open, setOpen] = useState(false);
-   const handleOpen = (leaveRequestId = null) => {
-    setSelectedLeaveRequestId(leaveRequestId); 
+  const handleOpen = (leaveRequestId = null) => {
+    setSelectedLeaveRequestId(leaveRequestId);
     setOpen(true);
   };
-   const handleAddOpen = ()=>setOpen(true)
+  const handleAddOpen = () => setOpen(true)
   const handleClose = () => setOpen(false);
   const handleSearch = (e) => {
     const value = e.target.value;
@@ -57,7 +56,7 @@ const SingleEmployeeLeaveList = ({ tenantDomain, id }) => {
     setCurrentPage(page);
   };
 
-  const { meta, leaveRequests } = data?.data || { meta: {}, leaveRequests: [] };
+  const { meta } = data?.data || { meta: {}, leaveRequests: [] };
   const { totalPage = 1 } = meta || {};
 
   const getStatusColor = (status) => {
@@ -185,7 +184,9 @@ const SingleEmployeeLeaveList = ({ tenantDomain, id }) => {
           sx={{ mt: 2, display: "flex", justifyContent: "center" }}
         />
       </Paper>
-      {open && <LeaveRequestForm tenantDomain={tenantDomain} onClose={handleClose} employeeId={id}  id={selectedLeaveRequestId}/>}
+      {open && <LeaveRequestForm open={open} setOpen={setOpen}
+        performActionWithPermission={performActionWithPermission} tenantDomain={tenantDomain}
+        onClose={handleClose} employeeId={id} id={selectedLeaveRequestId} />}
     </div>
   );
 };

@@ -13,7 +13,7 @@ import {
   useRestoreFromRecycledShowRoomMutation,
 } from "../../../redux/api/showRoomApi";
 import { Pagination } from "@mui/material";
-import { useTenantDomain } from "../../../hooks/useTenantDomain";
+import { useAppOptions } from "../../../hooks/useAppOptions";
 const RecycledbinShowRoomList = () => {
   const textInputRef = useRef(null);
   const [filterType, setFilterType] = useState("");
@@ -22,8 +22,7 @@ const RecycledbinShowRoomList = () => {
 
   const navigate = useNavigate();
   const limit = 10;
-const tenantDomain = useTenantDomain();
-
+  const { tenantDomain } = useAppOptions()
   const { data: showRoomData, isLoading: showroomLoading } =
     useGetAllShowRoomsQuery({
       tenantDomain,
@@ -121,7 +120,7 @@ const tenantDomain = useTenantDomain();
 
   return (
     <div className="w-full mt-5 mb-24">
-     
+
       <div className="flex flex-wrap items-center justify-between my-3 mb-8">
         <div className="flex items-center justify-center ">
           <FaUserTie className="invoicIcon" />
@@ -189,9 +188,9 @@ const tenantDomain = useTenantDomain();
                   {recyclebinShowRoomList?.map((card, index) => {
                     const lastVehicle = card?.vehicles
                       ? [...card.vehicles].sort(
-                          (a, b) =>
-                            new Date(b.createdAt) - new Date(a.createdAt)
-                        )[0]
+                        (a, b) =>
+                          new Date(b.createdAt) - new Date(a.createdAt)
+                      )[0]
                       : null;
                     const globalIndex =
                       (recyclebinShowRoomList?.meta?.currentPage - 1) * limit +
@@ -219,7 +218,7 @@ const tenantDomain = useTenantDomain();
                             <Link
                               to={`/dashboard/update-show-room?id=${card._id}`}
                             >
-                              <FaEdit className="editIcon text-blue-500" /> 
+                              <FaEdit className="editIcon text-blue-500" />
                             </Link>
                           </div>
                         </td>
@@ -229,14 +228,14 @@ const tenantDomain = useTenantDomain();
                             onClick={() => handleDeleteOrRestore(card._id)}
                             className="editIconWrap"
                             style={{
-                                      cursor: deleteLoading
-                                        ? "not-allowed"
-                                        : "pointer",
-                                      background: "white",
-                                      border: "none",
-                                      padding: 5,
-                                      borderRadius: "9999px"
-                                    }}
+                              cursor: deleteLoading
+                                ? "not-allowed"
+                                : "pointer",
+                              background: "white",
+                              border: "none",
+                              padding: 5,
+                              borderRadius: "9999px"
+                            }}
                           >
                             <FaTrashAlt className="deleteIcon text-red-500" />
                           </button>
