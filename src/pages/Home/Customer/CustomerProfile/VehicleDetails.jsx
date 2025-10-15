@@ -16,8 +16,9 @@ import {
   useGetAllVehiclesQuery,
 } from "../../../../redux/api/vehicle";
 import { History } from "lucide-react";
+import Can from "../../../../components/Can";
 
-const VehicleDetails = ({ id, user_type, tenantDomain }) => {
+const VehicleDetails = ({ id, user_type, tenantDomain, performActionWithPermission }) => {
   const [open, setOpen] = useState(false);
   const [vehicleDetails, setVehicleDetails] = useState(false);
   const [getId, setGetId] = useState("");
@@ -143,26 +144,7 @@ const VehicleDetails = ({ id, user_type, tenantDomain }) => {
         <div>
           {allVehicle?.data?.vehicles?.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-64 text-center p-4 bg-gray-100 rounded-lg">
-              <svg
-                className="w-16 h-16 text-gray-400 mb-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"
-                ></path>
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"
-                ></path>
-              </svg>
+
               <h3 className="text-xl font-semibold text-gray-800 mb-2">
                 No Vehicles Found
               </h3>
@@ -213,7 +195,7 @@ const VehicleDetails = ({ id, user_type, tenantDomain }) => {
                           {/* Mileage History Column */}
                           <td>
                             {card.mileageHistory &&
-                            card.mileageHistory.length > 0 ? (
+                              card.mileageHistory.length > 0 ? (
                               <Box
                                 sx={{
                                   display: "flex",
@@ -274,23 +256,28 @@ const VehicleDetails = ({ id, user_type, tenantDomain }) => {
 
                           {/* Edit Button */}
                           <td>
-                            <div
-                              onClick={() => handleEditOpen(card)}
-                              className="flex justify-center items-center cursor-pointer"
-                            >
-                              <FaEdit className="text-green-600" size={24} />
-                            </div>
+                            <Can page="/dashboard/update-customer" action="edit">
+                              <div
+                                onClick={() => handleEditOpen(card)}
+                                className="flex justify-center items-center cursor-pointer"
+                              >
+                                <FaEdit className="text-green-600" size={24} />
+                              </div>
+                            </Can>
                           </td>
 
                           {/* Delete Button */}
                           <td>
-                            <button
-                              disabled={deleteLoading}
-                              onClick={() => deletePackage(card._id)}
-                              className="flex justify-center items-center cursor-pointer"
-                            >
-                              <FaTrashAlt className="text-red-600" size={24} />
-                            </button>
+                            <Can page="/dashboard/add-customer" action="delete">
+                              <button
+                                disabled={deleteLoading}
+                                onClick={() => deletePackage(card._id)}
+                                className="flex justify-center items-center cursor-pointer"
+                              >
+                                <FaTrashAlt className="text-red-600" size={24} />
+                              </button>
+                            </Can>
+
                           </td>
                         </tr>
                       );
@@ -319,20 +306,26 @@ const VehicleDetails = ({ id, user_type, tenantDomain }) => {
           user_type={user_type}
           id={id}
           open={open}
+          setOpen={setOpen}
           onClose={handleClose}
           setReload={setReload}
           reload={reload}
           tenantDomain={tenantDomain}
           vehicleData={vehicleToEdit}
           isEditing={isEditing}
+          performActionWithPermission={performActionWithPermission}
         />
       )}
 
+
       {vehicleDetails && (
         <VehicleDetailsModal
+          open={vehicleDetails}
+          setOpen={setVehicleDetails}
           tenantDomain={tenantDomain}
           handVehicleDetailsOpen={handVehicleDetailsOpen}
           handleVehicleDetailsClose={handleVehicleDetailsClose}
+          performActionWithPermission={performActionWithPermission}
           getId={getId}
           id={id}
         />

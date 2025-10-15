@@ -17,9 +17,9 @@ import { useGetSingleCustomerQuery } from "../../../../redux/api/customerApi";
 import Loading from "../../../../components/Loading/Loading";
 import { Person } from "@mui/icons-material";
 import { tabsStyles, tabStyles } from "../../../../utils/customStyle";
-import { useTenantDomain } from "../../../../hooks/useTenantDomain";
 import CustomerNote from "./CustomerNote";
 import { useGetCompanyProfileQuery } from "../../../../redux/api/companyProfile";
+import { useAppOptions } from "../../../../hooks/useAppOptions";
 
 const CustomerProfile = () => {
   const location = useLocation();
@@ -39,7 +39,7 @@ const CustomerProfile = () => {
     localStorage.setItem(`customer-tab-${id}`, value.toString());
   }, [value, id]);
 
-  const { tenantDomain } = useTenantDomain();
+  const { tenantDomain, performActionWithPermission } = useAppOptions()
 
   const {
     data: profileData,
@@ -179,6 +179,9 @@ const CustomerProfile = () => {
 
         <TabPanel value={value} index={1}>
           <VehicleDetails
+            performActionWithPermission={performActionWithPermission}
+            companyProfileData={companyProfileData}
+            profileData={profileData}
             tenantDomain={tenantDomain}
             id={id}
             user_type={profileData?.data?.user_type}
@@ -187,6 +190,7 @@ const CustomerProfile = () => {
 
         <TabPanel value={value} index={2}>
           <CustomerJobCardList
+            performActionWithPermission={performActionWithPermission}
             companyProfileData={companyProfileData}
             tenantDomain={tenantDomain}
             customerId={profileData?.data?.customerId}
@@ -196,6 +200,7 @@ const CustomerProfile = () => {
         </TabPanel>
         <TabPanel value={value} index={3}>
           <CustomerQoutationList
+            performActionWithPermission={performActionWithPermission}
             companyProfileData={companyProfileData}
             tenantDomain={tenantDomain}
             id={id}
@@ -204,6 +209,7 @@ const CustomerProfile = () => {
         </TabPanel>
         <TabPanel value={value} index={4}>
           <CustomerInvoiceList
+            performActionWithPermission={performActionWithPermission}
             companyProfileData={companyProfileData}
             tenantDomain={tenantDomain}
             id={id}
@@ -212,6 +218,7 @@ const CustomerProfile = () => {
         </TabPanel>
         <TabPanel value={value} index={5}>
           <CustomerMoneyList
+            performActionWithPermission={performActionWithPermission}
             companyProfileData={companyProfileData}
             tenantDomain={tenantDomain}
             id={id}

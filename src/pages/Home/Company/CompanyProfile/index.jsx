@@ -18,13 +18,13 @@ import CustomerInvoiceList from "../../Customer/CustomerProfile/CustomerInvoiceL
 import CustomerMoneyList from "../../Customer/CustomerProfile/CustomerMoneyList";
 import { Person } from "@mui/icons-material";
 import { tabsStyles, tabStyles } from "../../../../utils/customStyle";
-import { useTenantDomain } from "../../../../hooks/useTenantDomain";
 import CustomerNote from "../../Customer/CustomerProfile/CustomerNote";
 import { useGetCompanyProfileQuery } from "../../../../redux/api/companyProfile";
+import { useAppOptions } from "../../../../hooks/useAppOptions";
 const CompanyProfile = () => {
   const location = useLocation();
   const id = new URLSearchParams(location.search).get("id");
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain } = useAppOptions();
 
   const {
     data: profileData,
@@ -175,7 +175,7 @@ const CompanyProfile = () => {
           <VehicleDetails tenantDomain={tenantDomain} id={id} />
         </TabPanel>
         <TabPanel value={value} index={2}>
-          <CustomerJobCardList 
+          <CustomerJobCardList
             companyProfileData={companyProfileData}
             tenantDomain={tenantDomain}
             id={id}
@@ -184,7 +184,7 @@ const CompanyProfile = () => {
           />
         </TabPanel>
         <TabPanel value={value} index={3}>
-          <CustomerQoutationList 
+          <CustomerQoutationList
             companyProfileData={companyProfileData}
             tenantDomain={tenantDomain}
             id={id}
@@ -192,7 +192,7 @@ const CompanyProfile = () => {
           />
         </TabPanel>
         <TabPanel value={value} index={4}>
-          <CustomerInvoiceList 
+          <CustomerInvoiceList
             companyProfileData={companyProfileData}
             tenantDomain={tenantDomain}
             id={id}
@@ -200,7 +200,7 @@ const CompanyProfile = () => {
           />
         </TabPanel>
         <TabPanel value={value} index={5}>
-          <CustomerMoneyList 
+          <CustomerMoneyList
             companyProfileData={companyProfileData}
             tenantDomain={tenantDomain}
             id={id}
@@ -211,7 +211,7 @@ const CompanyProfile = () => {
           <SupplierPaymentList tenantDomain={tenantDomain} />
         </TabPanel>
         <TabPanel value={value} index={7}>
-          <Message data={profileData?.data} tenantDomain={tenantDomain}/>
+          <Message data={profileData?.data} tenantDomain={tenantDomain} />
         </TabPanel>
         <TabPanel value={value} index={8}>
           <CustomerNote tenantDomain={tenantDomain} id={id} />

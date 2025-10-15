@@ -21,11 +21,12 @@ import { tabsStyles, tabStyles } from "../../../../utils/customStyle";
 import { useTenantDomain } from "../../../../hooks/useTenantDomain";
 import CustomerNote from "../../Customer/CustomerProfile/CustomerNote";
 import { useGetCompanyProfileQuery } from "../../../../redux/api/companyProfile";
+import { useAppOptions } from "../../../../hooks/useAppOptions";
 
 const ShowRoomProfile = () => {
   const location = useLocation();
   const id = new URLSearchParams(location.search).get("id");
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain } = useAppOptions();
 
   const { data: profileData, isLoading } = useGetSingleShowRoomQuery({
     tenantDomain,
