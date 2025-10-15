@@ -18,7 +18,6 @@ import {
   Avatar,
   InputAdornment,
   Divider,
-  Chip,
 } from "@mui/material";
 import {
   Receipt,
@@ -26,8 +25,6 @@ import {
   Add,
   Delete,
   Payment,
-
-  DateRange,
   BusinessCenter,
 } from "@mui/icons-material";
 import { useForm, FormProvider, useFieldArray } from "react-hook-form";
@@ -36,23 +33,18 @@ import {
   useGetSingleIncomeQuery,
   useUpdateIncomeMutation,
 } from "../../redux/api/income";
-import { useGetAllInvoicesQuery } from "../../redux/api/invoice";
-import ExpenseAutoComplete from "../Home/Expense/ExpenseAutoComplete";
 import TASInput from "../../components/form/Input";
 import TASTextarea from "../../components/form/Textarea";
-import FormDatePicker from "../../components/form/Datepicker";
-import { useTenantDomain } from "../../hooks/useTenantDomain";
 import Loading from "../../components/Loading/Loading";
 import TASSelect from "../../components/form/Select";
 import { paymentMethods } from "../../constant";
 import { expenseInputStyle } from "../../utils/customStyle";
+import { useAppOptions } from "../../hooks/useAppOptions";
+import Can from "../../components/Can";
 
 const ExpenseForm = ({ id }) => {
-  const navigate = useNavigate();
-  const tenantDomain = useTenantDomain();
-  const [filterType, setFilterType] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const limit = 10;
+  const { tenantDomain, performActionWithPermission, invoiceOption, allInvoices, navigate } = useAppOptions()
+
 
   const { data: singleIncome, isLoading } = useGetSingleIncomeQuery({
     tenantDomain,
@@ -62,22 +54,7 @@ const ExpenseForm = ({ id }) => {
   const [createIncome] = useCreateIncomeMutation();
   const [updateIncome] = useUpdateIncomeMutation();
 
-  const { data: allInvoices } = useGetAllInvoicesQuery({
-    tenantDomain,
-    limit,
-    page: currentPage,
-    searchTerm: filterType,
-    isRecycled: false,
-  });
 
-  const invoiceOption = useMemo(() => {
-    if (!allInvoices?.data?.invoices) return [];
-    return allInvoices.data.invoices.map((invoice) => ({
-      label: `${invoice.invoice_no} - ${invoice.Id}`,
-      _id: invoice._id,
-      invoiceData: invoice,
-    }));
-  }, [allInvoices?.data?.invoices]);
 
   const defaultValues = useMemo(() => {
     if (id && singleIncome?.data) {
@@ -131,20 +108,18 @@ const ExpenseForm = ({ id }) => {
     formState: { isDirty },
   } = methods;
 
-  // FIXED: Changed field name to match form data
   const { fields, append, remove } = useFieldArray({
     control,
-    name: "income_items", // Changed from "items" to "income_items"
+    name: "income_items",
   });
 
-  // FIXED: Changed to watch the correct field
+
   const incomeItems = watch("income_items");
   const selectedInvoiceId = watch("invoice_id");
 
   // Helper function to parse amount string and remove commas
   const parseAmount = (amountString) => {
     if (!amountString) return 0;
-    // Remove commas and convert to number
     const cleanAmount = amountString.toString().replace(/,/g, "");
     return Number(cleanAmount) || 0;
   };
@@ -157,7 +132,6 @@ const ExpenseForm = ({ id }) => {
       );
 
       if (selectedInvoice) {
-        // Parse and set service income amount
         const serviceAmount = parseAmount(selectedInvoice.service_total);
         const partsAmount = parseAmount(selectedInvoice.parts_total);
 
@@ -176,66 +150,67 @@ const ExpenseForm = ({ id }) => {
   // Calculate total for other income items
 
   const handleFormSubmit = async (data) => {
-    const cleanedIncomeItems = data.income_items.map((item) => ({
-      name: item.name,
-      amount: Number(item.amount),
-    }));
+    performActionWithPermission('/dashboard/add-income',
+      id ? 'edit' : 'create',
+      async () => {
+        const cleanedIncomeItems = data.income_items.map((item) => ({
+          name: item.name,
+          amount: Number(item.amount),
+        }));
+        const formattedDate =
+          data.date instanceof Date
+            ? data.date.toISOString().split("T")[0]
+            : data.date;
+        const incomeData = {
+          date: formattedDate,
+          invoice_id: data.invoice_id || "",
+          serviceIncomeAmount: Number(data.serviceIncomeAmount) || 0,
+          partsIncomeAmount: Number(data.partsIncomeAmount) || 0,
+          income_items: cleanedIncomeItems,
+          payment_method: data.payment_method,
+          accountNumber: data.accountNumber || "",
+          transactionNumber: data.transactionNumber || "",
+          note: data.note || "",
+        };
+        const toastId = toast.loading(
+          id ? "Updating Income..." : "Creating Income..."
+        );
+        try {
+          let res;
+          if (id) {
+            res = await updateIncome({
+              tenantDomain,
+              id,
+              ...incomeData,
+            }).unwrap();
+          } else {
+            res = await createIncome({
+              tenantDomain,
+              incomeInfo: incomeData,
+            }).unwrap();
+          }
 
-    const formattedDate =
-      data.date instanceof Date
-        ? data.date.toISOString().split("T")[0]
-        : data.date;
+          toast.update(toastId, {
+            render:
+              res.message || `Income ${id ? "updated" : "created"} successfully!`,
+            type: "success",
+            isLoading: false,
+            autoClose: 3000,
+          });
 
-    const incomeData = {
-      date: formattedDate,
-      invoice_id: data.invoice_id || "",
-      serviceIncomeAmount: Number(data.serviceIncomeAmount) || 0,
-      partsIncomeAmount: Number(data.partsIncomeAmount) || 0,
-      income_items: cleanedIncomeItems,
-      payment_method: data.payment_method,
-      accountNumber: data.accountNumber || "",
-      transactionNumber: data.transactionNumber || "",
-      note: data.note || "",
-    };
-
-    const toastId = toast.loading(
-      id ? "Updating Income..." : "Creating Income..."
-    );
-
-    try {
-      let res;
-      if (id) {
-        res = await updateIncome({
-          tenantDomain,
-          id,
-          ...incomeData,
-        }).unwrap();
-      } else {
-        res = await createIncome({
-          tenantDomain,
-          incomeInfo: incomeData,
-        }).unwrap();
-      }
-
-      toast.update(toastId, {
-        render:
-          res.message || `Income ${id ? "updated" : "created"} successfully!`,
-        type: "success",
-        isLoading: false,
-        autoClose: 3000,
-      });
-
-      navigate("/dashboard/income-list");
-    } catch (error) {
-      toast.update(toastId, {
-        render:
-          `Error ${id ? "updating" : "creating"} income: ` +
-          (error?.data?.message || error?.message || "Something went wrong!"),
-        type: "error",
-        isLoading: false,
-        autoClose: 3000,
-      });
-    }
+          navigate("/dashboard/income-list");
+        } catch (error) {
+          toast.update(toastId, {
+            render:
+              `Error ${id ? "updating" : "creating"} income: ` +
+              (error?.data?.message || error?.message || "Something went wrong!"),
+            type: "error",
+            isLoading: false,
+            autoClose: 3000,
+          });
+        }
+      }, `You don't have  permission to ${id ? 'edit' : 'create'} income`
+    )
   };
 
   if (isLoading) {
@@ -305,7 +280,7 @@ const ExpenseForm = ({ id }) => {
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(handleFormSubmit)}>
           <Grid container spacing={4}>
-            
+
 
             {/* Income Items Section */}
             <Grid item xs={12}>
@@ -317,7 +292,7 @@ const ExpenseForm = ({ id }) => {
                   backgroundColor: "white",
                 }}
               >
-                <CardContent sx={{ p: {xs:1, sm:4} }}>
+                <CardContent sx={{ p: { xs: 1, sm: 4 } }}>
                   <Stack
                     direction="row"
                     spacing={2}
@@ -328,7 +303,7 @@ const ExpenseForm = ({ id }) => {
                     <Stack direction="row" spacing={2} alignItems="center">
                       <BusinessCenter sx={{ color: "#8b5cf6", fontSize: 24 }} />
                       <Typography variant="h6" fontWeight="600" color="#1e293b">
-                         Income Source
+                        Income Source
                       </Typography>
                     </Stack>
                   </Stack>
@@ -338,7 +313,7 @@ const ExpenseForm = ({ id }) => {
                       <Paper
                         key={item.id}
                         sx={{
-                          p:{xs:1, sm:3},
+                          p: { xs: 1, sm: 3 },
                           borderRadius: 2,
                           backgroundColor: "#f8fafc",
                           border: "1px solid #e2e8f0",
@@ -371,7 +346,7 @@ const ExpenseForm = ({ id }) => {
                               InputProps={{
                                 startAdornment: (
                                   <InputAdornment position="start">
-                                   ৳
+                                    ৳
                                   </InputAdornment>
                                 ),
                               }}
@@ -435,7 +410,7 @@ const ExpenseForm = ({ id }) => {
                   backgroundColor: "white",
                 }}
               >
-                <CardContent sx={{ p: {xs:1, sm:4} }}>
+                <CardContent sx={{ p: { xs: 1, sm: 4 } }}>
                   <Stack direction="row" spacing={2} alignItems="center" mb={3}>
                     <Payment sx={{ color: "#8b5cf6", fontSize: 24 }} />
                     <Typography variant="h6" fontWeight="600" color="#1e293b">
@@ -460,25 +435,25 @@ const ExpenseForm = ({ id }) => {
                       "Other",
                       "Bank Transfer",
                     ].includes(methods.watch("payment_method")) && (
-                      <>
-                        <Grid item xs={12} md={3}>
-                          <TASInput
-                            fullWidth
-                            name="accountNumber"
-                            label="Account Number"
-                            sx={expenseInputStyle}
-                          />
-                        </Grid>
-                        <Grid item xs={12} md={3}>
-                          <TASInput
-                            fullWidth
-                            name="transactionNumber"
-                            label="Transaction ID"
-                            sx={expenseInputStyle}
-                          />
-                        </Grid>
-                      </>
-                    )}
+                        <>
+                          <Grid item xs={12} md={3}>
+                            <TASInput
+                              fullWidth
+                              name="accountNumber"
+                              label="Account Number"
+                              sx={expenseInputStyle}
+                            />
+                          </Grid>
+                          <Grid item xs={12} md={3}>
+                            <TASInput
+                              fullWidth
+                              name="transactionNumber"
+                              label="Transaction ID"
+                              sx={expenseInputStyle}
+                            />
+                          </Grid>
+                        </>
+                      )}
 
                     {["Cash"].includes(methods.watch("payment_method")) && (
                       <>
@@ -510,25 +485,28 @@ const ExpenseForm = ({ id }) => {
 
           {/* Submit Button */}
           <Box display="flex" justifyContent="center" mt={4}>
-            <Button
-              variant="contained"
-              type="submit"
-              size="large"
-              sx={{
-                ...expenseInputStyle,
-                backgroundColor: "#3b82f6",
-                "&:hover": {
-                  backgroundColor: "#2563eb",
-                },
-                px: 4,
-                py: 1.5,
-                fontSize: "1.1rem",
-                fontWeight: "600",
-                color: "#fff",
-              }}
-            >
-              {id ? "Update Income" : "Create Income"}
-            </Button>
+            <Can action={id ? 'edit' : 'create'}
+              page="/dashboard/add-income">
+              <Button
+                variant="contained"
+                type="submit"
+                size="large"
+                sx={{
+                  ...expenseInputStyle,
+                  backgroundColor: "#3b82f6",
+                  "&:hover": {
+                    backgroundColor: "#2563eb",
+                  },
+                  px: 4,
+                  py: 1.5,
+                  fontSize: "1.1rem",
+                  fontWeight: "600",
+                  color: "#fff",
+                }}
+              >
+                {id ? "Update Income" : "Create Income"}
+              </Button>
+            </Can>
           </Box>
         </form>
       </FormProvider>

@@ -18,10 +18,12 @@ import { useGetAllIProductTypeQuery } from "../redux/api/productTypeApi";
 import { useGetAllIUnitQuery } from "../redux/api/unitApi";
 import { useGetAllIBrandQuery } from "../redux/api/brandApi";
 import { useGetAllICategoryQuery } from "../redux/api/categoryApi";
+import { useGetAllInvoicesQuery } from "../redux/api/invoice";
 
 export function useAppOptions(limit = 10, initialSearch = "") {
     const [currentPage, setCurrentPage] = useState(1);
     const { tenantDomain } = useTenantDomain();
+    const [filterType, setFilterType] = useState("");
     const { performActionWithPermission } = usePermissions();
     // ===== Mutations =====
     const [createProduct] = useCreateProductMutation();
@@ -91,7 +93,25 @@ export function useAppOptions(limit = 10, initialSearch = "") {
         searchTerm: "",
     });
 
+    const { data: allInvoices } = useGetAllInvoicesQuery({
+        tenantDomain,
+        limit,
+        page: currentPage,
+        searchTerm: filterType,
+        isRecycled: false,
+    });
+
+
+
     // ===== Dropdown Options =====
+    const invoiceOption = useMemo(() => {
+        if (!allInvoices?.data?.invoices) return [];
+        return allInvoices.data.invoices.map((invoice) => ({
+            label: `${invoice.invoice_no} - ${invoice.Id}`,
+            _id: invoice._id,
+            invoiceData: invoice,
+        }));
+    }, [allInvoices?.data?.invoices]);
     const categoryOptions = useMemo(() => {
         return categoryData?.data?.categories?.map((item) => ({
             label: item.main_category,
@@ -141,14 +161,6 @@ export function useAppOptions(limit = 10, initialSearch = "") {
         })) || [];
     }, [warrantyData]);
 
-    // const productOptions = useMemo(() => {
-    //     return productData?.data?.products?.map((item) => ({
-    //         label: item.product_name,
-    //         value: item._id,
-    //     })) || [];
-    // }, [productData]);
-
-
     const productOptions = useMemo(() => {
         if (!productData?.data?.products) return [];
         return productData.data.products.map((product) => ({
@@ -169,8 +181,10 @@ export function useAppOptions(limit = 10, initialSearch = "") {
         supplierOptions,
         warehouseOptions,
         warrantyOptions,
+        invoiceOption,
 
         // Data
+        allInvoices,
         productData,
         categoryData,
         brandData,

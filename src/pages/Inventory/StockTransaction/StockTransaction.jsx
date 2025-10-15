@@ -23,7 +23,7 @@ import TransactionTable from "./TransactionTable";
 const StockTransaction = () => {
   const theme = useTheme();
   const {
-    // Data
+
     totalTransactions,
     totalIn,
     totalOut,
@@ -74,17 +74,17 @@ const StockTransaction = () => {
         <CardContent>
           <Box
             sx={{
-              display: {sm:"flex"},
+              display: { sm: "flex" },
               justifyContent: "space-between",
               alignItems: "center",
               mb: 2,
             }}
           >
-            <Typography              
+            <Typography
               color="primary.main"
             >
               <div className="text-[27px] md:text-4xl font-semibold">
-              Stock Transactions
+                Stock Transactions
               </div>
             </Typography>
             <div className="flex justify-end">
@@ -92,7 +92,7 @@ const StockTransaction = () => {
                 variant="outlined"
                 startIcon={<RefreshIcon />}
                 onClick={handleRefresh}
-                sx={{ mr: 1, padding:"5px" }}
+                sx={{ mr: 1, padding: "5px" }}
                 disabled={isLoading}
               >
                 {isLoading ? <CircularProgress size={20} /> : "Refresh"}
@@ -101,7 +101,7 @@ const StockTransaction = () => {
                 variant="outlined"
                 startIcon={<DownloadIcon />}
                 onClick={handleExport}
-                sx={{ padding:"5px" }}
+                sx={{ padding: "5px" }}
               >
                 Export
               </Button>

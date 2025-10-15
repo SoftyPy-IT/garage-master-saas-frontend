@@ -620,9 +620,9 @@ export const router = createBrowserRouter([
         "edit"
       ),
       createProtectedRoute(
-        "donation",
+        "create-donation",
         <Donation />,
-        "/dashboard/donation",
+        "/dashboard/create-donation",
         "create"
       ),
       createProtectedRoute(

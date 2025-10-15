@@ -29,7 +29,6 @@ import TASTextarea from "../../../components/form/Textarea"
 import { toast } from "react-toastify"
 import { useCreateAdjustmentMutation } from "../../../redux/api/adjustmentApi"
 import { useNavigate } from "react-router-dom"
-import { motion, AnimatePresence } from "framer-motion"
 import {
   Add as AddIcon,
   Remove as RemoveIcon,
@@ -220,10 +219,6 @@ const AddAdjustmentForm = () => {
     onAddProductField(option)
   }
 
-  const handleSearchChange = (value) => {
-    setSearchTerm(value)
-    setParams([{ name: "searchTerm", value }])
-  }
 
   return (
     <TASForm onSubmit={handleSubmit}>
@@ -560,7 +555,7 @@ const AddAdjustmentForm = () => {
 
       {/* Product List */}
       <Box sx={{ mt: 4 }}>
-        <AnimatePresence>
+        <>
           {productFields.length === 0 ? (
             <Box
               initial={{ opacity: 0, y: 20 }}
@@ -845,7 +840,7 @@ const AddAdjustmentForm = () => {
               </Card>
             ))
           )}
-        </AnimatePresence>
+        </>
       </Box>
 
       {/* Notes Section */}
