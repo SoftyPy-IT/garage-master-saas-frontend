@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { styled } from "@mui/material";
 import Stack from "@mui/material/Stack";
 import LinearProgress, {
@@ -7,7 +8,6 @@ import { Link } from "react-router-dom";
 import { HiOutlineArrowNarrowRight, HiOutlineEye } from "react-icons/hi";
 import { useGetAllJobCardsQuery } from "../../../redux/api/jobCard";
 import Loading from "../../../components/Loading/Loading";
-import { useTenantDomain } from "../../../hooks/useTenantDomain";
 
 const BorderLinearProgress = styled(LinearProgress)(({ theme, color }) => ({
   height: 10,
@@ -23,8 +23,7 @@ const BorderLinearProgress = styled(LinearProgress)(({ theme, color }) => ({
   },
 }));
 
-const RecentProject = () => {
-  const tenantDomain = useTenantDomain();
+const RecentProject = ({ tenantDomain }) => {
 
   const { data, error, isLoading } = useGetAllJobCardsQuery({
     tenantDomain,

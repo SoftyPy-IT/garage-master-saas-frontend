@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable react/no-unknown-property */
 /* eslint-disable no-unused-vars */
 import {
@@ -14,15 +15,13 @@ import Loading from "../../../components/Loading/Loading";
 import "./AllService.css";
 import { useGetAllMetaQuery } from "../../../redux/api/meta.api";
 import { AssuredWorkload } from "@mui/icons-material";
-import { useTenantDomain } from "../../../../src/hooks/useTenantDomain";
 import PropTypes from "prop-types";
 
-const AllServices = ({ showSensitiveData }) => {
-  const tenantDomain = useTenantDomain();
+const AllServices = ({ showSensitiveData, tenantDomain }) => {
+
   const {
     data: allMetaData,
     isLoading,
-    isError,
   } = useGetAllMetaQuery({ tenantDomain });
 
   if (isLoading) return <Loading />;
