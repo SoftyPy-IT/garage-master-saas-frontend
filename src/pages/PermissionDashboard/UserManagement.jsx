@@ -1,23 +1,21 @@
 // pages/UserManagement.js
-import React, { useState } from 'react';
-import { 
-  Box, 
-  Grid, 
-  Card, 
-  CardContent, 
-  Typography, 
-  Button, 
-  TextField, 
-  InputAdornment, 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableContainer, 
-  TableHead, 
-  TableRow, 
-  Paper, 
-  Avatar, 
-  Chip, 
+import { useState } from 'react';
+import {
+  Box,
+  Card,
+  Typography,
+  Button,
+  TextField,
+  InputAdornment,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Avatar,
+  Chip,
   IconButton,
   Menu,
   MenuItem,
@@ -30,29 +28,23 @@ import {
   Select,
   Tabs,
   Tab,
-  Badge,
-  useTheme
 } from '@mui/material';
-import { 
-  Search, 
-  Add, 
-  MoreVert, 
-  Edit, 
-  Delete, 
+import {
+  Search,
+  Add,
+  MoreVert,
+  Edit,
+  Delete,
   Visibility,
-  FilterList,
   Person,
   Email,
   Phone,
   Business,
   Shield,
-  Key,
-  CheckCircle,
-  Cancel
+
 } from '@mui/icons-material';
 
 const UserManagement = () => {
-  const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [tabValue, setTabValue] = useState(0);
@@ -80,45 +72,45 @@ const UserManagement = () => {
   };
 
   const users = [
-    { 
-      id: 1, 
-      name: 'John Smith', 
-      email: 'john@abcmotors.com', 
-      phone: '+1 (555) 123-4567', 
-      role: 'Admin', 
+    {
+      id: 1,
+      name: 'John Smith',
+      email: 'john@abcmotors.com',
+      phone: '+1 (555) 123-4567',
+      role: 'Admin',
       client: 'ABC Motors',
       status: 'Active',
       lastLogin: '2023-05-15 10:30 AM',
       permissions: ['Client Management', 'Jobcard', 'Invoice', 'Quotation']
     },
-    { 
-      id: 2, 
-      name: 'Sarah Johnson', 
-      email: 'sarah@xyzgarage.com', 
-      phone: '+1 (555) 987-6543', 
-      role: 'Accountant', 
+    {
+      id: 2,
+      name: 'Sarah Johnson',
+      email: 'sarah@xyzgarage.com',
+      phone: '+1 (555) 987-6543',
+      role: 'Accountant',
       client: 'XYZ Garage',
       status: 'Active',
       lastLogin: '2023-05-14 3:45 PM',
       permissions: ['Invoice', 'Quotation', 'Money Receipt']
     },
-    { 
-      id: 3, 
-      name: 'Michael Brown', 
-      email: 'michael@quickauto.com', 
-      phone: '+1 (555) 456-7890', 
-      role: 'User', 
+    {
+      id: 3,
+      name: 'Michael Brown',
+      email: 'michael@quickauto.com',
+      phone: '+1 (555) 456-7890',
+      role: 'User',
       client: 'Quick Auto',
       status: 'Active',
       lastLogin: '2023-05-13 9:15 AM',
       permissions: ['Client Management', 'Jobcard']
     },
-    { 
-      id: 4, 
-      name: 'Emily Davis', 
-      email: 'emily@superauto.com', 
-      phone: '+1 (555) 234-5678', 
-      role: 'Accountant', 
+    {
+      id: 4,
+      name: 'Emily Davis',
+      email: 'emily@superauto.com',
+      phone: '+1 (555) 234-5678',
+      role: 'Accountant',
       client: 'Super Auto',
       status: 'Inactive',
       lastLogin: '2023-05-10 2:20 PM',
@@ -135,14 +127,14 @@ const UserManagement = () => {
 
   const filteredUsers = users.filter(user => {
     const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         user.email.toLowerCase().includes(searchTerm.toLowerCase());
+      user.email.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesRole = filterRole === 'all' || user.role.toLowerCase().includes(filterRole.toLowerCase());
     return matchesSearch && matchesRole;
   });
 
   const getRoleColor = (role) => {
-    return role === 'Admin' ? 'primary' : 
-           role === 'Accountant' ? 'secondary' : 'info';
+    return role === 'Admin' ? 'primary' :
+      role === 'Accountant' ? 'secondary' : 'info';
   };
 
   return (
@@ -153,7 +145,7 @@ const UserManagement = () => {
       <Typography variant="body1" color="text.secondary" mb={4}>
         Manage system users, roles, and permissions across all clients
       </Typography>
-      
+
       <Card elevation={0} sx={{ p: 3, mb: 4 }}>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
           <Typography variant="h5" fontWeight="bold">
@@ -188,8 +180,8 @@ const UserManagement = () => {
                 ))}
               </Select>
             </FormControl>
-            <Button 
-              variant="contained" 
+            <Button
+              variant="contained"
               startIcon={<Add />}
               onClick={handleDialogOpen}
             >
@@ -197,13 +189,13 @@ const UserManagement = () => {
             </Button>
           </Box>
         </Box>
-        
+
         <Tabs value={tabValue} onChange={handleTabChange} aria-label="user tabs">
           <Tab label="All Users" />
           <Tab label="Active" />
           <Tab label="Inactive" />
         </Tabs>
-        
+
         <TableContainer component={Paper} elevation={0} sx={{ mt: 2 }}>
           <Table>
             <TableHead>
@@ -242,46 +234,46 @@ const UserManagement = () => {
                     </Box>
                   </TableCell>
                   <TableCell>
-                    <Chip 
-                      icon={<Business />} 
-                      label={user.client} 
-                      size="small" 
+                    <Chip
+                      icon={<Business />}
+                      label={user.client}
+                      size="small"
                       variant="outlined"
                       color="primary"
                     />
                   </TableCell>
                   <TableCell>
-                    <Chip 
-                      icon={<Shield />} 
-                      label={user.role} 
-                      size="small" 
+                    <Chip
+                      icon={<Shield />}
+                      label={user.role}
+                      size="small"
                       color={getRoleColor(user.role)}
                     />
                   </TableCell>
                   <TableCell>
                     <Box display="flex" flexWrap="wrap" gap={0.5}>
                       {user.permissions.slice(0, 2).map((permission, idx) => (
-                        <Chip 
-                          key={idx} 
-                          label={permission} 
-                          size="small" 
+                        <Chip
+                          key={idx}
+                          label={permission}
+                          size="small"
                           variant="outlined"
                           color={getRoleColor(user.role)}
                         />
                       ))}
                       {user.permissions.length > 2 && (
-                        <Chip 
-                          label={`+${user.permissions.length - 2} more`} 
-                          size="small" 
+                        <Chip
+                          label={`+${user.permissions.length - 2} more`}
+                          size="small"
                           variant="outlined"
                         />
                       )}
                     </Box>
                   </TableCell>
                   <TableCell>
-                    <Chip 
-                      label={user.status} 
-                      size="small" 
+                    <Chip
+                      label={user.status}
+                      size="small"
                       color={user.status === 'Active' ? 'success' : 'error'}
                     />
                   </TableCell>

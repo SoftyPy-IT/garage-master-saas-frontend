@@ -22,7 +22,6 @@ const AppBar = ({ toggle, navRef, toggleSideBar }) => {
   const {
     data: allMetaData,
     isLoading,
-    isError,
   } = useGetAllMetaQuery({ tenantDomain });
   const { data: CompanyInfoData } = useGetCompanyProfileQuery({
     tenantDomain,

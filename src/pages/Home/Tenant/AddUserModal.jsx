@@ -43,7 +43,6 @@ const AddUserModal = ({ open, onClose, onSuccess, performActionWithPermission, t
         if (data.password !== data.confirmPassword) {
           return toast.error("Passwords do not match");
         }
-
         const submitData = {
           name: data.name,
           createdBy: data.createdBy || 'system',

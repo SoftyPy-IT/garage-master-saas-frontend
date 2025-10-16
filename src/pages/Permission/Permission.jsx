@@ -55,6 +55,7 @@ import Loading from "../../components/Loading/Loading";
 import AddUserModal from "../Home/Tenant/AddUserModal";
 import MultipleAccess from "./MultipleAccess";
 
+
 const Permission = () => {
   const theme = useTheme();
   const [tabValue, setTabValue] = useState(0);
@@ -527,11 +528,13 @@ const Permission = () => {
         </Paper>
 
         <AddEditPermissionDialog
+          setOpen={setOpenDialog}
           open={openDialog}
           handleClose={handleDialogClose}
           permissionId={editingPermissionId}
           permissionType={editingPermissionId ? "edit" : "add"}
         />
+
 
         <AddRoleModal
           open={roleOpen}
@@ -539,6 +542,7 @@ const Permission = () => {
         />
 
         <PageForm
+          setOpen={setOpenDialog}
           open={pageOpen}
           onClose={handlePageClose}
           tenantDomain={tenantDomain}
