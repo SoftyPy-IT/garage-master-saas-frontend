@@ -36,8 +36,10 @@ const AddUserModal = ({ open, onClose, onSuccess, performActionWithPermission, t
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [createUser, { isLoading }] = useCreateUserMutation();
   const { roleOptions } = usePermissionFormData();
+  console.log('role option check', roleOptions)
 
   const handleSubmit = async (data, reset) => {
+
     performActionWithPermission('/dashboard/all-user-list', 'delete', async () => {
       try {
         if (data.password !== data.confirmPassword) {

@@ -126,10 +126,7 @@ import PurchaseReturnList from "../pages/Inventory/PurchaseReturn/PurchaseReturn
 import WarrantiesPage from "../pages/Inventory/Warranty/WarrantiesPage";
 import StockTransaction from "../pages/Inventory/StockTransaction/StockTransaction";
 import InvoiceList from "../pages/Home/Invoice/ViewInvoice";
-
 import ProtectedRoute from "./PrivateRoute";
-import FeatureAccess from "../pages/PermissionDashboard/FeatureAccess";
-import UserManagement from "../pages/PermissionDashboard/UserManagement";
 import PageManagement from "../pages/PageManagement/PageManagement";
 import RoleManagement from "../pages/RoleManagement";
 import Permission from "../pages/Permission/Permission";
@@ -194,18 +191,6 @@ export const router = createBrowserRouter([
         "user-permission",
         <Permission />,
         "/dashboard/user-permission",
-        "view"
-      ),
-      createProtectedRoute(
-        "feature-access",
-        <FeatureAccess />,
-        "/dashboard/feature-access",
-        "view"
-      ),
-      createProtectedRoute(
-        "user-management",
-        <UserManagement />,
-        "/dashboard/user-management",
         "view"
       ),
       createProtectedRoute(
