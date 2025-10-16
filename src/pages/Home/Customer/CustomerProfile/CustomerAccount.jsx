@@ -7,6 +7,7 @@ import { HiOutlineEye } from "react-icons/hi";
 import { formatDate } from "../../../../utils/formateDate";
 import { useState } from "react";
 import VehicleDetailsModal from "./VehicleDetailsModal";
+
 const CustomerAccount = ({ profileData, tenantDomain }) => {
   const [vehicleDetails, setVehicleDetails] = useState(false);
   const [getId, setGetId] = useState("");
