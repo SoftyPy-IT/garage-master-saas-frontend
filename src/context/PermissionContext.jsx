@@ -31,7 +31,7 @@ export const PermissionProvider = ({ children }) => {
       skip: !user?.userId || !tenantDomain,
     }
   );
-  console.log("permission data check for this user ", permissionData)
+  console.log('permission data check this   ', permissionData)
 
   const permissions = permissionData?.data?.permissions || [];
   const checkPermission = (pagePath, action = "view") => {
