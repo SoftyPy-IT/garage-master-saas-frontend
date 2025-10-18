@@ -16,7 +16,7 @@ const UserProfile = ({ tenantDomain }) => {
   const dropdownRef = useRef(null);
   const dispatch = useDispatch();
   const { data, isLoading } = useGetAllUserQuery({ tenantDomain });
-  const [tenantLogout] = useTenantLogoutMutation
+  const [tenantLogout] = useTenantLogoutMutation()
 
   const handleLogout = async () => {
     try {
