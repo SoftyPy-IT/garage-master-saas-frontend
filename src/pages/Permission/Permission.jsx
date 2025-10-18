@@ -10,7 +10,6 @@ import {
   InputAdornment,
   Tooltip,
   IconButton,
-  Fab,
   Container,
   Paper,
   useTheme,
@@ -553,22 +552,7 @@ const Permission = () => {
           onClose={handleUserClose}
         />
 
-        <Fab
-          color="primary"
-          aria-label="add permission"
-          sx={{
-            position: "fixed",
-            bottom: 24,
-            right: 24,
-            background: 'linear-gradient(45deg, #9c27b0 30%, #ba68c8 90%)',
-            boxShadow: '0 6px 20px rgba(156, 39, 176, 0.4)',
-            width: 56,
-            height: 56,
-          }}
-          onClick={() => handleDialogOpen()}
-        >
-          <Add />
-        </Fab>
+
 
         {permissionsLoading && (
           <Loading />
