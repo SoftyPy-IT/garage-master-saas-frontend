@@ -5,15 +5,15 @@ import { useEffect, useRef, useState } from "react";
 import { FaTrashAlt, FaEdit, FaEye, FaDownload } from "react-icons/fa";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
-import Loading from "../../../components/Loading/Loading";
+import Loading from "../../components/Loading/Loading";
 import {
   useGetAllJobCardsQuery,
   useMovetoRecyclebinJobCardMutation,
-} from "../../../redux/api/jobCard";
+} from "../../redux/api/jobCard";
 import { Pagination } from "@mui/material";
 import { HiOutlineSearch } from "react-icons/hi";
-import { useTenantDomain } from "../../../hooks/useTenantDomain";
-import { useGetCompanyProfileQuery } from "../../../redux/api/companyProfile";
+import { useTenantDomain } from "../../hooks/useTenantDomain";
+import { useGetCompanyProfileQuery } from "../../redux/api/companyProfile";
 
 const JobCardTable = () => {
   const location = useLocation();

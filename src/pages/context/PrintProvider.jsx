@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { createContext, useRef } from 'react'
 import { usePDF } from 'react-to-pdf';
 import { useReactToPrint } from 'react-to-print';

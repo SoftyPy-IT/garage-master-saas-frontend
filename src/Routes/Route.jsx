@@ -2,7 +2,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import Main from "../Layout/Main";
 import Home from "../pages/Home/Home";
-import JobCardList from "../pages/Home/AddJobCard/JobCardList";
 import AddEmployee from "../pages/Home/Employee/AddEmployee";
 import UpdateInvoice from "../pages/Home/Invoice/UpdateInvoice";
 import Invoice from "../pages/Home/Invoice/Invoice";
@@ -13,9 +12,6 @@ import AddExpense from "../pages/Home/Expense/AddExpense";
 import AddCustomer from "../pages/Home/Customer/AddCustomer";
 import AddProduct from "../pages/Home/Products/AddProduct";
 import Profile from "../pages/Home/Profile/Profile";
-import UpdateJobCard from "../pages/Home/AddJobCard/UpdateJobCard";
-import AddJobCard from "../pages/Home/AddJobCard/AddJobCard";
-import PreviewJobCard from "../pages/Home/AddJobCard/PreviewJobCard/PreviewJobCard";
 import UpdateProduct from "../pages/Home/Products/UpdateProduct";
 import UpdateRole from "../pages/Home/Role/UpdateRole";
 import DashboardLayout from "../Layout/DashboardLayout";
@@ -135,6 +131,10 @@ import InvoiceView from "../pages/Home/Invoice/InvoiceView";
 import CreateMoneyReceived from "../pages/Home/MoneyReceived/CreateMoneyReceived";
 import WarehouseManagement from "../pages/Inventory/Warehouse/WarehouseManagement";
 import RecycleBinJobCardList from "../pages/Home/Recyclebin/RecycleBinJobCardList";
+import JobCardList from "../pages/AddJobCard/JobCardList";
+import AddJobCard from "../pages/AddJobCard/AddJobCard";
+import UpdateJobCard from "../pages/AddJobCard/UpdateJobCard";
+import PreviewJobCard from "../pages/AddJobCard/PreviewJobCard/PreviewJobCard";
 
 const createProtectedRoute = (path, element, pagePath, action = "view") => {
   return {
