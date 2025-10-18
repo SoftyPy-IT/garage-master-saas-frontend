@@ -57,14 +57,14 @@ const AddUserModal = ({ open, onClose, onSuccess, performActionWithPermission, t
 
         console.log('submit data', submitData)
 
-        // const result = await createUser(submitData).unwrap();
+        const result = await createUser(submitData).unwrap();
 
-        // if (result.success) {
-        //   toast.success(result.message || "User created successfully");
-        //   onSuccess?.();
-        //   onClose();
-        //   reset();
-        // }
+        if (result.success) {
+          toast.success(result.message || "User created successfully");
+          onSuccess?.();
+          onClose();
+          reset();
+        }
       } catch (error) {
         console.error('Error details:', error);
         const message = error?.data?.message || "Failed to create user";
