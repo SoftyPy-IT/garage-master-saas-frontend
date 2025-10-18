@@ -39,6 +39,7 @@ const AddUserModal = ({ open, onClose, onSuccess, performActionWithPermission, t
   console.log('role option check', roleOptions)
 
   const handleSubmit = async (data, reset) => {
+    console.log('raw', data)
 
     performActionWithPermission('/dashboard/all-user-list', 'delete', async () => {
       try {
@@ -54,14 +55,16 @@ const AddUserModal = ({ open, onClose, onSuccess, performActionWithPermission, t
           role: data.role?.[0]?.label || data.role?.label,
         };
 
-        const result = await createUser(submitData).unwrap();
+        console.log('submit data', submitData)
 
-        if (result.success) {
-          toast.success(result.message || "User created successfully");
-          onSuccess?.();
-          onClose();
-          reset();
-        }
+        // const result = await createUser(submitData).unwrap();
+
+        // if (result.success) {
+        //   toast.success(result.message || "User created successfully");
+        //   onSuccess?.();
+        //   onClose();
+        //   reset();
+        // }
       } catch (error) {
         console.error('Error details:', error);
         const message = error?.data?.message || "Failed to create user";

@@ -44,7 +44,6 @@ import PermissionMatrixTab from "./PermissionMetrixTab";
 import UserPermissionsTab from "./UserPermissionTab";
 import AddEditPermissionDialog from "./PermissionDiloge";
 import { useDeletePermissionMutation, useGetAllPermissionsQuery } from "../../redux/api/permissionApi";
-import { useTenantDomain } from "../../hooks/useTenantDomain";
 import Swal from "sweetalert2";
 import { selectCurrentUser } from "../../redux/feature/authSlice";
 import { useSelector } from "react-redux";
@@ -53,7 +52,7 @@ import PageForm from "../PageManagement/PageForm";
 import Loading from "../../components/Loading/Loading";
 import AddUserModal from "../Home/Tenant/AddUserModal";
 import MultipleAccess from "./MultipleAccess";
-
+import { useAppOptions } from "../../hooks/useAppOptions";
 
 const Permission = () => {
   const theme = useTheme();
@@ -63,7 +62,8 @@ const Permission = () => {
   const [filteredPermissions, setFilteredPermissions] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [editingPermissionId, setEditingPermissionId] = useState(null);
-  const { tenantDomain } = useTenantDomain();
+  const { tenantDomain, performActionWithPermission } = useAppOptions();
+
   const user = useSelector(selectCurrentUser);
   const [pageOpen, setPageOpen] = useState(false)
   const [roleOpen, setRoleOpen] = useState(false)
@@ -548,6 +548,8 @@ const Permission = () => {
         />
 
         <AddUserModal
+          performActionWithPermission={performActionWithPermission}
+          tenantDomain={tenantDomain}
           open={userOpen}
           onClose={handleUserClose}
         />
