@@ -46,7 +46,7 @@ export const CARD_TYPES = {
     },
     moneyReceipt: {
         title: "Recent Money Receipt",
-        dataKey: null, // Will be set dynamically based on profile type
+        dataKey: null,
         fields: [
             { label: "Against bill no", key: "against_bill_no" },
             { label: "Remaining", key: "remaining", prefix: "৳" },
