@@ -16,13 +16,12 @@ import { useTenantDomain } from "../hooks/useTenantDomain";
 import Loading from "../components/Loading/Loading";
 import { useGetCompanyProfileQuery } from "../redux/api/companyProfile";
 
-const Appbar = ({ toggle, navRef, toggleSideBar }) => {
+const AppBar = ({ toggle, navRef, toggleSideBar }) => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain } = useTenantDomain();
   const {
     data: allMetaData,
     isLoading,
-    isError,
   } = useGetAllMetaQuery({ tenantDomain });
   const { data: CompanyInfoData } = useGetCompanyProfileQuery({
     tenantDomain,
@@ -103,8 +102,8 @@ const Appbar = ({ toggle, navRef, toggleSideBar }) => {
                             ? "#f44336"
                             : allMetaData.data.subscriptionInfo.daysRemaining <
                               60
-                            ? "#ff9800"
-                            : "#4caf50",
+                              ? "#ff9800"
+                              : "#4caf50",
                         color: "#fff",
                         fontWeight: 600,
                         borderRadius: "8px",
@@ -116,8 +115,8 @@ const Appbar = ({ toggle, navRef, toggleSideBar }) => {
                             ? "pulseRed 2s infinite"
                             : allMetaData.data.subscriptionInfo.daysRemaining <
                               60
-                            ? "pulseAmber 2s infinite"
-                            : "pulseGreen 2s infinite",
+                              ? "pulseAmber 2s infinite"
+                              : "pulseGreen 2s infinite",
                         boxShadow: "0 0 10px rgba(0,0,0,0.1)",
                       }}
                     />
@@ -157,9 +156,8 @@ const Appbar = ({ toggle, navRef, toggleSideBar }) => {
 
         {/* Dropdown menu for small and medium devices */}
         <div
-          className={`md:hidden w-full backdrop-blur-md bg-[#42A1DA]/80 transition-all duration-500 ease-in-out overflow-hidden rounded-b-2xl shadow-xl ${
-            menuOpen ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"
-          }`}
+          className={`md:hidden w-full backdrop-blur-md bg-[#42A1DA]/80 transition-all duration-500 ease-in-out overflow-hidden rounded-b-2xl shadow-xl ${menuOpen ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"
+            }`}
           style={{
             boxShadow: menuOpen ? "0 10px 20px rgba(0, 0, 0, 0.15)" : "none",
           }}
@@ -207,4 +205,4 @@ const Appbar = ({ toggle, navRef, toggleSideBar }) => {
   );
 };
 
-export default Appbar;
+export default AppBar;

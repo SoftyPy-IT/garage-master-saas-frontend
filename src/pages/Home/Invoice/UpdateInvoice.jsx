@@ -897,7 +897,7 @@ const UpdateInvoice = () => {
 
   const handleGoPreview = () => {
     handleSubmit(onSubmit)();
-    navigate(`/dashboard/detail?id=${id}`);
+    navigate(`/dashboard/invoice-view?id=${id}`);
   };
 
   return (

@@ -4,8 +4,7 @@
 /* eslint-disable no-unused-vars */
 
 import "./AddJobCard.css";
-import car from "../../../../public/assets/car2.jpeg";
-import logo from "../../../../public/assets/logo.png";
+import car from '../../../public//assets/car2.jpeg'
 import { useEffect, useRef, useState } from "react";
 import { Autocomplete, Box, Chip, Grid, TextField } from "@mui/material";
 // import "react-quill/dist/quill.snow.css";
@@ -13,7 +12,6 @@ import InputMask from "react-input-mask";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import Loading from "../../../components/Loading/Loading";
 import {
   carBrands,
   cmDmOptions,
@@ -22,23 +20,18 @@ import {
   vehicleModels,
   vehicleName,
   vehicleTypes,
-} from "../../../constant";
-
-import TrustAutoAddress from "../../../components/TrustAutoAddress/TrustAutoAddress";
-
-import {
-  useGetSingleJobCardQuery,
-  useUpdateJobCardMutation,
-} from "../../../redux/api/jobCard";
-import { useGetCompanyProfileQuery } from "../../../redux/api/companyProfile";
-import { useTenantDomain } from "../../../hooks/useTenantDomain";
-import { usePermissions } from "../../../context/PermissionContext";
-import Can from "../../../components/Can";
+} from "../../constant";
+import { useGetSingleJobCardQuery, useUpdateJobCardMutation } from "../../redux/api/jobCard";
+import TrustAutoAddress from "../../components/TrustAutoAddress/TrustAutoAddress";
+import Loading from "../../components/Loading/Loading";
+import { usePermissions } from "../../context/PermissionContext";
+import { useTenantDomain } from "../../hooks/useTenantDomain";
+import { useGetCompanyProfileQuery } from "../../redux/api/companyProfile";
+import Can from "../../components/Can";
 
 const UpdateJobCard = () => {
   const [inputValue, setInputValue] = useState("");
   const { performActionWithPermission } = usePermissions();
-
   const [countryCode, setCountryCode] = useState(countries[0]);
   const [driverCountryCode, setDriverCountryCode] = useState(countries[0]);
   const [phoneNumber, setPhoneNumber] = useState("");

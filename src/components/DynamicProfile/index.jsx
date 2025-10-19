@@ -76,6 +76,7 @@ const DynamicProfile = ({ profileType = "customer" }) => {
                 performActionWithPermission={performActionWithPermission}
                 id={id}
                 profileType={profileType}
+
             />
         </div>
     );

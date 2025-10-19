@@ -36,14 +36,16 @@ const AddUserModal = ({ open, onClose, onSuccess, performActionWithPermission, t
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [createUser, { isLoading }] = useCreateUserMutation();
   const { roleOptions } = usePermissionFormData();
+  console.log('role option check', roleOptions)
 
   const handleSubmit = async (data, reset) => {
+    console.log('raw', data)
+
     performActionWithPermission('/dashboard/all-user-list', 'delete', async () => {
       try {
         if (data.password !== data.confirmPassword) {
           return toast.error("Passwords do not match");
         }
-
         const submitData = {
           name: data.name,
           createdBy: data.createdBy || 'system',
@@ -52,6 +54,8 @@ const AddUserModal = ({ open, onClose, onSuccess, performActionWithPermission, t
           tenantDomain: tenantDomain,
           role: data.role?.[0]?.label || data.role?.label,
         };
+
+        console.log('submit data', submitData)
 
         const result = await createUser(submitData).unwrap();
 

@@ -18,7 +18,7 @@ const AllCustomerList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [filterType, setFilterType] = useState("");
   const ITEMS_PER_PAGE = 10;
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain } = useTenantDomain();
 
   const {
     data: allCustomerData,
@@ -161,8 +161,8 @@ const AllCustomerList = () => {
                 {allCustomerData?.data?.data?.map((customer, index) => {
                   const lastVehicle = customer?.vehicles
                     ? [...customer.vehicles].sort(
-                        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-                      )[0]
+                      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+                    )[0]
                     : null;
 
                   const displayIndex =
@@ -190,15 +190,14 @@ const AllCustomerList = () => {
                       <td>
                         <div className="editIconWrap edit">
                           <Link
-                            to={`/dashboard/${
-                              customer?.userType === "customer"
+                            to={`/dashboard/${customer?.userType === "customer"
                                 ? "update-customer"
                                 : customer?.userType === "company"
-                                ? "update-company"
-                                : "update-show-room"
-                            }?id=${customer?._id}`}
+                                  ? "update-company"
+                                  : "update-show-room"
+                              }?id=${customer?._id}`}
                           >
-                            <FaEdit className="editIcon text-blue-500" /> 
+                            <FaEdit className="editIcon text-blue-500" />
                           </Link>
                         </div>
                       </td>

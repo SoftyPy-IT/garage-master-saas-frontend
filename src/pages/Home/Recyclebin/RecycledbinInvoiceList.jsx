@@ -26,7 +26,7 @@ const InvoiceTable = () => {
   const textInputRef = useRef(null);
 
   const handleIconPreview = async (e) => {
-    navigate(`/dashboard/detail?id=${e}`);
+    navigate(`/dashboard/invoice-view?id=${e}`);
   };
 
   const [permanantlyDeleteInvoice, { isLoading: deleteLoading }] =

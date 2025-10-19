@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
@@ -21,6 +22,7 @@ export const usePermissions = () => {
 
 export const PermissionProvider = ({ children }) => {
   const { tenantDomain } = useTenantDomain();
+  console.log('tenant domain check this ', tenantDomain)
   const user = useSelector(selectCurrentUser);
 
   const { data: permissionData, isLoading, error, isError } = useGetUserPermissionQuery(
@@ -29,6 +31,7 @@ export const PermissionProvider = ({ children }) => {
       skip: !user?.userId || !tenantDomain,
     }
   );
+  console.log('permission data check this   ', permissionData)
 
   const permissions = permissionData?.data?.permissions || [];
   const checkPermission = (pagePath, action = "view") => {

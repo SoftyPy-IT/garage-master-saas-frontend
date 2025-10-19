@@ -27,7 +27,7 @@ export default function EnhancedSupplierProfile() {
   const [openPurchaseModal, setOpenPurchaseModal] = useState(false);
 
   const id = new URLSearchParams(location.search).get("id");
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain } = useTenantDomain();
 
   const { data: supplierWithBillPay } = useGetSupplierWithBillPayQuery({
     tenantDomain,

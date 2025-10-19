@@ -1,11 +1,9 @@
+/* eslint-disable react/prop-types */
 import { HiOutlineArrowNarrowRight, } from "react-icons/hi";
 import { Link } from "react-router-dom";
 import { useGetAllCustomersQuery } from "../../../redux/api/customerApi";
 import Loading from "../../../components/Loading/Loading";
-import { useTenantDomain } from "../../../hooks/useTenantDomain";
-const RecentClient = () => {
-    const tenantDomain = useTenantDomain();
-  
+const RecentClient = ({ tenantDomain }) => {
   const {
     data: customerData,
     error,
@@ -35,24 +33,24 @@ const RecentClient = () => {
         <table className="min-w-full">
           <thead>
             <th>Customer Id </th>
-    
+
             <th>Customer Name</th>
             <th>Phone </th>
 
             <th>Status</th>
-         
+
           </thead>
           <tbody>
             {customerData?.data?.customers.slice(0, 5).map((customer, i) => (
               <tr key={i}>
                 <td>{customer.customerId}</td>
-               
+
                 <td>
                   <div className="flex items-center">
-                    
+
                     <div className="ml-2 text-justify">
                       <h4 className="block">{customer.customer_name}</h4>
-                     
+
                     </div>
                   </div>
                 </td>
@@ -64,7 +62,7 @@ const RecentClient = () => {
                     Active
                   </button>
                 </td>
-              
+
               </tr>
             ))}
           </tbody>

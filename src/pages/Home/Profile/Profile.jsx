@@ -23,7 +23,7 @@ import { FaCreditCard, FaMoneyBillWave } from "react-icons/fa";
 
 const Profile = () => {
   const [activeTab, setActiveTab] = useState(0);
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain } = useTenantDomain();
   const { data, isLoading } = useGetAllUserQuery({ tenantDomain });
   const [updateUser] = useUpdateUserMutation();
   const userData = data?.data?.[0] || {};
@@ -82,7 +82,7 @@ const Profile = () => {
     <Box
       sx={{ maxWidth: 1400, margin: "auto", padding: 3, minHeight: "100vh" }}
     >
-      {/* Header Section */}
+
       <ProfileHeader
         tenantDomain={tenantDomain}
         userData={userData}
@@ -92,7 +92,7 @@ const Profile = () => {
         getSubscriptionStatusColor={getSubscriptionStatusColor}
       />
 
-      {/* Alerts Section */}
+
       <Box>
         {!subscription.isPaid && (
           <Fade in timeout={1000}>
@@ -115,7 +115,7 @@ const Profile = () => {
                 background: "linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%)",
               }}
             >
-              Payment Required: Your subscription payment of $
+              Payment Required: Your subscription payment of ৳
               {subscription?.amount} is pending.
             </Alert>
           </Fade>
@@ -139,7 +139,7 @@ const Profile = () => {
         )}
       </Box>
 
-      {/* Main Content Grid */}
+
       <Grid container spacing={4}>
         {/* Left Column - Tabs */}
         <Grid item xs={12} lg={8}>
@@ -166,8 +166,6 @@ const Profile = () => {
     </Box>
   );
 };
-
-// Utility function for status colors
 const getSubscriptionStatusColor = (status) => {
   switch (status?.toLowerCase()) {
     case "active":

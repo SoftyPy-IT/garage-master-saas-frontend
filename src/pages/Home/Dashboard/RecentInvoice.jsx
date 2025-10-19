@@ -1,11 +1,10 @@
+/* eslint-disable react/prop-types */
 import { HiOutlineArrowNarrowRight } from "react-icons/hi";
 import { Link } from "react-router-dom";
 import { useGetAllInvoicesQuery } from "../../../redux/api/invoice";
 import Loading from "../../../components/Loading/Loading";
-import { useTenantDomain } from "../../../hooks/useTenantDomain";
 
-const RecentInvoice = () => {
-  const tenantDomain = useTenantDomain();
+const RecentInvoice = ({ tenantDomain }) => {
 
   const {
     data: invoiceData,

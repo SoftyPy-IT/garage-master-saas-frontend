@@ -650,7 +650,7 @@ const Invoice = () => {
             setReload(!reload);
             refetch();
             if (goOtherButton === "preview") {
-              navigate(`/dashboard/detail?id=${res?.data?._id}`);
+              navigate(`/dashboard/invoice-view?id=${res?.data?._id}`);
               setGoOtherButton("");
             } else if (goOtherButton === "money-receipt") {
               navigate(
@@ -674,7 +674,7 @@ const Invoice = () => {
     )
   };
   const handleIconPreview = async (e) => {
-    navigate(`/dashboard/detail?id=${e}`);
+    navigate(`/dashboard/invoice-view?id=${e}`);
   };
   useEffect(() => {
     setGetDataWithChassisNo(jobCardData?.data?.vehicle);

@@ -37,7 +37,7 @@ const userApi = baseApi.injectEndpoints({
     updateUser: builder.mutation({
       query: ({ id, data, tenantDomain }) => ({
         url: `/user/${id}`,
-        method: "PATCH",
+        method: "PUT",
         body: data,
         params: { tenantDomain },
       }),

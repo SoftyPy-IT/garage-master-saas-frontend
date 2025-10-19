@@ -10,7 +10,6 @@ import {
   InputAdornment,
   Tooltip,
   IconButton,
-  Fab,
   Container,
   Paper,
   useTheme,
@@ -45,7 +44,6 @@ import PermissionMatrixTab from "./PermissionMetrixTab";
 import UserPermissionsTab from "./UserPermissionTab";
 import AddEditPermissionDialog from "./PermissionDiloge";
 import { useDeletePermissionMutation, useGetAllPermissionsQuery } from "../../redux/api/permissionApi";
-import { useTenantDomain } from "../../hooks/useTenantDomain";
 import Swal from "sweetalert2";
 import { selectCurrentUser } from "../../redux/feature/authSlice";
 import { useSelector } from "react-redux";
@@ -54,6 +52,7 @@ import PageForm from "../PageManagement/PageForm";
 import Loading from "../../components/Loading/Loading";
 import AddUserModal from "../Home/Tenant/AddUserModal";
 import MultipleAccess from "./MultipleAccess";
+import { useAppOptions } from "../../hooks/useAppOptions";
 
 const Permission = () => {
   const theme = useTheme();
@@ -63,7 +62,8 @@ const Permission = () => {
   const [filteredPermissions, setFilteredPermissions] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [editingPermissionId, setEditingPermissionId] = useState(null);
-  const { tenantDomain } = useTenantDomain();
+  const { tenantDomain, performActionWithPermission } = useAppOptions();
+
   const user = useSelector(selectCurrentUser);
   const [pageOpen, setPageOpen] = useState(false)
   const [roleOpen, setRoleOpen] = useState(false)
@@ -527,11 +527,13 @@ const Permission = () => {
         </Paper>
 
         <AddEditPermissionDialog
+          setOpen={setOpenDialog}
           open={openDialog}
           handleClose={handleDialogClose}
           permissionId={editingPermissionId}
           permissionType={editingPermissionId ? "edit" : "add"}
         />
+
 
         <AddRoleModal
           open={roleOpen}
@@ -539,32 +541,20 @@ const Permission = () => {
         />
 
         <PageForm
+          setOpen={setOpenDialog}
           open={pageOpen}
           onClose={handlePageClose}
           tenantDomain={tenantDomain}
         />
 
         <AddUserModal
+          performActionWithPermission={performActionWithPermission}
+          tenantDomain={tenantDomain}
           open={userOpen}
           onClose={handleUserClose}
         />
 
-        <Fab
-          color="primary"
-          aria-label="add permission"
-          sx={{
-            position: "fixed",
-            bottom: 24,
-            right: 24,
-            background: 'linear-gradient(45deg, #9c27b0 30%, #ba68c8 90%)',
-            boxShadow: '0 6px 20px rgba(156, 39, 176, 0.4)',
-            width: 56,
-            height: 56,
-          }}
-          onClick={() => handleDialogOpen()}
-        >
-          <Add />
-        </Fab>
+
 
         {permissionsLoading && (
           <Loading />

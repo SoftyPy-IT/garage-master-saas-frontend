@@ -1,17 +1,17 @@
 /* eslint-disable no-unused-vars */
 import { useContext, useEffect, useState } from "react";
 import "./PreviewJobCard.css";
-import { PrintContext } from "../../../context/PrintProvider";
-import car from "../../../../../public/assets/car3.jpeg";
+import car from "../../../../public/assets/car3.jpeg";
 import { useLocation } from "react-router-dom";
-import { useGetSingleJobCardQuery } from "../../../../redux/api/jobCard";
-import Loading from "../../../../components/Loading/Loading";
 import { useReactToPrint } from "react-to-print";
 import { Button, Link } from "@mui/material";
 import { WhatsApp } from "@mui/icons-material";
 import { WhatsappShareButton } from "react-share";
-import { useGetCompanyProfileQuery } from "../../../../redux/api/companyProfile";
-import { useTenantDomain } from "../../../../hooks/useTenantDomain";
+import { PrintContext } from "../../context/PrintProvider";
+import { useGetSingleJobCardQuery } from "../../../redux/api/jobCard";
+import { useGetCompanyProfileQuery } from "../../../redux/api/companyProfile";
+import Loading from "../../../components/Loading/Loading";
+import { useTenantDomain } from "../../../hooks/useTenantDomain";
 const PreviewJobCard = () => {
   const { componentRef, targetRef } = useContext(PrintContext);
   const [vehicleInterior, setVehicleInterior] = useState("");

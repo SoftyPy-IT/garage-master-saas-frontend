@@ -2,7 +2,7 @@
 /* eslint-disable no-unused-vars */
 
 import "./AddJobCard.css";
-import car from "../../../../public/assets/car2.jpeg";
+import car from "../../../public/assets/car2.jpeg";
 import { useEffect, useRef, useState } from "react";
 import {
   Autocomplete,
@@ -20,9 +20,9 @@ import {
 import InputMask from "react-input-mask";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-
 import { toast } from "react-toastify";
-import Loading from "../../../components/Loading/Loading";
+
+import { HiOutlineChevronDown, HiOutlinePlus } from "react-icons/hi";
 import {
   carBrands,
   cmDmOptions,
@@ -31,23 +31,18 @@ import {
   vehicleModels,
   vehicleName,
   vehicleTypes,
-} from "../../../constant";
-import { HiOutlineChevronDown, HiOutlinePlus } from "react-icons/hi";
-
-import TrustAutoAddress from "../../../components/TrustAutoAddress/TrustAutoAddress";
-import { useGetAllCustomersQuery } from "../../../redux/api/customerApi";
-import { useGetAllCompaniesQuery } from "../../../redux/api/companyApi";
-import { useGetAllShowRoomsQuery } from "../../../redux/api/showRoomApi";
-import {
-  useCreateJobCardMutation,
-  useGetAllJobCardsQuery,
-  useGetUserDetailsForJobCardQuery,
-} from "../../../redux/api/jobCard";
-import { useGetCompanyProfileQuery } from "../../../redux/api/companyProfile";
-import { useTenantDomain } from "../../../hooks/useTenantDomain";
+} from "../../constant";
+import { useTenantDomain } from "../../hooks/useTenantDomain";
+import { usePermissions } from "../../context/PermissionContext";
+import TrustAutoAddress from "../../components/TrustAutoAddress/TrustAutoAddress";
 import JobCardTable from "./JobcardTable";
-import { usePermissions } from "../../../context/PermissionContext";
-import Can from "../../../components/Can";
+import { useGetCompanyProfileQuery } from "../../redux/api/companyProfile";
+import Loading from "../../components/Loading/Loading";
+import Can from "../../components/Can";
+import { useCreateJobCardMutation, useGetAllJobCardsQuery, useGetUserDetailsForJobCardQuery } from "../../redux/api/jobCard";
+import { useGetAllShowRoomsQuery } from "../../redux/api/showRoomApi";
+import { useGetAllCompaniesQuery } from "../../redux/api/companyApi";
+import { useGetAllCustomersQuery } from "../../redux/api/customerApi";
 
 const AddJobCard = () => {
   const { tenantDomain } = useTenantDomain();
