@@ -20,7 +20,7 @@ const FormCheckBox = ({ name, label, description }) => {
   const { control } = useFormContext();
   const theme = useTheme();
 
-  const colorKey = colorMap[name] || "secondary"; // fallback color
+  const colorKey = colorMap[name] || "secondary";
   const mainColor = theme.palette[colorKey].main;
 
   return (

@@ -8,7 +8,6 @@ import {
 } from "@mui/material";
 import { Save } from "@mui/icons-material";
 import GarageForm from "../../components/form/Form";
-import FormCheckBox from "../../components/form/checkbox";
 import FormAutoCompleted from "../../components/form/FormAutoCompleted";
 import { usePermissionFormData } from "../../hooks/usePermissionFormData";
 import { useCreatePermissionMutation, useUpdatePermissionMutation, useGetSinglePermissionQuery } from "../../redux/api/permissionApi";
@@ -18,6 +17,7 @@ import { toast } from "react-toastify";
 import Loading from "../../components/Loading/Loading";
 import GarageModal from "../../components/Share/Modal/GarageModal";
 import { buttonBox } from "../../utils/customStyle";
+import FormCheckBox from "../../components/form/checkbox";
 
 const AddEditPermissionDialog = ({
   open,

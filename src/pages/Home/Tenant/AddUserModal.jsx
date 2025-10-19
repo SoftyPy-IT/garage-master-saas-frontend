@@ -30,13 +30,14 @@ import GarageForm from "../../../components/form/Form";
 import { usePermissionFormData } from "../../../hooks/usePermissionFormData";
 import FormAutoCompleted from "../../../components/form/FormAutoCompleted";
 import Can from "../../../components/Can";
+import { buttonBox } from "../../../utils/customStyle";
 
 const AddUserModal = ({ open, onClose, onSuccess, performActionWithPermission, tenantDomain }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [createUser, { isLoading }] = useCreateUserMutation();
   const { roleOptions } = usePermissionFormData();
-  console.log('role option check', roleOptions)
+
 
   const handleSubmit = async (data, reset) => {
     console.log('raw', data)
@@ -229,7 +230,7 @@ const AddUserModal = ({ open, onClose, onSuccess, performActionWithPermission, t
         </Grid>
 
         {/* Action Buttons */}
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 3 }}>
+        <Box sx={buttonBox}>
           <Button
             onClick={onClose}
             disabled={isLoading}

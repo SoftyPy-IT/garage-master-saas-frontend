@@ -53,6 +53,7 @@ import Loading from "../../components/Loading/Loading";
 import AddUserModal from "../Home/Tenant/AddUserModal";
 import MultipleAccess from "./MultipleAccess";
 import { useAppOptions } from "../../hooks/useAppOptions";
+import MultipleUserAccess from "./MultipleUserAccess";
 
 const Permission = () => {
   const theme = useTheme();
@@ -435,6 +436,11 @@ const Permission = () => {
               icon={<ViewModule />}
               iconPosition="start"
             />
+            <Tab
+              label="Give  User Permission "
+              icon={<ViewModule />}
+              iconPosition="start"
+            />
           </Tabs>
 
           <Box sx={{ mb: 3, display: "flex" }}>
@@ -516,6 +522,18 @@ const Permission = () => {
                   filteredPermissions={filteredPermissions}
                   pages={pages}
                   roles={roles}
+                  handleDialogOpen={handleDialogOpen}
+                  handleDeletePermission={handleDeletePermission}
+                  getRoleColor={getRoleColor}
+                  loading={permissionsLoading}
+                />
+              </div>
+            )}
+            {tabValue === 3 && (
+              <div>
+                <MultipleUserAccess
+
+
                   handleDialogOpen={handleDialogOpen}
                   handleDeletePermission={handleDeletePermission}
                   getRoleColor={getRoleColor}
