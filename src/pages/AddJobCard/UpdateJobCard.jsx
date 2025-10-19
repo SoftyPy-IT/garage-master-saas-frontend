@@ -7,7 +7,7 @@ import "./AddJobCard.css";
 import car from '../../../public//assets/car2.jpeg'
 import { useEffect, useRef, useState } from "react";
 import { Autocomplete, Box, Chip, Grid, TextField } from "@mui/material";
-import "react-quill/dist/quill.snow.css";
+// import "react-quill/dist/quill.snow.css";
 import InputMask from "react-input-mask";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
