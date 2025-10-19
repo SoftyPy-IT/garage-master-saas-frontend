@@ -1,15 +1,11 @@
 /* eslint-disable react/prop-types */
-// components/CreateNoteModal.jsx
 import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
+
   Button,
-  Typography,
   CircularProgress,
+  Box,
 } from "@mui/material";
-import { Description as NoteIcon } from "@mui/icons-material";
+
 import GarageForm from "../../../../components/form/Form";
 import TASInput from "../../../../components/form/Input";
 import {
@@ -18,8 +14,10 @@ import {
 } from "../../../../redux/api/noteApi";
 import { toast } from "react-toastify";
 import { CheckIcon } from "lucide-react";
+import GarageModal from "../../../../components/Share/Modal/GarageModal";
+import { buttonBox } from "../../../../utils/customStyle";
 
-const CreateNoteModal = ({ id, open, onClose, tenantDomain, editingNote }) => {
+const CreateNoteModal = ({ id, open, onClose, tenantDomain, editingNote, setOpen }) => {
   const [createNote, { isLoading: isCreating }] = useCreateNoteMutation();
   const [updateNote, { isLoading: isUpdating }] = useUpdateNoteMutation();
 
@@ -52,55 +50,38 @@ const CreateNoteModal = ({ id, open, onClose, tenantDomain, editingNote }) => {
       toast.error("Something went wrong!");
     }
   };
+  const title = `${id ? 'Edit' : 'Update'} Note`
 
   return (
-    <Dialog
+    <GarageModal
       open={open}
-      onClose={onClose}
-      fullWidth
+      setOpen={setOpen}
+      title={title}
       maxWidth="sm"
-      PaperProps={{ sx: { borderRadius: "16px" } }}
     >
       <GarageForm onSubmit={handleSubmit} defaultValues={editingNote || {}}>
-        <DialogTitle
-          sx={{
-            bgcolor: "primary.main",
-            color: "white",
-            display: "flex",
-            alignItems: "center",
-            gap: 1.5,
-            py: 2,
-          }}
-        >
-          <NoteIcon fontSize="large" />
-          <Typography variant="h6" sx={{ fontWeight: 600 }}>
-            {isEditMode ? "Edit Note" : "Create New Note"}
-          </Typography>
-        </DialogTitle>
 
-        <DialogContent sx={{ py: 3 }}>
-          <TASInput
-            fullWidth
-            label="Note Title"
-            name="title"
-            margin="normal"
-            variant="outlined"
-            InputProps={{ sx: { borderRadius: "12px" } }}
-          />
+        <TASInput
+          fullWidth
+          label="Note Title"
+          name="title"
+          margin="normal"
+          variant="outlined"
+          InputProps={{ sx: { borderRadius: "12px" } }}
+        />
 
-          <TASInput
-            fullWidth
-            multiline
-            rows={4}
-            label="Note Content"
-            name="content"
-            margin="normal"
-            variant="outlined"
-            InputProps={{ sx: { borderRadius: "12px" } }}
-          />
-        </DialogContent>
+        <TASInput
+          fullWidth
+          multiline
+          rows={4}
+          label="Note Content"
+          name="content"
+          margin="normal"
+          variant="outlined"
+          InputProps={{ sx: { borderRadius: "12px" } }}
+        />
 
-        <DialogActions sx={{ p: 3, pt: 0 }}>
+        <Box sx={buttonBox}>
           <Button
             variant="outlined"
             onClick={onClose}
@@ -131,9 +112,9 @@ const CreateNoteModal = ({ id, open, onClose, tenantDomain, editingNote }) => {
               "Create Note"
             )}
           </Button>
-        </DialogActions>
+        </Box>
       </GarageForm>
-    </Dialog>
+    </GarageModal>
   );
 };
 export default CreateNoteModal;

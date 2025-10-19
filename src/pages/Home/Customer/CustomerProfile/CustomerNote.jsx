@@ -288,6 +288,7 @@ const CustomerNote = ({ id, tenantDomain, companyId, showRoomId }) => {
         tenantDomain={tenantDomain}
         id={id}
         open={openModal}
+        setOpen={setOpenModal}
         onClose={() => {
           setOpenModal(false);
           setEditingNote(null);

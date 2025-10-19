@@ -19,6 +19,9 @@ import { useGetAllIUnitQuery } from "../redux/api/unitApi";
 import { useGetAllIBrandQuery } from "../redux/api/brandApi";
 import { useGetAllICategoryQuery } from "../redux/api/categoryApi";
 import { useGetAllInvoicesQuery } from "../redux/api/invoice";
+import { useGetAllUserQuery } from "../redux/api/userApi";
+import { useGetAllPagesQuery } from "../redux/api/pageApi";
+import { useGetAllRolesQuery } from "../redux/api/roleApi";
 
 export function useAppOptions(limit = 10, initialSearch = "") {
     const [currentPage, setCurrentPage] = useState(1);
@@ -35,7 +38,11 @@ export function useAppOptions(limit = 10, initialSearch = "") {
     const [updateSupplier, { isLoading: updateSupplierLoading }] =
         useUpdateSupplierMutation();
 
+
     // ===== Queries =====
+    const { data: userData } = useGetAllUserQuery({ tenantDomain });
+    const { data: pageData } = useGetAllPagesQuery({ tenantDomain })
+    const { data: roleData } = useGetAllRolesQuery({ tenantDomain })
     const { data: productData } = useGetAllIProductQuery({
         tenantDomain,
         limit,
@@ -103,7 +110,21 @@ export function useAppOptions(limit = 10, initialSearch = "") {
 
 
 
+
+
     // ===== Dropdown Options =====
+    const roleOptions = useMemo(() => {
+        if (!allInvoices?.data?.invoices) return [];
+        return allInvoices.data.invoices.map((invoice) => ({
+            label: `${invoice.invoice_no} - ${invoice.Id}`,
+            _id: invoice._id,
+            invoiceData: invoice,
+        }));
+    }, [allInvoices?.data?.invoices]);
+
+
+
+
     const invoiceOption = useMemo(() => {
         if (!allInvoices?.data?.invoices) return [];
         return allInvoices.data.invoices.map((invoice) => ({
@@ -112,6 +133,7 @@ export function useAppOptions(limit = 10, initialSearch = "") {
             invoiceData: invoice,
         }));
     }, [allInvoices?.data?.invoices]);
+
     const categoryOptions = useMemo(() => {
         return categoryData?.data?.categories?.map((item) => ({
             label: item.main_category,

@@ -18,7 +18,6 @@ const MultipleAccess = ({ handleDialogOpen, handleDeletePermission, getRoleColor
     const { tenantDomain } = useTenantDomain();
     const { data: userData } = useGetAllUserQuery({ tenantDomain });
 
-    // Get all pages from the system to ensure we show all possible permissions
     const getAllPages = () => {
         if (!userData || !userData.data) return [];
 
@@ -91,7 +90,7 @@ const MultipleAccess = ({ handleDialogOpen, handleDeletePermission, getRoleColor
                     edit: userPermission ? userPermission.edit : false,
                     view: userPermission ? userPermission.view : false,
                     delete: userPermission ? userPermission.delete : false,
-                    hasPermission: !!userPermission, // Flag to indicate if user has this permission
+                    hasPermission: !!userPermission,
                     originalPermission: userPermission
                 });
             });

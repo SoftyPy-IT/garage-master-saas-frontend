@@ -42,7 +42,6 @@ import {
   Store,
   Speed,
   Help as HelpIcon,
-  CheckCircle,
   WarningRounded,
   CalendarMonth,
   AccessTime,
@@ -65,7 +64,6 @@ import { CreateCategoryModal } from "../Category/CreateCategoryModal";
 import { CreateBrandModal } from "../Brand/CreateBrandModal";
 import { CreateProductTypeModal } from "../ProductType/CreateProductTypeModal";
 import { AddSupplierModal } from "../Suppliers/AddSupplierModal";
-import { useTenantDomain } from "../../../hooks/useTenantDomain";
 import Loading from "../../../components/Loading/Loading";
 import Can from "../../../components/Can";
 import { UnitModal } from "../Unit/UnitModal";
