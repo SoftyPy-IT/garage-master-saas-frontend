@@ -1,10 +1,6 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import {
-  DialogActions,
-  Button,
-  Grid,
-} from "@mui/material";
+import { DialogActions, Button, Grid } from "@mui/material";
 import {
   useCreateWarrantyMutation,
   useUpdateWarrantyMutation,
@@ -20,10 +16,12 @@ import Can from "../../../components/Can";
 const WarrantyModal = ({ open, onClose, editingWarranty }) => {
   const [createWarranty] = useCreateWarrantyMutation();
   const [updateWarranty] = useUpdateWarrantyMutation();
-  const { performActionWithPermission, tenantDomain } = useAppOptions()
+  const { performActionWithPermission, tenantDomain } = useAppOptions();
 
   const handleSubmit = async (data) => {
-    performActionWithPermission('/dashboard/warranties', editingWarranty ? 'edit' : 'create',
+    performActionWithPermission(
+      "/dashboard/warranties",
+      editingWarranty ? "edit" : "create",
       async () => {
         try {
           let res;
@@ -42,16 +40,20 @@ const WarrantyModal = ({ open, onClose, editingWarranty }) => {
 
           if (res.success) {
             toast.success(
-              `Warranty ${editingWarranty ? "updated" : "created"} successfully!`
+              `Warranty ${
+                editingWarranty ? "updated" : "created"
+              } successfully!`
             );
             onClose();
           }
         } catch (error) {
           toast.error(error.message || "Something went wrong");
         }
-
-      }, `You don't have permission to ${editingWarranty ? 'update' : 'create'} warranty !`
-    )
+      },
+      `You don't have permission to ${
+        editingWarranty ? "update" : "create"
+      } warranty !`
+    );
   };
 
   const formatDurationTypeForSelect = (type) => {
@@ -78,18 +80,13 @@ const WarrantyModal = ({ open, onClose, editingWarranty }) => {
     };
     handleSubmit(formattedData);
   };
-  const title = `${editingWarranty ? 'Update' : 'Create'} warranty`
+  const title = `${editingWarranty ? "Update" : "Create"} warranty`;
 
   return (
     <>
-      <GarageModal
-        open={open}
-        setOpen={onClose}
-        title={title}
-        maxWidth="sm"
-      >
+      <GarageModal open={open} setOpen={onClose} title={title} maxWidth="sm">
         <GarageForm onSubmit={handleFormSubmit} defaultValues={defaultValues}>
-          <Grid container spacing={2} sx={{ mt: 1 }}>
+          <Grid container spacing={3} style={{ mt: 1, padding: 8 }}>
             <Grid item xs={12}>
               <FormInput
                 name="name"
@@ -150,17 +147,17 @@ const WarrantyModal = ({ open, onClose, editingWarranty }) => {
           </Grid>
           <DialogActions>
             <Button onClick={onClose}>Cancel</Button>
-            <Can action={editingWarranty ? 'edit' : 'create'}
-              page="/dashboard/warranties">
+            <Can
+              action={editingWarranty ? "edit" : "create"}
+              page="/dashboard/warranties"
+            >
               <Button type="submit" variant="contained">
                 {editingWarranty ? "Update" : "Create "}
               </Button>
             </Can>
           </DialogActions>
         </GarageForm>
-
       </GarageModal>
-
     </>
   );
 };

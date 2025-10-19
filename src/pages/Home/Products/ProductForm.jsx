@@ -12,16 +12,11 @@ import {
   Paper,
   Button,
   Grid,
-  Snackbar,
-  Alert,
-  Avatar,
   InputAdornment,
   Stepper,
   Step,
   StepLabel,
   StepContent,
-  Backdrop,
-  CircularProgress,
   FormControl,
   InputLabel,
   Select,
@@ -42,7 +37,6 @@ import {
   Store,
   Speed,
   Help as HelpIcon,
-  CheckCircle,
   WarningRounded,
   CalendarMonth,
   AccessTime,
@@ -65,7 +59,6 @@ import { CreateCategoryModal } from "../Category/CreateCategoryModal";
 import { CreateBrandModal } from "../Brand/CreateBrandModal";
 import { CreateProductTypeModal } from "../ProductType/CreateProductTypeModal";
 import { AddSupplierModal } from "../Suppliers/AddSupplierModal";
-import { useTenantDomain } from "../../../hooks/useTenantDomain";
 import Loading from "../../../components/Loading/Loading";
 import Can from "../../../components/Can";
 import { UnitModal } from "../Unit/UnitModal";
@@ -1144,7 +1137,7 @@ export default function ProductForm({ id }) {
             background: "#42A0D9",
             color: "white",
             py: 3,
-            mb: 4,
+            mb: 2,
             borderRadius: { xs: "0 0 20px 20px", md: "0 0 20px 20px" },
             boxShadow: "0 4px 20px rgba(106, 27, 154, 0.4)",
           }}

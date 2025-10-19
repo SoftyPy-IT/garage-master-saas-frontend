@@ -216,22 +216,25 @@ const ProductTypeTable = ({ onEditProductType, onOpenCreateModal }) => {
                 sx={{
                     background: "#499CCC",
                     py: 1.5,
-                    px: 3,
+                    px: {xs:1,sm:3},
                     borderRadius: "12px 12px 0 0",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "space-between",
+
                 }}
+                className="gap-2"
             >
                 <Box sx={{ display: "flex", alignItems: "center" }}>
-                    <CategoryIcon sx={{ color: "white", mr: 1.5, fontSize: 28 }} />
-                    <Typography
+                    <CategoryIcon sx={{ color: "white", mr: 1, fontSize: 28 }} />
+                    <p className="text-md md:text-4xl font-bold text-white">Product Types</p>
+                    {/* <Typography
                         variant="h6"
                         component="h2"
                         sx={{ color: "white", fontWeight: 600 }}
                     >
                         Product Types
-                    </Typography>
+                    </Typography> */}
                     <Chip
                         label={productTypes.length}
                         size="small"
@@ -255,7 +258,8 @@ const ProductTypeTable = ({ onEditProductType, onOpenCreateModal }) => {
                         "&:hover": {
                             bgcolor: "rgba(255,255,255,0.3)",
                         },
-                        px: 3,
+                        px: {xs:1,sm:3},
+                       
                         py: 0.5,
                     }}
                 >

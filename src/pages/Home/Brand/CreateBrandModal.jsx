@@ -84,9 +84,7 @@ export const CreateBrandModal = ({ open, setOpen, brandId }) => {
             maxWidth="sm"
           >
             <GarageForm onSubmit={handleSubmit} defaultValues={defaultValues}>
-              <Grid container spacing={3}>
-
-
+              <Grid container spacing={3} style={{padding:8}}>
                 <Grid item xs={12}>
                   <TASInput
                     name="brand"

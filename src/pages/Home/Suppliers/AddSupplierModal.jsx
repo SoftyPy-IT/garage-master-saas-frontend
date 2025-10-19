@@ -29,20 +29,20 @@ export const AddSupplierModal = ({ open, setOpen }) => {
         sx={{
           background: "linear-gradient(135deg, #6a1b9a 0%, #42A1DA 100%)",
           py: 2,
-          px: 3,
+          px: 1,
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center" }}>
-          <CategoryIcon sx={{ color: "white", mr: 1.5, fontSize: 28 }} />
+          <CategoryIcon sx={{ color: "white", mr: 1, fontSize: 28 }} />
           <Typography
             variant="h6"
             component="h2"
             sx={{ color: "white", fontWeight: 600 }}
           >
-            Create Brand
+            Create Supplier
           </Typography>
         </Box>
         <IconButton
@@ -57,9 +57,9 @@ export const AddSupplierModal = ({ open, setOpen }) => {
       </Box>
 
       <DialogContent sx={{ p: 0 }}>
-        <Box sx={{ p: 3 }}>
+        {/* <Box sx={{ p: 3 }}> */}
           <SupplierForm/>
-        </Box>
+        {/* </Box> */}
       </DialogContent>
     </Dialog>
   );

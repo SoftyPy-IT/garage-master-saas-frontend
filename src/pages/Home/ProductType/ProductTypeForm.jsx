@@ -69,7 +69,7 @@ const ProductTypeForm = ({ editingProductType, onSuccess }) => {
       onSubmit={editingProductType ? handleUpdate : handleSubmit}
       defaultValues={defaultValues}
     >
-      <Grid container spacing={2}>
+      <Grid container spacing={2} style={{padding:5}}>
         <Grid item lg={12} md={12} sm={12} xs={12}>
           <Typography fontWeight="semi-bold" mb={1}>
             Product Type

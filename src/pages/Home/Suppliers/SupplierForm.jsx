@@ -56,7 +56,7 @@ import Can from "../../../components/Can";
 import { useAppOptions } from "../../../hooks/useAppOptions";
 
 const FormSection = ({ children }) => (
-  <div className="mb-6 p-4 border rounded-lg shadow-sm">{children}</div>
+  <div className="mb-6 p-2 lg:p-4 border rounded-lg shadow-sm">{children}</div>
 );
 
 const CountryCodeAutocomplete = ({
@@ -215,7 +215,7 @@ const SupplierForm = ({ id }) => {
         <h2>Loading</h2>
       ) : (
         <section className="md:py-0" style={{ minHeight: "100vh" }}>
-          <div className="max-w-6xl mx-auto lg:px-4 mt-10 ">
+          <div className="max-w-6xl mx-auto p-2 lg:px-4 lg:mt-10 ">
             <div className="mb-4 flex justify-between items-center">
               <h2 className="md:text-3xl font-[600] text-[#2980b9] block">
                 {isEditing ? "Edit Supplier" : "Add New Supplier"}
@@ -255,7 +255,7 @@ const SupplierForm = ({ id }) => {
             </Collapse>
 
             <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-              <CardContent sx={{ p: { sm: 0, lg: 3 } }}>
+              <CardContent sx={{ p: { xs: 0, lg: 3 } }}>
                 <GarageForm
                   onSubmit={id ? handleUpdate : handleSubmit}
                   defaultValues={defaultSupplierValues}

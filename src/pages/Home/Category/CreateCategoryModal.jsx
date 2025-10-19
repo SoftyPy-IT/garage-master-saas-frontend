@@ -100,10 +100,10 @@ export const CreateCategoryModal = ({ open, setOpen, categoryId }) => {
       open={open}
       setOpen={setOpen}
       title={title}
-      maxWidth="sm"
+      maxWidth="sm"      
     >
       <GarageForm onSubmit={handleSubmit} defaultValues={defaultValues}>
-        <Grid container spacing={3}>
+        <Grid container spacing={3} style={{padding:8}}>
           <Grid item xs={12}>
             <ImageUpload
               fullWidth
