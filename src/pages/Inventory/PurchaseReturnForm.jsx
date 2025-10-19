@@ -3,7 +3,7 @@
 /* eslint-disable no-unused-vars */
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -61,53 +61,20 @@ import {
 import { useForm, Controller } from "react-hook-form";
 import { toast } from "react-toastify";
 import { useGetAllStocksQuery } from "../../redux/api/stocksApi";
-import { useTenantDomain } from "../../hooks/useTenantDomain";
-import { useGetAllWarehousesQuery } from "../../redux/api/warehouseApi";
-import { useGetAllSuppliersQuery } from "../../redux/api/supplier";
 import { returnStatuses } from "../../constant/constant";
+import { useAppOptions } from "../../hooks/useAppOptions";
+import Can from "../../components/Can";
+import { purchaseBtn } from "../../utils/customStyle";
 
 export default function PurchaseReturnForm({ id }) {
   const theme = useTheme();
   const navigate = useNavigate();
   const [returnItems, setReturnItems] = useState([]);
   const [activeStep, setActiveStep] = useState(1);
-  const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
-  const [selectedPurchase, setSelectedPurchase] = useState("");
   const [selectedSupplier, setSelectedSupplier] = useState("");
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
-  const tenantDomain = useTenantDomain();
-
-  const { data: warehouseData } = useGetAllWarehousesQuery({
-    tenantDomain,
-    limit: 1000000,
-    page: 1,
-    searchTerm: "",
-  });
-
-  const { data: supplierData } = useGetAllSuppliersQuery({
-    tenantDomain,
-    limit: 1000000,
-    page: 1,
-    searchTerm: "",
-  });
-
-  const warehouseOptions = useMemo(() => {
-    if (!warehouseData?.data?.warehouses) return [];
-    return warehouseData.data.warehouses.map((war) => ({
-      label: war.name,
-      value: war._id,
-    }));
-  }, [warehouseData?.data?.warehouses]);
-
-  const supplierOptions = useMemo(() => {
-    if (!supplierData?.data?.suppliers) return [];
-    return supplierData.data.suppliers.map((sup) => ({
-      label: sup.full_name,
-      value: sup._id,
-    }));
-  }, [supplierData?.data?.suppliers]);
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
   const {
     control,
     handleSubmit,
@@ -126,12 +93,12 @@ export default function PurchaseReturnForm({ id }) {
       status: "pending",
     },
   });
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState("");
   const watchedWarehouse = watch("warehouse");
   const watchedSuppliers = watch("suppliers");
   const watchedPurchase = watch("purchase");
+  const { performActionWithPermission, supplierOptions, warehouseOptions, productOptions, tenantDomain } = useAppOptions()
+
+
 
   const queryParams = {
     tenantDomain,
@@ -317,119 +284,104 @@ export default function PurchaseReturnForm({ id }) {
   };
 
   const onSubmit = async (formData) => {
-    try {
-      const selectedItems = returnItems.filter(
-        (item) => item.selected && item.returnQuantity > 0
-      );
+    performActionWithPermission("/dashboard/purchase-return-add", id ? 'edit' : 'create',
+      async () => {
+        const loadingToast = toast.loading(`${id ? 'Updating' : 'creating'} purchase return...`);
 
-      if (selectedItems.length === 0) {
-        toast.error(
-          "Please select at least one item to return with quantity greater than 0"
-        );
-        return;
-      }
+        try {
+          let res;
+          const selectedItems = returnItems.filter(
+            (item) => item.selected && item.returnQuantity > 0
+          );
 
-      // Check if any selected item has invalid quantity
-      const invalidItems = selectedItems.filter(
-        (item) =>
-          item.returnQuantity <= 0 || item.returnQuantity > item.maxQuantity
-      );
+          if (selectedItems.length === 0) {
+            toast.error(
+              "Please select at least one item to return with quantity greater than 0"
+            );
+            return;
+          }
 
-      if (invalidItems.length > 0) {
-        toast.error(
-          "Please ensure all return quantities are valid (greater than 0 and not exceeding available quantity)"
-        );
-        return;
-      }
+          // Check if any selected item has invalid quantity
+          const invalidItems = selectedItems.filter(
+            (item) =>
+              item.returnQuantity <= 0 || item.returnQuantity > item.maxQuantity
+          );
 
-      // Check if suppliers array is not empty
-      if (!formData.suppliers || formData.suppliers.length === 0) {
-        toast.error("Please select at least one supplier");
-        return;
-      }
+          if (invalidItems.length > 0) {
+            toast.error(
+              "Please ensure all return quantities are valid (greater than 0 and not exceeding available quantity)"
+            );
+            return;
+          }
 
-      // Prepare items data
-      const items = selectedItems.map((item) => ({
-        productId: item.productId,
-        productCode: item.product.code,
-        productName: item.product.name,
-        quantity: item.returnQuantity,
-        maxQuantity: item.maxQuantity,
-        unitPrice: item.price,
-        unit: item.product.unit,
-        totalAmount: item.total,
-      }));
+          // Check if suppliers array is not empty
+          if (!formData.suppliers || formData.suppliers.length === 0) {
+            toast.error("Please select at least one supplier");
+            return;
+          }
 
-      const totalReturnAmount = selectedItems.reduce(
-        (sum, item) => sum + item.total,
-        0
-      );
+          // Prepare items data
+          const items = selectedItems.map((item) => ({
+            productId: item.productId,
+            productCode: item.product.code,
+            productName: item.product.name,
+            quantity: item.returnQuantity,
+            maxQuantity: item.maxQuantity,
+            unitPrice: item.price,
+            unit: item.product.unit,
+            totalAmount: item.total,
+          }));
 
-      if (id && singlePurchaseReturn?.data?._id) {
-        // Update existing purchase return
-        const loadingToast = toast.loading("Updating purchase return...");
+          const totalReturnAmount = selectedItems.reduce(
+            (sum, item) => sum + item.total,
+            0
+          );
 
-        // For update, use 'suppliers' as an array of IDs
-        const updateData = {
-          returnDate: formData.returnDate,
-          referenceNo: formData.referenceNo,
-          suppliers: Array.isArray(formData.suppliers)
-            ? formData.suppliers
-            : [formData.suppliers],
-          purchase: formData.purchase,
-          warehouse: formData.warehouse,
-          returnNote: formData.returnNote,
-          returnReason: formData.returnReason,
-          status: formData.status,
-          items: items,
-          totalReturnAmount,
-        };
+          const submitData = {
+            returnDate: formData.returnDate,
+            referenceNo: formData.referenceNo,
+            suppliers: Array.isArray(formData.suppliers)
+              ? formData.suppliers
+              : [formData.suppliers],
+            purchase: formData.purchase,
+            warehouse: formData.warehouse,
+            returnNote: formData.returnNote,
+            returnReason: formData.returnReason,
+            status: formData.status,
+            items: items,
+            totalReturnAmount,
+          };
+          if (id && singlePurchaseReturn?.data?._id) {
+            res = await updatePurchaseReturn({
+              id,
+              tenantDomain,
+              data: submitData,
+            }).unwrap();
 
-        const res = await updatePurchaseReturn({
-          id,
-          tenantDomain,
-          data: updateData,
-        }).unwrap();
+          } else {
+            res = await createPurchaseReturn({
+              tenantDomain,
+              ...submitData,
+            }).unwrap();
 
-        toast.dismiss(loadingToast);
-        toast.success("Purchase return updated successfully");
-        setTimeout(() => {
-          navigate("/dashboard/purchase-return");
-        }, 1500);
-      } else {
-        // Create new purchase return
-        const loadingToast = toast.loading("Creating purchase return...");
 
-        // For create, use 'suppliers' (plural) as an array
-        const returnData = {
-          returnDate: formData.returnDate,
-          referenceNo: formData.referenceNo,
-          suppliers: Array.isArray(formData.suppliers)
-            ? formData.suppliers
-            : [formData.suppliers],
-          purchase: formData.purchase,
-          warehouse: formData.warehouse,
-          returnNote: formData.returnNote,
-          returnReason: formData.returnReason,
-          status: formData.status,
-          items: items,
-          totalReturnAmount,
-        };
-        const result = await createPurchaseReturn({
-          tenantDomain,
-          ...returnData,
-        }).unwrap();
+          }
 
-        toast.dismiss(loadingToast);
-        toast.success("Purchase return created successfully");
-        setTimeout(() => {
-          navigate("/dashboard/purchase-return");
-        }, 1500);
-      }
-    } catch (error) {
-      console.error("Error processing purchase return:", error);
-      toast.error(error.data?.message || "Failed to process purchase return");
-    }
+          if (res.success) {
+
+            toast.dismiss(loadingToast);
+            toast.success(`Purchase return ${id ? 'update' : 'create'} successfully`);
+            setTimeout(() => {
+              navigate("/dashboard/purchase-return");
+            }, 1500);
+          }
+        } catch (error) {
+          console.error("Error processing purchase return:", error);
+          toast.error(error.data?.message || "Failed to process purchase return");
+        }
+
+      }, `You don't have permission to ${id ? 'edit' : 'create'} purchase return `
+    )
   };
 
   const handleCancel = () => {
@@ -1152,45 +1104,35 @@ export default function PurchaseReturnForm({ id }) {
                 </Box>
 
                 <Box>
-                  <Button
-                    fullWidth
-                    type="submit"
-                    variant="contained"
-                    color="primary"
-                    startIcon={
-                      isSubmitting || isUpdating ? (
-                        <CircularProgress size={20} color="inherit" />
-                      ) : (
-                        <SaveIcon />
-                      )
-                    }
-                    disabled={
-                      isSubmitting ||
-                      isUpdating ||
-                      returnItems.filter(
-                        (item) => item.selected && item.returnQuantity > 0
-                      ).length === 0
-                    }
-                    sx={{
-                      mb: 1,
-                      borderRadius: "8px",
-                      color: "white",
-                      boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
-                      background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`,
-                      transition: "all 0.3s",
-                      "&:hover": {
-                        boxShadow: "0 6px 15px rgba(0,0,0,0.2)",
-                        transform: "translateY(-2px)",
-                      },
-                      py: 1.5,
-                    }}
-                  >
-                    {isSubmitting || isUpdating
-                      ? "Processing..."
-                      : id
-                        ? "Update Return"
-                        : "Submit Return"}
-                  </Button>
+                  <Can page="/dashboard/purchase-return-add" action={id ? 'edit' : 'create'}>
+                    <Button
+                      fullWidth
+                      type="submit"
+                      variant="contained"
+                      color="primary"
+                      startIcon={
+                        isSubmitting || isUpdating ? (
+                          <CircularProgress size={20} color="inherit" />
+                        ) : (
+                          <SaveIcon />
+                        )
+                      }
+                      disabled={
+                        isSubmitting ||
+                        isUpdating ||
+                        returnItems.filter(
+                          (item) => item.selected && item.returnQuantity > 0
+                        ).length === 0
+                      }
+                      sx={purchaseBtn}
+                    >
+                      {isSubmitting || isUpdating
+                        ? "Processing..."
+                        : id
+                          ? "Update Return"
+                          : "Submit Return"}
+                    </Button>
+                  </Can>
                   <Button
                     fullWidth
                     variant="outlined"
@@ -1254,14 +1196,17 @@ export default function PurchaseReturnForm({ id }) {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseConfirmDialog}>Cancel</Button>
-          <Button
-            onClick={handleDialogConfirm}
-            color="primary"
-            variant="contained"
-            disabled={isSubmitting || isUpdating}
-          >
-            {isSubmitting || isUpdating ? "Processing..." : "Confirm"}
-          </Button>
+          <Can page="/dashboard/purchase-return-add" action={id ? 'edit' : 'create'}>
+            <Button
+              onClick={handleDialogConfirm}
+              color="primary"
+              variant="contained"
+              disabled={isSubmitting || isUpdating}
+            >
+              {isSubmitting || isUpdating ? "Processing..." : "Confirm"}
+            </Button>
+          </Can>
+
         </DialogActions>
       </Dialog>
     </Box>

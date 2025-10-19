@@ -171,8 +171,8 @@
 //       { path: '/dashboard/update-expense', title: 'Update Expense', permission: 'edit' },
 //       { path: '/dashboard/view-expense', title: 'View Expense', permission: 'view' },
 //       { path: '/dashboard/expense-categories', title: 'Expense Categories', permission: 'view' },
-//       { path: '/dashboard/donation', title: 'Donations', permission: 'view' },
-//       { path: '/dashboard/donation-list', title: 'Donation List', permission: 'view' },
+//       { path: '/create-donation', title: 'Donations', permission: 'view' },
+//       { path: '/create-donation-list', title: 'Donation List', permission: 'view' },
 //       { path: '/dashboard/update-donation', title: 'Update Donation', permission: 'edit' },
 //     ]
 //   },

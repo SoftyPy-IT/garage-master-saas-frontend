@@ -3,7 +3,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/no-unescaped-entities */
 "use client";
-import {  useCallback } from "react";
+import { useCallback } from "react";
 import {
   Dialog,
   DialogActions,
@@ -13,23 +13,26 @@ import {
   Button,
   LinearProgress,
   Typography,
+  Box,
 } from "@mui/material";
 import { alpha, useTheme } from "@mui/material/styles";
-import { useTenantDomain } from "../../../../hooks/useTenantDomain";
 import { useGetAllStocksQuery } from "../../../../redux/api/stocksApi";
 import { useGetAllWarehousesQuery } from "../../../../redux/api/warehouseApi";
 
 import StockTransferForm from "./StockTransferForm";
 import useStockTransfer from "../../../../hooks/useStockTransfer";
+import toast from "react-hot-toast";
+import GarageModal from "../../../../components/Share/Modal/GarageModal";
 
 function StockTransferModal({
   open,
   onClose,
   onSubmit,
   employees,
+  tenantDomain,
+  performActionWithPermission
 }) {
   const theme = useTheme();
-  const tenantDomain = useTenantDomain();
 
   const { data: stockData, isLoading: stockLoading } =
     useGetAllStocksQuery({
@@ -76,68 +79,63 @@ function StockTransferModal({
 
 
   const handleFormSubmit = async () => {
-    try {
+    performActionWithPermission('/dashboard/stock-transfer', 'create',
+      async () => {
+        let res;
+        try {
 
-      await handleSubmit((result) => {
-        if (result.success) {
-          handleSafeClose();
-          if (onSubmit && typeof onSubmit === "function") {
-            onSubmit(result.data);
+          res = await handleSubmit((result) => {
+            if (result.success) {
+              handleSafeClose();
+              if (onSubmit && typeof onSubmit === "function") {
+                onSubmit(result.data);
+              }
+            }
+          });
+          if (res.success) {
+            toast.success(res.message || 'Stock transfer successfully !')
           }
+        } catch (error) {
+          toast.error(error.message || 'Failed to transfer')
         }
-      });
-    } catch (error) {
-      // Error is already handled in the hook
-    }
+      }, `You don't have permission to stock transfer`
+    )
   };
 
   const isLoading = stockLoading || warehouseLoading || formSubmitting;
-
+  const title = "Stock Transfer "
   return (
-    <Dialog
+    <GarageModal
       open={open}
-      onClose={handleSafeClose}
+      setOpen={onClose}
+      title={title}
       maxWidth="md"
-      fullWidth
-      PaperProps={{
-        sx: {
-          borderRadius: 3,
-          boxShadow: "0 10px 40px rgba(0, 0, 0, 0.1)",
-        },
-      }}
     >
-      <DialogTitle sx={{ pb: 1 }}>
-        <Typography variant="h5" sx={{ fontWeight: "bold" }}>
-          New Stock Transfer
-        </Typography>
-      </DialogTitle>
-      <Divider />
-      <DialogContent sx={{ pb: 4 }}>
-        {isLoading ? (
-          <LinearProgress sx={{ my: 4 }} />
-        ) : (
-          <StockTransferForm
-            formData={formData}
-            transferItems={transferItems}
-            errors={errors}
-            warehouses={warehouses}
-            availableProducts={availableProducts}
-            formSubmitting={formSubmitting}
-            handleInputChange={handleInputChange}
-            handleSelectChange={handleSelectChange}
-            handleAddItem={handleAddItem}
-            handleRemoveItem={handleRemoveItem}
-            handleProductChange={handleProductChange}
-            handleQuantityChange={handleQuantityChange}
-            handleNoteChange={handleNoteChange}
-            handleSubmit={handleSubmit}
-            getWarehouseName={getWarehouseName}
-            theme={theme}
-          />
-        )}
-        {formSubmitting && <LinearProgress sx={{ mt: 3 }} />}
-      </DialogContent>
-      <DialogActions sx={{ px: 3, pb: 3 }}>
+      {isLoading ? (
+        <LinearProgress sx={{ my: 4 }} />
+      ) : (
+        <StockTransferForm
+          formData={formData}
+          transferItems={transferItems}
+          errors={errors}
+          warehouses={warehouses}
+          availableProducts={availableProducts}
+          formSubmitting={formSubmitting}
+          handleInputChange={handleInputChange}
+          handleSelectChange={handleSelectChange}
+          handleAddItem={handleAddItem}
+          handleRemoveItem={handleRemoveItem}
+          handleProductChange={handleProductChange}
+          handleQuantityChange={handleQuantityChange}
+          handleNoteChange={handleNoteChange}
+          handleSubmit={handleSubmit}
+          getWarehouseName={getWarehouseName}
+          theme={theme}
+        />
+      )}
+      {formSubmitting && <LinearProgress sx={{ mt: 3 }} />}
+
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: '5px' }}>
         <Button
           onClick={handleSafeClose}
           variant="outlined"
@@ -154,7 +152,7 @@ function StockTransferModal({
           Cancel
         </Button>
         <Button
-          onClick={handleFormSubmit} 
+          onClick={handleFormSubmit}
           variant="contained"
           disabled={
             isLoading ||
@@ -180,8 +178,8 @@ function StockTransferModal({
         >
           Complete Transfer
         </Button>
-      </DialogActions>
-    </Dialog>
+      </Box>
+    </GarageModal>
   );
 }
 

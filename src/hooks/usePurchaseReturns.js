@@ -9,6 +9,7 @@ import {
   useGetAllPurchaseReturnsQuery,
 } from "../redux/api/purchaseReturnApi";
 import { useGetAllWarehousesQuery } from "../redux/api/warehouseApi";
+import { useAppOptions } from "./useAppOptions";
 
 export const usePurchaseReturns = () => {
   const theme = useTheme();
@@ -25,6 +26,7 @@ export const usePurchaseReturns = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const { performActionWithPermission } = useAppOptions()
 
   // API mutations and queries
   const [deletePurchaseReturn] = useDeletePurchaseReturnMutation();
@@ -89,32 +91,37 @@ export const usePurchaseReturns = () => {
   };
 
   const handleDeleteReturn = async (id) => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: theme.palette.primary.main,
-      cancelButtonColor: theme.palette.error.main,
-      confirmButtonText: "Yes, delete it!",
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          setIsLoading(true);
-          await deletePurchaseReturn({ tenantDomain, id }).unwrap();
-          toast.success("Purchase return deleted successfully!");
-          refetch();
-          Swal.fire("Deleted!", "Purchase return has been deleted.", "success");
-        } catch (error) {
-          console.error("Failed to delete purchase return:", error);
-          toast.error("Failed to delete purchase return");
-          Swal.fire("Error!", "Failed to delete purchase return.", "error");
-        } finally {
-          setIsLoading(false);
-        }
-      }
-    });
-    handleMenuClose();
+    performActionWithPermission('/dashboard/purchase-return', 'delete',
+      async () => {
+        Swal.fire({
+          title: "Are you sure?",
+          text: "You won't be able to revert this!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: theme.palette.primary.main,
+          cancelButtonColor: theme.palette.error.main,
+          confirmButtonText: "Yes, delete it!",
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            try {
+              setIsLoading(true);
+              await deletePurchaseReturn({ tenantDomain, id }).unwrap();
+              toast.success("Purchase return deleted successfully!");
+              refetch();
+              Swal.fire("Deleted!", "Purchase return has been deleted.", "success");
+            } catch (error) {
+              console.error("Failed to delete purchase return:", error);
+              toast.error("Failed to delete purchase return");
+              Swal.fire("Error!", "Failed to delete purchase return.", "error");
+            } finally {
+              setIsLoading(false);
+            }
+          }
+        });
+        handleMenuClose();
+
+      }, "You don't have permission to delete purchase return "
+    )
   };
 
   const handleAddReturn = () => {

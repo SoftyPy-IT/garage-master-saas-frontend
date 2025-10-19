@@ -32,7 +32,7 @@ const InvoiceTable = ({ title }) => {
   const handleIconPreview = async (e) => {
     performActionWithPermission('/dashboard/invoice-list', 'view',
       async () => {
-        navigate(`/dashboard/detail?id=${e}`);
+        navigate(`/dashboard/invoice-view?id=${e}`);
       }, "You don't have permission to view invoice !"
     )
   };

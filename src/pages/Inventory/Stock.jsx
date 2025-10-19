@@ -77,7 +77,8 @@ import { StockDetailsDialog } from "./StockManagement/StockDetailsDialog";
 import { StockMovementDialog } from "./StockManagement/StockMovementDialog";
 import { StockHistoryDialog } from "./StockManagement/StockHistoryDialog";
 import { useGetAllStocksQuery } from "../../redux/api/stocksApi";
-import { useTenantDomain } from "../../hooks/useTenantDomain";
+import { useAppOptions } from "../../hooks/useAppOptions";
+import Can from "../../components/Can";
 export default function StockManagement() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -97,9 +98,10 @@ export default function StockManagement() {
   const [processedProducts, setProcessedProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const theme = useTheme();
-const tenantDomain = useTenantDomain();
+  const { tenantDomain } = useAppOptions()
 
-  const queryParams = { tenantDomain ,page: currentPage, limit: 100, searchTerm: searchTerm };
+
+  const queryParams = { tenantDomain, page: currentPage, limit: 100, searchTerm: searchTerm };
 
   const {
     data: stockData,
@@ -123,7 +125,7 @@ const tenantDomain = useTenantDomain();
         } else if (currentStock <= reorderLevel) {
           status = "low-stock";
         }
-        
+
         const totalPurchaseValue = stock.totalPurchaseValue || 0;
         const totalSellingValue = stock.totalSellingValue || 0;
         const purchasePrice = product.purchasePrice || 0;
@@ -135,7 +137,7 @@ const tenantDomain = useTenantDomain();
           code: product.product_code || "N/A",
           name: product.product_name || "Unnamed Product",
           category: product.category?.main_category || "Uncategorized",
-         
+
           unit: product.unit?.unit || "pcs",
           inQuantity: stock.inQuantity || 0,
           outQuantity: stock.outQuantity || 0,
@@ -180,13 +182,13 @@ const tenantDomain = useTenantDomain();
       setCategories(Array.from(uniqueCategories));
     }
   }, [stockData]);
-  
+
   const selectedProduct = useMemo(() => {
     return processedProducts.find(
       (product) => product.id === selectedProductId
     );
   }, [selectedProductId, processedProducts]);
-  
+
   const filteredProducts = useMemo(() => {
     if (!processedProducts) return [];
 
@@ -195,7 +197,7 @@ const tenantDomain = useTenantDomain();
         searchTerm === "" ||
         item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-       
+
         item.warehouse.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory =
         categoryFilter === "All" || item.category === categoryFilter;
@@ -205,7 +207,7 @@ const tenantDomain = useTenantDomain();
       return matchesSearch && matchesCategory && matchesStatus;
     });
   }, [processedProducts, statusFilter, searchTerm, categoryFilter]);
-  
+
   const summaryStats = useMemo(() => {
     if (!processedProducts || processedProducts.length === 0) {
       return {
@@ -242,12 +244,12 @@ const tenantDomain = useTenantDomain();
       ).length,
     };
   }, [processedProducts]);
-  
+
   const paginatedProducts = useMemo(() => {
     const startIndex = (currentPage - 1) * rowsPerPage;
     return filteredProducts.slice(startIndex, startIndex + rowsPerPage);
   }, [filteredProducts, currentPage, rowsPerPage]);
-  
+
   const handleChangePage = (event, newPage) => {
     setCurrentPage(newPage + 1);
   };
@@ -316,9 +318,9 @@ const tenantDomain = useTenantDomain();
     return theme.palette.success.main;
   };
 
- const formatCurrency = (amount) => {
-  return amount.toLocaleString("en-US") + " ৳";
-};
+  const formatCurrency = (amount) => {
+    return amount.toLocaleString("en-US") + " ৳";
+  };
 
 
   const isLoading = productLoading || isFetching;
@@ -510,13 +512,13 @@ const tenantDomain = useTenantDomain();
                 {isLoading ? (
                   <LinearProgress sx={{ my: 2 }} />
                 ) : (
-                  
-                  
-                  
-                   
+
+
+
+
                   formatCurrency(summaryStats.totalPurchaseValue)
-                  
-                  
+
+
                 )}
               </Typography>
               <Typography variant="body2" color="text.secondary">
@@ -666,7 +668,7 @@ const tenantDomain = useTenantDomain();
         <Paper
           elevation={0}
           sx={{
-            p: {xs:1, md:3},
+            p: { xs: 1, md: 3 },
             mb: 4,
             borderRadius: 2,
             boxShadow: "0 4px 20px rgba(0, 0, 0, 0.05)",
@@ -920,7 +922,7 @@ const tenantDomain = useTenantDomain();
                             </Typography>
                           </Box>
                         </TableCell>
-                     
+
                         <TableCell>
                           {formatCurrency(item.purchasePrice)}
                         </TableCell>
@@ -947,21 +949,21 @@ const tenantDomain = useTenantDomain();
                           />
                         </TableCell>
                         <TableCell align="right">
-                         
-                            <Typography
-                              variant="body2"
-                              sx={{
-                                fontWeight: "bold",
-                                color: getStockLevelColor(
-                                  item.currentStock,
-                                  item.minimumStock
-                                ),
-                           
-                              }}
-                            >
-                              {item.currentStock} {item.unit}
-                            </Typography>
-                            
+
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              fontWeight: "bold",
+                              color: getStockLevelColor(
+                                item.currentStock,
+                                item.minimumStock
+                              ),
+
+                            }}
+                          >
+                            {item.currentStock} {item.unit}
+                          </Typography>
+
                         </TableCell>
                         <TableCell align="right" sx={{ fontWeight: "medium" }}>
                           {formatCurrency(item.totalPurchaseValue)}
@@ -1001,10 +1003,12 @@ const tenantDomain = useTenantDomain();
                                   },
                                 }}
                               >
-                                <VisibilityIcon fontSize="small" />
+                                <Can page='/dashboard/stock' action='view'>
+                                  <VisibilityIcon fontSize="small" />
+                                </Can>
                               </IconButton>
                             </Tooltip>
-                           
+
                           </Box>
                         </TableCell>
                       </TableRow>
@@ -1038,9 +1042,9 @@ const tenantDomain = useTenantDomain();
                   labelRowsPerPage="Products per page:"
                   sx={{
                     "& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows":
-                      {
-                        margin: 0,
-                      },
+                    {
+                      margin: 0,
+                    },
                   }}
                 />
               </Box>
@@ -1132,22 +1136,7 @@ const tenantDomain = useTenantDomain();
         />
       )}
 
-      {/* Snackbar for notifications */}
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={6000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-      >
-        <Alert
-          onClose={handleCloseSnackbar}
-          severity={snackbarSeverity}
-          variant="filled"
-          sx={{ width: "100%" }}
-        >
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
+
     </Box>
   );
 }

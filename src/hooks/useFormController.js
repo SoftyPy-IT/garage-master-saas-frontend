@@ -1,4 +1,5 @@
 // src/hooks/useFormController.js
+import { useTheme } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -14,6 +15,15 @@ export function useFormController() {
     const [submitting, setSubmitting] = useState(false);
     const [success, setSuccess] = useState(false);
     const [expiryDateType, setExpiryDateType] = useState("fixed");
+    const theme = useTheme();
+    const [elevation, setElevation] = useState(1);
+
+    // 📦 Table / List / UI control states
+    const [currentPage, setCurrentPage] = useState(1);
+    const [search, setSearch] = useState("");
+    const [sortDirection, setSortDirection] = useState("desc");
+    const [filterCategory, setFilterCategory] = useState("");
+    const [filterStatus, setFilterStatus] = useState("");
 
     // 🧱 Modal open/close states
     const [unitOpen, setUnitOpen] = useState(false);
@@ -24,7 +34,7 @@ export function useFormController() {
     const [productTypeOpen, setproductTypeOpen] = useState(false);
     const [warrantyOpen, setWarrantyOpen] = useState(false);
 
-    // 🧩 Modal handlers (individual)
+    // 🧩 Modal handlers
     const handleWarrantyOpen = () => setWarrantyOpen(true);
     const handleWarrantyClose = () => setWarrantyOpen(false);
 
@@ -67,6 +77,23 @@ export function useFormController() {
         setSuccess,
         expiryDateType,
         setExpiryDateType,
+        theme,
+        elevation,
+        setElevation,
+
+        // 🔹 UI Control States (for List / Table)
+        currentPage,
+        setCurrentPage,
+        search,
+        setSearch,
+
+        sortDirection,
+        setSortDirection,
+        filterCategory,
+        setFilterCategory,
+        filterStatus,
+        setFilterStatus,
+
 
         // 🔹 Modal States
         unitOpen,
@@ -76,7 +103,6 @@ export function useFormController() {
         warehouseOpen,
         productTypeOpen,
         warrantyOpen,
-
 
         // 🔹 Modal Handlers
         handleWarrantyOpen,
@@ -93,6 +119,5 @@ export function useFormController() {
         handleSupplierClose,
         handleUnitOpen,
         handleUnitClose,
-
     };
 }

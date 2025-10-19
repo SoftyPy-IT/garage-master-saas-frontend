@@ -37,8 +37,8 @@ import {
   EventNote as EventNoteIcon,
   CreditCard as CreditCardIcon,
 } from "@mui/icons-material";
-import GarageForm from "../../components/form/Form";
-import FormDatePicker from "../../components/form/Datepicker";
+import GarageForm from "../../../components/form/Form";
+import FormDatePicker from "../../../components/form/Datepicker";
 import {
   ShoppingCart as ShoppingCartIcon,
   Discount as DiscountIcon,
@@ -55,12 +55,12 @@ import {
   outlinedInputSx,
   outlinedInputWrapperSx,
   productStyle,
+  purchaseBtn,
   textInuptStyle,
-} from "../../utils/customStyle";
-import TASInput from "../../components/form/Input";
-import TASSelect from "../../components/form/Select";
-import TASAutocomplete from "../../components/form/Autocomplete";
-import { useGetAllIProductQuery } from "../../redux/api/productApi";
+} from "../../../utils/customStyle";
+import TASInput from "../../../components/form/Input";
+import TASSelect from "../../../components/form/Select";
+import TASAutocomplete from "../../../components/form/Autocomplete";
 import { toast } from "react-toastify";
 import { AnimatePresence } from "framer-motion";
 import { motion } from "framer-motion";
@@ -68,12 +68,12 @@ import {
   useCreatePurchaseOrderMutation,
   useGetSinglePurchaseOrderQuery,
   useUpdatePurchaseOrderMutation,
-} from "../../redux/api/purchaseOrderApi";
-import TASTextarea from "../../components/form/Textarea";
-import { formatCurrency } from "../../utils/formatter";
-import { useGetAllSuppliersQuery } from "../../redux/api/supplier";
-import ImageUpload from "../../components/form/ImageUpload";
-import { useGetAllWarehousesQuery } from "../../redux/api/warehouseApi";
+} from "../../../redux/api/purchaseOrderApi";
+import TASTextarea from "../../../components/form/Textarea";
+import { formatCurrency } from "../../../utils/formatter";
+import ImageUpload from "../../../components/form/ImageUpload";
+import { useAppOptions } from "../../../hooks/useAppOptions";
+import Can from "../../../components/Can";
 
 const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
   const theme = useTheme();
@@ -83,69 +83,23 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
   const [totalTax, setTotalTax] = useState(0);
   const [totalShipping, setTotalShipping] = useState(0);
   const [grandTotal, setGrandTotal] = useState(0);
-  const [searchTerm, setSearchTerm] = useState("");
   const [expandedSummary, setExpandedSummary] = useState(true);
   const [shippingCost, setShippingCost] = useState(0);
   const productSearchRef = useRef(null);
-
-  const [createPurchaseOrder, { isLoading: isSubmitting }] =
+  const { performActionWithPermission, supplierOptions, warehouseOptions, productOptions, setSearchTerm } = useAppOptions()
+  const [createPurchaseOrder] =
     useCreatePurchaseOrderMutation();
-  const [file, setFile] = useState(null);
   const [updatePurchase] = useUpdatePurchaseOrderMutation();
-  const {
-    data: productsData,
-    isLoading: productsLoading,
-    isFetching: productsFetching,
-  } = useGetAllIProductQuery({
-    tenantDomain,
-    limit: 100,
-    page: 1,
-    searchTerm: "",
-  });
 
-  const { data: supplierData } = useGetAllSuppliersQuery({
-    tenantDomain,
-    limit: 1000000,
-    page: 1,
-    searchTerm: "",
-  });
-  const { data: warehouseData } = useGetAllWarehousesQuery({
-    tenantDomain,
-    limit: 1000000,
-    page: 1,
-    searchTerm: "",
-  });
 
   const { data: singlePurchase, isLoading } = useGetSinglePurchaseOrderQuery({
     tenantDomain,
     id: orderId,
   });
 
-  const suppliersOptions = useMemo(() => {
-    if (!supplierData?.data?.suppliers) return [];
-    return supplierData.data.suppliers.map((supplier) => ({
-      label: supplier.full_name,
-      value: supplier._id,
-    }));
-  }, [supplierData?.data?.suppliers]);
+  console.log(singlePurchase)
 
-  const warehouseOptions = useMemo(() => {
-    if (!warehouseData?.data?.warehouses) return [];
-    return warehouseData.data.warehouses.map((war) => ({
-      label: war.name,
-      value: war._id,
-    }));
-  }, [warehouseData?.data?.warehouses]);
-  
-  const productOptions = useMemo(() => {
-    if (!productsData?.data?.products) return [];
-    return productsData.data.products.map((product) => ({
-      label: product.product_name,
-      value: product._id,
-      product,
-    }));
-  }, [productsData?.data?.products]);
-  
+
   useEffect(() => {
     const newTotalAmount = productFields.reduce(
       (acc, item) => acc + (item.unit_price || 0) * (item.product_quantity || 0),
@@ -163,16 +117,16 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
       0
     );
 
-      // Calculate total shipping from products
-  const totalProductShipping = productFields.reduce(
-    (acc, item) => acc + (item.shipping || 0),
-    0
-  );
+    // Calculate total shipping from products
+    const totalProductShipping = productFields.reduce(
+      (acc, item) => acc + (item.shipping || 0),
+      0
+    );
 
-  // Total shipping is product shipping plus additional shipping cost
-  const totalShippingAmount = totalProductShipping + shippingCost;
+    // Total shipping is product shipping plus additional shipping cost
+    const totalShippingAmount = totalProductShipping + shippingCost;
 
-   setTotalShipping(totalShippingAmount); 
+    setTotalShipping(totalShippingAmount);
 
     setTotalAmount(newTotalAmount);
     setTotalDiscount(newTotalDiscount);
@@ -213,7 +167,7 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
       });
     } else {
       const productPrice = Number(product.product.purchasePrice) || 0;
-         const subTotal = productPrice * Number(product.product.product_quantity)
+      const subTotal = productPrice * Number(product.product.product_quantity)
       const newProduct = {
         productId: product.product._id,
         productName: product.product.product_name,
@@ -223,7 +177,7 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
         tax: Number(product.product.product_tax) || 0,
         discount: Number(product.product.discount) || 0,
         shipping: Number(product.product.shipping) || 0,
-           product_quantity: product.product.product_quantity,
+        product_quantity: product.product.product_quantity,
         quantity: 1,
         subtotal: subTotal,
       };
@@ -302,12 +256,6 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
     setProductFields(updatedFields);
   };
 
-  const handleShippingChange = (value) => {
-    const shippingValue = Number(value) || 0;
-    setShippingCost(shippingValue);
-    setTotalShipping(shippingValue);
-  };
-
   const defaultValues = {
     expectedDeliveryDate: singlePurchase?.data?.expectedDeliveryDate || "",
     discount: singlePurchase?.data?.discount || "",
@@ -319,7 +267,7 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
     paymentStatus: singlePurchase?.data?.paymentStatus || "Unpaid",
     attachDocument: singlePurchase?.data?.attachDocument || "",
     suppliers: singlePurchase?.data?.suppliers
-      ? [singlePurchase.data.suppliers.full_name]
+      ? [singlePurchase.data.suppliers[0].full_name]
       : [],
     warehouse: singlePurchase?.data?.warehouse
       ? [singlePurchase.data.warehouse.name]
@@ -340,7 +288,7 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
         subtotal:
           product.subtotal ||
           (product.unit_price || product.productPrice) *
-            (product.product_quantity || product.quantity),
+          (product.product_quantity || product.quantity),
       })) || [],
   };
 
@@ -361,91 +309,95 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
           subtotal:
             product.subtotal ||
             (product.unit_price || product.productPrice) *
-              (product.product_quantity || product.quantity),
+            (product.product_quantity || product.quantity),
         }))
       );
     }
   }, [singlePurchase]);
 
   const handleSubmit = async (data) => {
-    if (productFields.length === 0) {
-      toast.error("Please add at least one product", {
-        position: "top-right",
-        autoClose: 3000,
-      });
-      return;
-    }
-
-    const modifyData = {
-      ...data,
-      attachDocument: Array.isArray(data.attachDocument)
-        ? data.attachDocument[0]
-        : data.attachDocument,
-      shipping: shippingCost,
-      products: productFields.map((product) => ({
-        ...product,
-        productPrice: Number(product.productPrice),
-        unit_price: Number(product.unit_price),
-        tax: Number(product.tax),
-        discount: Number(product.discount),
-        quantity: Number(product.product_quantity),
-        product_quantity: Number(product.product_quantity),
-        shipping: Number(product.shipping),
-        subtotal: Number(product.unit_price) * Number(product.product_quantity),
-      })),
-      suppliers:
-        data.suppliers &&
-        data.suppliers[0] &&
-        suppliersOptions.find((cat) => cat.label === data.suppliers[0])?.value
-          ? [
-              suppliersOptions.find((cat) => cat.label === data.suppliers[0])
-                .value,
-            ]
-          : [],
-      warehouse:
-        data.warehouse &&
-        data.warehouse[0] &&
-        warehouseOptions.find(
-          (warehouse) => warehouse.label === data.warehouse[0]
-        )?.value
-          ? warehouseOptions.find(
-              (warehouse) => warehouse.label === data.warehouse[0]
-            ).value
-          : "",
-      referenceNo: Number(data.referenceNo),
-      totalAmount,
-      totalDiscount,
-      totalTax,
-     
-      grandTotal,
-      paymentStatus: data.paymentStatus || "Unpaid",
-      totalShipping
-    };
-
-    try {
-      if (orderId) {
-        const res = await updatePurchase({
-          id: orderId,
-          ...modifyData,
-          tenantDomain,
-        }).unwrap();
-        if (res.success) {
-          toast.success("Purchase updated successfully!");
-          onClose();
+    performActionWithPermission("/dashboard/purchase-order", orderId ? 'edit' : 'create',
+      async () => {
+        if (productFields.length === 0) {
+          toast.error("Please add at least one product", {
+            position: "top-right",
+            autoClose: 3000,
+          });
+          return;
         }
-      } else {
-        const res = await createPurchaseOrder({
-          tenantDomain,
-          ...modifyData,
-        }).unwrap();
-        if (res.success) {
-          toast.success("Purchase order created successfully!");
-          onClose();
+
+        const modifyData = {
+          ...data,
+          attachDocument: Array.isArray(data.attachDocument)
+            ? data.attachDocument[0]
+            : data.attachDocument,
+          shipping: shippingCost,
+          products: productFields.map((product) => ({
+            ...product,
+            productPrice: Number(product.productPrice),
+            unit_price: Number(product.unit_price),
+            tax: Number(product.tax),
+            discount: Number(product.discount),
+            quantity: Number(product.product_quantity),
+            product_quantity: Number(product.product_quantity),
+            shipping: Number(product.shipping),
+            subtotal: Number(product.unit_price) * Number(product.product_quantity),
+          })),
+          suppliers:
+            data.suppliers &&
+              data.suppliers[0] &&
+              supplierOptions.find((cat) => cat.label === data.suppliers[0])?.value
+              ? [
+                supplierOptions.find((cat) => cat.label === data.suppliers[0])
+                  .value,
+              ]
+              : [],
+          warehouse:
+            data.warehouse &&
+              data.warehouse[0] &&
+              warehouseOptions.find(
+                (warehouse) => warehouse.label === data.warehouse[0]
+              )?.value
+              ? warehouseOptions.find(
+                (warehouse) => warehouse.label === data.warehouse[0]
+              ).value
+              : "",
+          referenceNo: Number(data.referenceNo),
+          totalAmount,
+          totalDiscount,
+          totalTax,
+
+          grandTotal,
+          paymentStatus: data.paymentStatus || "Unpaid",
+          totalShipping
+        };
+
+        try {
+          if (orderId) {
+            const res = await updatePurchase({
+              id: orderId,
+              ...modifyData,
+              tenantDomain,
+            }).unwrap();
+            if (res.success) {
+              toast.success("Purchase updated successfully!");
+              onClose();
+            }
+          } else {
+            const res = await createPurchaseOrder({
+              tenantDomain,
+              ...modifyData,
+            }).unwrap();
+            if (res.success) {
+              toast.success("Purchase order created successfully!");
+              onClose();
+            }
+          }
+        } catch (error) {
+          toast.error(`Failed to ${orderId ? "update" : "create"} purchase`);
         }
-      }
-    } catch (error) {
-      toast.error(`Failed to ${orderId ? "update" : "create"} purchase`);
-    }
+      }, `You don't have permission to ${orderId ? 'update' : 'create'} purchase order`
+    )
   };
 
   const productBox = {
@@ -659,13 +611,13 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
                       </Grid>
                       <Grid item xs={12} md={6}>
                         <TASAutocomplete
-                          options={suppliersOptions}
+                          options={supplierOptions}
                           size="medium"
                           fullWidth
                           name="suppliers"
                           label={
                             <>
-                            Select Supplier
+                              Select Supplier
                               <span style={{ color: "red", fontSize: "25px" }}>
                                 {" "}
                                 *
@@ -682,7 +634,7 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
                           }}
                         />
                       </Grid>
-                     
+
                       <Grid item xs={12} md={6}>
                         <TASSelect
                           items={[
@@ -695,7 +647,7 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
                           size="medium"
                           label={
                             <>
-                            Purchase Status
+                              Purchase Status
                               <span style={{ color: "red", fontSize: "25px" }}>
                                 {" "}
                                 *
@@ -704,7 +656,7 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
                           }
                           fullWidth
                           name="status"
-                         
+
                           sx={outlinedInputWrapperSx}
                           InputProps={{
                             startAdornment: (
@@ -740,14 +692,14 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
                           name="paymentStatus"
                           label={
                             <>
-                             Payment Status 
+                              Payment Status
                               <span style={{ color: "red", fontSize: "25px" }}>
                                 {" "}
                                 *
                               </span>
                             </>
                           }
-                         
+
                           sx={outlinedInputWrapperSx}
                           InputProps={{
                             startAdornment: (
@@ -895,9 +847,8 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
                   </Box>
                   {productFields.length > 0 && (
                     <Chip
-                      label={`${productFields.length} ${
-                        productFields.length === 1 ? "item" : "items"
-                      }`}
+                      label={`${productFields.length} ${productFields.length === 1 ? "item" : "items"
+                        }`}
                       size="small"
                       sx={{
                         color: "white",
@@ -1194,14 +1145,14 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
                                           borderColor: "#e2e8f0",
                                         },
                                         "&:hover .MuiOutlinedInput-notchedOutline":
-                                          {
-                                            borderColor: "#cbd5e1",
-                                          },
+                                        {
+                                          borderColor: "#cbd5e1",
+                                        },
                                         "&.Mui-focused .MuiOutlinedInput-notchedOutline":
-                                          {
-                                            borderColor: "#8b5cf6",
-                                            borderWidth: "2px",
-                                          },
+                                        {
+                                          borderColor: "#8b5cf6",
+                                          borderWidth: "2px",
+                                        },
                                       },
                                     }}
                                   />
@@ -1302,14 +1253,14 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
                                           borderColor: "#e2e8f0",
                                         },
                                         "&:hover .MuiOutlinedInput-notchedOutline":
-                                          {
-                                            borderColor: "#cbd5e1",
-                                          },
+                                        {
+                                          borderColor: "#cbd5e1",
+                                        },
                                         "&.Mui-focused .MuiOutlinedInput-notchedOutline":
-                                          {
-                                            borderColor: "#8b5cf6",
-                                            borderWidth: "2px",
-                                          },
+                                        {
+                                          borderColor: "#8b5cf6",
+                                          borderWidth: "2px",
+                                        },
                                       },
                                     }}
                                   />
@@ -1340,14 +1291,14 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
                                           borderColor: "#e2e8f0",
                                         },
                                         "&:hover .MuiOutlinedInput-notchedOutline":
-                                          {
-                                            borderColor: "#cbd5e1",
-                                          },
+                                        {
+                                          borderColor: "#cbd5e1",
+                                        },
                                         "&.Mui-focused .MuiOutlinedInput-notchedOutline":
-                                          {
-                                            borderColor: "#8b5cf6",
-                                            borderWidth: "2px",
-                                          },
+                                        {
+                                          borderColor: "#8b5cf6",
+                                          borderWidth: "2px",
+                                        },
                                       },
                                     }}
                                   />
@@ -1381,14 +1332,14 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
                                           borderColor: "#e2e8f0",
                                         },
                                         "&:hover .MuiOutlinedInput-notchedOutline":
-                                          {
-                                            borderColor: "#cbd5e1",
-                                          },
+                                        {
+                                          borderColor: "#cbd5e1",
+                                        },
                                         "&.Mui-focused .MuiOutlinedInput-notchedOutline":
-                                          {
-                                            borderColor: "#8b5cf6",
-                                            borderWidth: "2px",
-                                          },
+                                        {
+                                          borderColor: "#8b5cf6",
+                                          borderWidth: "2px",
+                                        },
                                       },
                                     }}
                                   />
@@ -1413,8 +1364,8 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
                                   >
                                     {formatCurrency(
                                       field.subtotal ||
-                                        (field.unit_price ||
-                                          field.productPrice) * field.product_quantity
+                                      (field.unit_price ||
+                                        field.productPrice) * field.product_quantity
                                     )}
                                   </Box>
                                 </td>
@@ -1537,7 +1488,7 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
                     onClick={() => setExpandedSummary(!expandedSummary)}
                   >
                     <Box sx={{ display: "flex", alignItems: "center" }}>
-                    
+
                       <Typography variant="h6" fontWeight="700" color="white">
                         Order Summary
                       </Typography>
@@ -1730,18 +1681,17 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
             </Grid>
           </Grid>
           <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 3 }}>
-            <Button
-              type="submit"
-              variant="contained"
-              startIcon={<SaveIcon />}
-              sx={{
-                borderRadius: 2,
-                background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`,
-                boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
-              }}
-            >
-              Save Purchase Order
-            </Button>
+            <Can action={orderId ? 'edit' : 'create'}
+              page="/dashboard/purchase-order">
+              <Button
+                type="submit"
+                variant="contained"
+                startIcon={<SaveIcon />}
+                sx={purchaseBtn}
+              >
+                Save Purchase Order
+              </Button>
+            </Can>
           </Box>
         </GarageForm>
       )}

@@ -15,7 +15,7 @@ import {
   useRestoreFromRecycledCustomerMutation,
 } from "../../../redux/api/customerApi";
 import { toast } from "react-toastify";
-import { useTenantDomain } from "../../../hooks/useTenantDomain";
+import { useAppOptions } from "../../../hooks/useAppOptions";
 
 const RecycledbinCustomerList = () => {
   const textInputRef = useRef(null);
@@ -28,7 +28,7 @@ const RecycledbinCustomerList = () => {
   const navigate = useNavigate();
 
   const limit = 10;
-const tenantDomain = useTenantDomain();
+  const { tenantDomain } = useAppOptions()
 
   const {
 
@@ -37,7 +37,7 @@ const tenantDomain = useTenantDomain();
     error: customerError,
     refetch,
   } = useGetAllCustomersQuery({
-      tenantDomain,
+    tenantDomain,
     limit,
     page: currentPage,
     searchTerm: filterType,
@@ -205,9 +205,9 @@ const tenantDomain = useTenantDomain();
                       {recyclebinCustomerList?.map((card, index) => {
                         const lastVehicle = card?.vehicles
                           ? [...card.vehicles].sort(
-                              (a, b) =>
-                                new Date(b.createdAt) - new Date(a.createdAt)
-                            )[0]
+                            (a, b) =>
+                              new Date(b.createdAt) - new Date(a.createdAt)
+                          )[0]
                           : null;
 
                         const globalIndex =
@@ -238,7 +238,7 @@ const tenantDomain = useTenantDomain();
                                 <Link
                                   to={`/dashboard/update-customer?id=${card?._id}`}
                                 >
-                                  <FaEdit className="editIcon text-blue-500" /> 
+                                  <FaEdit className="editIcon text-blue-500" />
                                 </Link>
                               </div>
                             </td>

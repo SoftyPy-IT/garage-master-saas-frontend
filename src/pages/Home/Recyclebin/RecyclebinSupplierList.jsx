@@ -12,14 +12,13 @@ import {
 } from "../../../redux/api/supplier";
 import Loading from "../../../components/Loading/Loading";
 import { Pagination } from "@mui/material";
-import { useTenantDomain } from "../../../hooks/useTenantDomain";
+import { useAppOptions } from "../../../hooks/useAppOptions";
 
 const RecyclebinSupplierList = () => {
   const [filterType, setFilterType] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const limit = 10;
-const tenantDomain = useTenantDomain();
-
+  const { tenantDomain } = useAppOptions()
   const textInputRef = useRef(null);
 
   const [permenantlyDeleteSupplier, { isLoading: supplierLoading }] =
@@ -29,7 +28,7 @@ const tenantDomain = useTenantDomain();
 
   const { data: suppliersData, isLoading: suppliersLoading } =
     useGetAllSuppliersQuery({
-      tenantDomain, 
+      tenantDomain,
       limit,
       page: currentPage,
       searchTerm: filterType,
@@ -59,7 +58,7 @@ const tenantDomain = useTenantDomain();
 
     if (result === "restore") {
       try {
-        await restoreFromRecycledSupplier({tenantDomain, id}).unwrap();
+        await restoreFromRecycledSupplier({ tenantDomain, id }).unwrap();
         swal({
           title: "Restored!",
           text: "Supplier has been restored successfully.",
@@ -105,7 +104,7 @@ const tenantDomain = useTenantDomain();
   );
   return (
     <div className="w-full mt-5 mb-24">
-      
+
       <div className="md:flex items-center justify-between my-3 mb-8">
         <div className="flex items-center justify-center ">
           <FaUsers size={70} className="invoicIcon" />
@@ -183,7 +182,7 @@ const tenantDomain = useTenantDomain();
                               <Link
                                 to={`/dashboard/update-Supplier?id=${card._id}`}
                               >
-                                <FaEdit className="editIcon text-blue-500" /> 
+                                <FaEdit className="editIcon text-blue-500" />
                               </Link>
                             </div>
                           </td>
@@ -193,12 +192,12 @@ const tenantDomain = useTenantDomain();
                               onClick={() => handleDeleteOrRestore(card._id)}
                               className="editIconWrap"
                               style={{
-                                     
-                                      background: "white",
-                                      border: "none",
-                                      padding: 5,
-                                      borderRadius: "9999px"
-                                    }}
+
+                                background: "white",
+                                border: "none",
+                                padding: 5,
+                                borderRadius: "9999px"
+                              }}
                             >
                               <FaTrashAlt className="deleteIcon text-red-500" />
                             </button>

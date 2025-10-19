@@ -30,6 +30,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap; /* ✅ prevent overflow on smaller widths */
 }
 
 .customerSelect {
@@ -44,6 +45,7 @@
   width: 310px;
   left: 650px;
   top: 98px;
+  position: relative; /* ✅ ensure proper stacking on small screens */
 }
 
 .singleCustomerProfileWrap {
@@ -51,24 +53,29 @@
   justify-content: space-between;
   width: 100%;
   flex-direction: row;
+  flex-wrap: wrap; /* ✅ helps wrapping when not enough space */
 }
 
 .customerSingleRightCard {
   right: 1%;
   top: 100px;
+  position: relative; /* ✅ avoids absolute overlap on smaller screens */
 }
+
+/* ======================= */
+/* ✅ RESPONSIVE FIXES ONLY */
+/* ======================= */
 
 @media only screen and (max-width: 1500px) {
   .singleCustomerProfileCard {
-    left: 150px;
+    left: 0px;
     top: 98px;
   }
+
   .singleCustomerProfileWrap {
-    display: flex;
     justify-content: center;
-    width: 100%;
     flex-direction: column;
-    /* align-items: center; */
+    align-items: center;
   }
 
   .tabClass {
@@ -83,33 +90,33 @@
 
 @media only screen and (max-width: 1440px) {
   .singleCustomerProfileCard {
-    left: 0%;
+    left: 0;
     top: 61px;
   }
 
   .singleCustomerProfileWrap {
-    width: 50%;
+    width: 100%;
     flex-direction: column;
+    align-items: center;
   }
 
   .customerSingleRightCard {
-    left: 40%;
+    left: 0;
     top: 78px;
   }
 }
 
 @media only screen and (max-width: 1024px) {
   .addCustomerInputFieldWrap {
-    /* align-items: baseline; */
+    flex-direction: column;
+    align-items: flex-start;
   }
 
+  .singleCustomerProfileCard,
   .customerSingleRightCard {
-    /* left: 36%; */
-  }
-
-  .singleCustomerProfileCard {
-    /* left: 61%; */
-    top: 61px;
+    width: 100%;
+    left: 0;
+    top: 40px;
   }
 }
 
@@ -118,23 +125,8 @@
     display: block;
   }
 
-  /* .singleCustomerProfileCard {
-    top: 44px;
-    left: 40%;
-  } */
-
   .recentJobs {
-    width: auto;
-  }
-
-  .customerProfileCard {
-    left: 30%;
-    top: 43px;
-  }
-
-  .customerSingleRightCard {
-    left: 0px;
-    top: 61px;
+    width: 100%;
   }
 
   .customerProfileWrap span,
@@ -142,32 +134,45 @@
   .customerProfileWrap b {
     font-size: 11px;
   }
+
+  .singleCustomerProfileCard,
+  .customerSingleRightCard {
+    width: 100%;
+    left: 0;
+    top: 40px;
+  }
+
+  .tabClass {
+    margin-top: 100px;
+  }
 }
 
 @media only screen and (max-width: 430px) {
   .singleCustomerProfileCard {
-    width: 380px;
+    width: 100%;
     top: 44px;
-    /* left: -10px; */
+    left: 0;
   }
 
   .customerSingleRightCard {
-    /* left: 9px; */
+    width: 100%;
+    left: 0;
+  }
+
+  .addVehicleField,
+  .customerSelect {
+    width: 100% !important;
+    margin: 5px 0 !important;
   }
 }
 
 @media only screen and (max-width: 380px) {
   .singleCustomerProfileCard {
-    width: 300px;
+    width: 100%;
     top: 44px;
-    /* left: -10px; */
   }
 
   .tabClass {
     margin-top: 98px;
   }
-
-  
 }
-
-

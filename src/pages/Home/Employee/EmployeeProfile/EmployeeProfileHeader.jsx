@@ -49,20 +49,17 @@ const EmployeeProfileHeader = ({
                   width: 160,
                   height: 160,
                   border: "6px solid rgba(255,255,255,0.9)",
-                  boxShadow: "0 20px 40px rgba(0,0,0,0.2), 0 0 0 4px rgba(255,255,255,0.1)",
+
                 }}
               />
               <Box
                 sx={{
-                  position: "absolute",
                   bottom: 10,
                   right: 10,
                   width: 24,
                   height: 24,
                   borderRadius: "50%",
-                  background: "linear-gradient(45deg, #4CAF50, #8BC34A)",
-                  border: "3px solid white",
-                  boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+
                 }}
               />
             </Box>
@@ -104,12 +101,7 @@ const EmployeeProfileHeader = ({
                   py: 1.5,
                   background: "linear-gradient(45deg, #667eea, #764ba2)",
                   boxShadow: "0 8px 20px rgba(102, 126, 234, 0.4)",
-                  "&:hover": {
-                    background: "linear-gradient(45deg, #764ba2, #667eea)",
-                    boxShadow: "0 12px 25px rgba(102, 126, 234, 0.6)",
-                    transform: "translateY(-2px)",
-                  },
-                  transition: "all 0.3s ease",
+
                 }}
               >
                 Message
@@ -120,13 +112,7 @@ const EmployeeProfileHeader = ({
                   color: "white",
                   width: 50,
                   height: 50,
-                  boxShadow: "0 8px 20px rgba(240, 147, 251, 0.4)",
-                  "&:hover": {
-                    background: "linear-gradient(45deg, #f5576c, #f093fb)",
-                    boxShadow: "0 12px 25px rgba(240, 147, 251, 0.6)",
-                    transform: "translateY(-2px)",
-                  },
-                  transition: "all 0.3s ease",
+
                 }}
               >
                 <EditIcon />
@@ -225,11 +211,7 @@ const EmployeeProfileHeader = ({
                 p: 3,
                 color: "white",
                 boxShadow: "0 15px 35px rgba(102, 126, 234, 0.3)",
-                transition: "all 0.3s ease",
-                "&:hover": {
-                  transform: "translateY(-8px)",
-                  boxShadow: "0 20px 40px rgba(102, 126, 234, 0.4)",
-                },
+
               }}
             >
               <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
@@ -257,11 +239,7 @@ const EmployeeProfileHeader = ({
                 p: 3,
                 color: "white",
                 boxShadow: "0 15px 35px rgba(240, 147, 251, 0.3)",
-                transition: "all 0.3s ease",
-                "&:hover": {
-                  transform: "translateY(-8px)",
-                  boxShadow: "0 20px 40px rgba(240, 147, 251, 0.4)",
-                },
+
               }}
             >
               <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
@@ -269,7 +247,7 @@ const EmployeeProfileHeader = ({
                   Total Salary
                 </Typography>
                 <Avatar sx={{ bgcolor: "rgba(255,255,255,0.2)", width: 50, height: 50 }}>
-                 ৳
+                  ৳
                 </Avatar>
               </Box>
               <Typography variant="h3" fontWeight="bold" sx={{ mb: 1 }}>
@@ -286,11 +264,7 @@ const EmployeeProfileHeader = ({
                 p: 3,
                 color: "white",
                 boxShadow: "0 15px 35px rgba(79, 172, 254, 0.3)",
-                transition: "all 0.3s ease",
-                "&:hover": {
-                  transform: "translateY(-8px)",
-                  boxShadow: "0 20px 40px rgba(79, 172, 254, 0.4)",
-                },
+
               }}
             >
               <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>

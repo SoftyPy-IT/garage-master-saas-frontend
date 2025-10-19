@@ -73,11 +73,12 @@ import {
   useDeletePurchaseMutation,
   useGetAllPurchasesQuery,
 } from "../../../redux/api/purchaseApi";
-import { useTenantDomain } from "../../../hooks/useTenantDomain";
 import { formatCurrency } from "../../../utils/formatter";
 import { formatDate } from "../../../utils/formateDate";
+import { useAppOptions } from "../../../hooks/useAppOptions";
+import { purchaseBtn } from "../../../utils/customStyle";
+import Can from "../../../components/Can";
 
-// Status chip colors
 const statusColors = {
   Received: { bg: "#10b981", color: "#fff" },
   Pending: { bg: "#f59e0b", color: "#fff" },
@@ -87,7 +88,7 @@ const statusColors = {
   Paid: { bg: "#10b981", color: "#fff" },
 };
 
-// Purchase Details Modal Component
+
 function PurchaseDetailsModal({ open, onClose, purchase }) {
   const theme = useTheme();
 
@@ -458,7 +459,7 @@ export default function PurchaseList() {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [selectedPurchase, setSelectedPurchase] = useState(null);
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain, performActionWithPermission } = useAppOptions()
 
   const { data, isLoading, refetch } = useGetAllPurchasesQuery({
     tenantDomain,
@@ -502,28 +503,33 @@ export default function PurchaseList() {
   };
 
   const handleDeletePurchase = async () => {
-    if (!confirmDelete.id) return;
+    performActionWithPermission('/dashboard/purchase-list', 'delete',
+      async () => {
+        if (!confirmDelete.id) return;
 
-    try {
-      await deletePurchase({ tenantDomain, id: confirmDelete.id }).unwrap();
-      Swal.fire({
-        title: "Deleted!",
-        text: "The purchase has been deleted successfully.",
-        icon: "success",
-        confirmButtonColor: "#6366f1",
-        iconColor: "#6366f1",
-      });
-    } catch (error) {
-      Swal.fire({
-        title: "Error!",
-        text: "An error occurred while deleting the purchase.",
-        icon: "error",
-        confirmButtonColor: "#ef4444",
-      });
-    } finally {
-      setConfirmDelete({ open: false, id: null });
-      refetch();
-    }
+        try {
+          await deletePurchase({ tenantDomain, id: confirmDelete.id }).unwrap();
+          Swal.fire({
+            title: "Deleted!",
+            text: "The purchase has been deleted successfully.",
+            icon: "success",
+            confirmButtonColor: "#6366f1",
+            iconColor: "#6366f1",
+          });
+        } catch (error) {
+          Swal.fire({
+            title: "Error!",
+            text: "An error occurred while deleting the purchase.",
+            icon: "error",
+            confirmButtonColor: "#ef4444",
+          });
+        } finally {
+          setConfirmDelete({ open: false, id: null });
+          refetch();
+        }
+
+      }, "You don't have permission to delete purchase"
+    )
   };
 
   const handleSearch = (e) => {
@@ -1210,7 +1216,10 @@ export default function PurchaseList() {
                                   },
                                 }}
                               >
-                                <VisibilityIcon fontSize="small" />
+                                <Can page='dashboard/purchase-list' action='view'>
+                                  <VisibilityIcon fontSize="small" />
+                                </Can>
+
                               </IconButton>
                             </Tooltip>
                             <Tooltip title="Edit">
@@ -1225,7 +1234,10 @@ export default function PurchaseList() {
                                   },
                                 }}
                               >
-                                <EditIcon fontSize="small" />
+                                <Can page='dashboard/purchase-list' action='edit'>
+                                  <EditIcon fontSize="small" />
+                                </Can>
+
                               </IconButton>
                             </Tooltip>
                             <Tooltip title="Delete">
@@ -1240,7 +1252,9 @@ export default function PurchaseList() {
                                   },
                                 }}
                               >
-                                <DeleteIcon fontSize="small" />
+                                <Can page='dashboard/purchase-list' action='delete'>
+                                  <DeleteIcon fontSize="small" />
+                                </Can>
                               </IconButton>
                             </Tooltip>
                           </Stack>
@@ -1519,23 +1533,16 @@ export default function PurchaseList() {
             >
               Cancel
             </Button>
-            <Button
-              onClick={handleDeletePurchase}
-              variant="contained"
-              disabled={isDeleting}
-              sx={{
-                borderRadius: "8px",
-                backgroundColor: "#ef4444",
-                "&:hover": {
-                  backgroundColor: "#dc2626",
-                },
-                px: 3,
-                py: 1,
-                boxShadow: "0 4px 6px -1px rgba(239, 68, 68, 0.2)",
-              }}
-            >
-              {isDeleting ? "Deleting..." : "Delete Purchase"}
-            </Button>
+            <Can page='dashboard/purchase-list' action='delete'>
+              <Button
+                onClick={handleDeletePurchase}
+                variant="contained"
+                disabled={isDeleting}
+                sx={purchaseBtn}
+              >
+                {isDeleting ? "Deleting..." : "Delete Purchase"}
+              </Button>
+            </Can>
           </DialogActions>
         </Dialog>
 

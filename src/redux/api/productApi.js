@@ -15,10 +15,8 @@ const productApi = baseApi.injectEndpoints({
       query: ({ tenantDomain, limit, page, searchTerm, isRecycled }) => ({
         url: "/products",
         method: "GET",
-        params: { limit, page, searchTerm, isRecycled }, 
-        headers: {
-          "x-tenant-domain": tenantDomain,
-        },
+        params: { limit, page, searchTerm, isRecycled, tenantDomain },
+
       }),
 
       providesTags: ["products"],

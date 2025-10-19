@@ -46,13 +46,13 @@ import Loading from "../../../components/Loading/Loading";
 import { columns } from "./AddAttendance";
 import { useTenantDomain } from "../../../hooks/useTenantDomain";
 import { useGetCompanyProfileQuery } from "../../../redux/api/companyProfile";
+import { useAppOptions } from "../../../hooks/useAppOptions";
 
 const UpdateAttendance = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const date = new URLSearchParams(location.search).get("date");
-  const tenantDomain = useTenantDomain();
-
+  const { tenantDomain, performActionWithPermission } = useAppOptions()
   const [employeeAttendance, setEmployeeAttendance] = useState([]);
   const [error, setError] = useState("");
   const [presentState, setPresentState] = useState(
@@ -189,39 +189,43 @@ const UpdateAttendance = () => {
   };
 
   const handleSubMitAttendance = async () => {
-    const newAttendanceData = singleAttendance?.data?.map(
-      (attendance, index) => ({
-        employee: attendance.employee,
-        full_name: attendance.full_name,
-        employeeId: attendance.employeeId,
-        status: attendance.status,
-        designation: attendance.designation,
-        date: attendance.date,
-        office_time: "10:00",
-        present: presentState[index],
-        absent: absentState[index],
-        in_time: inTime[index],
-        out_time: outTime[index],
-        overtime: overtime[index],
-        late_status: lateStatus[index],
-      })
-    );
+    performActionWithPermission('/dashboard/update-attendance', 'edit',
+      async () => {
+        const newAttendanceData = singleAttendance?.data?.map(
+          (attendance, index) => ({
+            employee: attendance.employee,
+            full_name: attendance.full_name,
+            employeeId: attendance.employeeId,
+            status: attendance.status,
+            designation: attendance.designation,
+            date: attendance.date,
+            office_time: "10:00",
+            present: presentState[index],
+            absent: absentState[index],
+            in_time: inTime[index],
+            out_time: outTime[index],
+            overtime: overtime[index],
+            late_status: lateStatus[index],
+          })
+        );
 
-    try {
-      const response = await updateAttendance({
-        tenantDomain,
-        payload: newAttendanceData,
-      }).unwrap();
-      if (response.success) {
-        toast.success("Attendance update successful.");
-        navigate("/dashboard/attendance-list");
-        refetch();
-      }
-    } catch (error) {
-      toast.error(
-        error.message || "An error occurred while updating attendance."
-      );
-    }
+        try {
+          const response = await updateAttendance({
+            tenantDomain,
+            payload: newAttendanceData,
+          }).unwrap();
+          if (response.success) {
+            toast.success("Attendance update successful.");
+            navigate("/dashboard/attendance-list");
+            refetch();
+          }
+        } catch (error) {
+          toast.error(
+            error.message || "An error occurred while updating attendance."
+          );
+        }
+      }, "You don't have permission to update attendance."
+    )
   };
 
   if (singleAttendanceLoading) {
@@ -231,7 +235,7 @@ const UpdateAttendance = () => {
   if (singleAttendanceError) {
     toast.error(
       singleAttendanceError?.data?.message ||
-        "An error occurred while fetching attendance data."
+      "An error occurred while fetching attendance data."
     );
   }
 
@@ -338,8 +342,8 @@ const UpdateAttendance = () => {
                           index < 8
                             ? "white"
                             : index < 10
-                            ? "#1e1b4b"
-                            : "#1e1b4b",
+                              ? "#1e1b4b"
+                              : "#1e1b4b",
                         fontWeight: 600,
                         fontSize: "0.875rem",
                         padding: "16px",

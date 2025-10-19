@@ -13,8 +13,8 @@ import {
 import { Pagination } from "@mui/material";
 import { HiOutlineSearch } from "react-icons/hi";
 import "./Recyclebin.css";
-import { useTenantDomain } from "../../../hooks/useTenantDomain";
-const RecyclebinJobcardList = () => {
+import { useAppOptions } from "../../../hooks/useAppOptions";
+const RecycleBinJobCardList = () => {
   const location = useLocation();
   const search = new URLSearchParams(location.search).get("search");
   const [filterType, setFilterType] = useState("");
@@ -22,12 +22,13 @@ const RecyclebinJobcardList = () => {
   const textInputRef = useRef(null);
   const navigate = useNavigate();
 
+
   const limit = 10;
-const tenantDomain = useTenantDomain();
+  const { tenantDomain } = useAppOptions()
 
   const { data: allJobCards, isLoading: jobCardLoading } =
     useGetAllJobCardsQuery({
-        tenantDomain, 
+      tenantDomain,
       limit,
       page: currentPage,
       searchTerm: filterType,
@@ -121,7 +122,7 @@ const tenantDomain = useTenantDomain();
       <div className="mt-5 overflow-x-auto">
         <div className="flex items-center justify-between my-3 mb-8">
           <div className="flex flex-wrap items-center justify-center ">
-            <FaFileInvoice className="invoicIcon" />
+
             <div className="ml-2">
               <h3 className="text-sm font-bold md:text-2xl"> Job Card </h3>
               <span className="text-sm">
@@ -205,9 +206,8 @@ const tenantDomain = useTenantDomain();
                             <td>
                               <a
                                 className="bg-[#42A0D9] text-white px-3 py-2 rounded-full mx-2 "
-                                href={`${
-                                  import.meta.env.VITE_API_URL
-                                }/jobCards/jobcard/${card._id}`}
+                                href={`${import.meta.env.VITE_API_URL
+                                  }/jobCards/jobcard/${card._id}`}
                                 target="_blank"
                                 rel="noreferrer"
                               >
@@ -227,7 +227,7 @@ const tenantDomain = useTenantDomain();
                                 <Link
                                   to={`/dashboard/update-jobcard?id=${card._id}`}
                                 >
-                                  <FaEdit className="editIcon text-blue-500" /> 
+                                  <FaEdit className="editIcon text-blue-500" />
                                 </Link>
                               </div>
                             </td>
@@ -237,12 +237,12 @@ const tenantDomain = useTenantDomain();
                                 onClick={() => handleDeleteOrRestore(card?._id)}
                                 className="editIconWrap"
                                 style={{
-                                    
-                                      background: "white",
-                                      border: "none",
-                                      padding: 5,
-                                      borderRadius: "9999px"
-                                    }}
+
+                                  background: "white",
+                                  border: "none",
+                                  padding: 5,
+                                  borderRadius: "9999px"
+                                }}
                               >
                                 <FaTrashAlt className="deleteIcon text-red-500" />
                               </button>
@@ -272,4 +272,4 @@ const tenantDomain = useTenantDomain();
   );
 };
 
-export default RecyclebinJobcardList;
+export default RecycleBinJobCardList;

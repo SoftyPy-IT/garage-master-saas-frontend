@@ -271,10 +271,7 @@ const WarehouseModal = ({ open, onClose, warehouseId }) => {
                     py: 1,
                     px: 3,
                     color: "white",
-                    background: `linear-gradient(45deg, ${theme.palette.primary.dark} 30%, ${theme.palette.primary.light} 90%)`,
-                    "&:hover": {
-                      background: `linear-gradient(45deg, ${theme.palette.primary.dark} 40%, ${theme.palette.primary.light} 90%)`,
-                    },
+
                   }}
                 >
                   {warehouseId ? "Update Warehouse" : "Create Warehouse"}

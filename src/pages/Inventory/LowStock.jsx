@@ -53,7 +53,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import SortIcon from "@mui/icons-material/Sort";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import { useGetAllStocksQuery } from "../../redux/api/stocksApi";
-import { useTenantDomain } from "../../hooks/useTenantDomain";
+import { useAppOptions } from "../../hooks/useAppOptions";
 
 export default function LowStocksPage() {
   const theme = useTheme();
@@ -70,7 +70,7 @@ export default function LowStocksPage() {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [processedProducts, setProcessedProducts] = useState([]);
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain } = useAppOptions()
   const queryParams = {
     tenantDomain,
     page: currentPage,
@@ -381,7 +381,7 @@ export default function LowStocksPage() {
               background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`,
               boxShadow: `0 4px 10px ${alpha(theme.palette.primary.main, 0.3)}`,
               transition: "all 0.3s",
-               padding:"10px",
+              padding: "10px",
               "&:hover": {
                 boxShadow: `0 6px 15px ${alpha(
                   theme.palette.primary.main,
@@ -398,7 +398,7 @@ export default function LowStocksPage() {
             variant="outlined"
             startIcon={<RefreshIcon />}
             onClick={() => refetch()}
-            sx={{ borderRadius: 2,  padding:"10px" }}
+            sx={{ borderRadius: 2, padding: "10px" }}
           >
             Refresh
           </Button>
@@ -411,8 +411,8 @@ export default function LowStocksPage() {
             countByStatus.outOfStock > 0
               ? "error"
               : countByStatus.critical > 0
-              ? "warning"
-              : "info"
+                ? "warning"
+                : "info"
           }
           sx={{
             mb: 3,
@@ -435,8 +435,8 @@ export default function LowStocksPage() {
             {countByStatus.outOfStock > 0
               ? "Critical Alert!"
               : countByStatus.critical > 0
-              ? "Warning!"
-              : "Stock Status"}
+                ? "Warning!"
+                : "Stock Status"}
           </AlertTitle>
           {countByStatus.outOfStock > 0 && (
             <>
@@ -892,21 +892,21 @@ export default function LowStocksPage() {
                 filterStatus === "all"
                   ? "out-of-stock"
                   : filterStatus === "out-of-stock"
-                  ? "critical"
-                  : filterStatus === "critical"
-                  ? "low-stock"
-                  : "all"
+                    ? "critical"
+                    : filterStatus === "critical"
+                      ? "low-stock"
+                      : "all"
               )
             }
-            sx={{ borderRadius: 2, padding:"10px" }}
+            sx={{ borderRadius: 2, padding: "10px" }}
           >
             {filterStatus === "all"
               ? "Show All"
               : filterStatus === "out-of-stock"
-              ? "Out of Stock Only"
-              : filterStatus === "critical"
-              ? "Critical Only"
-              : "Low Stock Only"}
+                ? "Out of Stock Only"
+                : filterStatus === "critical"
+                  ? "Critical Only"
+                  : "Low Stock Only"}
           </Button>
 
           <Button
@@ -917,17 +917,17 @@ export default function LowStocksPage() {
                 sortBy === "name"
                   ? "currentStock"
                   : sortBy === "currentStock"
-                  ? "brand"
-                  : "name"
+                    ? "brand"
+                    : "name"
               )
             }
-            sx={{ borderRadius: 2, padding:"10px" }}
+            sx={{ borderRadius: 2, padding: "10px" }}
           >
             {sortBy === "name"
               ? "Name"
               : sortBy === "currentStock"
-              ? "Stock"
-              : "Brand"}
+                ? "Stock"
+                : "Brand"}
             {sortOrder === "asc" ? " ⬆" : " ⬇"}
           </Button>
         </Box>
@@ -980,7 +980,7 @@ export default function LowStocksPage() {
 
                 <Box
                   sx={{
-                    p: {xs:1, sm:2},
+                    p: { xs: 1, sm: 2 },
                     display: "flex",
                     alignItems: "center",
                     borderBottom: `1px solid ${theme.palette.divider}`,
@@ -1598,8 +1598,8 @@ export default function LowStocksPage() {
                       selectedProduct.status === "out-of-stock"
                         ? "error"
                         : selectedProduct.status === "critical"
-                        ? "warning"
-                        : "info"
+                          ? "warning"
+                          : "info"
                     }
                   />
                 </Box>

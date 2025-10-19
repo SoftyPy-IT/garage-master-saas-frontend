@@ -59,8 +59,8 @@ import { useDeletePurchaseOrderMutation } from "../../../../redux/api/purchaseOr
 import ActionMenu from "../../../Inventory/PurchaseOrder/ActionMenu";
 import ReceiveDialog from "../../../Inventory/PurchaseOrder/ReceiveDialog";
 import UpdatePurchaseOrderModal from "../../../Inventory/UpdatePurchaseOrderModal";
-import PurchaseOrderModal from "../../../Inventory/PurchaseOrderModal";
 import { useTenantDomain } from "../../../../hooks/useTenantDomain";
+import PurchaseOrderModal from "../../../Inventory/PurchaseOrder/PurchaseOrderModal";
 
 const OrderTable = ({ orderData, refetch }) => {
   const theme = useTheme();
@@ -307,8 +307,8 @@ const OrderTable = ({ orderData, refetch }) => {
             <Divider />
             <MenuItem onClick={handleFilterMenuClose}>Apply Filters</MenuItem>
           </Menu>
-                     
-       
+
+
           <Button
             variant="contained"
             startIcon={<Add />}
@@ -446,7 +446,7 @@ const OrderTable = ({ orderData, refetch }) => {
         />
       )}
 
-    
+
     </GlassCard>
   );
 };

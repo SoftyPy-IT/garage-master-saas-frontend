@@ -120,7 +120,7 @@ const CustomerProfile = () => {
               </div>
             </div>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 gap-x-36 md:gap-x-4 items-center relative customerSingleRightCard">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 gap-x-36 md:gap-x-30 lg:gap-x-4 items-center relative customerSingleRightCard">
 
             <div className="bg-gradient-to-r from-[#528AFA] to-[#FEBF17] border h-16 w-32 rounded-md  relative   ">
               <div className="flex mt-2 flex-col items-center justify-center">

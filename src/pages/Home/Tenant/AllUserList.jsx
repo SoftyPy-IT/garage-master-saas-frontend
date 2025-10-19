@@ -15,7 +15,6 @@ import {
   TablePagination,
   IconButton,
   Tooltip,
-  CircularProgress,
   Paper,
   TextField,
   InputAdornment,
@@ -38,15 +37,17 @@ import {
 } from "../../../redux/api/userApi";
 import { StatusChip, StyledTableContainer } from "../../../utils/customStyle";
 import { StyledPaper } from "../../../utils";
-import { useTenantDomain } from "../../../hooks/useTenantDomain";
+import { useAppOptions } from "../../../hooks/useAppOptions";
+import Loading from "../../../components/Loading/Loading";
+import Can from "../../../components/Can";
 
 const AllUserList = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState("");
   const [isAddUserOpen, setIsAddUserOpen] = useState(false);
+  const { tenantDomain, performActionWithPermission } = useAppOptions();
 
- const tenantDomain = useTenantDomain();
 
   const {
     data: userData,
@@ -62,25 +63,26 @@ const AllUserList = () => {
   );
 
   const handleDeleteUser = async (userId) => {
-    const result = await Swal.fire({
-      title: "Are you sure?",
-      text: "This action cannot be undone!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: "Yes, delete it!",
-    });
-
-    if (result.isConfirmed) {
-      try {
-        await deleteUser({ tenantDomain, id: userId }).unwrap();
-        toast.success("User deleted successfully");
-        refetch();
-      } catch {
-        toast.error("Failed to delete user");
+    performActionWithPermission('/dashboard/all-user-list', 'delete', async () => {
+      const result = await Swal.fire({
+        title: "Are you sure?",
+        text: "This action cannot be undone!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Yes, delete it!",
+      });
+      if (result.isConfirmed) {
+        try {
+          await deleteUser({ tenantDomain, id: userId }).unwrap();
+          toast.success("User deleted successfully");
+          refetch();
+        } catch {
+          toast.error("Failed to delete user");
+        }
       }
-    }
+    }, "You don't have permission to delete user.")
   };
 
   const handleChangePage = (e, newPage) => setPage(newPage);
@@ -92,10 +94,10 @@ const AllUserList = () => {
   const formatDate = (dateString) =>
     dateString
       ? new Date(dateString).toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "short",
-          day: "numeric",
-        })
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      })
       : "N/A";
 
   const stats = {
@@ -105,16 +107,7 @@ const AllUserList = () => {
   };
 
   if (isLoading) {
-    return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="400px"
-      >
-        <CircularProgress size={60} />
-      </Box>
-    );
+    return <Loading />
   }
 
   return (
@@ -297,13 +290,15 @@ const AllUserList = () => {
                     <TableCell>{formatDate(user.createdAt)}</TableCell>
                     <TableCell>
                       <Tooltip title="Delete User">
-                        <IconButton
-                          onClick={() => handleDeleteUser(user._id)}
-                          disabled={deleteLoading}
-                          sx={{ color: "#f44336" }}
-                        >
-                          <FaTrash />
-                        </IconButton>
+                        <Can page="/dashboard/all-user-list" action="delete">
+                          <IconButton
+                            onClick={() => handleDeleteUser(user._id)}
+                            disabled={deleteLoading}
+                            sx={{ color: "#f44336" }}
+                          >
+                            <FaTrash />
+                          </IconButton>
+                        </Can>
                       </Tooltip>
                     </TableCell>
                   </TableRow>
@@ -323,6 +318,8 @@ const AllUserList = () => {
       </StyledPaper>
 
       <AddUserModal
+        tenantDomain={tenantDomain}
+        performActionWithPermission={performActionWithPermission}
         open={isAddUserOpen}
         onClose={() => setIsAddUserOpen(false)}
         onSuccess={refetch}

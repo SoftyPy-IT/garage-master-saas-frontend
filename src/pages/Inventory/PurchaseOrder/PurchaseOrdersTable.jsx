@@ -18,6 +18,7 @@ import {
 } from "@mui/material";
 
 import { useTheme, alpha } from "@mui/material/styles";
+import { formatCurrency } from "../../../utils/formateCurrency";
 
 const PurchaseOrdersTable = ({
   purchaseOrderData,
@@ -52,10 +53,7 @@ const PurchaseOrdersTable = ({
   };
 
 
-  const formatCurrency = (value) => {
-    if (value === undefined || value === null) return "৳0";
-    return `৳${Number(value).toLocaleString()}`;
-  };
+
 
   return (
     <Paper
@@ -161,14 +159,14 @@ const PurchaseOrdersTable = ({
                       order.status === "Approved"
                         ? "success"
                         : order.status === "Cancelled"
-                        ? "error"
-                        : order.status === "Pending"
-                        ? "warning"
-                        : order.status === "Shipped"
-                        ? "info"
-                        : order.status === "Received"
-                        ? "primary"
-                        : "default"
+                          ? "error"
+                          : order.status === "Pending"
+                            ? "warning"
+                            : order.status === "Shipped"
+                              ? "info"
+                              : order.status === "Received"
+                                ? "primary"
+                                : "default"
                     }
                     size="small"
                     sx={{ fontWeight: "medium", borderRadius: "6px" }}

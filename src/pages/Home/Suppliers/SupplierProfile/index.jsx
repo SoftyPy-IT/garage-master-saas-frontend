@@ -16,11 +16,11 @@ import {
   useGetSupplierWithBillPayQuery,
 } from "../../../../redux/api/supplier";
 import { useTenantDomain } from "../../../../hooks/useTenantDomain";
-import PurchaseOrderModal from "../../../Inventory/PurchaseOrderModal";
 import SupplierHeaderActions from "./SupplierHeaderActions";
 import SupplierMetrics from "./SupplierMetrics";
 import SupplierProfileHeader from "./SupplierProfileHeader";
 import SupplierTabsContent from "./SupplierTabsContent";
+import PurchaseOrderModal from "../../../Inventory/PurchaseOrder/PurchaseOrderModal";
 export default function EnhancedSupplierProfile() {
   const [tabValue, setTabValue] = useState(0);
   const [anchorEl, setAnchorEl] = useState(null);

@@ -57,5 +57,27 @@ body {
 
 
 
+.cardIcon {
+  @apply w-12 h-12 bg-blue-500 rounded-lg flex flex-col items-center justify-center text-white mr-3 flex-shrink-0;
+}
+
+.recentJobs {
+  @apply text-sm font-medium text-gray-700 min-w-[100px];
+}
+
+.customerProfileWrap {
+  @apply space-y-6;
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+  .customerProfileWrap {
+    @apply space-y-4;
+  }
+  
+  .cardIcon {
+    @apply w-10 h-10;
+  }
+}
 
 

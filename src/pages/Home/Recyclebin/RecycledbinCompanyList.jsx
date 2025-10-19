@@ -12,7 +12,7 @@ import {
   usePermanantlyDeleteCompanyMutation,
   useRestoreFromRecycledCompanyMutation,
 } from "../../../redux/api/companyApi";
-import { useTenantDomain } from "../../../hooks/useTenantDomain";
+import { useAppOptions } from "../../../hooks/useAppOptions";
 
 const RecycledbinCompanyList = () => {
   const textInputRef = useRef(null);
@@ -26,7 +26,7 @@ const RecycledbinCompanyList = () => {
   };
 
   const limit = 10;
-const tenantDomain = useTenantDomain();
+  const { tenantDomain } = useAppOptions()
 
   const {
     data: companyData,
@@ -39,7 +39,7 @@ const tenantDomain = useTenantDomain();
     searchTerm: filterType,
   });
 
-  
+
   const [permanantlyDeleteCompany] = usePermanantlyDeleteCompanyMutation();
   const [
     restoreFromRecycledCompany,
@@ -129,9 +129,9 @@ const tenantDomain = useTenantDomain();
 
   return (
     <div className="w-full mt-5 mb-24">
-     
+
       <div className="flex flex-wrap items-center justify-between my-3 mb-8">
-       
+
         <div className="mt-2 productHome md:mt-0">
           <span>Home / </span>
           <span>Company / </span>
@@ -192,9 +192,9 @@ const tenantDomain = useTenantDomain();
                     {recyclebinCompanyList?.map((card, index) => {
                       const lastVehicle = card?.vehicles
                         ? [...card.vehicles].sort(
-                            (a, b) =>
-                              new Date(b.createdAt) - new Date(a.createdAt)
-                          )[0]
+                          (a, b) =>
+                            new Date(b.createdAt) - new Date(a.createdAt)
+                        )[0]
                         : null;
 
                       const globalIndex =
@@ -224,7 +224,7 @@ const tenantDomain = useTenantDomain();
                               <Link
                                 to={`/dashboard/update-company?id=${card?._id}`}
                               >
-                                <FaEdit className="editIcon text-blue-500" /> 
+                                <FaEdit className="editIcon text-blue-500" />
                               </Link>
                             </div>
                           </td>
@@ -234,12 +234,12 @@ const tenantDomain = useTenantDomain();
                               onClick={() => handleDeleteOrRestore(card?._id)}
                               className="editIconWrap"
                               style={{
-                                      
-                                      background: "white",
-                                      border: "none",
-                                      padding: 5,
-                                      borderRadius: "9999px"
-                                    }}
+
+                                background: "white",
+                                border: "none",
+                                padding: 5,
+                                borderRadius: "9999px"
+                              }}
                             >
                               <FaTrashAlt className="deleteIcon text-red-500" />
                             </button>
