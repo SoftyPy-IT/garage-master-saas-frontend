@@ -45,9 +45,10 @@ const ProductType = () => {
           <Container maxWidth="xl">
             <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
               <CategoryIcon sx={{ fontSize: 40, mr: 2 }} />
-              <Typography variant="h4" component="h1" sx={{ fontWeight: 700 }}>
+              <p className="text-2xl md:text-4xl font-bold">Product Types</p>
+              {/* <Typography variant="h4" component="h1" sx={{ fontWeight: 700 }}>
                 Product Types
-              </Typography>
+              </Typography>  */}
             </Box>
             <Typography variant="body1" sx={{ opacity: 0.9, maxWidth: 700 }}>
               Manage your product types to better organize and categorize your

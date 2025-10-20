@@ -1103,7 +1103,7 @@ export default function PurchaseReturnForm({ id }) {
                   </Grid>
                 </Box>
 
-                <Box>
+                <div className="gap-2 space-y-3">
                   <Can page="/dashboard/purchase-return-add" action={id ? 'edit' : 'create'}>
                     <Button
                       fullWidth
@@ -1146,7 +1146,7 @@ export default function PurchaseReturnForm({ id }) {
                   >
                     Cancel
                   </Button>
-                </Box>
+                </div>
               </CardContent>
             </Card>
           </Grid>

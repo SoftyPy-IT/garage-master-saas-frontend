@@ -69,7 +69,7 @@ const ImageUpload = ({ name, label = "Upload Image", uploadBoxStyles = {}, defau
           <Box
             sx={{
               width: "100%",
-              height: "200px",
+              height: {xs:"120px", sm:"150px", md:"200px"},
               border: "2px dashed #6a1b9a",
               borderRadius: "16px",
               display: "flex",

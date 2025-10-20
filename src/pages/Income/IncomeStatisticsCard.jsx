@@ -34,7 +34,7 @@ const IncomeStatisticsCard = ({ accountSummary }) => {
   const totalData = incomeData.total || {};
 
   return (
-    <Box sx={{ p: isMobile ? 1 : 3 }}>
+    <Box sx={{ p: isMobile ? 0 : 3 }}>
       {/* Income Statistics Section */}
       <Typography
         variant="h4"

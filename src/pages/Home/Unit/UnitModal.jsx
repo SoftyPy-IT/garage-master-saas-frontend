@@ -90,7 +90,7 @@ export const UnitModal = ({ open, setOpen, unitId }) => {
             maxWidth="sm"
           >
             <GarageForm onSubmit={handleSubmit} defaultValues={defaultValue}>
-              <Grid container spacing={3}>
+              <Grid container spacing={3} sx={{padding:2}}>
 
                 <Grid item xs={12}>
                   <TASInput

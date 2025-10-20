@@ -272,7 +272,7 @@ const JobCardForm = ({
       ) : (
         <GarageForm onSubmit={handleSubmit} defaultValues={defaultvalues}>
           <Box>
-            <Grid container spacing={2}>
+             <Grid container spacing={2} style={{padding:8}}>
               <Grid item lg={12} md={12} sm={12} xs={12}>
                 <FormAutocomplete
                   name="carReg_no"

@@ -24,7 +24,25 @@ const ProductStatusSelector = ({ name = "status" }) => {
         control={control}
         defaultValue=""
         render={({ field }) => (
-          <Stack direction="row" spacing={1}>
+          <Stack
+            direction="row"
+            spacing={1}
+            sx={{
+              overflowX: "auto",
+              flexWrap: "nowrap",
+              pb: 1,
+              "&::-webkit-scrollbar": {
+                height: 6,
+              },
+              "&::-webkit-scrollbar-thumb": {
+                backgroundColor: "#ccc",
+                borderRadius: 3,
+              },
+              "&::-webkit-scrollbar-thumb:hover": {
+                backgroundColor: "#999",
+              },
+            }}
+          >
             {statuses.map((status) => {
               const isActive = field.value === status.value;
               return (

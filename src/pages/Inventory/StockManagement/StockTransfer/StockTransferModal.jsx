@@ -30,17 +30,16 @@ function StockTransferModal({
   onSubmit,
   employees,
   tenantDomain,
-  performActionWithPermission
+  performActionWithPermission,
 }) {
   const theme = useTheme();
 
-  const { data: stockData, isLoading: stockLoading } =
-    useGetAllStocksQuery({
-      tenantDomain,
-      page: 1,
-      limit: 100,
-      searchTerm: "",
-    });
+  const { data: stockData, isLoading: stockLoading } = useGetAllStocksQuery({
+    tenantDomain,
+    page: 1,
+    limit: 100,
+    searchTerm: "",
+  });
   const { data: warehouseResponse, isLoading: warehouseLoading } =
     useGetAllWarehousesQuery({
       tenantDomain,
@@ -65,7 +64,12 @@ function StockTransferModal({
     handleSubmit,
     getWarehouseName,
     resetForm,
-  } = useStockTransfer({ employees, stockData, warehouseResponse, tenantDomain });
+  } = useStockTransfer({
+    employees,
+    stockData,
+    warehouseResponse,
+    tenantDomain,
+  });
 
   // Safe close function to prevent errors
   const handleSafeClose = useCallback(() => {
@@ -77,13 +81,13 @@ function StockTransferModal({
     }
   }, [onClose, resetForm]);
 
-
   const handleFormSubmit = async () => {
-    performActionWithPermission('/dashboard/stock-transfer', 'create',
+    performActionWithPermission(
+      "/dashboard/stock-transfer",
+      "create",
       async () => {
         let res;
         try {
-
           res = await handleSubmit((result) => {
             if (result.success) {
               handleSafeClose();
@@ -93,24 +97,21 @@ function StockTransferModal({
             }
           });
           if (res.success) {
-            toast.success(res.message || 'Stock transfer successfully !')
+            toast.success(res.message || "Stock transfer successfully !");
           }
         } catch (error) {
-          toast.error(error.message || 'Failed to transfer')
+          toast.error(error.message || "Failed to transfer");
         }
-      }, `You don't have permission to stock transfer`
-    )
+      },
+      `You don't have permission to stock transfer`
+    );
   };
 
   const isLoading = stockLoading || warehouseLoading || formSubmitting;
-  const title = "Stock Transfer "
+  const title = "Stock Transfer ";
   return (
-    <GarageModal
-      open={open}
-      setOpen={onClose}
-      title={title}
-      maxWidth="md"
-    >
+    
+    <GarageModal open={open} setOpen={onClose} title={title} maxWidth="md">
       {isLoading ? (
         <LinearProgress sx={{ my: 4 }} />
       ) : (
@@ -135,7 +136,7 @@ function StockTransferModal({
       )}
       {formSubmitting && <LinearProgress sx={{ mt: 3 }} />}
 
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: '5px' }}>
+      <div className="flex flex-col md:flex-row justify-between items-center mt-[5px] space-y-3">
         <Button
           onClick={handleSafeClose}
           variant="outlined"
@@ -178,7 +179,7 @@ function StockTransferModal({
         >
           Complete Transfer
         </Button>
-      </Box>
+      </div>
     </GarageModal>
   );
 }

@@ -111,9 +111,10 @@ const IncomeList = () => {
     <Box
       sx={{
         bgcolor: "white",
-        padding: 3,
+        padding: 0,
         borderRadius: 2,
         boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)",
+        paddingTop:1
       }}
     >
       <IncomeStatisticsCard accountSummary={accountSummary} />
@@ -123,6 +124,7 @@ const IncomeList = () => {
           alignItems: "center",
           justifyContent: "space-between",
           mb: 3,
+          mt:2
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center" }}>

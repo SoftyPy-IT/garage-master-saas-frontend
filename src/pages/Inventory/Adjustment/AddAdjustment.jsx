@@ -9,12 +9,10 @@ import AddAdjustmentForm from "./AddJustmentForm";
 
 const AddAdjustment = () => {
   return (
-    <Box sx={{ py: 4, px: { xs: 2, md: 4 } }}>
+    <Box sx={{ py: 2, px: {  md: 4 } }}>
       {/* Header with animated elements */}
-      <div
-
-      >
-        <Box sx={{ mb: 4 }}>
+      <div>
+        <Box sx={{ mb: 2 }}>
           <Typography
             variant="h4"
             fontWeight="800"

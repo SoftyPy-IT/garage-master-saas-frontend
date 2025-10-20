@@ -125,13 +125,13 @@ const WarehouseModal = ({ open, onClose, warehouseId }) => {
         >
           <GarageForm onSubmit={handleSubmit} defaultValues={defaultValue}>
             <DialogTitle sx={{ pb: 1 }}>
-              <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+              <Typography variant="" sx={{ fontWeight: "bold", display:"flex" }}>
                 {warehouseId ? "Update" : "Add New"} Warehouse
               </Typography>
             </DialogTitle>
             <Divider />
 
-            <Grid container spacing={3} sx={{ mt: 0 }}>
+            <Grid container spacing={3} sx={{ mt: 0, padding:2 }}>
               {/* Warehouse Name (Required) */}
               <Grid item xs={12}>
                 <TASInput
@@ -247,7 +247,7 @@ const WarehouseModal = ({ open, onClose, warehouseId }) => {
               </Grid>
             </Grid>
 
-            <Box display='flex' justifyContent='space-between' mt='3'>
+            <div className="flex flex-col md:flex-row justify-between items-center mt-3 space-y-3">
               <Button
                 onClick={handleClose}
                 variant="outlined"
@@ -277,7 +277,7 @@ const WarehouseModal = ({ open, onClose, warehouseId }) => {
                   {warehouseId ? "Update Warehouse" : "Create Warehouse"}
                 </Button>
               </Can>
-            </Box>
+            </div>
           </GarageForm>
         </GarageModal>
       )}
