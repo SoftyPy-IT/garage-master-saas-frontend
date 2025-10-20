@@ -25,7 +25,6 @@ import {
   useDeleteDonationMutation,
   useGetAllDonationQuery,
 } from "../../redux/api/donationApi";
-import { useTenantDomain } from "../../hooks/useTenantDomain";
 import Loading from "../../components/Loading/Loading";
 import { useAccountSummaryQuery } from "../../redux/api/meta.api";
 import DonationStatisticCard from "./DonationStatisticCard";

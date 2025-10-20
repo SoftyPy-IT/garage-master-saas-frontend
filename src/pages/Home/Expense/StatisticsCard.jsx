@@ -8,7 +8,7 @@ import {
   AccountTree,
   CalendarMonth,
   ShowChart,
-  MoneyOff
+  MoneyOff,
 } from "@mui/icons-material";
 import {
   Avatar,
@@ -19,18 +19,18 @@ import {
   Typography,
   Divider,
   useTheme,
-  useMediaQuery
+  useMediaQuery,
 } from "@mui/material";
 
 const ExpenseStatisticsCard = ({ accountSummary }) => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
   // Extract expense data
   const expenseData = accountSummary?.data?.expense || {};
   const donationData = accountSummary?.data?.donation || {};
   const salaryData = accountSummary?.data?.salary || {};
-  
+
   // Extract expense values
   const monthlyData = expenseData.monthly || {};
   const yearlyData = expenseData.yearly || {};
@@ -60,16 +60,16 @@ const ExpenseStatisticsCard = ({ accountSummary }) => {
               border: "1px solid #e2e8f0",
               boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
               background: "linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)",
-              height: "100%"
+              height: "100%",
             }}
           >
-            <CardContent sx={{ p: 3 }}>
+            <CardContent sx={{ p: { xs: 1.5, md: 4 } }}>
               <Box
                 sx={{
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "space-between",
-                  mb: 2
+                  mb: 2,
                 }}
               >
                 <Box>
@@ -94,42 +94,78 @@ const ExpenseStatisticsCard = ({ accountSummary }) => {
                   <CalendarMonth />
                 </Avatar>
               </Box>
-              
+
               <Divider sx={{ my: 2 }} />
-              
+
               <Box>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    mb: 1,
+                  }}
+                >
                   <Typography variant="body2" sx={{ color: "#64748b" }}>
                     Invoice Costs:
                   </Typography>
-                  <Typography variant="body2" sx={{ fontWeight: 600, color: "#dc2626" }}>
+                  <Typography
+                    variant="body2"
+                    sx={{ fontWeight: 600, color: "#dc2626" }}
+                  >
                     ৳{monthlyData.invoiceCost?.toLocaleString() || 0}
                   </Typography>
                 </Box>
-                
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    mb: 1,
+                  }}
+                >
                   <Typography variant="body2" sx={{ color: "#64748b" }}>
                     Other Expenses:
                   </Typography>
-                  <Typography variant="body2" sx={{ fontWeight: 600, color: "#dc2626" }}>
+                  <Typography
+                    variant="body2"
+                    sx={{ fontWeight: 600, color: "#dc2626" }}
+                  >
                     ৳{monthlyData.totalOtherExpense?.toLocaleString() || 0}
                   </Typography>
                 </Box>
-                
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    mb: 1,
+                  }}
+                >
                   <Typography variant="body2" sx={{ color: "#64748b" }}>
                     Salary Expenses:
                   </Typography>
-                  <Typography variant="body2" sx={{ fontWeight: 600, color: "#dc2626" }}>
+                  <Typography
+                    variant="body2"
+                    sx={{ fontWeight: 600, color: "#dc2626" }}
+                  >
                     ৳{monthlySalary.toLocaleString()}
                   </Typography>
                 </Box>
-                
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    mb: 1,
+                  }}
+                >
                   <Typography variant="body2" sx={{ color: "#64748b" }}>
                     Donations:
                   </Typography>
-                  <Typography variant="body2" sx={{ fontWeight: 600, color: "#dc2626" }}>
+                  <Typography
+                    variant="body2"
+                    sx={{ fontWeight: 600, color: "#dc2626" }}
+                  >
                     ৳{monthlyDonation.toLocaleString()}
                   </Typography>
                 </Box>
@@ -146,7 +182,7 @@ const ExpenseStatisticsCard = ({ accountSummary }) => {
               border: "1px solid #e2e8f0",
               boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
               background: "linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)",
-              height: "100%"
+              height: "100%",
             }}
           >
             <CardContent sx={{ p: 3 }}>
@@ -155,7 +191,7 @@ const ExpenseStatisticsCard = ({ accountSummary }) => {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "space-between",
-                  mb: 2
+                  mb: 2,
                 }}
               >
                 <Box>
@@ -180,42 +216,78 @@ const ExpenseStatisticsCard = ({ accountSummary }) => {
                   <AccountBalance />
                 </Avatar>
               </Box>
-              
+
               <Divider sx={{ my: 2 }} />
-              
+
               <Box>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    mb: 1,
+                  }}
+                >
                   <Typography variant="body2" sx={{ color: "#64748b" }}>
                     Invoice Costs:
                   </Typography>
-                  <Typography variant="body2" sx={{ fontWeight: 600, color: "#b45309" }}>
+                  <Typography
+                    variant="body2"
+                    sx={{ fontWeight: 600, color: "#b45309" }}
+                  >
                     ৳{yearlyData.invoiceCost?.toLocaleString() || 0}
                   </Typography>
                 </Box>
-                
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    mb: 1,
+                  }}
+                >
                   <Typography variant="body2" sx={{ color: "#64748b" }}>
                     Other Expenses:
                   </Typography>
-                  <Typography variant="body2" sx={{ fontWeight: 600, color: "#b45309" }}>
+                  <Typography
+                    variant="body2"
+                    sx={{ fontWeight: 600, color: "#b45309" }}
+                  >
                     ৳{yearlyData.totalOtherExpense?.toLocaleString() || 0}
                   </Typography>
                 </Box>
-                
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    mb: 1,
+                  }}
+                >
                   <Typography variant="body2" sx={{ color: "#64748b" }}>
                     Salary Expenses:
                   </Typography>
-                  <Typography variant="body2" sx={{ fontWeight: 600, color: "#b45309" }}>
+                  <Typography
+                    variant="body2"
+                    sx={{ fontWeight: 600, color: "#b45309" }}
+                  >
                     ৳{salaryData.yearly?.toLocaleString() || 0}
                   </Typography>
                 </Box>
-                
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    mb: 1,
+                  }}
+                >
                   <Typography variant="body2" sx={{ color: "#64748b" }}>
                     Donations:
                   </Typography>
-                  <Typography variant="body2" sx={{ fontWeight: 600, color: "#b45309" }}>
+                  <Typography
+                    variant="body2"
+                    sx={{ fontWeight: 600, color: "#b45309" }}
+                  >
                     ৳{donationData.yearly?.toLocaleString() || 0}
                   </Typography>
                 </Box>
@@ -232,7 +304,7 @@ const ExpenseStatisticsCard = ({ accountSummary }) => {
               border: "1px solid #e2e8f0",
               boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
               background: "linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%)",
-              height: "100%"
+              height: "100%",
             }}
           >
             <CardContent sx={{ p: 3 }}>
@@ -241,7 +313,7 @@ const ExpenseStatisticsCard = ({ accountSummary }) => {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "space-between",
-                  mb: 2
+                  mb: 2,
                 }}
               >
                 <Box>
@@ -266,42 +338,78 @@ const ExpenseStatisticsCard = ({ accountSummary }) => {
                   <ShowChart />
                 </Avatar>
               </Box>
-              
+
               <Divider sx={{ my: 2 }} />
-              
+
               <Box>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    mb: 1,
+                  }}
+                >
                   <Typography variant="body2" sx={{ color: "#64748b" }}>
                     Invoice Costs:
                   </Typography>
-                  <Typography variant="body2" sx={{ fontWeight: 600, color: "#3730a3" }}>
+                  <Typography
+                    variant="body2"
+                    sx={{ fontWeight: 600, color: "#3730a3" }}
+                  >
                     ৳{totalData.invoiceCost?.toLocaleString() || 0}
                   </Typography>
                 </Box>
-                
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    mb: 1,
+                  }}
+                >
                   <Typography variant="body2" sx={{ color: "#64748b" }}>
                     Other Expenses:
                   </Typography>
-                  <Typography variant="body2" sx={{ fontWeight: 600, color: "#3730a3" }}>
+                  <Typography
+                    variant="body2"
+                    sx={{ fontWeight: 600, color: "#3730a3" }}
+                  >
                     ৳{totalData.totalOtherExpense?.toLocaleString() || 0}
                   </Typography>
                 </Box>
-                
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    mb: 1,
+                  }}
+                >
                   <Typography variant="body2" sx={{ color: "#64748b" }}>
                     Salary Expenses:
                   </Typography>
-                  <Typography variant="body2" sx={{ fontWeight: 600, color: "#3730a3" }}>
+                  <Typography
+                    variant="body2"
+                    sx={{ fontWeight: 600, color: "#3730a3" }}
+                  >
                     ৳{salaryData.total?.toLocaleString() || 0}
                   </Typography>
                 </Box>
-                
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    mb: 1,
+                  }}
+                >
                   <Typography variant="body2" sx={{ color: "#64748b" }}>
                     Donations:
                   </Typography>
-                  <Typography variant="body2" sx={{ fontWeight: 600, color: "#3730a3" }}>
+                  <Typography
+                    variant="body2"
+                    sx={{ fontWeight: 600, color: "#3730a3" }}
+                  >
                     ৳{donationData.total?.toLocaleString() || 0}
                   </Typography>
                 </Box>
@@ -329,18 +437,18 @@ const ExpenseStatisticsCard = ({ accountSummary }) => {
               border: "1px solid #e2e8f0",
               boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
               background: "linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)",
-              height: "100%"
+              height: "100%",
             }}
           >
-            <CardContent sx={{ p: 3, textAlign: 'center' }}>
+            <CardContent sx={{ p: 3, textAlign: "center" }}>
               <Avatar
                 sx={{
                   bgcolor: "#f59e0b",
                   color: "white",
                   width: 56,
                   height: 56,
-                  mx: 'auto',
-                  mb: 2
+                  mx: "auto",
+                  mb: 2,
                 }}
               >
                 <Receipt />
@@ -369,18 +477,18 @@ const ExpenseStatisticsCard = ({ accountSummary }) => {
               border: "1px solid #e2e8f0",
               boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
               background: "linear-gradient(135deg, #fee2e2 0%, #fecaca 100%)",
-              height: "100%"
+              height: "100%",
             }}
           >
-            <CardContent sx={{ p: 3, textAlign: 'center' }}>
+            <CardContent sx={{ p: 3, textAlign: "center" }}>
               <Avatar
                 sx={{
                   bgcolor: "#ef4444",
                   color: "white",
                   width: 56,
                   height: 56,
-                  mx: 'auto',
-                  mb: 2
+                  mx: "auto",
+                  mb: 2,
                 }}
               >
                 <MoneyOff />
@@ -409,18 +517,18 @@ const ExpenseStatisticsCard = ({ accountSummary }) => {
               border: "1px solid #e2e8f0",
               boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
               background: "linear-gradient(135deg, #ffe4e6 0%, #fecdd3 100%)",
-              height: "100%"
+              height: "100%",
             }}
           >
-            <CardContent sx={{ p: 3, textAlign: 'center' }}>
+            <CardContent sx={{ p: 3, textAlign: "center" }}>
               <Avatar
                 sx={{
                   bgcolor: "#f43f5e",
                   color: "white",
                   width: 56,
                   height: 56,
-                  mx: 'auto',
-                  mb: 2
+                  mx: "auto",
+                  mb: 2,
                 }}
               >
                 <Payment />
@@ -449,18 +557,18 @@ const ExpenseStatisticsCard = ({ accountSummary }) => {
               border: "1px solid #e2e8f0",
               boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
               background: "linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)",
-              height: "100%"
+              height: "100%",
             }}
           >
-            <CardContent sx={{ p: 3, textAlign: 'center' }}>
+            <CardContent sx={{ p: 3, textAlign: "center" }}>
               <Avatar
                 sx={{
                   bgcolor: "#22c55e",
                   color: "white",
                   width: 56,
                   height: 56,
-                  mx: 'auto',
-                  mb: 2
+                  mx: "auto",
+                  mb: 2,
                 }}
               >
                 <AccountTree />

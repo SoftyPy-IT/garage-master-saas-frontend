@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 "use client";
 
 import { useState, useEffect } from "react";
@@ -138,7 +139,7 @@ const AttendanceList = () => {
   }
 
   return (
-    <div className="p-6 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl shadow-md">
+    <div className="py-2 md:py-0 md:p-6 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl shadow-md">
       {/* <div className="mt-12">
         <TodayAttendance />
       </div>

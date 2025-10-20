@@ -105,11 +105,11 @@ const EmployeeList = () => {
         </div>
       </div>
       <div className="w-full mt-5 mb-24">
-        <div className="flex flex-wrap items-center justify-between mb-5">
+        <div className="flex flex-col md:flex-row items-center justify-between mb-5">
           <h3 className="txt-center tet-sm ml- sm:ml-0 ont-bold md:text-3xl">
             Employee List
           </h3>
-          <div className="flex flex-wrap items-center">
+          <div className="flex items-center">
             <button
               onClick={handleAllEmployee}
               className="bg-[#42A1DA] text-white px-4 py-2 rounded-md mr-1"
@@ -120,7 +120,7 @@ const EmployeeList = () => {
               onChange={(e) => setFilterType(e.target.value)}
               type="text"
               placeholder="Search"
-              className="border py-2 px-3 rounded-md border-[#ddd]"
+              className="border py-2 px-3 rounded-md border-[#ddd] w-[198px] md:w-full"
               ref={textInputRef}
             />
             <button

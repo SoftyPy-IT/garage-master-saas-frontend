@@ -2,7 +2,7 @@
 import { Search } from "lucide-react";
 
 const SearchFilter = ({ searchTerm, setSearchTerm, officeTime }) => (
-  <div className="px-6 mb-6">
+  <div className="md:px-6 mb-6">
     <div className="bg-white rounded-xl shadow-sm p-6">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div className="relative flex-1">

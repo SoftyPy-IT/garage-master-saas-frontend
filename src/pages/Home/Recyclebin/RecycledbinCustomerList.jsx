@@ -161,7 +161,7 @@ const RecycledbinCustomerList = () => {
             onChange={(e) => setFilterType(e.target.value)}
             type="text"
             placeholder="Search"
-            className="border py-2 px-3 rounded-md border-[#ddd]"
+            className="border py-2 px-3 rounded-md border-[#ddd] w-[180px] md:w-full"
             ref={textInputRef}
           />
           <button

@@ -200,7 +200,8 @@ const ExpenseForm = ({ id }) => {
       sx={{
         maxWidth: "1200px",
         mx: "auto",
-        p: { xs: 2, md: 4 },
+        p: { xs: 0, md: 4 },
+        paddingY:{ xs: 1, md: 0 },
         backgroundColor: "#f8fafc",
         minHeight: "100vh",
       }}
@@ -208,7 +209,7 @@ const ExpenseForm = ({ id }) => {
       <Paper
         elevation={0}
         sx={{
-          p: { xs: 3, md: 4 },
+          p: { xs: 1.5, md: 4 },
           mb: 4,
           borderRadius: 3,
           backgroundColor: "white",
@@ -268,7 +269,7 @@ const ExpenseForm = ({ id }) => {
                   backgroundColor: "white",
                 }}
               >
-                <CardContent sx={{ p: 4 }}>
+                <CardContent sx={{ p:{ xs: 1.5, md: 4 }, }}>
                   <Stack direction="row" spacing={2} alignItems="center" mb={3}>
                     <DateRange sx={{ color: "#3b82f6", fontSize: 24 }} />
                     <Typography variant="h6" fontWeight="600" color="#1e293b">
@@ -326,7 +327,7 @@ const ExpenseForm = ({ id }) => {
                   backgroundColor: "white",
                 }}
               >
-                <CardContent sx={{ p: 4 }}>
+                <CardContent sx={{ p: { xs: 1.5, md: 4 } }}>
                   <Stack
                     direction="row"
                     spacing={2}
@@ -437,7 +438,7 @@ const ExpenseForm = ({ id }) => {
                   backgroundColor: "white",
                 }}
               >
-                <CardContent sx={{ p: 4 }}>
+                <CardContent sx={{ p: { xs: 1.5, md: 4 } }}>
                   <Stack direction="row" spacing={2} alignItems="center" mb={3}>
                     <Payment sx={{ color: "#8b5cf6", fontSize: 24 }} />
                     <Typography variant="h6" fontWeight="600" color="#1e293b">

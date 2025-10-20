@@ -140,7 +140,7 @@ const RecycledbinShowRoomList = () => {
         <div className="flex items-center">
           <button
             onClick={handleAllShowRoom}
-            className="mx-6 font-semibold cursor-pointer bg-[#42A1DA] px-2 py-1 rounded-md text-white"
+            className="mx-1 md:mx-6 font-semibold cursor-pointer bg-[#42A1DA] px-2 py-1 rounded-md text-white"
           >
             All
           </button>
@@ -148,7 +148,7 @@ const RecycledbinShowRoomList = () => {
             onChange={(e) => setFilterType(e.target.value)}
             type="text"
             placeholder="Search"
-            className="border py-2 px-3 rounded-md border-[#ddd]"
+            className="border py-2 px-3 rounded-md border-[#ddd] w-[180px] md:w-full"
             ref={textInputRef}
           />
           <button className="bg-[#42A1DA] text-white px-2 py-2 rounded-md ml-1">

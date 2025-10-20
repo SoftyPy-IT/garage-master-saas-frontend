@@ -257,12 +257,12 @@ const EnhancedEmployeeSalaryListTable = ({ tenantDomain, performActionWithPermis
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <Container maxWidth="7xl">
+      <Container maxWidth="7xl" sx={{p:0}}>
         <Box sx={{ pt: 4, pb: 8 }}>
           <Paper
             elevation={3}
             sx={{
-              p: 3,
+              p: { xs: 1.5, md: 3 },
               mb: 4,
               borderRadius: 2,
               background: `linear-gradient(135deg, ${theme.palette.primary.light}15, ${theme.palette.background.paper})`,

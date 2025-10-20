@@ -26,7 +26,7 @@ const RecycledbinCompanyList = () => {
   };
 
   const limit = 10;
-  const { tenantDomain } = useAppOptions()
+  const { tenantDomain } = useAppOptions();
 
   const {
     data: companyData,
@@ -38,7 +38,6 @@ const RecycledbinCompanyList = () => {
     page: currentPage,
     searchTerm: filterType,
   });
-
 
   const [permanantlyDeleteCompany] = usePermanantlyDeleteCompanyMutation();
   const [
@@ -129,21 +128,19 @@ const RecycledbinCompanyList = () => {
 
   return (
     <div className="w-full mt-5 mb-24">
-
       <div className="flex flex-wrap items-center justify-between my-3 mb-8">
-
         <div className="mt-2 productHome md:mt-0">
           <span>Home / </span>
           <span>Company / </span>
           <span>New Company </span>
         </div>
       </div>
-      <div className="flex-wrap flex items-center justify-between mb-5 bg-[#F1F3F6] py-5 px-3">
+      <div className="flex flex-col md:flex-row items-center justify-between mb-5 bg-[#F1F3F6] py-5 md:px-3">
         <h3 className="mb-3 text-xl font-bold md:text-3xl"> Company List:</h3>
         <div className="flex items-center">
           <button
             onClick={handleAllCompany}
-            className="mx-6 font-semibold cursor-pointer bg-[#42A1DA] px-3 py-2 rounded-md text-white"
+            className="mx-1 md:mx-6 font-semibold cursor-pointer bg-[#42A1DA] px-3 py-2 rounded-md text-white"
           >
             All
           </button>
@@ -151,7 +148,7 @@ const RecycledbinCompanyList = () => {
           <input
             type="text"
             placeholder="Search"
-            className="border py-2 px-3 rounded-md border-[#ddd]"
+            className="border py-2 px-3 rounded-md border-[#ddd] w-[195px] md:w-full"
             onChange={(e) => setFilterType(e.target.value)}
             ref={textInputRef}
           />
@@ -174,7 +171,14 @@ const RecycledbinCompanyList = () => {
             </div>
           ) : (
             <>
-              <section>
+              <section
+                style={{
+                  width: "100%",
+                  overflowX: "auto",
+                  borderRadius: "12px",
+                  background: "white",
+                }}
+              >
                 <table className="table">
                   <thead className="tableWrap">
                     <tr>
@@ -192,9 +196,9 @@ const RecycledbinCompanyList = () => {
                     {recyclebinCompanyList?.map((card, index) => {
                       const lastVehicle = card?.vehicles
                         ? [...card.vehicles].sort(
-                          (a, b) =>
-                            new Date(b.createdAt) - new Date(a.createdAt)
-                        )[0]
+                            (a, b) =>
+                              new Date(b.createdAt) - new Date(a.createdAt)
+                          )[0]
                         : null;
 
                       const globalIndex =
@@ -234,11 +238,10 @@ const RecycledbinCompanyList = () => {
                               onClick={() => handleDeleteOrRestore(card?._id)}
                               className="editIconWrap"
                               style={{
-
                                 background: "white",
                                 border: "none",
                                 padding: 5,
-                                borderRadius: "9999px"
+                                borderRadius: "9999px",
                               }}
                             >
                               <FaTrashAlt className="deleteIcon text-red-500" />

@@ -97,10 +97,12 @@ const UserPermissionsTab = ({ filteredPermissions, handleDialogOpen, handleDelet
       <TableContainer
         component={Paper}
         elevation={0}
+        
         sx={{
           borderRadius: 3,
-          overflow: 'hidden',
           boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+          width: "100%",
+    overflowX: "auto",
         }}
       >
         <Table>

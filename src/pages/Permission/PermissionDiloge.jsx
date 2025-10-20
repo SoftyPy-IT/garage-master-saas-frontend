@@ -135,7 +135,7 @@ const AddEditPermissionDialog = ({
     >
       <GarageForm onSubmit={handleSubmit} defaultValues={defaultValues}>
 
-        <Grid container spacing={3}>
+        <Grid container spacing={3} padding={2}>
           <Grid item xs={12} md={6}>
             <FormAutoCompleted
               options={userOptions}
