@@ -1459,7 +1459,7 @@ export const cardStyle = {
   position: "relative",
   overflow: "visible",
   "&:hover": {
-    transform: "translateY(-5px)",
+    transform: "translateY(-5px)", 
   },
 }
 
@@ -1470,4 +1470,4 @@ export const purchaseBtn = {
   boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
 }
 
-export const buttonBox = { mt: '15px', display: {md:'flex'}, gap: '5px', justifyContent: 'end', alignItems:'center', }
+export const buttonBox = { mt: '15px', display: 'flex', gap: '5px', justifyContent: 'end' }

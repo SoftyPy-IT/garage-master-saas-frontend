@@ -295,7 +295,7 @@ const MultipleUserAccess = ({
         <TableContainer
           component={Paper}
           elevation={0}
-          sx={{
+          sx={{ 
             width: "100%",
             overflowX: "auto",
             borderRadius: 3,
