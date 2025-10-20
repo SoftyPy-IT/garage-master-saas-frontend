@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import {
@@ -6,10 +7,6 @@ import {
   Button,
   Tabs,
   Tab,
-  TextField,
-  InputAdornment,
-  Tooltip,
-  IconButton,
   Container,
   Paper,
   useTheme,
@@ -17,33 +14,14 @@ import {
 } from "@mui/material";
 import {
   Add,
-  Search,
-  Close,
-  FilterList,
   ViewModule,
   Person,
-  Group,
-  Star,
   Security,
-  AccountBalance,
-  ManageAccounts,
-  Dashboard,
-  PersonPin,
-  AssignmentTurnedIn,
-  LibraryBooks,
-  Description,
-  Payments,
-  Inventory,
-  ShoppingCart,
-  Assessment,
-  Settings,
 } from "@mui/icons-material";
 import PermissionHeader from "./PermissionHeader";
-import StatsCards from "./StatsCards";
-import PermissionMatrixTab from "./PermissionMetrixTab";
 import UserPermissionsTab from "./UserPermissionTab";
 import AddEditPermissionDialog from "./PermissionDiloge";
-import { useDeletePermissionMutation, useGetAllPermissionsQuery } from "../../redux/api/permissionApi";
+import { useDeletePermissionMutation, useDeleteMultiplePermissionsMutation, useGetAllUserPermissionsQuery } from "../../redux/api/permissionApi";
 import Swal from "sweetalert2";
 import { selectCurrentUser } from "../../redux/feature/authSlice";
 import { useSelector } from "react-redux";
@@ -53,7 +31,6 @@ import Loading from "../../components/Loading/Loading";
 import AddUserModal from "../Home/Tenant/AddUserModal";
 import MultipleAccess from "./MultipleAccess";
 import { useAppOptions } from "../../hooks/useAppOptions";
-import MultipleUserAccess from "./MultipleUserAccess";
 
 const Permission = () => {
   const theme = useTheme();
@@ -64,161 +41,65 @@ const Permission = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [editingPermissionId, setEditingPermissionId] = useState(null);
   const { tenantDomain, performActionWithPermission } = useAppOptions();
-
   const user = useSelector(selectCurrentUser);
   const [pageOpen, setPageOpen] = useState(false)
   const [roleOpen, setRoleOpen] = useState(false)
   const [userOpen, setUserOpen] = useState(false)
-
-  const { data: permissionsData, isLoading: permissionsLoading } = useGetAllPermissionsQuery({ tenantDomain });
-  const [deletePermission] = useDeletePermissionMutation()
-
-  const pages = permissionsData?.data?.permissions
-    ? [...new Map(permissionsData.data?.permissions
-      .filter(item => item?.page?._id)
-      .map(item => [item.page._id, item.page])
-    ).values()]
-    : [];
-
-  const roles = permissionsData?.data?.permissions
-    ? [...new Map(permissionsData?.data?.permissions
-      .flatMap(item => item.roles || [])
-      .filter(role => role?._id)
-      .map(role => [role._id, role])
-    ).values()]
-    : [];
-
-  // Use summary data from backend instead of calculating
-  const [stats, setStats] = useState({
-    users: 0,
-    roles: 0,
-    pages: 0,
-    permissions: 0,
+  const [filters, setFilters] = useState({
+    page: 1,
+    limit: 10,
+    sortBy: 'createdAt',
+    sortOrder: 'desc',
+    role: '',
+    user: '',
+    searchTerm: ''
   });
+  const { data: permissionData, isLoading: permissionsLoading, refetch } = useGetAllUserPermissionsQuery({
+    tenantDomain,
+    ...filters
+  })
 
-  const transformPermissionData = (apiData) => {
-    if (!apiData?.data) return [];
+  const [deletePermission] = useDeletePermissionMutation()
+  const [deleteMultiplePermissions] = useDeleteMultiplePermissionsMutation()
 
-    return apiData.data.permissions?.flatMap(permission => {
-      const roleArray = Array.isArray(permission.roles) ? permission.roles : [permission.roles];
-
-      return roleArray.map(role => ({
-        id: permission._id,
-        permissionId: permission._id,
-        roleId: role?._id || '',
-        pageId: permission.page?._id || '',
-        create: permission.create || false,
-        edit: permission.edit || false,
-        view: permission.view || false,
-        delete: permission.delete || false,
-        roleName: role?.name || 'Unknown Role',
-        pageName: permission.page?.name || 'Unknown Page',
-      }));
-    });
+  const handlePageChange = (newPage) => {
+    setFilters(prev => ({ ...prev, page: newPage }));
   };
 
-  const buildPermissionMatrix = () => {
-    if (!permissionsData?.data) return [];
-
-    const matrix = [];
-    const pageCategories = [...new Set(pages.map(page => page.category).filter(Boolean))];
-
-    pageCategories.forEach(category => {
-      const categoryPages = pages.filter(page => page.category === category);
-      const categoryPermissions = [];
-
-      categoryPages.forEach(page => {
-        const pagePermissions = permissionsData?.data?.permissions?.filter(p => p.page?._id === page._id);
-
-        if (pagePermissions.length > 0) {
-          const actions = ['view', 'create', 'edit', 'delete'];
-
-          actions.forEach(action => {
-            const permissionEntry = {
-              name: `${action.charAt(0).toUpperCase() + action.slice(1)} ${page.name}`,
-            };
-
-            roles.forEach(role => {
-              const roleKey = role?.name ? role.name.toLowerCase().replace(/\s+/g, '') : 'unknownrole';
-
-              const hasPermission = pagePermissions.some(permission => {
-                const roleArray = Array.isArray(permission.roles) ? permission.roles : [permission.roles];
-                const roleMatch = roleArray.some(r => r._id === role._id);
-                return roleMatch && permission[action];
-              });
-
-              permissionEntry[roleKey] = hasPermission;
-            });
-
-            categoryPermissions.push(permissionEntry);
-          });
-        }
-      });
-
-      if (categoryPermissions.length > 0) {
-        matrix.push({
-          category: category,
-          icon: getCategoryIcon(category),
-          permissions: categoryPermissions
-        });
-      }
-    });
-
-    return matrix;
+  const handleFilterChange = (newFilters) => {
+    setFilters(prev => ({ ...prev, ...newFilters, page: 1 }));
   };
 
-  const getCategoryIcon = (category) => {
-    const iconMap = {
-      'Main': <Dashboard />,
-      'Client': <PersonPin />,
-      'Jobcard': <AssignmentTurnedIn />,
-      'Invoice': <LibraryBooks />,
-      'Quotation': <Description />,
-      'Payment': <Payments />,
-      'Inventory': <Inventory />,
-      'Purchase': <ShoppingCart />,
-      'HRM': <Group />,
-      'Accounts': <AccountBalance />,
-      'Reports': <Assessment />,
-      'Settings': <Settings />,
-      'Permission': <Security />,
-      'Role Management': <ManageAccounts />,
-      'user-management': <Person />,
-      'page-management': <ViewModule />,
-      'Feature Access': <Star />,
-      'All User List': <Group />,
-      'Profile': <Person />,
-      'Money Receipt Management': <Payments />,
-      'Brand': <ViewModule />
-    };
-
-    return iconMap[category] || <ViewModule />;
-  };
+  // Refetch data when filters change
+  useEffect(() => {
+    refetch();
+  }, [filters, refetch]);
 
   useEffect(() => {
-    if (permissionsData?.data) {
-      const transformedPermissions = transformPermissionData(permissionsData);
-      setPermissions(transformedPermissions);
-      setFilteredPermissions(transformedPermissions);
-      if (permissionsData.data.summary) {
-        setStats({
-          users: permissionsData.data.summary.totalUsers || 0,
-          roles: permissionsData.data.summary.totalRoles || 0,
-          pages: permissionsData.data.summary.totalPages || 0,
-          permissions: permissionsData.data.summary.totalPermissions || 0,
-        });
-      }
+    if (permissionData?.data?.permissions) {
+      setPermissions(permissionData.data.permissions);
+      setFilteredPermissions(permissionData.data.permissions);
     }
-  }, [permissionsData]);
+  }, [permissionData]);
 
   useEffect(() => {
     if (searchTerm === "") {
       setFilteredPermissions(permissions);
     } else {
       const filtered = permissions.filter(
-        (perm) =>
-          perm.roleName?.toLowerCase()?.includes(searchTerm?.toLowerCase()) ||
-          perm.pageName?.toLowerCase()?.includes(searchTerm?.toLowerCase())
+        (perm) => {
+          const page = perm.pageId && perm.pageId.length > 0 ? perm.pageId[0] : {};
+          const role = perm.roleId && perm.roleId.length > 0 ? perm.roleId[0] : {};
+          const user = perm.userId && perm.userId.length > 0 ? perm.userId[0] : {};
+
+          return (
+            role.name?.toLowerCase()?.includes(searchTerm?.toLowerCase()) ||
+            page.name?.toLowerCase()?.includes(searchTerm?.toLowerCase()) ||
+            page.path?.toLowerCase()?.includes(searchTerm?.toLowerCase()) ||
+            user.name?.toLowerCase()?.includes(searchTerm?.toLowerCase()) ||
+            user.email?.toLowerCase()?.includes(searchTerm?.toLowerCase())
+          );
+        }
       );
       setFilteredPermissions(filtered);
     }
@@ -255,7 +136,6 @@ const Permission = () => {
       cancelButtonColor: theme.palette.error.main,
       confirmButtonText: "Yes, delete it!",
       background: "#fff",
-
     });
 
     if (confirmResult.isConfirmed) {
@@ -273,16 +153,67 @@ const Permission = () => {
           showConfirmButton: false,
           timer: 2000,
           background: "#fff",
-
         });
+
+        // Refetch data to update the table
+        refetch();
       } catch (error) {
         Swal.fire({
           icon: "error",
           title: "Error!",
-          text: "An error occurred while deleting the permission.",
+          text: error?.data?.message || "An error occurred while deleting the permission.",
           confirmButtonColor: theme.palette.primary.main,
           background: "#fff",
+        });
+      }
+    }
+  };
 
+  const handleDeleteMultiplePermissions = async (permissionIds) => {
+    const confirmResult = await Swal.fire({
+      title: "Are you sure?",
+      text: `You are about to delete ${permissionIds.length} permission(s). You won't be able to revert this!`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: theme.palette.primary.main,
+      cancelButtonColor: theme.palette.error.main,
+      confirmButtonText: "Yes, delete them!",
+      background: "#fff",
+    });
+
+    if (confirmResult.isConfirmed) {
+      try {
+        const result = await deleteMultiplePermissions({
+          userId: user?.userId,
+          tenantDomain,
+          permissionIds,
+        }).unwrap();
+
+        const { successful, failed } = result.data;
+
+        Swal.fire({
+          icon: successful > 0 ? "success" : "error",
+          title: successful > 0 ? "Deleted!" : "Error!",
+          html: `
+            <div>
+              ${successful > 0 ? `<p>${successful} permission(s) deleted successfully.</p>` : ''}
+              ${failed > 0 ? `<p>${failed} permission(s) could not be deleted.</p>` : ''}
+            </div>
+          `,
+          showConfirmButton: true,
+          confirmButtonColor: theme.palette.primary.main,
+          background: "#fff",
+        });
+
+        // Refetch data to update the table
+        refetch();
+      } catch (error) {
+        Swal.fire({
+          icon: "error",
+          title: "Error!",
+          text: error?.data?.message || "An error occurred while deleting the permissions.",
+          confirmButtonColor: theme.palette.primary.main,
+          background: "#fff",
         });
       }
     }
@@ -299,8 +230,6 @@ const Permission = () => {
     return roleColors[roleName] || 'default';
   };
 
-  const permissionMatrix = buildPermissionMatrix();
-
   return (
     <Box sx={{
       minHeight: '100vh',
@@ -309,8 +238,6 @@ const Permission = () => {
     }}>
       <Container maxWidth="xl">
         <PermissionHeader />
-        <StatsCards stats={stats} />
-
         <Paper
           elevation={0}
           sx={{
@@ -422,106 +349,25 @@ const Permission = () => {
           >
 
             <Tab
-              label="User Permissions"
+              label="Multiple User Permission "
               icon={<Person />}
               iconPosition="start"
             />
+
             <Tab
-              label="Permission Matrix"
+              label="User Permissions "
               icon={<ViewModule />}
               iconPosition="start"
             />
-            <Tab
-              label="Multiple User Permission "
-              icon={<ViewModule />}
-              iconPosition="start"
-            />
-            <Tab
-              label="Give  User Permission "
-              icon={<ViewModule />}
-              iconPosition="start"
-            />
+
           </Tabs>
 
-          <Box sx={{ mb: 3, display: "flex" }}>
-            <TextField
-              placeholder="Search permissions..."
-              variant="outlined"
-              size="small"
-              fullWidth
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              sx={{
-                borderRadius: 3,
-                "& .MuiOutlinedInput-root": {
-                  borderRadius: 3,
-                  backgroundColor: 'rgba(255, 255, 255, 0.7)',
-                  '&:hover fieldset': {
-                    borderColor: alpha(theme.palette.primary.main, 0.5),
-                  },
-                  '&.Mui-focused fieldset': {
-                    borderColor: theme.palette.primary.main,
-                  },
-                },
-              }}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Search color="action" />
-                  </InputAdornment>
-                ),
-                endAdornment: searchTerm && (
-                  <InputAdornment position="end">
-                    <IconButton size="small" onClick={() => setSearchTerm("")}>
-                      <Close />
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
-            <Tooltip title="Advanced Filters">
-              <IconButton
-                sx={{
-                  ml: 2,
-                  backgroundColor: 'rgba(255, 255, 255, 0.7)',
-                  '&:hover': {
-                    backgroundColor: alpha(theme.palette.primary.main, 0.1),
-                  }
-                }}
-              >
-                <FilterList />
-              </IconButton>
-            </Tooltip>
-          </Box>
           <Box>
 
             {tabValue === 0 && (
               <div>
-                <UserPermissionsTab
-                  filteredPermissions={filteredPermissions}
-                  pages={pages}
-                  roles={roles}
-                  handleDialogOpen={handleDialogOpen}
-                  handleDeletePermission={handleDeletePermission}
-                  getRoleColor={getRoleColor}
-                  loading={permissionsLoading}
-                />
-              </div>
-            )}
-            {tabValue === 1 && (
-              <div>
-                <PermissionMatrixTab
-                  permissionMatrix={permissionMatrix}
-                  roles={roles}
-                />
-              </div>
-            )}
-            {tabValue === 2 && (
-              <div>
                 <MultipleAccess
                   filteredPermissions={filteredPermissions}
-                  pages={pages}
-                  roles={roles}
                   handleDialogOpen={handleDialogOpen}
                   handleDeletePermission={handleDeletePermission}
                   getRoleColor={getRoleColor}
@@ -529,18 +375,24 @@ const Permission = () => {
                 />
               </div>
             )}
-            {tabValue === 3 && (
+
+            {tabValue === 1 && (
               <div>
-                <MultipleUserAccess
 
-
+                <UserPermissionsTab
+                  permissionData={permissionData?.data || {}}
+                  loading={permissionsLoading}
+                  onPageChange={handlePageChange}
+                  onFilterChange={handleFilterChange}
+                  filters={filters}
                   handleDialogOpen={handleDialogOpen}
                   handleDeletePermission={handleDeletePermission}
+                  handleDeleteMultiplePermissions={handleDeleteMultiplePermissions}
                   getRoleColor={getRoleColor}
-                  loading={permissionsLoading}
                 />
               </div>
             )}
+
           </Box>
         </Paper>
 
