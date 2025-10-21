@@ -27,21 +27,17 @@ const MultipleAccess = ({ handleDialogOpen, handleDeletePermission, getRoleColor
         },
     })
 
-    // Get all pages from pageData
     const getAllPages = () => {
         if (!pageData || !pageData.data) return [];
         return pageData.data;
     };
 
     const allPages = getAllPages();
-
-    // Transform pageData to a format compatible with the existing table
     const transformPageDataToPermissions = () => {
         if (!pageData || !pageData.data) return [];
 
         const permissions = [];
 
-        // For each page, create permission entries for all users
         allPages.forEach(page => {
 
             permissions.push({
@@ -50,7 +46,7 @@ const MultipleAccess = ({ handleDialogOpen, handleDeletePermission, getRoleColor
                 pageName: page.name,
                 pagePath: page.path,
                 pageCategory: page.category,
-                create: false, // Default values
+                create: false,
                 edit: false,
                 view: false,
                 delete: false,
@@ -95,7 +91,6 @@ const MultipleAccess = ({ handleDialogOpen, handleDeletePermission, getRoleColor
             const isSelected = prev.includes(permissionId);
 
             if (isSelected) {
-                // If unselecting, remove from permissionChanges
                 setPermissionChanges(current => {
                     const newChanges = { ...current };
                     delete newChanges[permissionId];
@@ -103,7 +98,6 @@ const MultipleAccess = ({ handleDialogOpen, handleDeletePermission, getRoleColor
                 });
                 return prev.filter(id => id !== permissionId);
             } else {
-                // If selecting, add default permissions to permissionChanges
                 setPermissionChanges(current => ({
                     ...current,
                     [permissionId]: {
@@ -175,8 +169,6 @@ const MultipleAccess = ({ handleDialogOpen, handleDeletePermission, getRoleColor
                 });
                 return;
             }
-
-            // Get all selected permission IDs
             const allPermissionIds = new Set([
                 ...selectedRows,
                 ...Object.keys(permissionChanges)
@@ -193,28 +185,24 @@ const MultipleAccess = ({ handleDialogOpen, handleDeletePermission, getRoleColor
                 });
                 return;
             }
-
-            // Prepare permissions data based on selections
             const allPermissionsData = [];
 
             allPermissionIds.forEach(permissionId => {
                 const permission = pagePermissions.find(p => p.id === permissionId);
                 const changes = permissionChanges[permissionId] || {};
-
-                // Create a base permission object with the page ID and permission flags
                 const basePermission = {
-                    pageId: [permission.pageId], // Array of page IDs as per backend model
+                    pageId: [permission.pageId],
                     create: changes.create !== undefined ? changes.create : permission.create,
                     edit: changes.edit !== undefined ? changes.edit : permission.edit,
                     view: changes.view !== undefined ? changes.view : permission.view,
                     delete: changes.delete !== undefined ? changes.delete : permission.delete,
                 };
 
-                // Create a single permission object with all selected users and roles
+
                 allPermissionsData.push({
                     ...basePermission,
-                    userId: selectedUsers.length > 0 ? selectedUsers : [null], // Use [null] if no users selected
-                    roleId: selectedRoles.length > 0 ? selectedRoles : [null], // Use [null] if no roles selected
+                    userId: selectedUsers.length > 0 ? selectedUsers : [null],
+                    roleId: selectedRoles.length > 0 ? selectedRoles : [null],
                 });
             });
 
@@ -228,16 +216,12 @@ const MultipleAccess = ({ handleDialogOpen, handleDeletePermission, getRoleColor
                 });
                 return;
             }
-
-            console.log('Final permission data:', allPermissionsData);
-
-            // Send the data to backend
             const result = await createOrUpdateMultiplePermissions({
                 tenantDomain,
                 permissionData: allPermissionsData,
             }).unwrap();
 
-            // Show success message
+
             Swal.fire({
                 icon: "success",
                 title: "Success!",
@@ -246,8 +230,6 @@ const MultipleAccess = ({ handleDialogOpen, handleDeletePermission, getRoleColor
                 timer: 2000,
                 background: "#fff",
             });
-
-            // Reset form state
             setSelectedRows([]);
             setPermissionChanges({});
             methods.reset();
@@ -315,7 +297,7 @@ const MultipleAccess = ({ handleDialogOpen, handleDeletePermission, getRoleColor
                             {pagePermissions.length > 0 ? (
                                 categoriesArray.map((categoryGroup) => (
                                     <>
-                                        {/* Category Header */}
+
                                         <TableRow key={`category-${categoryGroup.category}`}>
                                             <TableCell colSpan={8} sx={{
                                                 bgcolor: alpha(theme.palette.primary.main, 0.05),
@@ -330,7 +312,7 @@ const MultipleAccess = ({ handleDialogOpen, handleDeletePermission, getRoleColor
                                             </TableCell>
                                         </TableRow>
 
-                                        {/* Pages in this category */}
+
                                         {categoryGroup.permissions.map((permission) => (
                                             <TableRow
                                                 key={permission.id}
