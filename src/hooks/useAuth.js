@@ -12,11 +12,10 @@ export const useAuth = () => {
                 let res = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
                     method: "GET",
                     credentials: "include",
-                    headers: { "Content-Type": "application/json" },
                 });
 
-                // If access token expired → try refresh
                 if (res.status === 401) {
+                    // try refresh
                     const refreshRes = await fetch(`${import.meta.env.VITE_API_URL}/auth/refresh-token`, {
                         method: "POST",
                         credentials: "include",
@@ -24,26 +23,30 @@ export const useAuth = () => {
 
                     if (!refreshRes.ok) throw new Error("Refresh token failed");
 
-                    const refreshData = await refreshRes.json();
-                    const newToken = refreshData.data.accessToken;
-                    dispatch(setUser({ token: newToken }));
+                    const { data } = await refreshRes.json();
 
-                    // Retry /auth/me with new access token
+                    // Retry /me with new token
                     res = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
                         method: "GET",
                         credentials: "include",
-                        headers: {
-                            "Content-Type": "application/json",
-                            Authorization: `Bearer ${newToken}`,
-                        },
+                        headers: { Authorization: `Bearer ${data.accessToken}` },
                     });
+
+                    if (!res.ok) throw new Error("Failed after refresh");
                 }
 
-                const data = await res.json();
+                if (!res.ok) throw new Error("Auth failed");
 
-                if (!data.success) throw new Error(data.message || "Auth failed");
+                const { data } = await res.json();
 
-                dispatch(setUser({ token: data.data.accessToken, user: data.data }));
+                if (!data || !data.userId) throw new Error("Invalid user data");
+
+                // Make sure to include both tokens and user data
+                dispatch(setUser({
+                    token: data.accessToken,
+                    refreshToken: data.refreshToken, // Make sure this is included
+                    user: data
+                }));
             } catch (err) {
                 console.error("Auth check failed:", err);
                 dispatch(logout());

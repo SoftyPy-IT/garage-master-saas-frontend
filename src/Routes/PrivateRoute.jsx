@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import { Box, CircularProgress } from "@mui/material";
 import { useNavigate } from "react-router-dom";
@@ -8,12 +9,13 @@ import { useDispatch } from "react-redux";
 import { logout } from "../redux/feature/authSlice";
 
 const ProtectedRoute = ({ children, pagePath, action = "view" }) => {
-  const { checkPermission, loading: permissionsLoading, permissions, user } = usePermissions();
-  const { loading: authLoading } = useAuth(); // <- new
+  const { checkPermission, loading: permissionsLoading, user } = usePermissions();
+  const { loading: authLoading } = useAuth();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  if (authLoading || permissionsLoading || permissions.length === 0) {
+  // Wait until auth & permissions are fully loaded
+  if (authLoading || permissionsLoading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
         <CircularProgress size={60} />
@@ -21,11 +23,11 @@ const ProtectedRoute = ({ children, pagePath, action = "view" }) => {
     );
   }
 
-  if (!user) {
-    dispatch(logout());
-    navigate("/login", { replace: true });
-    return null;
-  }
+  // if (!user?.accessToken || !user?.refreshToken) {
+  //   dispatch(logout());
+  //   navigate("/login", { replace: true });
+  //   return null;
+  // }
 
   const hasAccess = checkPermission(pagePath, action);
 

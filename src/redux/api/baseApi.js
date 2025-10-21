@@ -16,7 +16,6 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions);
 
   if (result?.error?.status === 401) {
-    console.warn("Access token expired, attempting refresh...");
 
     const refreshResult = await baseQuery(
       { url: "/auth/refresh-token", method: "POST", credentials: "include" },
@@ -28,7 +27,7 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
       const newToken = refreshResult.data.data.accessToken;
       api.dispatch(setUser({ token: newToken }));
 
-      // Retry original request
+      // retry original request again
       result = await baseQuery(args, api, extraOptions);
     } else {
       console.error("Refresh token failed, logging out");
