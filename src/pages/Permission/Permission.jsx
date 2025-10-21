@@ -70,7 +70,6 @@ const Permission = () => {
     setFilters(prev => ({ ...prev, ...newFilters, page: 1 }));
   };
 
-  // Refetch data when filters change
   useEffect(() => {
     refetch();
   }, [filters, refetch]);
@@ -140,8 +139,19 @@ const Permission = () => {
 
     if (confirmResult.isConfirmed) {
       try {
+        // Find the permission to get the associated user ID
+        const permission = permissions.find(p => p._id === id);
+        if (!permission) {
+          throw new Error("Permission not found");
+        }
+
+        // Get the first user ID from the permission's userId array
+        const permissionUserId = permission.userId && permission.userId.length > 0
+          ? permission.userId[0]._id || permission.userId[0]
+          : user?.userId;
+
         await deletePermission({
-          userId: user?.userId,
+          userId: permissionUserId,
           tenantDomain,
           id,
         }).unwrap();
@@ -158,10 +168,23 @@ const Permission = () => {
         // Refetch data to update the table
         refetch();
       } catch (error) {
+        console.error("Delete permission error:", error);
+
+        // Handle specific error messages
+        let errorMessage = "An error occurred while deleting the permission.";
+
+        if (error?.data?.message) {
+          errorMessage = error.data.message;
+        } else if (error?.status === 403) {
+          errorMessage = "You don't have permission to delete this permission.";
+        } else if (error?.status === 404) {
+          errorMessage = "Permission not found.";
+        }
+
         Swal.fire({
           icon: "error",
           title: "Error!",
-          text: error?.data?.message || "An error occurred while deleting the permission.",
+          text: errorMessage,
           confirmButtonColor: theme.palette.primary.main,
           background: "#fff",
         });
@@ -183,35 +206,103 @@ const Permission = () => {
 
     if (confirmResult.isConfirmed) {
       try {
-        const result = await deleteMultiplePermissions({
-          userId: user?.userId,
-          tenantDomain,
-          permissionIds,
-        }).unwrap();
+        // Group permissions by user ID to handle multiple users
+        const permissionsByUser = {};
 
-        const { successful, failed } = result.data;
+        permissionIds.forEach(id => {
+          const permission = permissions.find(p => p._id === id);
+          if (permission) {
+            const permissionUserId = permission.userId && permission.userId.length > 0
+              ? permission.userId[0]._id || permission.userId[0]
+              : user?.userId;
 
-        Swal.fire({
-          icon: successful > 0 ? "success" : "error",
-          title: successful > 0 ? "Deleted!" : "Error!",
-          html: `
-            <div>
-              ${successful > 0 ? `<p>${successful} permission(s) deleted successfully.</p>` : ''}
-              ${failed > 0 ? `<p>${failed} permission(s) could not be deleted.</p>` : ''}
-            </div>
-          `,
-          showConfirmButton: true,
-          confirmButtonColor: theme.palette.primary.main,
-          background: "#fff",
+            if (!permissionsByUser[permissionUserId]) {
+              permissionsByUser[permissionUserId] = [];
+            }
+            permissionsByUser[permissionUserId].push(id);
+          }
         });
+
+        let totalSuccessful = 0;
+        let totalFailed = 0;
+
+        // Process each user's permissions separately
+        for (const [userId, ids] of Object.entries(permissionsByUser)) {
+          try {
+            const result = await deleteMultiplePermissions({
+              userId,
+              tenantDomain,
+              permissionIds: ids,
+            }).unwrap();
+
+            const { successful, failed } = result.data;
+            totalSuccessful += successful;
+            totalFailed += failed;
+          } catch (error) {
+            console.error(`Error deleting permissions for user ${userId}:`, error);
+            totalFailed += ids.length;
+          }
+        }
+
+        // Show detailed results
+        if (totalSuccessful > 0 && totalFailed === 0) {
+          Swal.fire({
+            icon: "success",
+            title: "Deleted!",
+            text: `${totalSuccessful} permission(s) deleted successfully.`,
+            showConfirmButton: false,
+            timer: 2000,
+            background: "#fff",
+          });
+        } else if (totalSuccessful > 0 && totalFailed > 0) {
+          Swal.fire({
+            icon: "warning",
+            title: "Partial Success",
+            html: `
+              <div>
+                <p>${totalSuccessful} permission(s) deleted successfully.</p>
+                <p>${totalFailed} permission(s) could not be deleted.</p>
+                <p class="text-muted">This might be because you don't have permission to delete some of these permissions.</p>
+              </div>
+            `,
+            confirmButtonColor: theme.palette.primary.main,
+            background: "#fff",
+          });
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Error!",
+            html: `
+              <div>
+                <p>None of the permissions could be deleted.</p>
+                <p class="text-muted">This might be because you don't have permission to delete these permissions or they don't exist.</p>
+              </div>
+            `,
+            confirmButtonColor: theme.palette.primary.main,
+            background: "#fff",
+          });
+        }
 
         // Refetch data to update the table
         refetch();
       } catch (error) {
+        console.error("Delete multiple permissions error:", error);
+
+        // Handle specific error messages
+        let errorMessage = "An error occurred while deleting the permissions.";
+
+        if (error?.data?.message) {
+          errorMessage = error.data.message;
+        } else if (error?.status === 403) {
+          errorMessage = "You don't have permission to delete these permissions.";
+        } else if (error?.status === 404) {
+          errorMessage = "One or more permissions not found.";
+        }
+
         Swal.fire({
           icon: "error",
           title: "Error!",
-          text: error?.data?.message || "An error occurred while deleting the permissions.",
+          text: errorMessage,
           confirmButtonColor: theme.palette.primary.main,
           background: "#fff",
         });
@@ -234,15 +325,14 @@ const Permission = () => {
     <Box sx={{
       minHeight: '100vh',
       background: `linear-gradient(135deg, ${alpha(theme.palette.primary.light, 0.1)} 0%, ${alpha(theme.palette.secondary.light, 0.1)} 100%)`,
-      py: 3,
-
+      py: 3
     }}>
-      <Container maxWidth="xl" sx={{p:0}}>
+      <Container maxWidth="xl">
         <PermissionHeader />
         <Paper
           elevation={0}
           sx={{
-            p: { xs: 1.5, md: 3 },
+            p: 3,
             mb: 4,
             borderRadius: 4,
             background: 'rgba(255, 255, 255, 0.9)',
@@ -267,9 +357,9 @@ const Permission = () => {
                 startIcon={<Person />}
                 onClick={handleUserOpen}
                 sx={{
-                  borderRadius: 2,
-                  px: { xs: 1.3, md: 3 },
-                  py: 1,
+                  borderRadius: 3,
+                  px: 3,
+                  py: 1.2,
                   background: 'linear-gradient(45deg, #2196f3 30%, #21cbf3 90%)',
                   boxShadow: '0 4px 10px rgba(33, 150, 243, 0.3)',
                 }}
@@ -282,8 +372,8 @@ const Permission = () => {
                 startIcon={<ViewModule />}
                 onClick={handlePageOpen}
                 sx={{
-                  borderRadius: 2,
-                  px: { xs: 1.3, md: 3 },
+                  borderRadius: 3,
+                  px: 3,
                   py: 1.2,
                   background: 'linear-gradient(45deg, #4caf50 30%, #66bb6a 90%)',
                   boxShadow: '0 4px 10px rgba(76, 175, 80, 0.3)',
@@ -297,8 +387,8 @@ const Permission = () => {
                 startIcon={<Security />}
                 onClick={handleRoleOpen}
                 sx={{
-                  borderRadius: 2,
-                  px: { xs: 1.3, md: 3 },
+                  borderRadius: 3,
+                  px: 3,
                   py: 1.2,
                   background: 'linear-gradient(45deg, #ff9800 30%, #ffb74d 90%)',
                   boxShadow: '0 4px 10px rgba(255, 152, 0, 0.3)',
@@ -312,8 +402,8 @@ const Permission = () => {
                 startIcon={<Add />}
                 onClick={() => handleDialogOpen()}
                 sx={{
-                  borderRadius: 2,
-                  px: { xs: 1.3, md: 3 },
+                  borderRadius: 3,
+                  px: 3,
                   py: 1.2,
                   background: 'linear-gradient(45deg, #9c27b0 30%, #ba68c8 90%)',
                   boxShadow: '0 4px 10px rgba(156, 39, 176, 0.3)',
@@ -344,7 +434,7 @@ const Permission = () => {
                 borderRadius: 3,
               }
             }}
-            variant="scrollable"
+            variant="fullWidth"
             textColor="primary"
             indicatorColor="primary"
           >
@@ -377,7 +467,7 @@ const Permission = () => {
               </div>
             )}
 
-            {tabValue === 1 && ( 
+            {tabValue === 1 && (
               <div>
 
                 <UserPermissionsTab
@@ -390,6 +480,7 @@ const Permission = () => {
                   handleDeletePermission={handleDeletePermission}
                   handleDeleteMultiplePermissions={handleDeleteMultiplePermissions}
                   getRoleColor={getRoleColor}
+                  tenantDomain={tenantDomain}
                 />
               </div>
             )}

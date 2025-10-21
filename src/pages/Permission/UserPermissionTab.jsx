@@ -1,11 +1,13 @@
 /* eslint-disable react/prop-types */
 import { useState, useEffect, useCallback } from "react";
 import { alpha, Box, Button, Typography } from "@mui/material";
-import { Delete as DeleteIcon } from "@mui/icons-material";
+import { Delete as DeleteIcon, Edit as EditIcon } from "@mui/icons-material";
 import Loading from "../../components/Loading/Loading";
 import PermissionFilters from "./PermissionFilters";
 import PermissionsTable from "./PermissionTable";
 import PermissionsPagination from "./PermissionPagination";
+import { useUpdateMultiplePermissionsMutation } from "../../redux/api/permissionApi";
+import UpdateMultiplePermissionsDialog from "./UpdateMultiplePermissionsDialog";
 
 const UserPermissionsTab = ({
   permissionData,
@@ -16,7 +18,8 @@ const UserPermissionsTab = ({
   loading,
   onPageChange,
   onFilterChange,
-  filters
+  filters,
+  tenantDomain,
 }) => {
   const [selectedRole, setSelectedRole] = useState(filters.role || '');
   const [selectedUser, setSelectedUser] = useState(filters.user || '');
@@ -24,11 +27,13 @@ const UserPermissionsTab = ({
   const [roles, setRoles] = useState([]);
   const [users, setUsers] = useState([]);
   const [selectedPermissions, setSelectedPermissions] = useState([]);
+  const [updateDialogOpen, setUpdateDialogOpen] = useState(false);
+
+  const [updateMultiplePermissions] = useUpdateMultiplePermissionsMutation()
 
   const { permissions = [], pagination = {} } = permissionData || {};
   const { total = 0, page = 1, limit = 10, pages = 0 } = pagination;
 
-  // Extract unique roles and users from permissions
   useEffect(() => {
     if (permissions && permissions.length > 0) {
       const uniqueRoles = [...new Set(
@@ -97,12 +102,34 @@ const UserPermissionsTab = ({
   const handleSelectAllPermissions = useCallback((event) => {
     if (event.target.checked) {
       setSelectedPermissions(permissions.map(p => p._id));
-    } else { 
+    } else {
       setSelectedPermissions([]);
     }
   }, [permissions]);
 
   const isAllSelected = permissions.length > 0 && selectedPermissions.length === permissions.length;
+
+  const handleUpdateMultiplePermissions = async (permissionUpdates) => {
+    try {
+      await updateMultiplePermissions({
+        tenantDomain,
+        permissionUpdates
+      }).unwrap();
+
+      // Refetch data to update the table
+      if (onFilterChange) {
+        onFilterChange(filters);
+      }
+
+      return { success: true };
+    } catch (error) {
+      console.error("Error updating permissions:", error);
+      return {
+        success: false,
+        error: error?.data?.message || "An error occurred while updating permissions."
+      };
+    }
+  };
 
   // Render loading state
   if (loading) {
@@ -110,7 +137,7 @@ const UserPermissionsTab = ({
   }
 
   return (
-    <Box> 
+    <Box>
       <PermissionFilters
         selectedRole={selectedRole}
         selectedUser={selectedUser}
@@ -121,7 +148,8 @@ const UserPermissionsTab = ({
         onRoleFilterChange={handleRoleFilterChange}
         onUserFilterChange={handleUserFilterChange}
         onSearchChange={handleSearchChange}
-      /> 
+      />
+
       {selectedPermissions.length > 0 && (
         <Box
           sx={{
@@ -131,24 +159,37 @@ const UserPermissionsTab = ({
             mb: 2,
             p: 2,
             borderRadius: 2,
-            backgroundColor: alpha('#f44336', 0.05),
-            border: '1px solid rgba(244, 67, 54, 0.2)'
+            backgroundColor: alpha('#1976d2', 0.05),
+            border: '1px solid rgba(25, 118, 210, 0.2)'
           }}
         >
           <Typography variant="body2">
             {selectedPermissions.length} permission(s) selected
           </Typography>
-          <Button
-            variant="contained"
-            color="error"
-            startIcon={<DeleteIcon />}
-            onClick={() => handleDeleteMultiplePermissions(selectedPermissions)}
-            sx={{
-              borderRadius: 2,
-            }}
-          >
-            Delete Selected
-          </Button>
+          <Box display="flex" gap={1}>
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<EditIcon />}
+              onClick={() => setUpdateDialogOpen(true)}
+              sx={{
+                borderRadius: 2,
+              }}
+            >
+              Update Selected
+            </Button>
+            <Button
+              variant="contained"
+              color="error"
+              startIcon={<DeleteIcon />}
+              onClick={() => handleDeleteMultiplePermissions(selectedPermissions)}
+              sx={{
+                borderRadius: 2,
+              }}
+            >
+              Delete Selected
+            </Button>
+          </Box>
         </Box>
       )}
 
@@ -172,6 +213,15 @@ const UserPermissionsTab = ({
           onPageChange={handlePageChange}
         />
       )}
+
+      <UpdateMultiplePermissionsDialog
+        tenantDomain={tenantDomain}
+        open={updateDialogOpen}
+        onClose={() => setUpdateDialogOpen(false)}
+        selectedPermissions={selectedPermissions}
+        permissions={permissions}
+        onUpdatePermissions={handleUpdateMultiplePermissions}
+      />
     </Box>
   );
 };

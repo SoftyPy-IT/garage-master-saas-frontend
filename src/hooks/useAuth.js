@@ -1,39 +1,62 @@
-// src/hooks/useAuth.js
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { setUser } from "../redux/feature/authSlice";
+import { setUser, logout } from "../redux/feature/authSlice";
 
 export const useAuth = () => {
     const dispatch = useDispatch();
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        const checkAuth = async () => {
+            try {
+                let res = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
+                    method: "GET",
+                    credentials: "include",
+                });
 
-        fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
-            method: "GET",
-            credentials: "include",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        })
-            .then(async (res) => {
+                if (res.status === 401) {
+                    // try refresh
+                    const refreshRes = await fetch(`${import.meta.env.VITE_API_URL}/auth/refresh-token`, {
+                        method: "POST",
+                        credentials: "include",
+                    });
 
-                if (!res.ok) {
-                    const errData = await res.json().catch(() => ({}));
-                    console.error("[useAuth] Fetch error:", errData);
-                    return null;
+                    if (!refreshRes.ok) throw new Error("Refresh token failed");
+
+                    const { data } = await refreshRes.json();
+
+                    // Retry /me with new token
+                    res = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
+                        method: "GET",
+                        credentials: "include",
+                        headers: { Authorization: `Bearer ${data.accessToken}` },
+                    });
+
+                    if (!res.ok) throw new Error("Failed after refresh");
                 }
 
-                return res.json();
-            })
-            .then((data) => {
-                if (data?.success && data?.data) {
-                    dispatch(setUser({ user: data.data, token: data.data.accessToken }));
-                }
+                if (!res.ok) throw new Error("Auth failed");
 
+                const { data } = await res.json();
 
-            })
-            .catch((err) => {
-                console.error("[useAuth] Fetch failed:", err);
-            });
+                if (!data || !data.userId) throw new Error("Invalid user data");
+
+                // Make sure to include both tokens and user data
+                dispatch(setUser({
+                    token: data.accessToken,
+                    refreshToken: data.refreshToken, // Make sure this is included
+                    user: data
+                }));
+            } catch (err) {
+                console.error("Auth check failed:", err);
+                dispatch(logout());
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        checkAuth();
     }, [dispatch]);
+
+    return { loading };
 };

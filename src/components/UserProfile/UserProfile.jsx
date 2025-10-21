@@ -32,6 +32,7 @@ const UserProfile = ({ tenantDomain }) => {
   };
 
 
+
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
   };

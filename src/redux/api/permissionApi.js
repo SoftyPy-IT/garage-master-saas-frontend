@@ -84,8 +84,8 @@ const permissionApi = baseApi.injectEndpoints({
     }),
     deleteMultiplePermissions: builder.mutation({
       query: ({ userId, tenantDomain, permissionIds }) => ({
-        url: `/permission/user/${userId}/batch`,
-        method: 'DELETE',
+        url: `/permission/user/${userId}/batch-delete`,
+        method: 'POST',
         params: { tenantDomain },
         body: { permissionIds },
       }),
