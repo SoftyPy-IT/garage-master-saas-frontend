@@ -22,11 +22,10 @@ const PermissionHeader = () => {
            sx={{ background: alpha(theme.palette.primary.light, 0.1) }} />
 
       <Box position="relative" zIndex={1}>
-        <p className="font-bold text-4xl">Permission Management</p>
         <Typography variant="h3" fontWeight="bold" mb={1}>
-          
+          Permission Management
         </Typography>
-        <Typography variant="h7" sx={{ opacity: 0.9, fontWeight: 300 }}>
+        <Typography variant="h6" sx={{ opacity: 0.9, fontWeight: 300 }}>
           Advanced permission control and access management system
         </Typography>
       </Box>

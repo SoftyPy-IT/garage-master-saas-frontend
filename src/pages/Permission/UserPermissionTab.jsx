@@ -97,7 +97,7 @@ const UserPermissionsTab = ({
   const handleSelectAllPermissions = useCallback((event) => {
     if (event.target.checked) {
       setSelectedPermissions(permissions.map(p => p._id));
-    } else { 
+    } else {
       setSelectedPermissions([]);
     }
   }, [permissions]);
@@ -110,7 +110,7 @@ const UserPermissionsTab = ({
   }
 
   return (
-    <Box> 
+    <Box>
       <PermissionFilters
         selectedRole={selectedRole}
         selectedUser={selectedUser}
@@ -121,7 +121,8 @@ const UserPermissionsTab = ({
         onRoleFilterChange={handleRoleFilterChange}
         onUserFilterChange={handleUserFilterChange}
         onSearchChange={handleSearchChange}
-      /> 
+      />
+
       {selectedPermissions.length > 0 && (
         <Box
           sx={{
