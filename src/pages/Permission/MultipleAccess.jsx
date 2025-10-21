@@ -15,9 +15,10 @@ const MultipleAccess = ({ handleDialogOpen, handleDeletePermission, getRoleColor
     const theme = useTheme();
     const [selectedRows, setSelectedRows] = useState([]);
     const [permissionChanges, setPermissionChanges] = useState({});
-    const [createOrUpdateMultiplePermissions, { isLoading: isCreating }] = useCreateMultiplePermissionsMutation();
+    const [createMultiplePermissions, { isLoading: isCreating }] = useCreateMultiplePermissionsMutation();
     const { tenantDomain } = useTenantDomain();
     const { roleOptions, pageData, userOptions } = usePermissionFormData()
+
 
     const methods = useForm({
         defaultValues: {
@@ -216,7 +217,7 @@ const MultipleAccess = ({ handleDialogOpen, handleDeletePermission, getRoleColor
                 });
                 return;
             }
-            const result = await createOrUpdateMultiplePermissions({
+            const result = await createMultiplePermissions({
                 tenantDomain,
                 permissionData: allPermissionsData,
             }).unwrap();
