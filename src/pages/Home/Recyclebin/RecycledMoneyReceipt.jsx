@@ -21,14 +21,13 @@ const RecycledMoneyReceipt = () => {
   const limit = 10;
   const navigate = useNavigate();
   const textInputRef = useRef(null);
-  const { tenantDomain } = useAppOptions()
+  const { tenantDomain } = useAppOptions();
 
   useEffect(() => {
     if (search) {
       setFilterType(search);
     }
   }, [search]);
-
 
   const { data: allMoneyReceipts, isLoading: moneyReceiptLoading } =
     useGetAllMoneyReceiptsQuery({
@@ -129,12 +128,10 @@ const RecycledMoneyReceipt = () => {
     toast.error(deleteError?.message);
   }
 
-
-
   return (
     <div className="mt-5 overflow-x-auto">
       <div className="flex items-center justify-between mt-5 mb-8">
-        <div className="flex flex-wrap items-center justify-center">
+        <div className="flex  items-center justify-center">
           <FaFileInvoice className="invoicIcon" />
           <div className="ml-2">
             <h3 className="text-sm font-bold md:text-2xl">Money Receipt</h3>
@@ -150,7 +147,7 @@ const RecycledMoneyReceipt = () => {
           <span>Money receipt</span>
         </div>
       </div>
-      <div className="flex-wrap flex items-center justify-between mb-5 bg-[#F1F3F6] py-5 px-3">
+      <div className="flex flex-col md:flex-row items-center justify-between mb-5 bg-[#F1F3F6] py-5 px-3">
         <h3 className="mb-3 text-xl font-bold md:text-3xl">
           Receycled Bin Money Receipt List:
         </h3>
@@ -171,7 +168,14 @@ const RecycledMoneyReceipt = () => {
         </div>
       </div>
 
-      <div>
+      <div
+        style={{
+          width: "100%",
+          overflowX: "auto",
+          borderRadius: "12px",
+          background: "white",
+        }}
+      >
         <table className="table">
           <thead className="tableWrap">
             <tr>
@@ -221,8 +225,9 @@ const RecycledMoneyReceipt = () => {
                   <td>
                     <a
                       className="bg-[#42A0D9] text-white px-3 py-2 text-[12px] rounded-full mr-2"
-                      href={`${import.meta.env.VITE_API_URL
-                        }/money-receipts/money/${card._id}`}
+                      href={`${
+                        import.meta.env.VITE_API_URL
+                      }/money-receipts/money/${card._id}`}
                       target="_blank"
                       rel="noreferrer"
                     >
@@ -244,13 +249,11 @@ const RecycledMoneyReceipt = () => {
                       onClick={() => handleDeleteOrRestore(card._id)}
                       className="editIconWrap"
                       style={{
-                        cursor: deleteLoading
-                          ? "not-allowed"
-                          : "pointer",
+                        cursor: deleteLoading ? "not-allowed" : "pointer",
                         background: "white",
                         border: "none",
                         padding: 5,
-                        borderRadius: "9999px"
+                        borderRadius: "9999px",
                       }}
                     >
                       <FaTrashAlt className="deleteIcon text-red-500" />

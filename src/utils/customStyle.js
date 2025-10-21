@@ -1459,7 +1459,7 @@ export const cardStyle = {
   position: "relative",
   overflow: "visible",
   "&:hover": {
-    transform: "translateY(-5px)",
+    transform: "translateY(-5px)", 
   },
 }
 

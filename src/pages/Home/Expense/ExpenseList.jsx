@@ -27,7 +27,6 @@ import {
   useDeleteExpenseMutation,
   useGetAllExpensesQuery,
 } from "../../../redux/api/expense";
-import { useTenantDomain } from "../../../hooks/useTenantDomain";
 import Loading from "../../../components/Loading/Loading";
 import { useAccountSummaryQuery } from "../../../redux/api/meta.api";
 import StatisticsCard from "./StatisticsCard";
@@ -104,15 +103,10 @@ export default function ExpenseList() {
   const { meta = {} } = data?.data || {};
   const { totalPage = 1, total = 0 } = meta;
 
-  // Extract expense data from account summary
-  const expenseData = accountSummary?.data?.expense || {};
 
-  const totalExpense = expenseData.total?.totalAmount || 0;
-  const invoiceCost = expenseData.monthly?.invoiceCost || 0;
-  const otherExpense = expenseData.monthly?.totalOtherExpense || 0;
 
   return (
-    <Box sx={{ p: 3, backgroundColor: "#f8fafc", minHeight: "100vh" }}>
+    <Box sx={{ p: { xs: 0, md: 3 }, backgroundColor: "#f8fafc", minHeight: "100vh" }}>
 
 
       {/* Statistics Cards */}
@@ -128,7 +122,7 @@ export default function ExpenseList() {
           boxShadow: "0 4px 6px rgba(0,0,0,0.05)",
         }}
       >
-        <Box sx={{ p: 3, borderBottom: "1px solid #e2e8f0" }}>
+        <Box sx={{ p: { xs: 1.5, md: 3 }, borderBottom: "1px solid #e2e8f0" }}>
           <Stack
             direction={{ xs: "column", sm: "row" }}
             justifyContent="space-between"
@@ -146,7 +140,7 @@ export default function ExpenseList() {
                 placeholder="Search expenses..."
                 sx={{
                   width: { xs: "100%", sm: "300px" },
-                  p: "12px 16px",
+                  p: "12px 15px",
                   borderRadius: 2,
                   border: "1px solid #d1d5db",
                   fontSize: "14px",

@@ -3,13 +3,13 @@
 import { UserCheck, Calendar } from "lucide-react";
 
 const HeaderSection = ({ formattedDate }) => (
-  <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 px-6">
-    <div className="flex items-center gap-3">
-      <div className="bg-indigo-600 p-3 rounded-lg shadow-lg">
+  <div className="flex flex-col md:flex-row items-center content-center md:justify-between mb-8 md:px-6">
+    <div className="flex flex-col items-center gap-3">
+      <div className="bg-indigo-600 p-2 md:p-3 rounded-lg shadow-lg">
         <UserCheck className="h-6 w-6 text-white" />
       </div>
       <div>
-        <h3 className="text-2xl font-bold bg-gradient-to-r from-indigo-700 to-indigo-500 bg-clip-text text-transparent">
+        <h3 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-indigo-700 to-indigo-500 bg-clip-text text-transparent">
           Attendance Management
         </h3>
         <div className="flex items-center text-slate-500 text-sm">

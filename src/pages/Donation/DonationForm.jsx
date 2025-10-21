@@ -174,7 +174,7 @@ export default function DonationForm({ id }) {
   }
 
   return (
-    <Box sx={{ minHeight: "100vh", bgcolor: "grey.50", py: 8 }}>
+    <Box sx={{ minHeight: "100vh", bgcolor: "grey.50", py: { xs: 1.5, md: 8 } }}>
       <Container maxWidth="lg">
         <Grid container spacing={4}>
           <Grid item xs={12} md={12}>
@@ -195,7 +195,7 @@ export default function DonationForm({ id }) {
 
               <FormProvider {...methods}>
                 <form onSubmit={handleSubmit(handleFormSubmit)}>
-                  <Box sx={{ p: 4 }}>
+                  <Box sx={{ p: { xs: 1.5, md: 4 } }}>
                     {/* Personal Information Section */}
                     <Box sx={{ mb: 5 }}>
                       <Typography
@@ -309,7 +309,7 @@ export default function DonationForm({ id }) {
                           backgroundColor: "white",
                         }}
                       >
-                        <CardContent sx={{ p: 4 }}>
+                        <CardContent sx={{ p: { xs: 1.5, md: 4 } }}>
                           <Stack
                             direction="row"
                             spacing={2}

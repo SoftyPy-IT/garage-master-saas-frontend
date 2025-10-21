@@ -105,7 +105,7 @@ const RecyclebinSupplierList = () => {
   return (
     <div className="w-full mt-5 mb-24">
 
-      <div className="md:flex items-center justify-between my-3 mb-8">
+      <div className="flex items-center justify-between my-3 mb-8">
         <div className="flex items-center justify-center ">
           <FaUsers size={70} className="invoicIcon" />
           <div className="ml-2">
@@ -120,7 +120,7 @@ const RecyclebinSupplierList = () => {
         </div>
       </div>
       <div className="mt-20 overflow-x-auto">
-        <div className="md:flex items-center justify-end mb-5">
+        <div className="flex flex-col md:flex-row items-center justify-between mb-5">
           <h3 className="mb-3 text-xl md:text-3xl font-bold">
             Suppliers List:
           </h3>

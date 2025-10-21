@@ -124,7 +124,7 @@ export default function EmployeeLeaveTable({
   }
 
   return (
-    <Paper sx={{ width: "100%", overflow: "hidden", p: 3 }}>
+    <Paper sx={{ width: "100%", overflow: "hidden", p: { xs: 1.5, md: 3 } }}>
       <Typography
         variant="h4"
         component="h1"

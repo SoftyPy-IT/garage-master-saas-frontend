@@ -87,7 +87,8 @@ const AddUserModal = ({ open, onClose, onSuccess, performActionWithPermission, t
           tenantDomain: tenantDomain
         }}
       >
-        <Grid container spacing={2}>
+        <Grid container spacing={2} padding={1}>
+
           {/* Full Name Field */}
           <Grid item xs={12} md={6}>
             <FormInput
@@ -230,11 +231,12 @@ const AddUserModal = ({ open, onClose, onSuccess, performActionWithPermission, t
         </Grid>
 
         {/* Action Buttons */}
-        <Box sx={buttonBox}>
+        <Box className='flex flex-col md:flex-col space-y-2 items-center mb-4' >
           <Button
             onClick={onClose}
             disabled={isLoading}
             variant="outlined"
+            className="flex items-center justify-center content-center"
           >
             Cancel
           </Button>

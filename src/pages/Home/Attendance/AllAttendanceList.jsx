@@ -570,8 +570,8 @@ const AttendanceListPage = () => {
         </Paper>
 
         {/* Tabs for different views */}
-        <Paper sx={{ mb: 2, borderRadius: 3 }}>
-          <Tabs value={tabValue} onChange={handleTabChange} centered>
+        <Paper sx={{ mb: 2, borderRadius: 3}} >
+          <Tabs value={tabValue} onChange={handleTabChange} centered variant="scrollable">
             <Tab icon={<Schedule />} label="Daily View" />
             <Tab icon={<CalendarToday />} label="Monthly Summary" />
             <Tab icon={<Person />} label="Employee Reports" />

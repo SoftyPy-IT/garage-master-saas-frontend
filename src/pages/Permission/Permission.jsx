@@ -252,14 +252,15 @@ const Permission = () => {
     <Box sx={{
       minHeight: '100vh',
       background: `linear-gradient(135deg, ${alpha(theme.palette.primary.light, 0.1)} 0%, ${alpha(theme.palette.secondary.light, 0.1)} 100%)`,
-      py: 3
+      py: 3,
+
     }}>
-      <Container maxWidth="xl">
+      <Container maxWidth="xl" sx={{p:0}}>
         <PermissionHeader />
         <Paper
           elevation={0}
           sx={{
-            p: 3,
+            p: { xs: 1.5, md: 3 },
             mb: 4,
             borderRadius: 4,
             background: 'rgba(255, 255, 255, 0.9)',
@@ -284,9 +285,9 @@ const Permission = () => {
                 startIcon={<Person />}
                 onClick={handleUserOpen}
                 sx={{
-                  borderRadius: 3,
-                  px: 3,
-                  py: 1.2,
+                  borderRadius: 2,
+                  px: { xs: 1.3, md: 3 },
+                  py: 1,
                   background: 'linear-gradient(45deg, #2196f3 30%, #21cbf3 90%)',
                   boxShadow: '0 4px 10px rgba(33, 150, 243, 0.3)',
                 }}
@@ -299,8 +300,8 @@ const Permission = () => {
                 startIcon={<ViewModule />}
                 onClick={handlePageOpen}
                 sx={{
-                  borderRadius: 3,
-                  px: 3,
+                  borderRadius: 2,
+                  px: { xs: 1.3, md: 3 },
                   py: 1.2,
                   background: 'linear-gradient(45deg, #4caf50 30%, #66bb6a 90%)',
                   boxShadow: '0 4px 10px rgba(76, 175, 80, 0.3)',
@@ -314,8 +315,8 @@ const Permission = () => {
                 startIcon={<Security />}
                 onClick={handleRoleOpen}
                 sx={{
-                  borderRadius: 3,
-                  px: 3,
+                  borderRadius: 2,
+                  px: { xs: 1.3, md: 3 },
                   py: 1.2,
                   background: 'linear-gradient(45deg, #ff9800 30%, #ffb74d 90%)',
                   boxShadow: '0 4px 10px rgba(255, 152, 0, 0.3)',
@@ -329,8 +330,8 @@ const Permission = () => {
                 startIcon={<Add />}
                 onClick={() => handleDialogOpen()}
                 sx={{
-                  borderRadius: 3,
-                  px: 3,
+                  borderRadius: 2,
+                  px: { xs: 1.3, md: 3 },
                   py: 1.2,
                   background: 'linear-gradient(45deg, #9c27b0 30%, #ba68c8 90%)',
                   boxShadow: '0 4px 10px rgba(156, 39, 176, 0.3)',
@@ -361,7 +362,7 @@ const Permission = () => {
                 borderRadius: 3,
               }
             }}
-            variant="fullWidth"
+            variant="scrollable"
             textColor="primary"
             indicatorColor="primary"
           >
@@ -394,7 +395,7 @@ const Permission = () => {
               </div>
             )}
 
-            {tabValue === 1 && (
+            {tabValue === 1 && ( 
               <div>
 
                 <UserPermissionsTab

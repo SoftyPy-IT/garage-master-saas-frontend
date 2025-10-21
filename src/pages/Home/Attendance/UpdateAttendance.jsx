@@ -275,7 +275,7 @@ const UpdateAttendance = () => {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 px-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 md:px-6">
         <div className="bg-white rounded-xl shadow-sm p-6 border-l-4 border-indigo-500 flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-slate-500">

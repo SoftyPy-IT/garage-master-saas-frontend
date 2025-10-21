@@ -1,118 +1,140 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Avatar, Chip, Typography, Checkbox, Box, Tooltip, IconButton, useTheme, alpha, CircularProgress, Button, Grid } from "@mui/material";
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Avatar, Chip, Typography, Checkbox, Box, Tooltip, IconButton, useTheme, alpha, CircularProgress, Button } from "@mui/material";
 import { Edit, Delete, LibraryBooks, Save, Person } from "@mui/icons-material";
 import { useState } from "react";
 
 import Swal from "sweetalert2";
 import { useTenantDomain } from "../../hooks/useTenantDomain";
-import { useCreateMultiplePermissionsMutation } from '../../redux/api/permissionApi.js'
-import { usePermissionFormData } from "../../hooks/usePermissionFormData.js";
-import { useForm, FormProvider } from "react-hook-form"
-import PermissionAutoComplete from "../../components/form/PermissionAutoComplete.jsx";
+import { useUpdateMultiplePermissionsMutation, useCreateMultiplePermissionsMutation } from '../../redux/api/permissionApi.js'
+import { useGetAllUserQuery } from "../../redux/api/userApi.js";
 
 const MultipleAccess = ({ handleDialogOpen, handleDeletePermission, getRoleColor, loading }) => {
     const theme = useTheme();
     const [selectedRows, setSelectedRows] = useState([]);
     const [permissionChanges, setPermissionChanges] = useState({});
+    const [updateMultiplePermissions, { isLoading: isUpdating }] = useUpdateMultiplePermissionsMutation();
     const [createOrUpdateMultiplePermissions, { isLoading: isCreating }] = useCreateMultiplePermissionsMutation();
     const { tenantDomain } = useTenantDomain();
-    const { roleOptions, pageData, userOptions } = usePermissionFormData()
+    const { data: userData } = useGetAllUserQuery({ tenantDomain });
 
-    const methods = useForm({
-        defaultValues: {
-            user: [],
-            role: [],
-            permissions: {},
-        },
-    })
-
-    // Get all pages from pageData
     const getAllPages = () => {
-        if (!pageData || !pageData.data) return [];
-        return pageData.data;
+        if (!userData || !userData.data) return [];
+
+        const allPages = new Set();
+
+        userData.data.forEach(user => {
+            if (user.permission && user.permission.length > 0) {
+                user.permission.forEach(perm => {
+                    if (perm.pageId && perm.pageId.length > 0) {
+                        perm.pageId.forEach(page => {
+                            allPages.add(JSON.stringify(page));
+                        });
+                    }
+                });
+            }
+        });
+
+        return Array.from(allPages).map(pageStr => JSON.parse(pageStr));
     };
 
-    const allPages = getAllPages();
+  const allPages = getAllPages();
 
-    // Transform pageData to a format compatible with the existing table
-    const transformPageDataToPermissions = () => {
-        if (!pageData || !pageData.data) return [];
+    // Transform userData to a format compatible with the existing table
+    const transformUserDataToPermissions = () => {
+        if (!userData || !userData.data) return [];
 
-        const permissions = [];
+    const permissions = [];
 
-        // For each page, create permission entries for all users
-        allPages.forEach(page => {
+        userData.data.forEach(user => {
+            // Create a map of user's permissions by page ID for quick lookup
+            const userPermissionsMap = {};
 
-            permissions.push({
-                id: `page-${page._id}`,
-                pageId: page._id,
-                pageName: page.name,
-                pagePath: page.path,
-                pageCategory: page.category,
-                create: false, // Default values
-                edit: false,
-                view: false,
-                delete: false,
-                hasPermission: false,
-                userId: null,
-                userName: "All Users",
-                userEmail: "N/A",
-                roleName: "Assign Role"
+            if (user.permission && user.permission.length > 0) {
+                user.permission.forEach(perm => {
+                    if (perm.pageId && perm.pageId.length > 0) {
+                        perm.pageId.forEach(page => {
+                            const pageId = page._id;
+                            userPermissionsMap[pageId] = {
+                                permissionId: perm._id,
+                                create: perm.create || false,
+                                edit: perm.edit || false,
+                                view: perm.view || false,
+                                delete: perm.delete || false,
+                                roleId: perm.roleId || []
+                            };
+                        });
+                    }
+                });
+            }
+
+            // For each page in the system, create a permission entry for this user
+            allPages.forEach(page => {
+                const pageId = page._id;
+                const userPermission = userPermissionsMap[pageId];
+
+                const roleName = userPermission && userPermission.roleId && userPermission.roleId.length > 0
+                    ? userPermission.roleId[0].name
+                    : user.role || 'Unknown';
+
+                permissions.push({
+                    id: userPermission ? userPermission.permissionId : `new-${user._id}-${pageId}`,
+                    userId: user._id,
+                    userName: user.name,
+                    userEmail: user.email,
+                    roleName: roleName,
+                    pageName: page.name,
+                    pagePath: page.path,
+                    pageId: pageId,
+                    create: userPermission ? userPermission.create : false,
+                    edit: userPermission ? userPermission.edit : false,
+                    view: userPermission ? userPermission.view : false,
+                    delete: userPermission ? userPermission.delete : false,
+                    hasPermission: !!userPermission,
+                    originalPermission: userPermission
+                });
             });
         });
 
-        return permissions;
-    };
+    return permissions;
+  };
 
-    const pagePermissions = transformPageDataToPermissions();
+    const userPermissions = transformUserDataToPermissions();
 
-    // Group permissions by category for better organization
-    const groupedPermissions = pagePermissions.reduce((acc, permission) => {
-        const category = permission.pageCategory || 'Uncategorized';
-        if (!acc[category]) {
-            acc[category] = {
-                category: category,
+    // Group permissions by user for better organization
+    const groupedPermissions = userPermissions.reduce((acc, permission) => {
+        if (!acc[permission.userId]) {
+            acc[permission.userId] = {
+                user: {
+                    id: permission.userId,
+                    name: permission.userName,
+                    email: permission.userEmail,
+                    role: permission.roleName
+                },
                 permissions: []
             };
         }
-        acc[category].permissions.push(permission);
+        acc[permission.userId].permissions.push(permission);
         return acc;
     }, {});
 
-    const categoriesArray = Object.values(groupedPermissions);
+    const usersArray = Object.values(groupedPermissions);
 
-    if (loading) {
-        return (
-            <Box display="flex" justifyContent="center" alignItems="center" py={6}>
-                <CircularProgress size={60} thickness={4} />
-            </Box>
-        );
-    }
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" py={6}>
+        <CircularProgress size={60} thickness={4} />
+      </Box>
+    );
+  }
 
     const handleSelectRow = (permissionId) => {
         setSelectedRows(prev => {
-            const isSelected = prev.includes(permissionId);
-
-            if (isSelected) {
-                // If unselecting, remove from permissionChanges
-                setPermissionChanges(current => {
-                    const newChanges = { ...current };
-                    delete newChanges[permissionId];
-                    return newChanges;
-                });
+            if (prev.includes(permissionId)) {
+                // If row is already selected, deselect it
                 return prev.filter(id => id !== permissionId);
             } else {
-                // If selecting, add default permissions to permissionChanges
-                setPermissionChanges(current => ({
-                    ...current,
-                    [permissionId]: {
-                        create: true,
-                        edit: true,
-                        view: true,
-                        delete: true
-                    }
-                }));
+                // If row is not selected, select it
                 return [...prev, permissionId];
             }
         });
@@ -120,12 +142,11 @@ const MultipleAccess = ({ handleDialogOpen, handleDeletePermission, getRoleColor
 
     const handleSelectAll = (event) => {
         if (event.target.checked) {
-            const allIds = pagePermissions.map(p => p.id);
-            setSelectedRows(allIds);
-
-            // Set all permissions to true when selecting all
+            // Select all rows
+            setSelectedRows(userPermissions.map(p => p.id));
+            // Set all permissions to true
             const allChanges = {};
-            pagePermissions.forEach(permission => {
+            userPermissions.forEach(permission => {
                 allChanges[permission.id] = {
                     create: true,
                     edit: true,
@@ -135,7 +156,9 @@ const MultipleAccess = ({ handleDialogOpen, handleDeletePermission, getRoleColor
             });
             setPermissionChanges(allChanges);
         } else {
+            // Deselect all rows
             setSelectedRows([]);
+            // Reset all permission changes
             setPermissionChanges({});
         }
     };
@@ -145,99 +168,52 @@ const MultipleAccess = ({ handleDialogOpen, handleDeletePermission, getRoleColor
             const currentChanges = prev[permissionId] || {};
             const currentValue = currentChanges[permissionType] !== undefined
                 ? currentChanges[permissionType]
-                : pagePermissions.find(p => p.id === permissionId)[permissionType];
+                : userPermissions.find(p => p.id === permissionId)[permissionType];
 
-            return {
-                ...prev,
-                [permissionId]: {
-                    ...currentChanges,
-                    [permissionType]: !currentValue
-                }
-            };
-        });
-    };
+      return {
+        ...prev,
+        [permissionId]: {
+          ...currentChanges,
+          [permissionType]: !currentValue,
+        },
+      };
+    });
+  };
 
-    const handleMultiplePermissions = async (e) => {
+    // MultipleAccess component e ei function ta use koro
+    const handleUpdateMultiplePermissions = async (e) => {
         if (e) e.preventDefault();
 
         try {
-            const formData = methods.getValues();
-            const selectedUsers = formData.user || [];
-            const selectedRoles = formData.role || [];
+            // Prepare all permissions data
+            const allPermissionsData = [];
 
-            if (selectedUsers.length === 0 && selectedRoles.length === 0) {
-                Swal.fire({
-                    icon: "warning",
-                    title: "Selection Required!",
-                    text: "Please select at least one user or role to assign permissions.",
-                    confirmButtonColor: theme.palette.primary.main,
-                    background: "#fff",
-                });
-                return;
-            }
-
-            // Get all selected permission IDs
+            // Combine selected rows and permission changes
             const allPermissionIds = new Set([
                 ...selectedRows,
                 ...Object.keys(permissionChanges)
             ]);
 
-            // If no permissions selected, show warning
-            if (allPermissionIds.size === 0) {
-                Swal.fire({
-                    icon: "warning",
-                    title: "No Permissions Selected!",
-                    text: "Please select at least one page to assign permissions.",
-                    confirmButtonColor: theme.palette.primary.main,
-                    background: "#fff",
-                });
-                return;
-            }
-
-            // Prepare permissions data based on selections
-            const allPermissionsData = [];
-
             allPermissionIds.forEach(permissionId => {
-                const permission = pagePermissions.find(p => p.id === permissionId);
+                const permission = userPermissions.find(p => p.id === permissionId);
                 const changes = permissionChanges[permissionId] || {};
 
-                // Create a base permission object with the page ID and permission flags
-                const basePermission = {
-                    pageId: [permission.pageId], // Array of page IDs as per backend model
+                allPermissionsData.push({
+                    userId: permission.userId,
+                    pageId: permission.pageId,
                     create: changes.create !== undefined ? changes.create : permission.create,
                     edit: changes.edit !== undefined ? changes.edit : permission.edit,
                     view: changes.view !== undefined ? changes.view : permission.view,
                     delete: changes.delete !== undefined ? changes.delete : permission.delete,
-                };
-
-                // Create a single permission object with all selected users and roles
-                allPermissionsData.push({
-                    ...basePermission,
-                    userId: selectedUsers.length > 0 ? selectedUsers : [null], // Use [null] if no users selected
-                    roleId: selectedRoles.length > 0 ? selectedRoles : [null], // Use [null] if no roles selected
                 });
             });
 
-            if (allPermissionsData.length === 0) {
-                Swal.fire({
-                    icon: "warning",
-                    title: "No Permissions!",
-                    text: "No permissions selected to update.",
-                    confirmButtonColor: theme.palette.primary.main,
-                    background: "#fff",
-                });
-                return;
-            }
-
-            console.log('Final permission data:', allPermissionsData);
-
-            // Send the data to backend
+            // Single API call for both create and update
             const result = await createOrUpdateMultiplePermissions({
                 tenantDomain,
                 permissionData: allPermissionsData,
             }).unwrap();
 
-            // Show success message
             Swal.fire({
                 icon: "success",
                 title: "Success!",
@@ -247,10 +223,11 @@ const MultipleAccess = ({ handleDialogOpen, handleDeletePermission, getRoleColor
                 background: "#fff",
             });
 
-            // Reset form state
             setSelectedRows([]);
             setPermissionChanges({});
-            methods.reset();
+
+            // Optional: Refresh data
+            // refetch user data here if needed
 
         } catch (error) {
             console.error("Error processing permissions:", error);
@@ -264,288 +241,278 @@ const MultipleAccess = ({ handleDialogOpen, handleDeletePermission, getRoleColor
         }
     };
 
-    const isAllSelected = pagePermissions.length > 0 && selectedRows.length === pagePermissions.length;
-    const isIndeterminate = selectedRows.length > 0 && selectedRows.length < pagePermissions.length;
+    const isAllSelected = userPermissions.length > 0 && selectedRows.length === userPermissions.length;
+    const isIndeterminate = selectedRows.length > 0 && selectedRows.length < userPermissions.length;
 
     return (
-        <FormProvider {...methods}>
-            <Box component="form" onSubmit={handleMultiplePermissions} noValidate>
-                <Grid container spacing={2} sx={{ mb: 3 }}>
-                    <Grid item xs={12} sm={6}>
-                        <PermissionAutoComplete fullWidth name="user" label="Select User" options={userOptions} multiple freeSolo />
-                    </Grid>
-
-                    <Grid item xs={12} sm={6}>
-                        <PermissionAutoComplete fullWidth name="role" label="Select Role" options={roleOptions} multiple freeSolo />
-                    </Grid>
-                </Grid>
-
-                <TableContainer
-                    component={Paper}
-                    elevation={0}
-                    sx={{
-                        borderRadius: 3,
-                        overflow: 'hidden',
-                        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
-                    }}
-                >
-                    <Table>
-                        <TableHead sx={{
-                            bgcolor: alpha(theme.palette.primary.main, 0.08),
-                        }}>
-                            <TableRow>
-                                <TableCell padding="checkbox">
-                                    <Checkbox
-                                        color="primary"
-                                        indeterminate={isIndeterminate}
-                                        checked={isAllSelected}
-                                        onChange={handleSelectAll}
-                                    />
-                                </TableCell>
-                                <TableCell sx={{ fontWeight: 600, py: 2 }}>Page</TableCell>
-                                <TableCell sx={{ fontWeight: 600, py: 2 }}>Category</TableCell>
-                                <TableCell sx={{ fontWeight: 600, py: 2 }}>Create</TableCell>
-                                <TableCell sx={{ fontWeight: 600, py: 2 }}>Edit</TableCell>
-                                <TableCell sx={{ fontWeight: 600, py: 2 }}>View</TableCell>
-                                <TableCell sx={{ fontWeight: 600, py: 2 }}>Delete</TableCell>
-                                <TableCell align="right" sx={{ fontWeight: 600, py: 2 }}>Actions</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {pagePermissions.length > 0 ? (
-                                categoriesArray.map((categoryGroup) => (
-                                    <>
-                                        {/* Category Header */}
-                                        <TableRow key={`category-${categoryGroup.category}`}>
-                                            <TableCell colSpan={8} sx={{
-                                                bgcolor: alpha(theme.palette.primary.main, 0.05),
-                                                py: 1.5,
-                                                fontWeight: 600,
-                                                fontSize: '0.9rem'
-                                            }}>
-                                                <Box display="flex" alignItems="center">
-                                                    <Person sx={{ mr: 1, fontSize: '1rem' }} />
-                                                    {categoryGroup.category}
-                                                </Box>
-                                            </TableCell>
-                                        </TableRow>
-
-                                        {/* Pages in this category */}
-                                        {categoryGroup.permissions.map((permission) => (
-                                            <TableRow
-                                                key={permission.id}
-                                                hover
-                                                selected={selectedRows.includes(permission.id)}
+        <Box component="form" onSubmit={handleUpdateMultiplePermissions} noValidate>
+            <TableContainer
+                component={Paper}
+                elevation={0}
+                sx={{
+                    borderRadius: 3,
+                    overflow: 'hidden',
+                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+                }}
+            >
+                <Table>
+                    <TableHead sx={{
+                        bgcolor: alpha(theme.palette.primary.main, 0.08),
+                    }}>
+                        <TableRow>
+                            <TableCell padding="checkbox">
+                                <Checkbox
+                                    color="primary"
+                                    indeterminate={isIndeterminate}
+                                    checked={isAllSelected}
+                                    onChange={handleSelectAll}
+                                />
+                            </TableCell>
+                            <TableCell sx={{ fontWeight: 600, py: 2 }}>User</TableCell>
+                            <TableCell sx={{ fontWeight: 600, py: 2 }}>Role</TableCell>
+                            <TableCell sx={{ fontWeight: 600, py: 2 }}>Page</TableCell>
+                            <TableCell sx={{ fontWeight: 600, py: 2 }}>Create</TableCell>
+                            <TableCell sx={{ fontWeight: 600, py: 2 }}>Edit</TableCell>
+                            <TableCell sx={{ fontWeight: 600, py: 2 }}>View</TableCell>
+                            <TableCell sx={{ fontWeight: 600, py: 2 }}>Delete</TableCell>
+                            <TableCell align="right" sx={{ fontWeight: 600, py: 2 }}>Actions</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {userPermissions.length > 0 ? (
+                            userPermissions.map((permission) => (
+                                <TableRow
+                                    key={permission.id}
+                                    hover
+                                    selected={selectedRows.includes(permission.id)}
+                                    sx={{
+                                        '&:hover': {
+                                            backgroundColor: alpha(theme.palette.primary.main, 0.02),
+                                        },
+                                        '&.Mui-selected': {
+                                            backgroundColor: alpha(theme.palette.primary.main, 0.05),
+                                        },
+                                        // Highlight rows for users without permissions
+                                        backgroundColor: !permission.hasPermission ? alpha(theme.palette.warning.main, 0.02) : 'inherit',
+                                    }}
+                                >
+                                    <TableCell padding="checkbox">
+                                        <Checkbox
+                                            color="primary"
+                                            checked={selectedRows.includes(permission.id)}
+                                            onChange={() => handleSelectRow(permission.id)}
+                                        />
+                                    </TableCell>
+                                    <TableCell sx={{ py: 2 }}>
+                                        <Box display="flex" alignItems="center">
+                                            <Avatar
                                                 sx={{
-                                                    '&:hover': {
-                                                        backgroundColor: alpha(theme.palette.primary.main, 0.02),
-                                                    },
-                                                    '&.Mui-selected': {
-                                                        backgroundColor: alpha(theme.palette.primary.main, 0.05),
-                                                    },
-                                                    backgroundColor: !permission.hasPermission ? alpha(theme.palette.warning.main, 0.02) : 'inherit',
+                                                    width: 36,
+                                                    height: 36,
+                                                    mr: 1.5,
+                                                    bgcolor: alpha(theme.palette.secondary.main, 0.15),
+                                                    color: theme.palette.secondary.main,
+                                                    boxShadow: `0 2px 8px ${alpha(theme.palette.secondary.main, 0.2)}`,
                                                 }}
                                             >
-                                                <TableCell padding="checkbox">
-                                                    <Checkbox
-                                                        color="primary"
-                                                        checked={selectedRows.includes(permission.id)}
-                                                        onChange={() => handleSelectRow(permission.id)}
-                                                    />
-                                                </TableCell>
-
-                                                <TableCell sx={{ py: 2 }}>
-                                                    <Box display="flex" alignItems="center">
-                                                        <Avatar
-                                                            sx={{
-                                                                width: 36,
-                                                                height: 36,
-                                                                mr: 1.5,
-                                                                bgcolor: alpha(theme.palette.info.main, 0.15),
-                                                                color: theme.palette.info.main,
-                                                                boxShadow: `0 2px 8px ${alpha(theme.palette.info.main, 0.2)}`,
-                                                            }}
-                                                        >
-                                                            <LibraryBooks />
-                                                        </Avatar>
-                                                        <Box>
-                                                            <Typography variant="body2" fontWeight={500}>
-                                                                {permission.pageName}
-                                                            </Typography>
-                                                            <Typography variant="caption" color="text.secondary">
-                                                                {permission.pagePath}
-                                                            </Typography>
-                                                        </Box>
-                                                    </Box>
-                                                </TableCell>
-
-                                                <TableCell sx={{ py: 2 }}>
-                                                    <Chip
-                                                        label={permission.pageCategory}
-                                                        size="small"
-                                                        variant="outlined"
-                                                        color="primary"
-                                                    />
-                                                </TableCell>
-
-                                                <TableCell sx={{ py: 2 }}>
-                                                    <Checkbox
-                                                        checked={
-                                                            permissionChanges[permission.id]?.create !== undefined
-                                                                ? permissionChanges[permission.id].create
-                                                                : selectedRows.includes(permission.id)
-                                                                    ? true
-                                                                    : permission.create
+                                                <Person fontSize="small" />
+                                            </Avatar>
+                                            <Box>
+                                                <Typography variant="body2" fontWeight={500}>
+                                                    {permission.userName}
+                                                </Typography>
+                                                <Typography variant="caption" color="text.secondary">
+                                                    {permission.userEmail}
+                                                </Typography>
+                                            </Box>
+                                        </Box>
+                                    </TableCell>
+                                    <TableCell sx={{ py: 2 }}>
+                                        <Chip
+                                            label={permission.roleName}
+                                            size="small"
+                                            color={getRoleColor(permission.roleName)}
+                                            sx={{
+                                                fontWeight: 600,
+                                                borderRadius: 2,
+                                                px: 1,
+                                            }}
+                                        />
+                                    </TableCell>
+                                    <TableCell sx={{ py: 2 }}>
+                                        <Box display="flex" alignItems="center">
+                                            <Avatar
+                                                sx={{
+                                                    width: 36,
+                                                    height: 36,
+                                                    mr: 1.5,
+                                                    bgcolor: alpha(theme.palette.info.main, 0.15),
+                                                    color: theme.palette.info.main,
+                                                    boxShadow: `0 2px 8px ${alpha(theme.palette.info.main, 0.2)}`,
+                                                }}
+                                            >
+                                                <LibraryBooks />
+                                            </Avatar>
+                                            <Typography variant="body2" fontWeight={500}>
+                                                {permission.pageName}
+                                            </Typography>
+                                        </Box>
+                                    </TableCell>
+                                    <TableCell sx={{ py: 2 }}>
+                                        <Checkbox
+                                            checked={
+                                                selectedRows.includes(permission.id)
+                                                    ? true
+                                                    : permissionChanges[permission.id]?.create !== undefined
+                                                        ? permissionChanges[permission.id].create
+                                                        : permission.create
+                                            }
+                                            color="success"
+                                            size="small"
+                                            onChange={() => handlePermissionChange(permission.id, 'create')}
+                                            sx={{
+                                                '&.Mui-checked': {
+                                                    color: theme.palette.success.main,
+                                                },
+                                            }}
+                                        />
+                                    </TableCell>
+                                    <TableCell sx={{ py: 2 }}>
+                                        <Checkbox
+                                            checked={
+                                                selectedRows.includes(permission.id)
+                                                    ? true
+                                                    : permissionChanges[permission.id]?.edit !== undefined
+                                                        ? permissionChanges[permission.id].edit
+                                                        : permission.edit
+                                            }
+                                            color="warning"
+                                            size="small"
+                                            onChange={() => handlePermissionChange(permission.id, 'edit')}
+                                            sx={{
+                                                '&.Mui-checked': {
+                                                    color: theme.palette.warning.main,
+                                                },
+                                            }}
+                                        />
+                                    </TableCell>
+                                    <TableCell sx={{ py: 2 }}>
+                                        <Checkbox
+                                            checked={
+                                                selectedRows.includes(permission.id)
+                                                    ? true
+                                                    : permissionChanges[permission.id]?.view !== undefined
+                                                        ? permissionChanges[permission.id].view
+                                                        : permission.view
+                                            }
+                                            color="info"
+                                            size="small"
+                                            onChange={() => handlePermissionChange(permission.id, 'view')}
+                                            sx={{
+                                                '&.Mui-checked': {
+                                                    color: theme.palette.info.main,
+                                                },
+                                            }}
+                                        />
+                                    </TableCell>
+                                    <TableCell sx={{ py: 2 }}>
+                                        <Checkbox
+                                            checked={
+                                                selectedRows.includes(permission.id)
+                                                    ? true
+                                                    : permissionChanges[permission.id]?.delete !== undefined
+                                                        ? permissionChanges[permission.id].delete
+                                                        : permission.delete
+                                            }
+                                            color="error"
+                                            size="small"
+                                            onChange={() => handlePermissionChange(permission.id, 'delete')}
+                                            sx={{
+                                                '&.Mui-checked': {
+                                                    color: theme.palette.error.main,
+                                                },
+                                            }}
+                                        />
+                                    </TableCell>
+                                    <TableCell align="right" sx={{ py: 2 }}>
+                                        <Tooltip title="Edit Permission">
+                                            <IconButton
+                                                size="small"
+                                                onClick={() => handleDialogOpen(permission.id)}
+                                                sx={{
+                                                    color: theme.palette.primary.main,
+                                                    '&:hover': {
+                                                        backgroundColor: alpha(theme.palette.primary.main, 0.1),
+                                                    }
+                                                }}
+                                            >
+                                                <Edit fontSize="small" />
+                                            </IconButton>
+                                        </Tooltip>
+                                        {permission.hasPermission && (
+                                            <Tooltip title="Delete Permission">
+                                                <IconButton
+                                                    size="small"
+                                                    color="error"
+                                                    onClick={() => handleDeletePermission(permission.id)}
+                                                    sx={{
+                                                        '&:hover': {
+                                                            backgroundColor: alpha(theme.palette.error.main, 0.1),
                                                         }
-                                                        color="success"
-                                                        size="small"
-                                                        onChange={() => handlePermissionChange(permission.id, 'create')}
-                                                        sx={{
-                                                            '&.Mui-checked': {
-                                                                color: theme.palette.success.main,
-                                                            },
-                                                        }}
-                                                    />
-                                                </TableCell>
-                                                <TableCell sx={{ py: 2 }}>
-                                                    <Checkbox
-                                                        checked={
-                                                            permissionChanges[permission.id]?.edit !== undefined
-                                                                ? permissionChanges[permission.id].edit
-                                                                : selectedRows.includes(permission.id)
-                                                                    ? true
-                                                                    : permission.edit
-                                                        }
-                                                        color="warning"
-                                                        size="small"
-                                                        onChange={() => handlePermissionChange(permission.id, 'edit')}
-                                                        sx={{
-                                                            '&.Mui-checked': {
-                                                                color: theme.palette.warning.main,
-                                                            },
-                                                        }}
-                                                    />
-                                                </TableCell>
-                                                <TableCell sx={{ py: 2 }}>
-                                                    <Checkbox
-                                                        checked={
-                                                            permissionChanges[permission.id]?.view !== undefined
-                                                                ? permissionChanges[permission.id].view
-                                                                : selectedRows.includes(permission.id)
-                                                                    ? true
-                                                                    : permission.view
-                                                        }
-                                                        color="info"
-                                                        size="small"
-                                                        onChange={() => handlePermissionChange(permission.id, 'view')}
-                                                        sx={{
-                                                            '&.Mui-checked': {
-                                                                color: theme.palette.info.main,
-                                                            },
-                                                        }}
-                                                    />
-                                                </TableCell>
-                                                <TableCell sx={{ py: 2 }}>
-                                                    <Checkbox
-                                                        checked={
-                                                            permissionChanges[permission.id]?.delete !== undefined
-                                                                ? permissionChanges[permission.id].delete
-                                                                : selectedRows.includes(permission.id)
-                                                                    ? true
-                                                                    : permission.delete
-                                                        }
-                                                        color="error"
-                                                        size="small"
-                                                        onChange={() => handlePermissionChange(permission.id, 'delete')}
-                                                        sx={{
-                                                            '&.Mui-checked': {
-                                                                color: theme.palette.error.main,
-                                                            },
-                                                        }}
-                                                    />
-                                                </TableCell>
-                                                <TableCell align="right" sx={{ py: 2 }}>
-                                                    <Tooltip title="Edit Permission">
-                                                        <IconButton
-                                                            size="small"
-                                                            onClick={() => handleDialogOpen(permission.id)}
-                                                            sx={{
-                                                                color: theme.palette.primary.main,
-                                                                '&:hover': {
-                                                                    backgroundColor: alpha(theme.palette.primary.main, 0.1),
-                                                                }
-                                                            }}
-                                                        >
-                                                            <Edit fontSize="small" />
-                                                        </IconButton>
-                                                    </Tooltip>
-                                                    {permission.hasPermission && (
-                                                        <Tooltip title="Delete Permission">
-                                                            <IconButton
-                                                                size="small"
-                                                                color="error"
-                                                                onClick={() => handleDeletePermission(permission.id)}
-                                                                sx={{
-                                                                    '&:hover': {
-                                                                        backgroundColor: alpha(theme.palette.error.main, 0.1),
-                                                                    }
-                                                                }}
-                                                            >
-                                                                <Delete fontSize="small" />
-                                                            </IconButton>
-                                                        </Tooltip>
-                                                    )}
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </>
-                                ))
-                            ) : (
-                                <TableRow>
-                                    <TableCell colSpan={8} align="center" sx={{ py: 6 }}>
-                                        <Typography variant="body2" color="text.secondary">
-                                            No pages found
-                                        </Typography>
+                                                    }}
+                                                >
+                                                    <Delete fontSize="small" />
+                                                </IconButton>
+                                            </Tooltip>
+                                        )}
                                     </TableCell>
                                 </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
+                            ))
+                        ) : (
+                            <TableRow>
+                                <TableCell colSpan={9} align="center" sx={{ py: 6 }}>
+                                    <Typography variant="body2" color="text.secondary">
+                                        No user permissions found
+                                    </Typography>
+                                </TableCell>
+                            </TableRow>
+                        )}
+                    </TableBody>
+                </Table>
+            </TableContainer>
 
-                {(selectedRows.length > 0 || Object.keys(permissionChanges).length > 0) && (
-                    <Box
+            {(selectedRows.length > 0 || Object.keys(permissionChanges).length > 0) && (
+                <Box
+                    sx={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        mt: 2,
+                        p: 2,
+                        borderRadius: 2,
+                        backgroundColor: alpha(theme.palette.primary.main, 0.05),
+                        border: `1px solid ${alpha(theme.palette.primary.main, 0.1)}`
+                    }}
+                >
+                    <Typography variant="body2">
+                        {selectedRows.length} row(s) and {Object.keys(permissionChanges).length} permission(s) selected
+                    </Typography>
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        startIcon={<Save />}
+                        disabled={isUpdating || isCreating}
                         sx={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            mt: 2,
-                            p: 2,
                             borderRadius: 2,
-                            backgroundColor: alpha(theme.palette.primary.main, 0.05),
-                            border: `1px solid ${alpha(theme.palette.primary.main, 0.1)}`
+                            background: 'linear-gradient(45deg, #9c27b0 30%, #ba68c8 90%)',
+                            boxShadow: '0 4px 10px rgba(156, 39, 176, 0.3)',
                         }}
                     >
-                        <Typography variant="body2">
-                            {selectedRows.length} page(s) and {Object.keys(permissionChanges).length} permission(s) selected
-                        </Typography>
-                        <Button
-                            type="submit"
-                            variant="contained"
-                            startIcon={<Save />}
-                            disabled={isCreating}
-                            sx={{
-                                borderRadius: 2,
-                                background: 'linear-gradient(45deg, #9c27b0 30%, #ba68c8 90%)',
-                                boxShadow: '0 4px 10px rgba(156, 39, 176, 0.3)',
-                            }}
-                        >
-                            {isCreating ? 'Creating...' : 'Create Permissions'}
-                        </Button>
-                    </Box>
-                )}
-            </Box>
-        </FormProvider>
+                        {isUpdating || isCreating ? 'Updating...' : 'Update Permissions'}
+                    </Button>
+                </Box>
+            )}
+        </Box>
     );
 };
 

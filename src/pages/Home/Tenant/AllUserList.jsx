@@ -115,7 +115,8 @@ const AllUserList = () => {
       sx={{
         maxWidth: 1600,
         mx: "auto",
-        p: 3,
+        paddingX: { xs: 0, md: 3 },
+        paddingY:2,
         background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
         minHeight: "100vh",
       }}
@@ -128,7 +129,7 @@ const AllUserList = () => {
         <Paper
           elevation={3}
           sx={{
-            p: 4,
+            p: { xs: 2, md: 4 },
             mb: 4,
             borderRadius: 3,
             background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
@@ -146,7 +147,7 @@ const AllUserList = () => {
               <FaUserShield size={40} />
               <Box>
                 <Typography variant="h3" fontWeight="bold" gutterBottom>
-                  User Management
+                  {/* User Management */}
                 </Typography>
                 <Typography variant="h6" sx={{ opacity: 0.9 }}>
                   Manage your team members and their permissions
@@ -243,8 +244,22 @@ const AllUserList = () => {
         />
       </Paper>
 
-      <StyledPaper elevation={4} sx={{ borderRadius: 3 }}>
-        <StyledTableContainer>
+      <StyledPaper elevation={4} sx={{ borderRadius: 3, p:{ xs: 1, md: 3 } }} >
+        <StyledTableContainer sx={{
+    width: "100%",
+    overflowX: "auto",
+    borderRadius: 2,
+    "&::-webkit-scrollbar": {
+      height: 6,
+    },
+    "&::-webkit-scrollbar-thumb": {
+      backgroundColor: "#ccc",
+      borderRadius: 3,
+    },
+    "&::-webkit-scrollbar-thumb:hover": {
+      backgroundColor: "#999",
+    },
+  }}>
           <Table>
             <TableHead>
               <TableRow sx={{ bgcolor: "primary.main" }}>

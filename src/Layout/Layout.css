@@ -330,7 +330,7 @@
 
 	.activeDrawer {
 		width: 98%;
-		padding: 0 15px;
+		padding: 0 0px;
 	}
 
 	.completedServiceCards {

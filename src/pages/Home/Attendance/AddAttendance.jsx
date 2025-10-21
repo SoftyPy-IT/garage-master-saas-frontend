@@ -245,7 +245,7 @@ const AddAttendance = () => {
         officeTime={profileData?.data?.officeTime}
       />
 
-      <div className="px-6">
+      <div className="md:px-6">
         <div className="bg-white rounded-xl shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <TableContainer component={Paper} elevation={0}>

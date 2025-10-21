@@ -121,7 +121,7 @@ const RecycleBinJobCardList = () => {
     <div>
       <div className="mt-5 overflow-x-auto">
         <div className="flex items-center justify-between my-3 mb-8">
-          <div className="flex flex-wrap items-center justify-center ">
+          <div className="flex  items-center justify-center ">
 
             <div className="ml-2">
               <h3 className="text-sm font-bold md:text-2xl"> Job Card </h3>
@@ -138,12 +138,12 @@ const RecycleBinJobCardList = () => {
         </div>
 
         <div className="w-full mt-5 mb-24">
-          <div className="flex flex-wrap items-center justify-between mb-5">
+          <div className="flex flex-col md:flex-row items-center justify-between mb-5">
             <h3 className="txt-center tet-sm ml- sm:ml-0 ont-bold md:text-3xl">
               {" "}
               Job Card List:{" "}
             </h3>
-            <div className="flex flex-wrap items-center">
+            <div className="flex items-center">
               <button
                 onClick={handleAllAddToJobCard}
                 className="bg-[#42A1DA] text-white px-4 py-2 rounded-md mr-1"
@@ -154,7 +154,7 @@ const RecycleBinJobCardList = () => {
                 onChange={(e) => setFilterType(e.target.value)}
                 type="text"
                 placeholder="Search"
-                className="border py-2 px-3 rounded-md border-[#ddd]"
+                className="border py-2 px-3 rounded-md border-[#ddd] w-[180px] md:w-full"
                 ref={textInputRef}
               />
               <button
@@ -177,7 +177,12 @@ const RecycleBinJobCardList = () => {
                   No matching card found.
                 </div>
               ) : (
-                <section>
+                <section style={{
+    width: "100%",
+    overflowX: "auto",
+    borderRadius: "12px",
+    background: "white",
+  }} >
                   <table className="table">
                     <thead className="tableWrap">
                       <tr>

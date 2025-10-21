@@ -117,7 +117,7 @@ const RecycledQuotationList = () => {
       <div className="overflow-x-auto mt-5">
 
 
-        <div className="flex items-center justify-between my-3 mb-8">
+        <div className="flex flex-col items-center justify-between my-3 mb-8">
           <div className="flex items-center justify-center ">
             <FaFileInvoice className="invoicIcon" />
             <div className="ml-2">
@@ -133,14 +133,14 @@ const RecycledQuotationList = () => {
         </div>
 
         <div className="w-full mt-5 mb-24">
-          <div className="flex items-center justify-between mb-5">
+          <div className="flex flex-col md:flex-row items-center justify-between mb-5">
             <h3 className="text-3xl font-bold text-center ">
               Recycled Bin Quotation List:
             </h3>
-            <div className="flex items-center">
+            <div className="flex  items-center">
               <button
                 onClick={handleAllQuotation}
-                className="mx-6 font-semibold cursor-pointer bg-[#42A1DA] px-2 py-1 rounded-md text-white"
+                className="mx-1 md:mx-6 font-semibold cursor-pointer bg-[#42A1DA] px-2 py-1 rounded-md text-white"
               >
                 All
               </button>
@@ -148,7 +148,7 @@ const RecycledQuotationList = () => {
                 onChange={(e) => setFilterType(e.target.value)}
                 type="text"
                 placeholder="Search"
-                className="border py-2 px-3 rounded-md border-[#ddd]"
+                className="border py-2 px-3 rounded-md border-[#ddd] w-[150px] md:w-full"
                 ref={textInputRef}
               />
               <button className="SearchBtn ">Search</button>
@@ -165,7 +165,12 @@ const RecycledQuotationList = () => {
                   No matching card found.
                 </div>
               ) : (
-                <section>
+                <section style={{
+    width: "100%",
+    overflowX: "auto",
+    borderRadius: "12px",
+    background: "white",
+  }}>
                   <table className="table">
                     <thead className="tableWrap">
                       <tr>
