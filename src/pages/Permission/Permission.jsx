@@ -170,25 +170,9 @@ const Permission = () => {
   };
 
   const handleDeleteMultiplePermissions = async (permissionIds) => {
-    console.log('permission id ', permissionIds)
-    const validPermissionIds = permissionIds.filter(id =>
-      id !== 'batch' && /^[0-9a-fA-F]{24}$/.test(id)
-    );
-
-    if (validPermissionIds.length === 0) {
-      Swal.fire({
-        icon: "error",
-        title: "Error!",
-        text: "No valid permission IDs selected",
-        confirmButtonColor: theme.palette.primary.main,
-        background: "#fff",
-      });
-      return;
-    }
-
     const confirmResult = await Swal.fire({
       title: "Are you sure?",
-      text: `You are about to delete ${validPermissionIds.length} permission(s). You won't be able to revert this!`,
+      text: `You are about to delete ${permissionIds.length} permission(s). You won't be able to revert this!`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: theme.palette.primary.main,
@@ -202,9 +186,8 @@ const Permission = () => {
         const result = await deleteMultiplePermissions({
           userId: user?.userId,
           tenantDomain,
-          permissionIds: validPermissionIds,
+          permissionIds,
         }).unwrap();
-
 
         const { successful, failed } = result.data;
 
@@ -212,11 +195,11 @@ const Permission = () => {
           icon: successful > 0 ? "success" : "error",
           title: successful > 0 ? "Deleted!" : "Error!",
           html: `
-          <div>
-            ${successful > 0 ? `<p>${successful} permission(s) deleted successfully.</p>` : ''}
-            ${failed > 0 ? `<p>${failed} permission(s) could not be deleted.</p>` : ''}
-          </div>
-        `,
+            <div>
+              ${successful > 0 ? `<p>${successful} permission(s) deleted successfully.</p>` : ''}
+              ${failed > 0 ? `<p>${failed} permission(s) could not be deleted.</p>` : ''}
+            </div>
+          `,
           showConfirmButton: true,
           confirmButtonColor: theme.palette.primary.main,
           background: "#fff",
@@ -251,15 +234,14 @@ const Permission = () => {
     <Box sx={{
       minHeight: '100vh',
       background: `linear-gradient(135deg, ${alpha(theme.palette.primary.light, 0.1)} 0%, ${alpha(theme.palette.secondary.light, 0.1)} 100%)`,
-      py: 3,
-
+      py: 3
     }}>
-      <Container maxWidth="xl" sx={{ p: 0 }}>
+      <Container maxWidth="xl">
         <PermissionHeader />
         <Paper
           elevation={0}
           sx={{
-            p: { xs: 1.5, md: 3 },
+            p: 3,
             mb: 4,
             borderRadius: 4,
             background: 'rgba(255, 255, 255, 0.9)',
@@ -284,9 +266,9 @@ const Permission = () => {
                 startIcon={<Person />}
                 onClick={handleUserOpen}
                 sx={{
-                  borderRadius: 2,
-                  px: { xs: 1.3, md: 3 },
-                  py: 1,
+                  borderRadius: 3,
+                  px: 3,
+                  py: 1.2,
                   background: 'linear-gradient(45deg, #2196f3 30%, #21cbf3 90%)',
                   boxShadow: '0 4px 10px rgba(33, 150, 243, 0.3)',
                 }}
@@ -299,8 +281,8 @@ const Permission = () => {
                 startIcon={<ViewModule />}
                 onClick={handlePageOpen}
                 sx={{
-                  borderRadius: 2,
-                  px: { xs: 1.3, md: 3 },
+                  borderRadius: 3,
+                  px: 3,
                   py: 1.2,
                   background: 'linear-gradient(45deg, #4caf50 30%, #66bb6a 90%)',
                   boxShadow: '0 4px 10px rgba(76, 175, 80, 0.3)',
@@ -314,8 +296,8 @@ const Permission = () => {
                 startIcon={<Security />}
                 onClick={handleRoleOpen}
                 sx={{
-                  borderRadius: 2,
-                  px: { xs: 1.3, md: 3 },
+                  borderRadius: 3,
+                  px: 3,
                   py: 1.2,
                   background: 'linear-gradient(45deg, #ff9800 30%, #ffb74d 90%)',
                   boxShadow: '0 4px 10px rgba(255, 152, 0, 0.3)',
@@ -329,8 +311,8 @@ const Permission = () => {
                 startIcon={<Add />}
                 onClick={() => handleDialogOpen()}
                 sx={{
-                  borderRadius: 2,
-                  px: { xs: 1.3, md: 3 },
+                  borderRadius: 3,
+                  px: 3,
                   py: 1.2,
                   background: 'linear-gradient(45deg, #9c27b0 30%, #ba68c8 90%)',
                   boxShadow: '0 4px 10px rgba(156, 39, 176, 0.3)',
@@ -361,7 +343,7 @@ const Permission = () => {
                 borderRadius: 3,
               }
             }}
-            variant="scrollable"
+            variant="fullWidth"
             textColor="primary"
             indicatorColor="primary"
           >
