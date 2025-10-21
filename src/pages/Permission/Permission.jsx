@@ -169,10 +169,28 @@ const Permission = () => {
     }
   };
 
+  // In UserPermissionsTab.js, modify the handleDeleteMultiplePermissions function:
+
   const handleDeleteMultiplePermissions = async (permissionIds) => {
+    console.log('permission id ', permissionIds)
+    const validPermissionIds = permissionIds.filter(id =>
+      id !== 'batch' && /^[0-9a-fA-F]{24}$/.test(id)
+    );
+
+    if (validPermissionIds.length === 0) {
+      Swal.fire({
+        icon: "error",
+        title: "Error!",
+        text: "No valid permission IDs selected",
+        confirmButtonColor: theme.palette.primary.main,
+        background: "#fff",
+      });
+      return;
+    }
+
     const confirmResult = await Swal.fire({
       title: "Are you sure?",
-      text: `You are about to delete ${permissionIds.length} permission(s). You won't be able to revert this!`,
+      text: `You are about to delete ${validPermissionIds.length} permission(s). You won't be able to revert this!`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: theme.palette.primary.main,
@@ -186,7 +204,7 @@ const Permission = () => {
         const result = await deleteMultiplePermissions({
           userId: user?.userId,
           tenantDomain,
-          permissionIds,
+          permissionIds: validPermissionIds,
         }).unwrap();
 
         const { successful, failed } = result.data;
@@ -195,11 +213,11 @@ const Permission = () => {
           icon: successful > 0 ? "success" : "error",
           title: successful > 0 ? "Deleted!" : "Error!",
           html: `
-            <div>
-              ${successful > 0 ? `<p>${successful} permission(s) deleted successfully.</p>` : ''}
-              ${failed > 0 ? `<p>${failed} permission(s) could not be deleted.</p>` : ''}
-            </div>
-          `,
+          <div>
+            ${successful > 0 ? `<p>${successful} permission(s) deleted successfully.</p>` : ''}
+            ${failed > 0 ? `<p>${failed} permission(s) could not be deleted.</p>` : ''}
+          </div>
+        `,
           showConfirmButton: true,
           confirmButtonColor: theme.palette.primary.main,
           background: "#fff",
