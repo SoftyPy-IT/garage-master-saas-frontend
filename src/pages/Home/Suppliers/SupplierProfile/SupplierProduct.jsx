@@ -257,7 +257,21 @@ const SupplierProduct = ({ productData }) => {
           </Menu>
         </Box>
       </Box>
-      <StyledTableContainer component={Paper}>
+      <StyledTableContainer component={Paper} sx={{
+            width: "100%",
+            overflowX: "auto",
+            borderRadius: 2,
+            "&::-webkit-scrollbar": {
+              height: 6,
+            },
+            "&::-webkit-scrollbar-thumb": {
+              backgroundColor: "#ccc",
+              borderRadius: 3,
+            },
+            "&::-webkit-scrollbar-thumb:hover": {
+              backgroundColor: "#999",
+            },
+          }}>
         <Table sx={{ minWidth: 700 }} aria-label="product table">
           <TableHead>
             <TableRow>

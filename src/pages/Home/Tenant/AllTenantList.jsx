@@ -566,7 +566,21 @@ const AllTenantList = () => {
 
       {/* Tenants Table */}
       <StyledPaper>
-        <StyledTableContainer>
+        <StyledTableContainer sx={{
+            width: "100%",
+            overflowX: "auto",
+            borderRadius: 2,
+            "&::-webkit-scrollbar": {
+              height: 6,
+            },
+            "&::-webkit-scrollbar-thumb": {
+              backgroundColor: "#ccc",
+              borderRadius: 3,
+            },
+            "&::-webkit-scrollbar-thumb:hover": {
+              backgroundColor: "#999",
+            },
+          }}>
           <Table>
             <TableHead>
               <TableRow>

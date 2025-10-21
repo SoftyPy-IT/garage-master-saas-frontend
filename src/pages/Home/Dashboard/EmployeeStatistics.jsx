@@ -1,12 +1,11 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
-import {
-  HiOutlineCheckCircle,
-} from "react-icons/hi";
+import { HiOutlineCheckCircle } from "react-icons/hi";
 import { CircularProgressbar } from "react-circular-progressbar";
 import { useGetAllEmployeesQuery } from "../../../redux/api/employee";
 import Loading from "../../../components/Loading/Loading";
 import DashboardLeave from "./DashboardLeave";
+import "react-circular-progressbar/dist/styles.css";
 
 const EmployeeStatistics = ({ tenantDomain }) => {
   const {
@@ -54,8 +53,8 @@ const EmployeeStatistics = ({ tenantDomain }) => {
     },
     0
   );
-  //advance salary calculate
 
+  // advance salary calculate
   const advanceSalary = employeeData?.data?.employees?.reduce(
     (totalDue, employee) => {
       const salaryAdvance = employee.salary.reduce(
@@ -72,7 +71,6 @@ const EmployeeStatistics = ({ tenantDomain }) => {
   );
 
   // late employee calculate
-
   const lateEmployeeCount = employeeData?.data?.employees?.reduce(
     (totalLate, employee) => {
       const lateCount = employee.attendance.reduce((count, attendanceEntry) => {
@@ -102,220 +100,266 @@ const EmployeeStatistics = ({ tenantDomain }) => {
     totalEmployee > 0 ? (AbsentEmployeeCount / totalEmployee) * 100 : 0;
 
   return (
-    <>
-      <div className=" xl:flex gap-5  justify-between sectionMargin  mb-10 ">
-        <div className="earningCardWrap ">
-          <p className="mb-3 font-semibold">Employee Statistic</p>
-          <div className="grid grid-cols-1 md:grid-cols-2 justify-between gap-3">
-            <div className="flex items-center w-50 justify-between  earningCard">
-              <div>
-                <div style={{ width: 60, height: 60 }}>
+    <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 sectionMargin mb-10">
+      {/* Employee Statistics */}
+      <div className="bg-white/90 backdrop-blur-xl rounded-2xl border border-white/30 shadow-xl p-6">
+        <h3 className="text-xl font-semibold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-6">
+          Employee Statistics
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Active Employee */}
+          <div className="bg-gradient-to-br from-green-50 to-green-100/50 rounded-xl p-4 border border-green-200/50 hover:shadow-lg transition-all duration-300">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12">
                   <CircularProgressbar
                     value={activeEmployeePercentage}
-                    text={`${activeEmployeePercentage}%`}
+                    text={`${Math.round(activeEmployeePercentage)}%`}
                     styles={{
                       path: {
-                        stroke: `#60BE6B`,
+                        stroke: `#10b981`,
+                        strokeLinecap: 'round',
                       },
-
                       text: {
-                        fill: "#3e98c7",
+                        fill: '#10b981',
+                        fontSize: '24px',
+                        fontWeight: 'bold',
                       },
-
                       trail: {
-                        stroke: "#f4f4f4",
+                        stroke: '#d1fae5',
                       },
                     }}
                   />
                 </div>
-                <b className="text-sm">Active Employee </b>
-              </div>
-
-              <b>
-                {" "}
-                {activeEmployeeCount} / {totalEmployee}{" "}
-              </b>
-            </div>
-            <div className="flex items-center w-20 justify-between earningCard">
-              <div>
-                <div style={{ width: 60, height: 60 }}>
-                  <CircularProgressbar
-                    value={90}
-                    text={`${90}%`}
-                    styles={{
-                      path: {
-                        stroke: `#60BE6B`,
-                      },
-
-                      text: {
-                        fill: "#3e98c7",
-                      },
-
-                      trail: {
-                        stroke: "#f4f4f4",
-                      },
-                    }}
-                  />
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Active</p>
+                  <p className="text-lg font-bold text-gray-900">{activeEmployeeCount}/{totalEmployee}</p>
                 </div>
-                <b className="text-sm">Total Holiday </b>
               </div>
-              <b> 5 / 30 </b>
             </div>
-            <div className="flex items-center w-20 justify-between earningCard">
-              <div>
-                <div style={{ width: 60, height: 60 }}>
+          </div>
+
+          {/* Today Leave */}
+          <div className="bg-gradient-to-br from-orange-50 to-orange-100/50 rounded-xl p-4 border border-orange-200/50 hover:shadow-lg transition-all duration-300">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12">
                   <CircularProgressbar
                     value={absentEmployeePercentage}
-                    text={`${absentEmployeePercentage}%`}
+                    text={`${Math.round(absentEmployeePercentage)}%`}
                     styles={{
                       path: {
-                        stroke: `#F77F00`,
+                        stroke: `#f97316`,
+                        strokeLinecap: 'round',
                       },
-
                       text: {
-                        fill: "#3e98c7",
+                        fill: '#f97316',
+                        fontSize: '24px',
+                        fontWeight: 'bold',
                       },
-
                       trail: {
-                        stroke: "#f4f4f4",
+                        stroke: '#ffedd5',
                       },
                     }}
                   />
                 </div>
-                <b className="text-sm">Today Leave </b>
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Today Leave</p>
+                  <p className="text-lg font-bold text-gray-900">{AbsentEmployeeCount}/{totalEmployee}</p>
+                </div>
               </div>
-              <b>
-                {" "}
-                {AbsentEmployeeCount} / {totalEmployee}
-              </b>
             </div>
-            <div className="flex items-center w-20 justify-between earningCard">
-              <div>
-                <div style={{ width: 60, height: 60 }}>
+          </div>
+
+          {/* Today Late */}
+          <div className="bg-gradient-to-br from-red-50 to-red-100/50 rounded-xl p-4 border border-red-200/50 hover:shadow-lg transition-all duration-300">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12">
                   <CircularProgressbar
                     value={lateEmployeePercentage}
-                    text={`${lateEmployeePercentage}%`}
+                    text={`${Math.round(lateEmployeePercentage)}%`}
                     styles={{
                       path: {
-                        stroke: `#EF4444`,
+                        stroke: `#ef4444`,
+                        strokeLinecap: 'round',
                       },
-
                       text: {
-                        fill: "#3e98c7",
+                        fill: '#ef4444',
+                        fontSize: '24px',
+                        fontWeight: 'bold',
                       },
-
                       trail: {
-                        stroke: "#f4f4f4",
+                        stroke: '#fee2e2',
                       },
                     }}
                   />
                 </div>
-                <b className="text-sm ">Today Late </b>
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Today Late</p>
+                  <p className="text-lg font-bold text-gray-900">{lateEmployeeCount}/{totalEmployee}</p>
+                </div>
               </div>
-              <b>
-                {" "}
-                {lateEmployeeCount} / {totalEmployee}
-              </b>
             </div>
-            <div className="flex items-center w-20 justify-between earningCard">
-              <div>
-                <div style={{ width: 60, height: 60 }}>
+          </div>
+
+          {/* Advance Salary */}
+          <div className="bg-gradient-to-br from-blue-50 to-blue-100/50 rounded-xl p-4 border border-blue-200/50 hover:shadow-lg transition-all duration-300">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12">
                   <CircularProgressbar
                     value={advanceSalaryPercentage}
-                    text={`${advanceSalaryPercentage}%`}
+                    text={`${Math.round(advanceSalaryPercentage)}%`}
                     styles={{
                       path: {
-                        stroke: `#60BE6B`,
+                        stroke: `#3b82f6`,
+                        strokeLinecap: 'round',
                       },
-
                       text: {
-                        fill: "#3e98c7",
+                        fill: '#3b82f6',
+                        fontSize: '24px',
+                        fontWeight: 'bold',
                       },
-
                       trail: {
-                        stroke: "#f4f4f4",
+                        stroke: '#dbeafe',
                       },
                     }}
                   />
                 </div>
-                <b className="text-sm">Advance Salary </b>
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Advance Salary</p>
+                  <p className="text-lg font-bold text-gray-900">৳{advanceSalary}</p>
+                </div>
               </div>
-              <b className="">৳{advanceSalary}</b>
             </div>
-            <div className="flex items-center w-20 justify-between earningCard">
-              <div>
-                <div style={{ width: 60, height: 60 }}>
+          </div>
+
+          {/* Due Salary */}
+          <div className="bg-gradient-to-br from-purple-50 to-purple-100/50 rounded-xl p-4 border border-purple-200/50 hover:shadow-lg transition-all duration-300">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12">
                   <CircularProgressbar
                     value={90}
-                    text={`${90}%`}
+                    text={`90%`}
                     styles={{
                       path: {
-                        stroke: `#EF4444`,
+                        stroke: `#8b5cf6`,
+                        strokeLinecap: 'round',
                       },
-
                       text: {
-                        fill: "#3e98c7",
+                        fill: '#8b5cf6',
+                        fontSize: '24px',
+                        fontWeight: 'bold',
                       },
-
                       trail: {
-                        stroke: "#f4f4f4",
+                        stroke: '#f3e8ff',
                       },
                     }}
                   />
                 </div>
-                <b className="text-sm ">Due Salary </b>
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Due Salary</p>
+                  <p className="text-lg font-bold text-gray-900">৳{dueSalary}</p>
+                </div>
               </div>
-              <b className="">৳{dueSalary}</b>
-            </div>
-          </div>
-        </div>
-        <div className="earningCardWrap mt-5">
-          <p className="mb-3 font-semibold ">Task Statistic </p>
-          <div className="flex flex-col md:flex-row gap-2 items-center justify-between">
-            <div className="task">
-              <p>Total Tasks </p>
-              <b>350</b>
-            </div>
-            <div className="task">
-              <p>Overdue Tasks </p>
-              <b>350</b>
             </div>
           </div>
 
-          <div className="space-y-5 mt-5">
-            <div className="flex items-center justify-between ">
-              <div className="flex items-center">
-                <HiOutlineCheckCircle className="text-[#60BE6B] mr-1" />
-                <span className="font-semibold">Complete Task </span>
+          {/* Total Holiday */}
+          <div className="bg-gradient-to-br from-cyan-50 to-cyan-100/50 rounded-xl p-4 border border-cyan-200/50 hover:shadow-lg transition-all duration-300">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12">
+                  <CircularProgressbar
+                    value={90}
+                    text={`90%`}
+                    styles={{
+                      path: {
+                        stroke: `#06b6d4`,
+                        strokeLinecap: 'round',
+                      },
+                      text: {
+                        fill: '#06b6d4',
+                        fontSize: '24px',
+                        fontWeight: 'bold',
+                      },
+                      trail: {
+                        stroke: '#cffafe',
+                      },
+                    }}
+                  />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Total Holiday</p>
+                  <p className="text-lg font-bold text-gray-900">5/30</p>
+                </div>
               </div>
-              <b>455</b>
-            </div>
-            <div className="flex items-center justify-between ">
-              <div className="flex items-center">
-                <HiOutlineCheckCircle className="text-[#FFBC34] mr-1" />
-                <span className="font-semibold">Inprogress Task </span>
-              </div>
-              <b>25</b>
-            </div>
-            <div className="flex items-center justify-between ">
-              <div className="flex items-center">
-                <HiOutlineCheckCircle className="text-[#EF4444]  mr-1" />
-                <span className="font-semibold">Pending Task </span>
-              </div>
-              <b>25</b>
-            </div>
-            <div className="flex items-center justify-between ">
-              <div className="flex items-center">
-                <HiOutlineCheckCircle className="text-[#FFBC34] mr-1" />
-                <span className="font-semibold">Review Task </span>
-              </div>
-              <b>25</b>
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Task Statistics */}
+      <div className="bg-white/90 backdrop-blur-xl rounded-2xl border border-white/30 shadow-xl p-6">
+        <h3 className="text-xl font-semibold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-6">
+          Task Statistics
+        </h3>
+        
+        {/* Total Tasks Overview */}
+        <div className="grid grid-cols-2 gap-4 mb-6">
+          <div className="bg-gradient-to-br from-indigo-50 to-indigo-100/50 rounded-xl p-4 border border-indigo-200/50 text-center">
+            <p className="text-sm font-medium text-gray-600 mb-1">Total Tasks</p>
+            <p className="text-2xl font-bold text-indigo-600">350</p>
+          </div>
+          <div className="bg-gradient-to-br from-rose-50 to-rose-100/50 rounded-xl p-4 border border-rose-200/50 text-center">
+            <p className="text-sm font-medium text-gray-600 mb-1">Overdue Tasks</p>
+            <p className="text-2xl font-bold text-rose-600">350</p>
+          </div>
+        </div>
+
+        {/* Task Breakdown */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between p-3 bg-green-50 rounded-xl border border-green-200/50 hover:shadow-md transition-all duration-300">
+            <div className="flex items-center space-x-3">
+              <HiOutlineCheckCircle className="text-green-500 text-xl" />
+              <span className="font-semibold text-gray-700">Complete Task</span>
+            </div>
+            <span className="text-lg font-bold text-green-600">455</span>
+          </div>
+
+          <div className="flex items-center justify-between p-3 bg-amber-50 rounded-xl border border-amber-200/50 hover:shadow-md transition-all duration-300">
+            <div className="flex items-center space-x-3">
+              <HiOutlineCheckCircle className="text-amber-500 text-xl" />
+              <span className="font-semibold text-gray-700">Inprogress Task</span>
+            </div>
+            <span className="text-lg font-bold text-amber-600">25</span>
+          </div>
+
+          <div className="flex items-center justify-between p-3 bg-red-50 rounded-xl border border-red-200/50 hover:shadow-md transition-all duration-300">
+            <div className="flex items-center space-x-3">
+              <HiOutlineCheckCircle className="text-red-500 text-xl" />
+              <span className="font-semibold text-gray-700">Pending Task</span>
+            </div>
+            <span className="text-lg font-bold text-red-600">25</span>
+          </div>
+
+          <div className="flex items-center justify-between p-3 bg-blue-50 rounded-xl border border-blue-200/50 hover:shadow-md transition-all duration-300">
+            <div className="flex items-center space-x-3">
+              <HiOutlineCheckCircle className="text-blue-500 text-xl" />
+              <span className="font-semibold text-gray-700">Review Task</span>
+            </div>
+            <span className="text-lg font-bold text-blue-600">25</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Dashboard Leave */}
+      <div className="xl:col-span-1">
         <DashboardLeave />
       </div>
-    </>
+    </div>
   );
 };
 
