@@ -169,8 +169,6 @@ const Permission = () => {
     }
   };
 
-  // In UserPermissionsTab.js, modify the handleDeleteMultiplePermissions function:
-
   const handleDeleteMultiplePermissions = async (permissionIds) => {
     console.log('permission id ', permissionIds)
     const validPermissionIds = permissionIds.filter(id =>
@@ -206,6 +204,7 @@ const Permission = () => {
           tenantDomain,
           permissionIds: validPermissionIds,
         }).unwrap();
+
 
         const { successful, failed } = result.data;
 
@@ -255,7 +254,7 @@ const Permission = () => {
       py: 3,
 
     }}>
-      <Container maxWidth="xl" sx={{p:0}}>
+      <Container maxWidth="xl" sx={{ p: 0 }}>
         <PermissionHeader />
         <Paper
           elevation={0}
@@ -395,7 +394,7 @@ const Permission = () => {
               </div>
             )}
 
-            {tabValue === 1 && ( 
+            {tabValue === 1 && (
               <div>
 
                 <UserPermissionsTab
