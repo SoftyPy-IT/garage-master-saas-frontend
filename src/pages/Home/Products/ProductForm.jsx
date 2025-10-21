@@ -1,9 +1,10 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useMemo, useEffect } from "react";
 import {
   Box,
   Container,
@@ -11,21 +12,17 @@ import {
   Paper,
   Button,
   Grid,
-  Snackbar,
-  Alert,
-  Avatar,
   InputAdornment,
   Stepper,
   Step,
   StepLabel,
   StepContent,
-  Backdrop,
-  CircularProgress,
   FormControl,
   InputLabel,
   Select,
   MenuItem,
   FormHelperText,
+  Tooltip,
 } from "@mui/material";
 import {
   Save as SaveIcon,
@@ -40,23 +37,13 @@ import {
   Store,
   Speed,
   Help as HelpIcon,
-  CheckCircle,
   WarningRounded,
   CalendarMonth,
   AccessTime,
   Notifications,
 } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
-import {
-  useCreateProductMutation,
-  useGetSingleProductQuery,
-  useUpdateProductMutation,
-} from "../../../redux/api/productApi";
-import { useGetAllICategoryQuery } from "../../../redux/api/categoryApi";
-import { useGetAllIBrandQuery } from "../../../redux/api/brandApi";
-import { useGetAllIUnitQuery } from "../../../redux/api/unitApi";
-import { useGetAllIProductTypeQuery } from "../../../redux/api/productTypeApi";
-import { useGetAllSuppliersQuery } from "../../../redux/api/supplier";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import { useGetSingleProductQuery } from "../../../redux/api/productApi";
 import GarageForm from "../../../components/form/Form";
 import TASInput from "../../../components/form/Input";
 import TASAutocomplete from "../../../components/form/Autocomplete";
@@ -67,165 +54,75 @@ import ProductStatusSelector from "../../../components/form/Status";
 import { toast } from "react-toastify";
 import TASSelect from "../../../components/form/Select";
 import FormDatePicker from "../../../components/form/Datepicker";
-import { useGetAllWarehousesQuery } from "../../../redux/api/warehouseApi";
-import { Tooltip } from "@mui/material";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import { addButtonStyle } from "../../../utils/customStyle";
+import { addButtonStyle, pBtnStyle } from "../../../utils/customStyle";
 import { CreateCategoryModal } from "../Category/CreateCategoryModal";
 import { CreateBrandModal } from "../Brand/CreateBrandModal";
-import AddWarehouseModal from "../../Inventory/Warehouse/AddWarehouse";
 import { CreateProductTypeModal } from "../ProductType/CreateProductTypeModal";
 import { AddSupplierModal } from "../Suppliers/AddSupplierModal";
-import { CreateUnitModal } from "../Unit/CreateUnitModal";
-import { useTenantDomain } from "../../../hooks/useTenantDomain";
-import { useGetAllWarrantyQuery } from "../../../redux/api/warrantyApi";
-import CreateWarrantyModal from "../../Inventory/WarrandyModal";
+import Loading from "../../../components/Loading/Loading";
+import Can from "../../../components/Can";
+import { UnitModal } from "../Unit/UnitModal";
+import { useAppOptions } from "../../../hooks/useAppOptions";
+import { useFormController } from "../../../hooks/useFormController";
+import WarrantyModal from "../../Inventory/Warranty/WarrantyModal";
+import WarehouseModal from "../../Inventory/Warehouse/WarehouseModal";
 
 export default function ProductForm({ id }) {
-  const navigate = useNavigate();
-  const [activeStep, setActiveStep] = useState(0);
-  const [errors, setErrors] = useState({});
-  const [previewImage, setPreviewImage] = useState(null);
-  const [selectedTags, setSelectedTags] = useState([]);
-  const [productStatus, setProductStatus] = useState("active");
-  const [snackbar, setSnackbar] = useState({
-    open: false,
-    message: "",
-    severity: "success",
-  });
-  const [submitting, setSubmitting] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [expiryDateType, setExpiryDateType] = useState("fixed");
-  const [unitOpen, setUnitOpen] = useState(false);
-  const [brandOpen, setBrandOpen] = useState(false);
-  const [supplierOpen, setSupplierOpen] = useState(false);
-  const [categoryOpen, setCategoryOpen] = useState(false);
-  const [warehouseOpen, setWarehouseOpen] = useState(false);
-  const [productTypeOpen, setproductTypeOpen] = useState(false);
-  const [warrantyOpen, setWarrantyOpen] = useState(false);
+  const {
+    activeStep,
+    setActiveStep,
+    setPreviewImage,
+    setProductStatus,
+    categoryOpen,
+    handleCategoryOpen,
+    handleCategoryClose,
+    brandOpen,
+    handleBrandOpen,
+    handleBrandClose,
+    warehouseOpen,
+    handleWarehouseOpen,
+    handleWarehouseClose,
+    unitOpen,
+    handleUnitOpen,
+    handleUnitClose,
+    setSelectedTags,
+    navigate,
+    setErrors,
+    expiryDateType,
+    setExpiryDateType,
+    handleProductTypeClose,
+    handleProductTypeOpen,
+    handleWarrantyClose,
+    handleWarrantyOpen,
+    warrantyOpen,
+    handleSupplierOpen,
+    handleSupplierClose,
+    submitting,
+    productTypeOpen,
+    supplierOpen,
+  } = useFormController();
 
-  const handleWarrantyOpen = () => setWarrantyOpen(true);
-  const handleWarrantyClose = () => setWarrantyOpen(false);
-  const handleCategoryOpen = () => setCategoryOpen(true);
-  const handleCategoryClose = () => setCategoryOpen(false);
-  const handleBrandOpen = () => setBrandOpen(true);
-  const handleBrandClose = () => setBrandOpen(false);
-  const handleWarehouseOpen = () => setWarehouseOpen(true);
-  const handleWarehouseClose = () => setWarehouseOpen(false);
-  const handleProductTypeOpen = () => setproductTypeOpen(true);
-  const handleProductTypeClose = () => setproductTypeOpen(false);
-  const handleSupplierOpen = () => setSupplierOpen(true);
-  const handleSupplierClose = () => setSupplierOpen(false);
-  const handleUnitOpen = () => setUnitOpen(true);
-  const handleUnitClose = () => setUnitOpen(false);
-  const tenantDomain = useTenantDomain();
+  const {
+    productTypeLoading,
+    supplierLoading,
+    unitLoading,
+    brandLoading,
+    warehouseLoading,
+    categoryOptions,
+    supplierOptions,
+    unitOptions,
+    brandOptions,
+    warehouseOptions,
+    productTypeOptions,
+    warrantyOptions,
+    updateProduct,
+    createProduct,
+    performActionWithPermission,
+    tenantDomain
+  } = useAppOptions();
 
   const { data: singleProduct, isLoading: singleProductLoading } =
     useGetSingleProductQuery({ tenantDomain, id });
-  const [updateProduct] = useUpdateProductMutation();
-  const [createProduct] = useCreateProductMutation();
-  const { data } = useGetAllICategoryQuery({
-    tenantDomain,
-    limit: 99999999999,
-    page: 1,
-    searchTerm: "",
-  });
-  const { data: brandData, isLoading: brandLoading } = useGetAllIBrandQuery({
-    tenantDomain,
-    limit: 99999999999,
-    page: 1,
-    searchTerm: "",
-  });
-  const { data: unitData, isLoading: unitLoading } = useGetAllIUnitQuery({
-    tenantDomain,
-    limit: 99999999999,
-    page: 1,
-    searchTerm: "",
-  });
-  const { data: productTypeData, isLoading: productTypeLoading } =
-    useGetAllIProductTypeQuery({
-      tenantDomain,
-      limit: 99999999999,
-      page: 1,
-      searchTerm: "",
-    });
-  const { data: supplierData, isLoading: supplierLoading } =
-    useGetAllSuppliersQuery({
-      tenantDomain,
-      limit: 1000000,
-      page: 1,
-      searchTerm: "",
-    });
-  const { data: wareHouseData, isLoading: warehouseLoading } =
-    useGetAllWarehousesQuery({
-      tenantDomain,
-      limit: 1000000,
-      page: 1,
-      searchTerm: "",
-    });
-  const { data: warrantyData } = useGetAllWarrantyQuery({
-    tenantDomain,
-    limit: 1000000,
-    page: 1,
-    searchTerm: "",
-  });
-
-  // Options for dropdowns
-  const warrantyOptions = useMemo(() => {
-    if (!warrantyData?.data?.data) return [];
-    return warrantyData.data?.data.map((war) => ({
-      label: war.name,
-      value: war._id,
-    }));
-  }, [warrantyData?.data]);
-  // Options for dropdowns
-  const warehouseOptions = useMemo(() => {
-    if (!wareHouseData?.data?.warehouses) return [];
-    return wareHouseData.data.warehouses.map((war) => ({
-      label: war.name,
-      value: war._id,
-    }));
-  }, [wareHouseData?.data?.warehouses]);
-
-  const categoryOptions = useMemo(() => {
-    if (!data?.data?.categories) return [];
-    return data.data.categories.map((category) => ({
-      label: category.main_category,
-      value: category._id,
-    }));
-  }, [data]);
-
-  const brandOptions = useMemo(() => {
-    if (!brandData?.data?.brands) return [];
-    return brandData.data.brands.map((brand) => ({
-      label: brand.brand,
-      value: brand._id,
-    }));
-  }, [brandData?.data?.brands]);
-
-  const unitOptions = useMemo(() => {
-    if (!unitData?.data?.units) return [];
-    return unitData.data.units.map((unit) => ({
-      label: unit.unit,
-      value: unit._id,
-    }));
-  }, [unitData?.data?.units]);
-
-  const productTypeOptions = useMemo(() => {
-    if (!productTypeData?.data?.productTypes) return [];
-    return productTypeData.data.productTypes.map((productType) => ({
-      label: productType.product_type,
-      value: productType._id,
-    }));
-  }, [productTypeData?.data?.productTypes]);
-
-  const suppliersOptions = useMemo(() => {
-    if (!supplierData?.data?.suppliers) return [];
-    return supplierData.data.suppliers.map((supplier) => ({
-      label: supplier.full_name,
-      value: supplier._id,
-    }));
-  }, [supplierData?.data?.suppliers]);
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -233,13 +130,6 @@ export default function ProductForm({ id }) {
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
-  };
-
-  const handleCloseSnackbar = () => {
-    setSnackbar({
-      ...snackbar,
-      open: false,
-    });
   };
 
   const handleReset = () => {
@@ -257,7 +147,7 @@ export default function ProductForm({ id }) {
       product_code: singleProduct.data.product_code || "",
       purchasePrice: singleProduct.data.purchasePrice || "",
       minimumSalePrice: singleProduct.data.minimumSalePrice || "",
-      sellingPrice: singleProduct.data.purchasePrice || "",
+      sellingPrice: singleProduct.data.sellingPrice || "",
       unit_price: singleProduct.data.unit_price || "",
       expense: singleProduct.data.expense || "",
       discount: singleProduct.data.discount || "",
@@ -280,53 +170,53 @@ export default function ProductForm({ id }) {
       expiryAlertDays: singleProduct.data.expiryAlertDays || 30,
       category: singleProduct.data.category
         ? [
-            categoryOptions.find(
-              (cat) => cat.value === singleProduct.data.category._id
-            )?.label || "",
-          ]
+          categoryOptions.find(
+            (cat) => cat.value === singleProduct.data.category._id
+          )?.label || "",
+        ]
         : [],
       brand: singleProduct.data.brand
         ? [
-            brandOptions.find(
-              (brand) => brand.value === singleProduct.data.brand._id
-            )?.label || "",
-          ]
+          brandOptions.find(
+            (brand) => brand.value === singleProduct.data.brand._id
+          )?.label || "",
+        ]
         : [],
       unit: singleProduct.data.unit
         ? [
-            unitOptions.find(
-              (unit) => unit.value === singleProduct.data.unit._id
-            )?.label || "",
-          ]
+          unitOptions.find(
+            (unit) => unit.value === singleProduct.data.unit._id
+          )?.label || "",
+        ]
         : [],
       warehouse: singleProduct.data.warehouse
         ? [
-            warehouseOptions.find(
-              (warehouse) =>
-                warehouse.value === singleProduct.data.warehouse._id
-            )?.label || "",
-          ]
+          warehouseOptions.find(
+            (warehouse) =>
+              warehouse.value === singleProduct.data.warehouse._id
+          )?.label || "",
+        ]
         : [],
       product_type: singleProduct.data.product_type
         ? [
-            productTypeOptions.find(
-              (type) => type.value === singleProduct.data.product_type._id
-            )?.label || "",
-          ]
+          productTypeOptions.find(
+            (type) => type.value === singleProduct.data.product_type._id
+          )?.label || "",
+        ]
         : [],
       suppliers: singleProduct.data.suppliers
         ? [
-            suppliersOptions.find(
-              (supplier) => supplier.value === singleProduct.data.suppliers._id
-            )?.label || "",
-          ]
+          supplierOptions.find(
+            (supplier) => supplier.value === singleProduct.data.suppliers._id
+          )?.label || "",
+        ]
         : [],
       warranties: singleProduct.data.warranties
         ? [
-            warrantyOptions.find(
-              (war) => war.value === singleProduct.data.warranties._id
-            )?.label || "",
-          ]
+          warrantyOptions.find(
+            (war) => war.value === singleProduct.data.warranties._id
+          )?.label || "",
+        ]
         : [],
       initialStock: singleProduct.data.initialStock || 0,
       stock: singleProduct.data.stock || 0,
@@ -341,7 +231,7 @@ export default function ProductForm({ id }) {
     brandOptions,
     unitOptions,
     productTypeOptions,
-    suppliersOptions,
+    supplierOptions,
     warehouseOptions,
     warrantyOptions,
   ]);
@@ -350,161 +240,168 @@ export default function ProductForm({ id }) {
     if (singleProduct?.data?.productStatus) {
       setProductStatus(singleProduct.data.productStatus);
     }
-  }, [singleProduct?.data]);
+  }, [singleProduct?.data, setProductStatus]);
 
   useEffect(() => {
     if (singleProduct?.data?.tags && Array.isArray(singleProduct.data.tags)) {
       setSelectedTags(singleProduct.data.tags);
     }
-  }, [singleProduct?.data]);
+  }, [singleProduct?.data, setSelectedTags]);
 
   useEffect(() => {
     if (singleProduct?.data?.image) {
       setPreviewImage(singleProduct.data.image);
     }
-  }, [singleProduct?.data]);
+  }, [singleProduct?.data, setPreviewImage]);
 
   useEffect(() => {
     if (singleProduct?.data?.expiryDateType) {
       setExpiryDateType(singleProduct.data.expiryDateType);
     }
-  }, [singleProduct?.data]);
+  }, [singleProduct?.data, setExpiryDateType]);
 
   if (
-    productTypeLoading |
-    brandLoading |
-    unitLoading |
-    warehouseLoading |
+    productTypeLoading ||
+    brandLoading ||
+    unitLoading ||
+    warehouseLoading ||
     supplierLoading
   ) {
-    return <h4>Loading.........</h4>;
+    return <Loading />;
   }
 
   const handleSubmit = async (data) => {
-    try {
-      const imageUrl =
-        data.image && data.image.length > 0 ? data.image[0] : data?.data?.image;
+    performActionWithPermission(
+      '/dashboard/add-product',
+      id ? 'edit' : 'create',
+      async () => {
+        try {
+          let res;
+          const imageUrl =
+            data.image && data.image.length > 0 ? data.image[0] : data?.image;
 
-      const modifyValues = {
-        ...data,
-        image: imageUrl,
-        suppliers:
-          data.suppliers?.[0] &&
-          suppliersOptions.find((cat) => cat.label === data.suppliers[0])?.value
-            ? [
-                suppliersOptions.find((cat) => cat.label === data.suppliers[0])
-                  .value,
-              ]
-            : [],
-        category:
-          data.category?.[0] &&
-          categoryOptions.find((cat) => cat.label === data.category[0])?.value
-            ? [
-                categoryOptions.find((cat) => cat.label === data.category[0])
-                  .value,
-              ]
-            : [],
-        warehouse:
-          data.warehouse?.[0] &&
-          warehouseOptions.find((cat) => cat.label === data.warehouse[0])?.value
-            ? [
-                warehouseOptions.find((cat) => cat.label === data.warehouse[0])
-                  .value,
-              ]
-            : [],
-        warranties:
-          data.warranties?.[0] &&
-          warrantyOptions.find((cat) => cat.label === data.warranties[0])?.value
-            ? [
-                warrantyOptions.find((cat) => cat.label === data.warranties[0])
-                  .value,
-              ]
-            : [],
-        brand:
-          data.brand?.[0] &&
-          brandOptions.find((brand) => brand.label === data.brand[0])?.value
-            ? [
-                brandOptions.find((brand) => brand.label === data.brand[0])
-                  .value,
-              ]
-            : [],
-        unit:
-          data.unit?.[0] &&
-          unitOptions.find((unit) => unit.label === data.unit[0])?.value
-            ? [unitOptions.find((unit) => unit.label === data.unit[0]).value]
-            : [],
-        product_type:
-          data.product_type?.[0] &&
-          productTypeOptions.find((type) => type.label === data.product_type[0])
-            ?.value
-            ? [
-                productTypeOptions.find(
-                  (type) => type.label === data.product_type[0]
-                ).value,
-              ]
-            : [],
-        minimumSalePrice: Number(data.minimumSalePrice),
-        purchasePrice: Number(data.purchasePrice),
-        sellingPrice: Number(data.sellingPrice),
-        discount: Number(data.discount),
-        expense: Number(data.expense),
-        product_tax: Number(data.product_tax),
-        stock_alert: Number(data.stock_alert),
-        product_quantity: Number(data.product_quantity),
-        unit_price: Number(data.unit_price),
-        shipping: Number(data.shipping),
-        tags: data.tags,
-        productStatus: data.productStatus,
-        expiryDateType: expiryDateType,
-        expiryDate: data.expiryDate,
-        shelfLife: Number(data.shelfLife),
-        shelfLifeUnit: data.shelfLifeUnit,
-        manufacturingDate: data.manufacturingDate,
-        batchNumber: data.batchNumber,
-        expiryAlertDays: Number(data.expiryAlertDays),
-        initialStock: Number(data.initialStock || 0),
-        stock: Number(data.stock || 0),
-        stockIn: Number(data.stockIn || 0),
-        stockOut: Number(data.stockOut || 0),
-        reorderLevel: Number(data.reorderLevel || 0),
-        lastPurchaseDate: data.lastPurchaseDate,
-        lastSoldDate: data.lastSoldDate,
-        isDeleted: data.isDeleted || false,
-      };
-      if (!id) {
-        const res = await createProduct({
-          tenantDomain,
-          ...modifyValues,
-        }).unwrap();
-        if (res.success) {
-          toast.success("Product create successfully!");
-          navigate("/dashboard/product-list");
-        }
-      } else {
-        const res = await updateProduct({
-          tenantDomain,
-          id,
-          ...modifyValues,
-        }).unwrap();
-        if (res.success) {
-          toast.success("Product update successfully!");
-          navigate("/dashboard/product-list");
-        }
-      }
-    } catch (error) {
-      const apiError = error?.data || error;
+          const modifyValues = {
+            ...data,
+            image: imageUrl,
+            suppliers:
+              data.suppliers?.[0] &&
+                supplierOptions.find((cat) => cat.label === data.suppliers[0])?.value
+                ? [
+                  supplierOptions.find((cat) => cat.label === data.suppliers[0])
+                    .value,
+                ]
+                : [],
+            category:
+              data.category?.[0] &&
+                categoryOptions.find((cat) => cat.label === data.category[0])?.value
+                ? [
+                  categoryOptions.find((cat) => cat.label === data.category[0])
+                    .value,
+                ]
+                : [],
+            warehouse:
+              data.warehouse?.[0] &&
+                warehouseOptions.find((cat) => cat.label === data.warehouse[0])?.value
+                ? [
+                  warehouseOptions.find((cat) => cat.label === data.warehouse[0])
+                    .value,
+                ]
+                : [],
+            warranties:
+              data.warranties?.[0] &&
+                warrantyOptions.find((cat) => cat.label === data.warranties[0])?.value
+                ? [
+                  warrantyOptions.find((cat) => cat.label === data.warranties[0])
+                    .value,
+                ]
+                : [],
+            brand:
+              data.brand?.[0] &&
+                brandOptions.find((brand) => brand.label === data.brand[0])?.value
+                ? [
+                  brandOptions.find((brand) => brand.label === data.brand[0])
+                    .value,
+                ]
+                : [],
+            unit:
+              data.unit?.[0] &&
+                unitOptions.find((unit) => unit.label === data.unit[0])?.value
+                ? [unitOptions.find((unit) => unit.label === data.unit[0]).value]
+                : [],
+            product_type:
+              data.product_type?.[0] &&
+                productTypeOptions.find((type) => type.label === data.product_type[0])
+                  ?.value
+                ? [
+                  productTypeOptions.find(
+                    (type) => type.label === data.product_type[0]
+                  ).value,
+                ]
+                : [],
+            minimumSalePrice: Number(data.minimumSalePrice),
+            purchasePrice: Number(data.purchasePrice),
+            sellingPrice: Number(data.sellingPrice),
+            discount: Number(data.discount),
+            expense: Number(data.expense),
+            product_tax: Number(data.product_tax),
+            stock_alert: Number(data.stock_alert),
+            product_quantity: Number(data.product_quantity),
+            unit_price: Number(data.unit_price),
+            shipping: Number(data.shipping),
+            tags: data.tags,
+            productStatus: data.productStatus,
+            expiryDateType: expiryDateType,
+            expiryDate: data.expiryDate,
+            shelfLife: Number(data.shelfLife),
+            shelfLifeUnit: data.shelfLifeUnit,
+            manufacturingDate: data.manufacturingDate,
+            batchNumber: data.batchNumber,
+            expiryAlertDays: Number(data.expiryAlertDays),
+            initialStock: Number(data.initialStock || 0),
+            stock: Number(data.stock || 0),
+            stockIn: Number(data.stockIn || 0),
+            stockOut: Number(data.stockOut || 0),
+            reorderLevel: Number(data.reorderLevel || 0),
+            lastPurchaseDate: data.lastPurchaseDate,
+            lastSoldDate: data.lastSoldDate,
+            isDeleted: data.isDeleted || false,
+          };
 
-      // Show specific Zod validation error if available
-      if (apiError?.errorSources?.length > 0) {
-        apiError.errorSources.forEach((source) => {
-          toast.error(`${source.path}: ${source.message}`);
-        });
-      } else if (apiError?.message) {
-        toast.error(apiError.message);
-      } else {
-        toast.error("Failed to create product");
-      }
-    }
+          if (id) {
+            res = await updateProduct({
+              tenantDomain,
+              id,
+              ...modifyValues,
+            }).unwrap();
+            if (res.success) {
+              toast.success('Product updated successfully!');
+              navigate("/dashboard/product-list");
+            }
+          } else {
+            res = await createProduct({
+              tenantDomain,
+              ...modifyValues,
+            }).unwrap();
+            if (res.success) {
+              toast.success('Product created successfully!');
+              navigate("/dashboard/product-list");
+            }
+          }
+        } catch (error) {
+          const apiError = error?.data || error;
+          if (apiError?.errorSources?.length > 0) {
+            apiError.errorSources.forEach((source) => {
+              toast.error(`${source.path}: ${source.message}`);
+            });
+          } else if (apiError?.message) {
+            toast.error(apiError.message);
+          } else {
+            toast.error(`Failed to ${id ? 'update' : 'create'} product`);
+          }
+        }
+      },
+      `You don't have permission to ${id ? 'update' : 'create'} product!`
+    );
   };
 
   const steps = [
@@ -542,8 +439,6 @@ export default function ProductForm({ id }) {
               iconPosition="start"
             />
           </Grid>
-
-          {/* Category with Add Button */}
           <Grid item xs={12} md={6}>
             <Grid container spacing={1} alignItems="center">
               <Grid item xs={8.5} lg={11}>
@@ -575,8 +470,6 @@ export default function ProductForm({ id }) {
               </Grid>
             </Grid>
           </Grid>
-
-          {/* Warehouse with Add Button */}
           <Grid item xs={12} md={6}>
             <Grid container spacing={1} alignItems="center">
               <Grid item xs={8.5} lg={11}>
@@ -691,7 +584,7 @@ export default function ProductForm({ id }) {
                   placeholder="Choose Supplier"
                   icon={Category}
                   iconPosition="start"
-                  options={suppliersOptions}
+                  options={supplierOptions}
                 />
               </Grid>
               <Grid item lg={1} display="flex" justifyContent="center">
@@ -721,7 +614,7 @@ export default function ProductForm({ id }) {
                 />
               </Grid>
               <Grid item lg={1} display="flex" justifyContent="center">
-                <Tooltip title="Add Supplier" arrow>
+                <Tooltip title="Add Warranty" arrow>
                   <Button
                     onClick={handleWarrantyOpen}
                     variant="contained"
@@ -1227,7 +1120,7 @@ export default function ProductForm({ id }) {
   ];
 
   return singleProductLoading ? (
-    <h4>Loading</h4>
+    <Loading />
   ) : (
     <>
       <Box
@@ -1244,7 +1137,7 @@ export default function ProductForm({ id }) {
             background: "#42A0D9",
             color: "white",
             py: 3,
-            mb: 4,
+            mb: 2,
             borderRadius: { xs: "0 0 20px 20px", md: "0 0 20px 20px" },
             boxShadow: "0 4px 20px rgba(106, 27, 154, 0.4)",
           }}
@@ -1253,12 +1146,11 @@ export default function ProductForm({ id }) {
             <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
               <ShoppingBag sx={{ fontSize: 40, mr: 2 }} />
               <span className="font-[700] text-[30px] md:text-[35px]">
-                Create New Product
+                {id ? 'Edit Product' : 'Create New Product'}
               </span>
             </Box>
             <Typography variant="body1" sx={{ opacity: 0.9, maxWidth: 700 }}>
-              Create a new product by filling in the required information.
-              Follow the steps to complete the process.
+              {id ? 'Edit the product information.' : 'Create a new product by filling in the required information. Follow the steps to complete the process.'}
             </Typography>
           </Container>
         </Box>
@@ -1329,17 +1221,11 @@ export default function ProductForm({ id }) {
                                 type="submit"
                                 startIcon={<SaveIcon />}
                                 disabled={submitting}
-                                sx={{
-                                  borderRadius: 100,
-                                  background:
-                                    "linear-gradient(135deg, #6a1b9a 0%, #4a148c 100%)",
-                                  boxShadow:
-                                    "0 4px 10px rgba(106, 27, 154, 0.3)",
-                                  px: 3,
-                                  color: "white",
-                                }}
+                                sx={pBtnStyle}
                               >
-                                {id ? "Update Product " : "Create Product"}
+                                <Can page='/dashboard/update-product' action={id ? 'edit' : 'create'}>
+                                  {id ? 'Update' : 'Create'} Product
+                                </Can>
                               </Button>
                             ) : (
                               <Button
@@ -1382,97 +1268,13 @@ export default function ProductForm({ id }) {
               </Box>
             </GarageForm>
           </Paper>
-          {/* Help Card */}
-          <Paper
-            elevation={2}
-            sx={{
-              p: 3,
-              borderRadius: 4,
-              background: "linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%)",
-              display: "flex",
-              alignItems: "flex-start",
-              gap: 2,
-            }}
-          >
-            <HelpIcon sx={{ color: "#2e7d32", mt: 0.5 }} />
-            <Box>
-              <Typography
-                variant="subtitle1"
-                sx={{ color: "#2e7d32", fontWeight: 600 }}
-              >
-                Need Help?
-              </Typography>
-              <Typography variant="body2" sx={{ color: "#1b5e20" }}>
-                Creating a product is the first step in managing your inventory.
-                After creating a product, it will be available in quotations and
-                invoices. Make sure to fill in all required fields for optimal
-                results and easy searchability.
-              </Typography>
-            </Box>
-          </Paper>
+
         </Container>
-        {/* Success Backdrop */}
-        <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={success}
-        >
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              bgcolor: "white",
-              p: 4,
-              borderRadius: 4,
-              maxWidth: 400,
-              textAlign: "center",
-            }}
-          >
-            <Box
-              sx={{
-                width: 80,
-                height: 80,
-                borderRadius: "50%",
-                bgcolor: "#e8f5e9",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                mb: 2,
-              }}
-            >
-              <CheckCircle sx={{ fontSize: 50, color: "#2e7d32" }} />
-            </Box>
-            <Typography
-              variant="h5"
-              sx={{ color: "#2e7d32", fontWeight: 600, mb: 1 }}
-            >
-              Success!
-            </Typography>
-            <Typography variant="body1" sx={{ color: "text.secondary", mb: 3 }}>
-              Your product has been created successfully. Redirecting to product
-              list...
-            </Typography>
-            <CircularProgress size={24} sx={{ color: "#6a1b9a" }} />
-          </Box>
-        </Backdrop>
-        {/* Snackbar for notifications */}
-        <Snackbar
-          open={snackbar.open}
-          autoHideDuration={6000}
-          onClose={handleCloseSnackbar}
-        >
-          <Alert
-            onClose={handleCloseSnackbar}
-            severity={snackbar.severity}
-            sx={{ width: "100%" }}
-          >
-            {snackbar.message}
-          </Alert>
-        </Snackbar>
+
       </Box>
 
       {warrantyOpen && (
-        <CreateWarrantyModal
+        <WarrantyModal
           open={warrantyOpen}
           onClose={handleWarrantyClose}
         />
@@ -1488,7 +1290,7 @@ export default function ProductForm({ id }) {
         <CreateBrandModal open={brandOpen} setOpen={handleBrandClose} />
       )}
       {warehouseOpen && (
-        <AddWarehouseModal
+        <WarehouseModal
           open={warehouseOpen}
           onClose={handleWarehouseClose}
         />
@@ -1503,7 +1305,7 @@ export default function ProductForm({ id }) {
         <AddSupplierModal open={supplierOpen} setOpen={handleSupplierClose} />
       )}
       {unitOpen && (
-        <CreateUnitModal open={unitOpen} setOpen={handleUnitClose} />
+        <UnitModal open={unitOpen} setOpen={handleUnitClose} />
       )}
     </>
   );

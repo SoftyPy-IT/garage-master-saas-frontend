@@ -15,14 +15,14 @@ import {
 } from "../../../redux/api/employee";
 import Loading from "../../../components/Loading/Loading";
 import { Pagination } from "@mui/material";
-import { useTenantDomain } from "../../../hooks/useTenantDomain";
+import { useAppOptions } from "../../../hooks/useAppOptions";
 
 const RecycledbinEmployeeList = () => {
   const [filterType, setFilterType] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const textInputRef = useRef(null);
   const limit = 20;
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain } = useAppOptions()
 
   const {
     data: employeeData,
@@ -63,7 +63,7 @@ const RecycledbinEmployeeList = () => {
 
     if (result === "restore") {
       try {
-        await restoreFromRecycledEmployee({tenantDomain, id}).unwrap();
+        await restoreFromRecycledEmployee({ tenantDomain, id }).unwrap();
         swal({
           title: "Restored!",
           text: "Employee has been restored successfully.",

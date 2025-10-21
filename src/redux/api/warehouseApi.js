@@ -12,13 +12,11 @@ const warehouseApi = baseApi.injectEndpoints({
     }),
 
     getAllWarehouses: builder.query({
-      query: ({tenantDomain,  limit, page, searchTerm }) => ({
+      query: ({ tenantDomain, limit, page, searchTerm }) => ({
         url: "/warehouse",
         method: "GET",
-        params: { limit, page, searchTerm },
-        headers: {
-          "x-tenant-domain": tenantDomain,
-        },
+        params: { limit, page, searchTerm, tenantDomain },
+
       }),
       providesTags: ["warehouse"],
     }),
@@ -27,7 +25,7 @@ const warehouseApi = baseApi.injectEndpoints({
       query: ({ tenantDomain, id }) => ({
         url: `/warehouse/${id}`,
         method: "GET",
-         params: {
+        params: {
           tenantDomain,
         },
       }),
@@ -57,7 +55,7 @@ const warehouseApi = baseApi.injectEndpoints({
       query: ({ tenantDomain, id }) => ({
         url: `/warehouse/${id}`,
         method: "DELETE",
-         params: {
+        params: {
           tenantDomain,
         },
       }),

@@ -29,43 +29,49 @@ import FormInput from "../../../components/form/Input";
 import GarageForm from "../../../components/form/Form";
 import { usePermissionFormData } from "../../../hooks/usePermissionFormData";
 import FormAutoCompleted from "../../../components/form/FormAutoCompleted";
+import Can from "../../../components/Can";
+import { buttonBox } from "../../../utils/customStyle";
 
-const AddUserModal = ({ open, onClose, onSuccess }) => {
+const AddUserModal = ({ open, onClose, onSuccess, performActionWithPermission, tenantDomain }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [createUser, { isLoading }] = useCreateUserMutation();
-  const { tenantDomain, roleOptions } = usePermissionFormData();
+  const { roleOptions } = usePermissionFormData();
+
 
   const handleSubmit = async (data, reset) => {
-    try {
-      if (data.password !== data.confirmPassword) {
-        return toast.error("Passwords do not match");
+    console.log('raw', data)
+
+    performActionWithPermission('/dashboard/all-user-list', 'delete', async () => {
+      try {
+        if (data.password !== data.confirmPassword) {
+          return toast.error("Passwords do not match");
+        }
+        const submitData = {
+          name: data.name,
+          createdBy: data.createdBy || 'system',
+          email: data.email,
+          password: data.password,
+          tenantDomain: tenantDomain,
+          role: data.role?.[0]?.label || data.role?.label,
+        };
+
+        console.log('submit data', submitData)
+
+        const result = await createUser(submitData).unwrap();
+
+        if (result.success) {
+          toast.success(result.message || "User created successfully");
+          onSuccess?.();
+          onClose();
+          reset();
+        }
+      } catch (error) {
+        console.error('Error details:', error);
+        const message = error?.data?.message || "Failed to create user";
+        toast.error(message);
       }
-
-      const submitData = {
-        name: data.name,
-        createdBy: data.createdBy || 'system',
-        email: data.email,
-        password: data.password,
-        tenantDomain: tenantDomain,
-        role: data.role?.[0]?.label || data.role?.label,
-      };
-
-      console.log('Final submit data:', submitData);
-
-      const result = await createUser(submitData).unwrap();
-
-      if (result.success) {
-        toast.success(result.message || "User created successfully");
-        onSuccess?.();
-        onClose();
-        reset();
-      }
-    } catch (error) {
-      console.error('Error details:', error);
-      const message = error?.data?.message || "Failed to create user";
-      toast.error(message);
-    }
+    }, "You don't have permission to create a user !")
   };
 
   return (
@@ -81,7 +87,8 @@ const AddUserModal = ({ open, onClose, onSuccess }) => {
           tenantDomain: tenantDomain
         }}
       >
-        <Grid container spacing={2}>
+        <Grid container spacing={2} padding={1}>
+
           {/* Full Name Field */}
           <Grid item xs={12} md={6}>
             <FormInput
@@ -224,26 +231,29 @@ const AddUserModal = ({ open, onClose, onSuccess }) => {
         </Grid>
 
         {/* Action Buttons */}
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 3 }}>
+        <Box className='flex flex-col md:flex-col space-y-2 items-center mb-4' >
           <Button
             onClick={onClose}
             disabled={isLoading}
             variant="outlined"
+            className="flex items-center justify-center content-center"
           >
             Cancel
           </Button>
-          <Button
-            type="submit"
-            variant="contained"
-            disabled={isLoading}
-            sx={{ minWidth: 140 }}
-          >
-            {isLoading ? (
-              <CircularProgress size={24} color="inherit" />
-            ) : (
-              "Create User"
-            )}
-          </Button>
+          <Can page='/dashboard/all-user-list' action='create'>
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={isLoading}
+              sx={{ minWidth: 140 }}
+            >
+              {isLoading ? (
+                <CircularProgress size={24} color="inherit" />
+              ) : (
+                "Create User"
+              )}
+            </Button>
+          </Can>
         </Box>
       </GarageForm>
     </GarageModal>

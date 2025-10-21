@@ -36,6 +36,7 @@ import FormAutocomplete from "../../../../components/form/FormAutocomplete";
 import FormInput from "../../../../components/form/Input";
 import AutocompleteSelect from "../../../../components/form/AutocompleteSelect";
 import MaskedInput from "../../../../components/form/InputMask";
+import Can from "../../../../components/Can";
 
 const JobCardForm = ({
   tenantDomain,
@@ -44,6 +45,7 @@ const JobCardForm = ({
   user_type,
   vehicleData: vehicleIdData,
   isEditing,
+  performActionWithPermission
 }) => {
   const [driverCountryCode, setDriverCountryCode] = useState(countries[0]);
   const [createVehicle, { isLoading: createLoading }] =
@@ -76,8 +78,6 @@ const JobCardForm = ({
   useEffect(() => {
     if (vehicleData?.mileageHistory) {
       setMileageHistory(vehicleData.mileageHistory);
-
-      // Set current mileage to the last entry if available
       if (vehicleData.mileageHistory.length > 0) {
         const lastMileage =
           vehicleData.mileageHistory[vehicleData.mileageHistory.length - 1]
@@ -89,132 +89,133 @@ const JobCardForm = ({
   }, [vehicleData, setValue]);
 
   const handleSubmit = async (data) => {
-    const toastId = toast.loading(
-      isEditing ? "Updating Vehicle..." : "Creating Vehicle..."
-    );
+    performActionWithPermission('/dashboard/add-customer', vehicleId ? 'edit' : 'create', async () => {
+      const toastId = toast.loading(
+        isEditing ? "Updating Vehicle..." : "Creating Vehicle..."
+      );
 
-    // --- Handle mileage update ---
-    let updatedMileageHistory = [...mileageHistory];
-    if (mileageChanged && currentMileage) {
-      const newMileageEntry = {
-        mileage: Number(currentMileage),
-        date: new Date().toISOString(),
-      };
-      updatedMileageHistory.push(newMileageEntry);
-      setMileageHistory(updatedMileageHistory);
-    }
-
-    // --- Normalize vehicle_model ---
-    let vehicleModelValue;
-    if (Array.isArray(data.vehicle_model)) {
-      // if array (autocomplete/select), pick first and convert
-      vehicleModelValue = Number(data.vehicle_model[0]);
-    } else {
-      // else directly convert to number
-      vehicleModelValue = Number(data.vehicle_model);
-    }
-
-    // avoid NaN
-    if (isNaN(vehicleModelValue)) {
-      vehicleModelValue = undefined;
-    }
-
-    const submitData = {
-      Id: id,
-      user_type: user_type,
-
-      // pick first if array
-      carReg_no: Array.isArray(data.carReg_no)
-        ? data.carReg_no[0]
-        : data.carReg_no,
-      vehicle_brand: Array.isArray(data.vehicle_brand)
-        ? data.vehicle_brand[0]
-        : data.vehicle_brand,
-      vehicle_name: Array.isArray(data.vehicle_name)
-        ? data.vehicle_name[0]
-        : data.vehicle_name,
-      vehicle_category: Array.isArray(data.vehicle_category)
-        ? data.vehicle_category[0]
-        : data.vehicle_category,
-      fuel_type: Array.isArray(data.fuel_type)
-        ? data.fuel_type[0]
-        : data.fuel_type,
-
-      // normal string fields
-      car_registration_no: data.car_registration_no,
-      chassis_no: data.chassis_no,
-      engine_no: data.engine_no,
-      color_code: data.color_code,
-
-      // fixed: always number or undefined
-      vehicle_model: vehicleModelValue,
-
-      // mileage tracking
-      mileage: currentMileage ? Number(currentMileage) : undefined,
-      mileageHistory: updatedMileageHistory,
-
-      // driver info
-      driver_name: data.driver_name,
-      driver_contact: data.driver_contact,
-      driver_country_code:
-        data.driver_country_code?.value || data.driver_country_code,
-    };
-
-    try {
-      let res;
-      if (vehicleId) {
-        res = await updateVehicle({
-          tenantDomain,
-          id: vehicleData._id,
-          vehicleInfo: submitData,
-        }).unwrap();
-      } else {
-        res = await createVehicle({
-          tenantDomain,
-          vehicleInfo: submitData,
-        }).unwrap();
+      // --- Handle mileage update ---
+      let updatedMileageHistory = [...mileageHistory];
+      if (mileageChanged && currentMileage) {
+        const newMileageEntry = {
+          mileage: Number(currentMileage),
+          date: new Date().toISOString(),
+        };
+        updatedMileageHistory.push(newMileageEntry);
+        setMileageHistory(updatedMileageHistory);
       }
 
-      if (res.success) {
-        toast.update(toastId, {
-          render: res.message,
-          type: "success",
-          isLoading: false,
-          autoClose: 3000,
-        });
-        onClose();
+      // --- Normalize vehicle_model ---
+      let vehicleModelValue;
+      if (Array.isArray(data.vehicle_model)) {
+        // if array (autocomplete/select), pick first and convert
+        vehicleModelValue = Number(data.vehicle_model[0]);
       } else {
+        // else directly convert to number
+        vehicleModelValue = Number(data.vehicle_model);
+      }
+
+      // avoid NaN
+      if (isNaN(vehicleModelValue)) {
+        vehicleModelValue = undefined;
+      }
+
+      const submitData = {
+        Id: id,
+        user_type: user_type,
+
+        // pick first if array
+        carReg_no: Array.isArray(data.carReg_no)
+          ? data.carReg_no[0]
+          : data.carReg_no,
+        vehicle_brand: Array.isArray(data.vehicle_brand)
+          ? data.vehicle_brand[0]
+          : data.vehicle_brand,
+        vehicle_name: Array.isArray(data.vehicle_name)
+          ? data.vehicle_name[0]
+          : data.vehicle_name,
+        vehicle_category: Array.isArray(data.vehicle_category)
+          ? data.vehicle_category[0]
+          : data.vehicle_category,
+        fuel_type: Array.isArray(data.fuel_type)
+          ? data.fuel_type[0]
+          : data.fuel_type,
+
+        // normal string fields
+        car_registration_no: data.car_registration_no,
+        chassis_no: data.chassis_no,
+        engine_no: data.engine_no,
+        color_code: data.color_code,
+
+        // fixed: always number or undefined
+        vehicle_model: vehicleModelValue,
+
+        // mileage tracking
+        mileage: currentMileage ? Number(currentMileage) : undefined,
+        mileageHistory: updatedMileageHistory,
+
+        // driver info
+        driver_name: data.driver_name,
+        driver_contact: data.driver_contact,
+        driver_country_code:
+          data.driver_country_code?.value || data.driver_country_code,
+      };
+
+      try {
+        let res;
+        if (vehicleId) {
+          res = await updateVehicle({
+            tenantDomain,
+            id: vehicleData._id,
+            vehicleInfo: submitData,
+          }).unwrap();
+        } else {
+          res = await createVehicle({
+            tenantDomain,
+            vehicleInfo: submitData,
+          }).unwrap();
+        }
+
+        if (res.success) {
+          toast.update(toastId, {
+            render: res.message,
+            type: "success",
+            isLoading: false,
+            autoClose: 3000,
+          });
+          onClose();
+        } else {
+          toast.update(toastId, {
+            render: `Failed to ${isEditing ? "update" : "create"} vehicle!`,
+            type: "error",
+            isLoading: false,
+            autoClose: 3000,
+          });
+        }
+      } catch (err) {
+        let errorMessage = `Failed to ${isEditing ? "update" : "create"
+          } vehicle!`;
+
+        if (err?.data?.message) {
+          errorMessage = err.data.message;
+        }
+        if (err?.data?.errorSources?.length > 0) {
+          errorMessage = err.data.errorSources[0]?.message || errorMessage;
+        }
+        if (err?.data?.err?.code === 11000) {
+          const key = Object.keys(err.data.err.keyValue)[0];
+          const value = err.data.err.keyValue[key];
+          errorMessage = `${value} already exists`;
+        }
+
         toast.update(toastId, {
-          render: `Failed to ${isEditing ? "update" : "create"} vehicle!`,
+          render: errorMessage,
           type: "error",
           isLoading: false,
           autoClose: 3000,
         });
       }
-    } catch (err) {
-      let errorMessage = `Failed to ${
-        isEditing ? "update" : "create"
-      } vehicle!`;
-
-      if (err?.data?.message) {
-        errorMessage = err.data.message;
-      }
-      if (err?.data?.errorSources?.length > 0) {
-        errorMessage = err.data.errorSources[0]?.message || errorMessage;
-      }
-      if (err?.data?.err?.code === 11000) {
-        const key = Object.keys(err.data.err.keyValue)[0];
-        const value = err.data.err.keyValue[key];
-        errorMessage = `${value} already exists`;
-      }
-
-      toast.update(toastId, {
-        render: errorMessage,
-        type: "error",
-        isLoading: false,
-        autoClose: 3000,
-      });
-    }
+    }, `You don't have permission to ${vehicleId ? 'edit' : 'create'} vehicle !`)
   };
 
   const defaultvalues = {
@@ -240,11 +241,11 @@ const JobCardForm = ({
       ? Array.isArray(vehicleData?.vehicle_model)
         ? vehicleData.vehicle_model.map((v) => ({ label: v, value: v }))
         : [
-            {
-              label: vehicleData.vehicle_model,
-              value: vehicleData.vehicle_model,
-            },
-          ]
+          {
+            label: vehicleData.vehicle_model,
+            value: vehicleData.vehicle_model,
+          },
+        ]
       : [],
     vehicle_category: vehicleData?.vehicle_category
       ? Array.isArray(vehicleData?.vehicle_category)
@@ -271,14 +272,14 @@ const JobCardForm = ({
       ) : (
         <GarageForm onSubmit={handleSubmit} defaultValues={defaultvalues}>
           <Box>
-            <Grid container spacing={2}>
+             <Grid container spacing={2} style={{padding:8}}>
               <Grid item lg={12} md={12} sm={12} xs={12}>
                 <FormAutocomplete
                   name="carReg_no"
-        
+
                   label={
                     <>
-                    Vehicle Reg No
+                      Vehicle Reg No
                       <span style={{ color: "red", fontSize: "25px" }}> *</span>
                     </>
                   }
@@ -318,7 +319,7 @@ const JobCardForm = ({
                   size="medium"
                   label={
                     <>
-                     Chassis No (T&N)
+                      Chassis No (T&N)
                       <span style={{ color: "red", fontSize: "25px" }}> *</span>
                     </>
                   }
@@ -494,24 +495,26 @@ const JobCardForm = ({
               </Grid>
             </Grid>
           </Box>
-          <button
-            disabled={isLoading}
-            className="block mt-3 w-full bg-[#42A1DA] text-white font-bold p-4 rounded-lg"
-          >
-            {isLoading ? (
-              "Processing..."
-            ) : vehicleId ? (
-              <>
-                <EditIcon sx={{ mr: 1, verticalAlign: "middle" }} />
-                Update Vehicle
-              </>
-            ) : (
-              <>
-                <AddCircleIcon sx={{ mr: 1, verticalAlign: "middle" }} />
-                Add Vehicle
-              </>
-            )}
-          </button>
+          <Can page="/dashboard/add-customer" action={vehicleId ? 'edit' : 'create'}>
+            <button
+              disabled={isLoading}
+              className="block mt-3 w-full bg-[#42A1DA] text-white font-bold p-4 rounded-lg"
+            >
+              {isLoading ? (
+                "Processing..."
+              ) : vehicleId ? (
+                <>
+                  <EditIcon sx={{ mr: 1, verticalAlign: "middle" }} />
+                  Update Vehicle
+                </>
+              ) : (
+                <>
+                  <AddCircleIcon sx={{ mr: 1, verticalAlign: "middle" }} />
+                  Add Vehicle
+                </>
+              )}
+            </button>
+          </Can>
         </GarageForm>
       )}
     </>

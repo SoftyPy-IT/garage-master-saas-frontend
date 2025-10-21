@@ -5,61 +5,56 @@ import TASInput from "../../../components/form/Input";
 import TASAutocomplete from "../../../components/form/Autocomplete";
 import TASTextarea from "../../../components/form/Textarea";
 import { toast } from "react-toastify";
-import { useCreateBarcodeMutation } from "../../../redux/api/barcodeApi";
-import { useGetAllIProductQuery } from "../../../redux/api/productApi";
-import { useMemo, useState } from "react";
+import { useAppOptions } from '../../../hooks/useAppOptions.js'
 const BarcodeForm = () => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [createBarcode] = useCreateBarcodeMutation();
-  const { data: productData } = useGetAllIProductQuery({
-    limit: 999999999999999,
-    page: currentPage,
-    searchTerm: "",
-  });
+  const { productOptions,
+    createBarcode,
+    tenantDomain
+  } = useAppOptions()
 
-  const productOptions = useMemo(() => {
-    if (!productData?.data?.products) return [];
-    return productData.data.products.map((product) => ({
-      label: product.product_name,
-      value: product._id,
-    }));
-  }, [productData?.data?.products]);
 
   const handleSubmit = async (data) => {
+    const mappedProduct =
+      Array.isArray(data.product_id) && data.product_id.length > 0
+        ? productOptions.find((opt) => opt.label === data.product_id[0])
+        : null;
+
     const modifyValues = {
       ...data,
       product_id:
-        data.product_id &&
-        data.product_id[0] &&
-        productOptions.find((cat) => cat.label === data.product_id[0])?.value
-          ? [
-              productOptions.find((cat) => cat.label === data.product_id[0]).value,
-            ]
-          : [],
+        mappedProduct?.value || data.product_id?.[0] || data.product_id || null,
     };
-  
+
     const toastId = toast.loading("Creating Barcode...");
-  
     try {
-      const res = await createBarcode(modifyValues).unwrap();
+      const res = await createBarcode({ tenantDomain, data: modifyValues }).unwrap();
 
-      toast.update(toastId, {
-        render: "Barcode created successfully!",
-        type: "success",
-        isLoading: false,
-        autoClose: 3000, 
-      });
+      if (res.success) {
+        toast.update(toastId, {
+          render: "Barcode created successfully!",
+          type: "success",
+          isLoading: false,
+          autoClose: 3000,
+        });
+      } else {
+        toast.update(toastId, {
+          render: res.message || "Failed to create barcode",
+          type: "error",
+          isLoading: false,
+          autoClose: 3000,
+        });
+      }
     } catch (error) {
-
+      console.error("❌ Barcode create error:", error);
       toast.update(toastId, {
-        render: `Error creating barcode: ${error.message || "Something went wrong!"}`,
+        render: error?.data?.message || error.message || "Something went wrong!",
         type: "error",
         isLoading: false,
-        autoClose: 3000, 
+        autoClose: 3000,
       });
     }
   };
-  
+
 
   return (
     <TASForm onSubmit={handleSubmit}>
@@ -82,7 +77,7 @@ const BarcodeForm = () => {
 
         <Grid item lg={12} md={12} sm={12} xs={12}>
           <Button type="submit" sx={{ color: "white" }}>
-            Genrate Barcode{" "}
+            Generate Barcode{" "}
           </Button>
         </Grid>
       </Grid>

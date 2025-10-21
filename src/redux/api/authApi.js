@@ -10,9 +10,16 @@ const authApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["tenant"],
     }),
+    tenantLogout: builder.mutation({
+      query: () => ({
+        url: "/auth/logout",
+        method: "POST",
+        credentials: "include",
+      }),
+    }),
 
-  
+
   }),
 });
 
-export const { useTenantLoginMutation } = authApi;
+export const { useTenantLoginMutation, useTenantLogoutMutation } = authApi;

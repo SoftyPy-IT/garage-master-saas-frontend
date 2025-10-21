@@ -61,9 +61,8 @@ export default function TASRightSideModal({
           <CloseIcon />
         </IconButton>
         {title && (
-          <h2 style={{ fontWeight: 'bold', textAlign: 'center' }}>
-            {title}
-          </h2>
+          <p className='font-bold mt-4 ml-4 md:text-2xl'>{title}</p>
+          
         )}
         <div>{children}</div>
       </Drawer>

@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { FaCarSide, FaFileInvoice } from "react-icons/fa";
 import {
   HiOutlineBriefcase,
@@ -8,10 +9,8 @@ import { Link } from "react-router-dom";
 import ExpanseIncomeChart from "../../../components/Chart/ExpanseIncomeChart";
 import Loading from "../../../components/Loading/Loading";
 import { useGetAllMetaQuery } from "../../../redux/api/meta.api";
-import { useTenantDomain } from "../../../hooks/useTenantDomain";
 
-const ProjectOverView = () => {
-  const tenantDomain = useTenantDomain();
+const ProjectOverView = ({ tenantDomain }) => {
 
   const { data: allMetaData, isLoading } = useGetAllMetaQuery({ tenantDomain });
   if (isLoading) return <Loading />;
@@ -65,39 +64,38 @@ const ProjectOverView = () => {
                   i == 0
                     ? `${`/dashboard/customer-list`}`
                     : i == 1
-                    ? `${`/dashboard/show-room-list`}`
-                    : i == 2
-                    ? `${`/dashboard/company-list`}`
-                    : i == 3
-                    ? `${`/dashboard/jobcard-list`}`
-                    : i == 4
-                    ? `${`/dashboard/quotation-list`}`
-                    : i == 5
-                    ? `${`/dashboard/invoice-list`}`
-                    : i == 2
-                    ? `${`/dashboard/company-list`}`
-                    : null
+                      ? `${`/dashboard/show-room-list`}`
+                      : i == 2
+                        ? `${`/dashboard/company-list`}`
+                        : i == 3
+                          ? `${`/dashboard/jobcard-list`}`
+                          : i == 4
+                            ? `${`/dashboard/quotation-list`}`
+                            : i == 5
+                              ? `${`/dashboard/create-invoice-list`}`
+                              : i == 2
+                                ? `${`/dashboard/company-list`}`
+                                : null
                 }
               >
                 <div
                   className="dashboardCard "
                   style={{
-                    background: `linear-gradient(to right, ${
-                      [
-                        "#42a5f5",
-                        "#478ed1",
-                        "#66bb6a",
-                        "#43a047",
-                        "#ffb74d",
-                        "#f57c00",
-                        "#ec407a",
-                        "#d81b60",
-                        "#ab47bc",
-                        "#8e24aa",
-                        "#26c6da",
-                        "#00acc1",
-                      ][i * 2]
-                    })`,
+                    background: `linear-gradient(to right, ${[
+                      "#42a5f5",
+                      "#478ed1",
+                      "#66bb6a",
+                      "#43a047",
+                      "#ffb74d",
+                      "#f57c00",
+                      "#ec407a",
+                      "#d81b60",
+                      "#ab47bc",
+                      "#8e24aa",
+                      "#26c6da",
+                      "#00acc1",
+                    ][i * 2]
+                      })`,
                   }}
                 >
                   <div className="dashboardIconWrap">

@@ -39,7 +39,7 @@ const CustomerProfile = () => {
     localStorage.setItem(`customer-tab-${id}`, value.toString());
   }, [value, id]);
 
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain } = useTenantDomain();
 
   const {
     data: profileData,
@@ -93,8 +93,8 @@ const CustomerProfile = () => {
     <div>
       <div className="w-full lg:h-52 mt-5 lg:bg-gradient-to-r from-[#FE4728] via-[#9A8BFD] to-[#15C294] text-white flex items-center">
         <div className="singleCustomerProfileWrap ">
-          <div className="bg-gradient-to-r from-[#15C294] via-[#568DFA] to-[#2B8AE0] border rounded-md py-5 px-5 relative w-[300px] singleCustomerProfileCard ">
-            <div className="flex flex-col flex-wrap gap-3 items-center  py-5">
+          <div className="bg-gradient-to-r from-[#15C294] via-[#568DFA] to-[#2B8AE0] border rounded-md py-5 px-5 relative singleCustomerProfileCard ">
+            <div className="flex flex-col flex-wrap gap-3 items-center py-5">
               <div className="md:w-24 md:h-24 bg-[#42A1DA] border rounded-full p-3 absolute -top-14">
                 <ImUserTie size="70" className="text-white" />
               </div>
@@ -120,36 +120,41 @@ const CustomerProfile = () => {
               </div>
             </div>
           </div>
-          <div className="flex flex-wrap gap-3 items-center relative    gap-x-3 customerSingleRightCard">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 gap-x-36 md:gap-x-30 lg:gap-x-4 items-center relative customerSingleRightCard">
+
             <div className="bg-gradient-to-r from-[#528AFA] to-[#FEBF17] border h-16 w-32 rounded-md  relative   ">
               <div className="flex mt-2 flex-col items-center justify-center">
                 <p>Total Amount </p>
                 <b>{totalAmount} ৳ </b>
               </div>
             </div>
+
             <div className="bg-gradient-to-r from-[#2F7EDD] to-[#15C193] border h-16 w-32 rounded-md  relative   ">
               <div className="flex mt-2 flex-col items-center justify-center">
                 <p>Advance </p>
                 <b>{totalAdvance} ৳ </b>
               </div>
             </div>
+
             <div className="bg-gradient-to-r from-[#998AFD] to-[#998AFD] border h-16 w-32 rounded-md  relative   ">
               <div className="flex mt-2 flex-col items-center justify-center">
                 <p>Discount </p>
                 <b>{discount} ৳ </b>
               </div>
             </div>
+
             <div className=" bg-gradient-to-r from-[#FE331D] to-[#fe5d1df5] border h-16 w-32 rounded-md  relative ">
               <div className="flex mt-2 flex-col items-center justify-center">
                 <p>Due </p>
                 <b>{totalDue} ৳</b>
               </div>
             </div>
+
           </div>
         </div>
       </div>
 
-      <div className="mt-32 text-black tabClass">
+      <div className="md:mt-32 text-black tabClass">
         <Box sx={{ width: "100%", overflowX: "auto" }}>
           <Tabs
             value={value}
@@ -187,7 +192,7 @@ const CustomerProfile = () => {
 
         <TabPanel value={value} index={2}>
           <CustomerJobCardList
-          companyProfileData={companyProfileData}
+            companyProfileData={companyProfileData}
             tenantDomain={tenantDomain}
             customerId={profileData?.data?.customerId}
             user_type={profileData?.data?.user_type}
@@ -196,7 +201,7 @@ const CustomerProfile = () => {
         </TabPanel>
         <TabPanel value={value} index={3}>
           <CustomerQoutationList
-          companyProfileData={companyProfileData}
+            companyProfileData={companyProfileData}
             tenantDomain={tenantDomain}
             id={id}
             user_type={profileData?.data?.user_type}
@@ -204,7 +209,7 @@ const CustomerProfile = () => {
         </TabPanel>
         <TabPanel value={value} index={4}>
           <CustomerInvoiceList
-          companyProfileData={companyProfileData}
+            companyProfileData={companyProfileData}
             tenantDomain={tenantDomain}
             id={id}
             user_type={profileData?.data?.user_type}
@@ -212,7 +217,7 @@ const CustomerProfile = () => {
         </TabPanel>
         <TabPanel value={value} index={5}>
           <CustomerMoneyList
-          companyProfileData={companyProfileData}
+            companyProfileData={companyProfileData}
             tenantDomain={tenantDomain}
             id={id}
             user_type={profileData?.data?.user_type}

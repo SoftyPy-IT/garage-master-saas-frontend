@@ -6,33 +6,46 @@ import { HiOutlineSearch } from "react-icons/hi";
 import { useRef, useState } from "react";
 import swal from "sweetalert";
 import Loading from "../../../components/Loading/Loading";
-import { Chip, Pagination, Tooltip } from "@mui/material";
+import { Pagination, } from "@mui/material";
 import { toast } from "react-toastify";
 import {
   useGetAllCompaniesQuery,
   useMoveRecycledCompanyMutation,
 } from "../../../redux/api/companyApi";
 import EmptyData from "../../../components/EmptyData/EmptyData";
-import { mileageStyle } from "../../../utils/customStyle";
 import { useTenantDomain } from "../../../hooks/useTenantDomain";
+import { usePermissions } from "../../../context/PermissionContext";
+import Can from "../../../components/Can";
 
 const CompanyListTable = () => {
   const textInputRef = useRef(null);
   const [filterType, setFilterType] = useState("");
+  const { performActionWithPermission } = usePermissions();
 
   const [currentPage, setCurrentPage] = useState(1);
 
   const navigate = useNavigate();
+
+
+
+
   const handleIconPreview = async (e) => {
-    navigate(`/dashboard/company-profile?id=${e}`);
+    performActionWithPermission(
+      "/dashboard/customer-list",
+      "view",
+      () => {
+        navigate(`/dashboard/company-profile?id=${e}`);
+      },
+      "You don't have permission to view customer details."
+    );
   };
 
   const limit = 10;
-   const tenantDomain = useTenantDomain();
+  const { tenantDomain } = useTenantDomain();
 
   const { data: companyData, isLoading: companyLoading } =
     useGetAllCompaniesQuery({
-      tenantDomain, 
+      tenantDomain,
       limit,
       page: currentPage,
       searchTerm: filterType,
@@ -44,28 +57,32 @@ const CompanyListTable = () => {
     { isLoading: companyDeleteLoading, error: deleteError },
   ] = useMoveRecycledCompanyMutation();
 
-const handleMoveToRecycled = async (id) => {
-  const willDelete = await swal({
-    title: "Are you sure?",
-    text: "You want to move this Company to Recycle Bin?",
-    icon: "warning",
-    dangerMode: true,
-  });
+  const handleMoveToRecycled = async (id) => {
+    performActionWithPermission('/dashboard/company-list', 'delete',
+      async () => {
+        const willDelete = await swal({
+          title: "Are you sure?",
+          text: "You want to move this Company to Recycle Bin?",
+          icon: "warning",
+          dangerMode: true,
+        });
 
-  if (willDelete) {
-    try {
-      await moveRecycledCompany({ tenantDomain, id }).unwrap(); 
-      swal(
-        "Moved to Recycle Bin!",
-        "Company successfully moved to the recycle bin.",
-        "success"
-      );
-    } catch (error) {
-      console.error("Recycling error:", error);
-      swal("Error", "An error occurred while moving the company.", "error");
-    }
-  }
-};
+        if (willDelete) {
+          try {
+            await moveRecycledCompany({ tenantDomain, id }).unwrap();
+            swal(
+              "Moved to Recycle Bin!",
+              "Company successfully moved to the recycle bin.",
+              "success"
+            );
+          } catch (error) {
+            console.error("Recycling error:", error);
+            swal("Error", "An error occurred while moving the company.", "error");
+          }
+        }
+      }
+    )
+  };
 
 
 
@@ -135,12 +152,12 @@ const handleMoveToRecycled = async (id) => {
                   </thead>
                   <tbody>
                     {companyData?.data?.companies?.map((card, index) => {
-                      
+
                       const lastVehicle = card?.vehicles
                         ? [...card.vehicles].sort(
-                            (a, b) =>
-                              new Date(b.createdAt) - new Date(a.createdAt)
-                          )[0]
+                          (a, b) =>
+                            new Date(b.createdAt) - new Date(a.createdAt)
+                        )[0]
                         : null;
 
                       const globalIndex =
@@ -198,29 +215,35 @@ const handleMoveToRecycled = async (id) => {
                           </td>
 
                           <td>
-                            <div className="editIconWrap edit">
-                              <Link
-                                to={`/dashboard/update-company?id=${card?._id}`}
-                              >
-                                <FaEdit className="editIcon text-blue-500" /> 
-                              </Link>
-                            </div>
+
+                            <Can page="/dashboard/update-company" action="edit">
+                              <div className="editIconWrap edit">
+                                <Link
+                                  to={`/dashboard/update-company?id=${card?._id}`}
+                                >
+                                  <FaEdit className="editIcon text-blue-500" />
+                                </Link>
+                              </div>
+                            </Can>
+
+
                           </td>
                           <td>
-                            <button
-                              disabled={companyDeleteLoading}
-                              onClick={() => handleMoveToRecycled(card?._id)}
-                              className="editIconWrap"
-                              style={{
-                                      
-                                      background: "white",
-                                      border: "none",
-                                      padding: 5,
-                                      borderRadius: "9999px"
-                                    }}
-                            >
-                              <FaTrashAlt className="deleteIcon text-red-500" />
-                            </button>
+                            <Can page="/dashboard/company-list" action="delete">
+                              <div
+                                onClick={() => handleMoveToRecycled(card?._id)}
+                                className="editIconWrap cursor-pointer"
+                                style={{
+                                  background: "white",
+                                  border: "none",
+                                  padding: 5,
+                                  borderRadius: "9999px"
+                                }}
+                              >
+                                <FaTrashAlt className="deleteIcon text-red-500" />
+                              </div>
+                            </Can>
+
                           </td>
                         </tr>
                       );

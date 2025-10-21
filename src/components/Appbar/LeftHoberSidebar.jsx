@@ -85,7 +85,7 @@ import {
 
 const LeftHoberSidebar = () => {
   const navigate = useNavigate();
-  
+
   const handleLogout = () => {
     Cookies.remove("tas-auth");
     navigate("/");
@@ -118,7 +118,7 @@ const LeftHoberSidebar = () => {
       {/* Vehicle Job Card */}
       <div className="mt-[14px]">
         <div className="toolTipWrap">
-          <NavLink to="/dashboard/addjob">
+          <NavLink to="/dashboard/create-job-card">
             <DirectionsCar className="tooltipIcon" />
           </NavLink>
           <b className="toolTip">Vehicle Job Card</b>
@@ -128,7 +128,7 @@ const LeftHoberSidebar = () => {
       {/* Quotation */}
       <div className="mt-[14px]">
         <div className="toolTipWrap">
-          <NavLink to="/dashboard/qutation">
+          <NavLink to="/dashboard/create-quotation">
             <RequestQuote className="tooltipIcon" />
           </NavLink>
           <b className="toolTip">Quotation</b>
@@ -138,7 +138,7 @@ const LeftHoberSidebar = () => {
       {/* Invoice Card */}
       <div className="mt-[14px]">
         <div className="toolTipWrap">
-          <NavLink to="/dashboard/invoice">
+          <NavLink to="/dashboard/create-invoice">
             <Receipt className="tooltipIcon" />
           </NavLink>
           <b className="toolTip">Invoice Card</b>
@@ -148,7 +148,7 @@ const LeftHoberSidebar = () => {
       {/* Money Receipt */}
       <div className="mt-[14px]">
         <div className="toolTipWrap">
-          <NavLink to="/dashboard/money-receive">
+          <NavLink to="/dashboard/money-receive-create">
             <CurrencyExchange className="tooltipIcon" />
           </NavLink>
           <b className="toolTip text-sm">Money Receipt</b>

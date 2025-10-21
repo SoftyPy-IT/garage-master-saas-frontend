@@ -6,12 +6,9 @@ import { Box, Typography, Breadcrumbs, Link, Grid, Paper } from "@mui/material";
 
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import PurchaseOrderModal from "../PurchaseOrderModal";
 import UpdatePurchaseOrderModal from "../UpdatePurchaseOrderModal";
-import { useTenantDomain } from "../../../hooks/useTenantDomain";
 import { useDeletePurchaseOrderMutation, useGetAllPurchaseOrdersQuery } from "../../../redux/api/purchaseOrderApi";
 import PageHeader from "./PurchaseHeader";
-import SummaryCards from "./PurchaseSummaryCards";
 import FiltersSection from "./PurchaseFilter";
 import PurchaseOrdersTable from "./PurchaseOrdersTable";
 import ActionMenu from "./ActionMenu";
@@ -20,19 +17,19 @@ import { Home, NavigateNext, Receipt } from "@mui/icons-material";
 import { ShoppingCart } from "lucide-react";
 import Swal from "sweetalert2";
 import ReceiveDialog from "./ReceiveDialog";
+import { useAppOptions } from "../../../hooks/useAppOptions";
+import PurchaseOrderModal from "./PurchaseOrderModal";
+import SummaryCards from "./PurchaseSummaryCards";
 
 export default function PurchaseOrder() {
   const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState("");
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [openReceiveDialog, setOpenReceiveDialog] = useState(false);
   const [receiveDate, setReceiveDate] = useState(
     new Date().toISOString().split("T")[0]
   );
-  const tenantDomain = useTenantDomain();
-
-  const [search, setSearch] = useState("");
+  const { tenantDomain, search, setSearch, searchTerm, setSearchTerm, performActionWithPermission } = useAppOptions()
   const [receiveStatus, setReceiveStatus] = useState("received");
   const [receiveNote, setReceiveNote] = useState("");
   const [dateRange, setDateRange] = useState({
@@ -45,7 +42,7 @@ export default function PurchaseOrder() {
 
 
   const [receivingOrderId, setReceivingOrderId] = useState(null);
-  
+
   const [deletePurchase] = useDeletePurchaseOrderMutation();
   const { data: purchaseOrderData, refetch } = useGetAllPurchaseOrdersQuery({
     tenantDomain,
@@ -85,42 +82,47 @@ export default function PurchaseOrder() {
     }
   };
 
- const handleDeleteOrder = async () => {
-  if (!selectedOrder) return;
+  const handleDeleteOrder = async () => {
+    performActionWithPermission('/dashboard/purchase-order', 'delete',
+      async () => {
+        if (!selectedOrder) return;
 
-  Swal.fire({
-    title: "Are you sure?",
-    text: "This action cannot be undone.",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#d33",
-    cancelButtonColor: "#3085d6",
-    confirmButtonText: "Yes, delete it!",
-    cancelButtonText: "Cancel",
-    reverseButtons: true,
-  }).then(async (result) => {
-    if (result.isConfirmed) {
-      try {
-        const res = await deletePurchase({
-          tenantDomain,
-          id: selectedOrder._id,
-        }).unwrap();
+        Swal.fire({
+          title: "Are you sure?",
+          text: "This action cannot be undone.",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#d33",
+          cancelButtonColor: "#3085d6",
+          confirmButtonText: "Yes, delete it!",
+          cancelButtonText: "Cancel",
+          reverseButtons: true,
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            try {
+              const res = await deletePurchase({
+                tenantDomain,
+                id: selectedOrder._id,
+              }).unwrap();
 
-        if (res.success) {
-          toast.success("Purchase order deleted successfully!");
-          refetch();
+              if (res.success) {
+                toast.success("Purchase order deleted successfully!");
+                refetch();
 
-          Swal.fire("Deleted!", "The purchase order has been deleted.", "success");
-        }
-      } catch (error) {
-        Swal.fire("Error", "Failed to delete purchase order", "error");
-        console.error(error);
-      }
-    }
-  });
+                Swal.fire("Deleted!", "The purchase order has been deleted.", "success");
+              }
+            } catch (error) {
+              Swal.fire("Error", "Failed to delete purchase order", "error");
+              console.error(error);
+            }
+          }
+        });
 
-  handleMenuClose();
-};
+        handleMenuClose();
+
+      }, "You don't have permission to delete order"
+    )
+  };
 
   const handleAddOrder = () => {
     setOpenPurchaseModal(true);
@@ -238,7 +240,7 @@ export default function PurchaseOrder() {
         onClose={() => setOpenPurchaseModal(false)}
         tenantDomain={tenantDomain}
       />
-      
+
       {openUpdateModal && selectedOrder && (
         <UpdatePurchaseOrderModal
           tenantDomain={tenantDomain}

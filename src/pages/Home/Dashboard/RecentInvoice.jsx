@@ -1,18 +1,17 @@
+/* eslint-disable react/prop-types */
 import { HiOutlineArrowNarrowRight } from "react-icons/hi";
 import { Link } from "react-router-dom";
 import { useGetAllInvoicesQuery } from "../../../redux/api/invoice";
 import Loading from "../../../components/Loading/Loading";
-import { useTenantDomain } from "../../../hooks/useTenantDomain";
 
-const RecentInvoice = () => {
-    const tenantDomain = useTenantDomain();
-  
+const RecentInvoice = ({ tenantDomain }) => {
+
   const {
     data: invoiceData,
     error: invoiceError,
     isLoading: invoiceLoading,
   } = useGetAllInvoicesQuery({
-    tenantDomain, 
+    tenantDomain,
     limit: 5,
     page: 1,
   });
@@ -25,7 +24,7 @@ const RecentInvoice = () => {
       <div className="recentCard overflow-x-auto ">
         <div className="flex items-center justify-between">
           <h3 className="m-3 text-xl block font-semibold">Recent Invoice </h3>
-          <Link to="/dashboard/invoice-list">
+          <Link to="/dashboard/create-invoice-list">
             <button className=" flex items-center mr-2  rounded-full px-3 py-1 bg-[#DDDDDD]">
               <small className="">See More</small>
               <HiOutlineArrowNarrowRight size={15} className="ml-1" />

@@ -31,6 +31,7 @@ import {
 } from "@mui/icons-material";
 import { usePartialyPaymentMutation } from "../../../redux/api/salary";
 import { toast } from "react-toastify";
+import Can from "../../../components/Can";
 
 const PartialPaymentModal = ({
   tenantDomain,
@@ -39,6 +40,7 @@ const PartialPaymentModal = ({
   employee,
   salaryRecord,
   onPaymentSuccess,
+  performActionWithPermission
 }) => {
   const [paymentAmount, setPaymentAmount] = useState("");
   const [note, setNote] = useState("");
@@ -47,51 +49,53 @@ const PartialPaymentModal = ({
   const [partialyPayment, { isLoading }] = usePartialyPaymentMutation();
 
   const handleSubmit = async () => {
-    const amount = Number.parseFloat(paymentAmount);
-    if (!amount || amount <= 0) {
-      setError("Please enter a valid payment amount");
-      return;
-    }
-
-    if (amount > salaryRecord.due_amount) {
-      setError("Payment amount cannot exceed due amount");
-      return;
-    }
-
-    try {
-      const result = await partialyPayment({
-        id: salaryRecord._id,
-        data: {
-          tenantDomain,
-          amount,
-          note: note.trim() || undefined,
-          payment_method: paymentMethod,
-        },
-      }).unwrap();
-      toast.success("Payment added successfully!");
-      setPaymentAmount("");
-      setNote("");
-      setPaymentMethod("cash");
-      setError("");
-      if (onPaymentSuccess) {
-        onPaymentSuccess();
+    performActionWithPermission('/dashboard/employee-salary', 'edit', async () => {
+      const amount = Number.parseFloat(paymentAmount);
+      if (!amount || amount <= 0) {
+        setError("Please enter a valid payment amount");
+        return;
       }
 
-      onClose();
-    } catch (error) {
-      console.error("Error adding payment:", error);
-
-      if (error.data && error.data.message) {
-        setError(error.data.message);
-        toast.error(error.data.message);
-      } else if (error.message) {
-        setError(error.message);
-        toast.error(error.message);
-      } else {
-        setError("An error occurred while adding payment");
-        toast.error("An error occurred while adding payment");
+      if (amount > salaryRecord.due_amount) {
+        setError("Payment amount cannot exceed due amount");
+        return;
       }
-    }
+
+      try {
+        const result = await partialyPayment({
+          id: salaryRecord._id,
+          data: {
+            tenantDomain,
+            amount,
+            note: note.trim() || undefined,
+            payment_method: paymentMethod,
+          },
+        }).unwrap();
+        toast.success("Payment added successfully!");
+        setPaymentAmount("");
+        setNote("");
+        setPaymentMethod("cash");
+        setError("");
+        if (onPaymentSuccess) {
+          onPaymentSuccess();
+        }
+
+        onClose();
+      } catch (error) {
+        console.error("Error adding payment:", error);
+
+        if (error.data && error.data.message) {
+          setError(error.data.message);
+          toast.error(error.data.message);
+        } else if (error.message) {
+          setError(error.message);
+          toast.error(error.message);
+        } else {
+          setError("An error occurred while adding payment");
+          toast.error("An error occurred while adding payment");
+        }
+      }
+    }, "You don't have permission to add a payment.");
   };
 
   const handleClose = () => {
@@ -376,14 +380,16 @@ const PartialPaymentModal = ({
         <Button onClick={handleClose} color="inherit" disabled={isLoading}>
           Cancel
         </Button>
-        <Button
-          onClick={handleSubmit}
-          variant="contained"
-          disabled={isLoading || dueAmount === 0}
-          startIcon={<Payment />}
-        >
-          {isLoading ? "Processing..." : "Add Payment"}
-        </Button>
+        <Can page='/dashboard/employee-salary' action='edit'>
+          <Button
+            onClick={handleSubmit}
+            variant="contained"
+            disabled={isLoading || dueAmount === 0}
+            startIcon={<Payment />}
+          >
+            {isLoading ? "Processing..." : "Add Payment"}
+          </Button>
+        </Can>
       </DialogActions>
     </Dialog>
   );

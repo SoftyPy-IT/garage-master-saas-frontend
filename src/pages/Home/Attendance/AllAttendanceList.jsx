@@ -17,10 +17,6 @@ import {
   Card,
   CardContent,
   Grid,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   Button,
   useTheme,
   alpha,
@@ -58,11 +54,12 @@ import {
   useDeleteAttendanceMutation,
   useGetAllEmployeeAttendancesQuery,
 } from "../../../redux/api/attendance";
-import { useTenantDomain } from "../../../hooks/useTenantDomain";
 import swal from "sweetalert";
 import Loading from "../../../components/Loading/Loading";
 import { Link } from "react-router-dom";
-
+import { useAppOptions } from "../../../hooks/useAppOptions";
+import Can from "../../../components/Can";
+import { AttendanceDetails } from "./AttendanceDetails";
 const AttendanceListPage = () => {
   const theme = useTheme();
   const [page, setPage] = useState(1);
@@ -78,10 +75,8 @@ const AttendanceListPage = () => {
   const [tabValue, setTabValue] = useState(0);
   const [filterMenuAnchor, setFilterMenuAnchor] = useState(null);
   const limit = 10;
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain, performActionWithPermission } = useAppOptions()
   const [deleteAttendance] = useDeleteAttendanceMutation();
-
-  // Build query parameters based on selected filters
   const buildQueryParams = () => {
     let queryParams = {
       tenantDomain,
@@ -117,47 +112,48 @@ const AttendanceListPage = () => {
   // FIXED: Handle delete attendance with date parameter
   const handleDeleteAttendance = async (id, date) => {
 
-    const formattedDate = dayjs(date, ["DD-MM-YYYY", "DD-MM-YY"]).format(
-      "YYYY-MM-DD" // Changed to match backend expectation
-    );
+    performActionWithPermission('/dashboard/attendance-list', 'delete',
+      async () => {
+        const formattedDate = dayjs(date, ["DD-MM-YYYY", "DD-MM-YY"]).format(
+          "YYYY-MM-DD"
+        );
+        const willDelete = await swal({
+          title: "Are you sure?",
+          text: `You want to delete attendance for ${formattedDate}?`,
+          icon: "warning",
+          dangerMode: true,
+          buttons: ["Cancel", "Yes, Delete"],
+        });
 
-    // Show confirmation dialog
-    const willDelete = await swal({
-      title: "Are you sure?",
-      text: `You want to delete attendance for ${formattedDate}?`,
-      icon: "warning",
-      dangerMode: true,
-      buttons: ["Cancel", "Yes, Delete"],
-    });
+        if (willDelete) {
+          try {
+            const response = await deleteAttendance({
+              tenantDomain,
+              id,
+              date: formattedDate,
+            }).unwrap();
 
-    if (willDelete) {
-      try {
-        // FIXED: Send date instead of id to match backend API
-        const response = await deleteAttendance({
-          tenantDomain,
-          id,
-          date: formattedDate, // Send date instead of id
-        }).unwrap();
-
-        if (response.success) {
-          swal(
-            "Deleted!",
-            `Attendance record has been deleted successfully.`,
-            "success"
-          );
-          refetch();
-        } else {
-          swal(
-            "Error",
-            response.message || "Failed to delete attendance",
-            "error"
-          );
+            if (response.success) {
+              swal(
+                "Deleted!",
+                `Attendance record has been deleted successfully.`,
+                "success"
+              );
+              refetch();
+            } else {
+              swal(
+                "Error",
+                response.message || "Failed to delete attendance",
+                "error"
+              );
+            }
+          } catch (error) {
+            console.error("Delete error:", error);
+            swal("Error", error.message || "Failed to delete attendance", "error");
+          }
         }
-      } catch (error) {
-        console.error("Delete error:", error);
-        swal("Error", error.message || "Failed to delete attendance", "error");
-      }
-    }
+      }, "You don't have permission to delete attendance records."
+    )
   };
 
   // Calculate statistics from API data
@@ -473,10 +469,10 @@ const AttendanceListPage = () => {
               {filterType === "none"
                 ? "Date Filter"
                 : filterType === "daily"
-                ? "Date Range"
-                : filterType === "monthly"
-                ? "Monthly"
-                : "Yearly"}
+                  ? "Date Range"
+                  : filterType === "monthly"
+                    ? "Monthly"
+                    : "Yearly"}
             </Button>
 
             <Menu
@@ -574,8 +570,8 @@ const AttendanceListPage = () => {
         </Paper>
 
         {/* Tabs for different views */}
-        <Paper sx={{ mb: 2, borderRadius: 3 }}>
-          <Tabs value={tabValue} onChange={handleTabChange} centered>
+        <Paper sx={{ mb: 2, borderRadius: 3}} >
+          <Tabs value={tabValue} onChange={handleTabChange} centered variant="scrollable">
             <Tab icon={<Schedule />} label="Daily View" />
             <Tab icon={<CalendarToday />} label="Monthly Summary" />
             <Tab icon={<Person />} label="Employee Reports" />
@@ -702,9 +698,9 @@ const AttendanceListPage = () => {
                       <Box display="flex" justifyContent="center" gap={1}>
                         <Tooltip title="View Details">
                           <IconButton
-                          // component={Link}
-                          //  to={`/dashboard/view-attendance?date=${attendance?.date}`}
-                        
+                            // component={Link}
+                            //  to={`/dashboard/view-attendance?date=${attendance?.date}`}
+
                             color="primary"
                             onClick={() => handleViewDetails(attendance)}
                           >
@@ -712,26 +708,31 @@ const AttendanceListPage = () => {
                           </IconButton>
                         </Tooltip>
                         <Tooltip title="Edit">
-                          <IconButton
-                            component={Link}
-                            to={`/dashboard/update-attendance?date=${attendance?.date}`}
-                            color="secondary"
-                          >
-                            <Edit />
-                          </IconButton>
+                          <Can page="/dashboard/attendance-list" action="edit">
+                            <IconButton
+                              component={Link}
+                              to={`/dashboard/update-attendance?date=${attendance?.date}`}
+                              color="secondary"
+                            >
+                              <Edit />
+                            </IconButton>
+                          </Can>
+
                         </Tooltip>
                         <Tooltip title="Delete">
-                          <IconButton
-                            color="error"
-                            onClick={() =>
-                              handleDeleteAttendance(
-                                attendance._id,
-                                attendance.date
-                              )
-                            }
-                          >
-                            <Delete />
-                          </IconButton>
+                          <Can page="/dashboard/attendance-list" action="delete">
+                            <IconButton
+                              color="error"
+                              onClick={() =>
+                                handleDeleteAttendance(
+                                  attendance._id,
+                                  attendance.date
+                                )
+                              }
+                            >
+                              <Delete />
+                            </IconButton>
+                          </Can>
                         </Tooltip>
                       </Box>
                     </TableCell>
@@ -743,12 +744,12 @@ const AttendanceListPage = () => {
 
           {(!attendanceData?.attendances ||
             attendanceData.attendances.length === 0) && (
-            <Box textAlign="center" py={4}>
-              <Typography variant="body1" color="text.secondary">
-                No attendance records found
-              </Typography>
-            </Box>
-          )}
+              <Box textAlign="center" py={4}>
+                <Typography variant="body1" color="text.secondary">
+                  No attendance records found
+                </Typography>
+              </Box>
+            )}
         </Paper>
 
         {/* Pagination */}
@@ -774,147 +775,8 @@ const AttendanceListPage = () => {
         </Box>
 
         {/* Attendance Detail Dialog */}
-        <Dialog
-          open={viewDialogOpen}
-          onClose={handleCloseDialog}
-          maxWidth="sm"
-          fullWidth
-        >
-          <DialogTitle>
-            <Typography variant="h6" fontWeight="bold">
-              Attendance Details
-            </Typography>
-          </DialogTitle>
-          <DialogContent dividers>
-            {selectedAttendance && (
-              <Box>
-                <Box display="flex" alignItems="center" gap={2} mb={2}>
-                  <Avatar
-                    sx={{
-                      width: 60,
-                      height: 60,
-                      backgroundColor: theme.palette.primary.main,
-                      fontSize: "1.5rem",
-                    }}
-                  >
-                    {selectedAttendance.full_name?.charAt(0) || "E"}
-                  </Avatar>
-                  <Box>
-                    <Typography variant="h6" fontWeight="bold">
-                      {selectedAttendance.full_name}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {selectedAttendance.employeeId} •{" "}
-                      {selectedAttendance.designation}
-                    </Typography>
-                  </Box>
-                </Box>
-
-                <Grid container spacing={2} mt={1}>
-                  <Grid item xs={6}>
-                    <Typography
-                      variant="body2"
-                      fontWeight="bold"
-                      color="text.secondary"
-                    >
-                      Date
-                    </Typography>
-                    <Typography variant="body1">
-                      {dayjs(selectedAttendance.date, "DD-MM-YYYY").format(
-                        "MMM DD, YYYY"
-                      )}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Typography
-                      variant="body2"
-                      fontWeight="bold"
-                      color="text.secondary"
-                    >
-                      Status
-                    </Typography>
-                    <Box mt={0.5}>{getStatusChip(selectedAttendance)}</Box>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Typography
-                      variant="body2"
-                      fontWeight="bold"
-                      color="text.secondary"
-                    >
-                      In Time
-                    </Typography>
-                    <Typography variant="body1">
-                      {selectedAttendance.in_time || "N/A"}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Typography
-                      variant="body2"
-                      fontWeight="bold"
-                      color="text.secondary"
-                    >
-                      Out Time
-                    </Typography>
-                    <Typography variant="body1">
-                      {selectedAttendance.out_time || "N/A"}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Typography
-                      variant="body2"
-                      fontWeight="bold"
-                      color="text.secondary"
-                    >
-                      Working Hours
-                    </Typography>
-                    <Typography variant="body1">
-                      {calculateWorkingHours(
-                        selectedAttendance.in_time,
-                        selectedAttendance.out_time
-                      )}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Typography
-                      variant="body2"
-                      fontWeight="bold"
-                      color="text.secondary"
-                    >
-                      Overtime
-                    </Typography>
-                    <Typography variant="body1">
-                      {selectedAttendance.overtime
-                        ? `${selectedAttendance.overtime} hours`
-                        : "N/A"}
-                    </Typography>
-                  </Grid>
-                  {selectedAttendance.late_status && (
-                    <Grid item xs={12}>
-                      <Paper
-                        variant="outlined"
-                        sx={{
-                          p: 1.5,
-                          bgcolor: alpha(theme.palette.warning.light, 0.2),
-                        }}
-                      >
-                        <Typography
-                          variant="body2"
-                          color="warning.main"
-                          fontWeight="bold"
-                        >
-                          Late Arrival
-                        </Typography>
-                      </Paper>
-                    </Grid>
-                  )}
-                </Grid>
-              </Box>
-            )}
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleCloseDialog}>Close</Button>
-          </DialogActions>
-        </Dialog>
+        <AttendanceDetails calculateWorkingHours={calculateWorkingHours} open={viewDialogOpen}
+          onClose={handleCloseDialog} selectedAttendance={selectedAttendance} getStatusChip={getStatusChip} />
       </Box>
     </LocalizationProvider>
   );

@@ -51,6 +51,8 @@ export const usePermissionFormData = () => {
     pageLoading,
     roleLoading,
     roleData,
-    roleOptions
+    roleOptions,
+    pageData,
+    userData
   };
 };

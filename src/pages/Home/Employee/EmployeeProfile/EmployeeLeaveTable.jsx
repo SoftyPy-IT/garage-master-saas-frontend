@@ -51,10 +51,11 @@ export default function EmployeeLeaveTable({
   data,
   isLoading,
   currentPage,
+  performActionWithPermission
 }) {
   const [open, setOpen] = useState(false);
   const [leaveRequestId, setLeaveRequestId] = useState(null);
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain } = useTenantDomain();
 
   const handleOpen = (id) => {
     setLeaveRequestId(id);
@@ -123,7 +124,7 @@ export default function EmployeeLeaveTable({
   }
 
   return (
-    <Paper sx={{ width: "100%", overflow: "hidden", p: 3 }}>
+    <Paper sx={{ width: "100%", overflow: "hidden", p: { xs: 1.5, md: 3 } }}>
       <Typography
         variant="h4"
         component="h1"
@@ -240,8 +241,11 @@ export default function EmployeeLeaveTable({
 
       {open && (
         <LeaveRequestForm
+          open={open}
+          setOpen={setOpen}
+          performActionWithPermission={performActionWithPermission}
           onClose={handleClose}
-          leaveRequestId={leaveRequestId}
+          id={leaveRequestId}
           tenantDomain={tenantDomain}
         />
       )}

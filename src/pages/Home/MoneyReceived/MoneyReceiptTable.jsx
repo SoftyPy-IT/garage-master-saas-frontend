@@ -11,6 +11,8 @@ import { Pagination } from "@mui/material";
 import Loading from "../../../components/Loading/Loading";
 import { useTenantDomain } from "../../../hooks/useTenantDomain";
 import { useGetCompanyProfileQuery } from "../../../redux/api/companyProfile";
+import Can from "../../../components/Can";
+import { usePermissions } from "../../../context/PermissionContext";
 
 const MoneyReceiptTable = () => {
   const location = useLocation();
@@ -20,7 +22,8 @@ const MoneyReceiptTable = () => {
   const limit = 10;
   const navigate = useNavigate();
   const textInputRef = useRef(null);
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain } = useTenantDomain();
+  const { performActionWithPermission } = usePermissions();
 
   useEffect(() => {
     if (search) {
@@ -59,25 +62,29 @@ const MoneyReceiptTable = () => {
   };
 
   const handleMoveRecycledbin = async (id) => {
-    const willDelete = await swal({
-      title: "Are you sure?",
-      text: " You want to move  this Money Receipt Recycle Bin?",
-      icon: "warning",
-      dangerMode: true,
-    });
+    performActionWithPermission('/dashboard/money-receive-list', 'delete',
+      async () => {
+        const willDelete = await swal({
+          title: "Are you sure?",
+          text: " You want to move  this Money Receipt Recycle Bin?",
+          icon: "warning",
+          dangerMode: true,
+        });
 
-    if (willDelete) {
-      try {
-        await moveRecycledMoneyReceipt({ tenantDomain, id }).unwrap();
-        swal(
-          "Move to Recycle bin!",
-          "Move to Recycle bin successful.",
-          "success"
-        );
-      } catch (error) {
-        swal("Error", "An error occurred while deleting the card.", "error");
-      }
-    }
+        if (willDelete) {
+          try {
+            await moveRecycledMoneyReceipt({ tenantDomain, id }).unwrap();
+            swal(
+              "Move to Recycle bin!",
+              "Move to Recycle bin successful.",
+              "success"
+            );
+          } catch (error) {
+            swal("Error", "An error occurred while deleting the card.", "error");
+          }
+        }
+      }, "You don't have permission to delete money receive !"
+    )
   };
 
   useEffect(() => {
@@ -138,15 +145,14 @@ const MoneyReceiptTable = () => {
               return (
                 <tr
                   key={card._id}
-                  className={`${
-                    card.paymentColor === "#2dce89"
-                      ? "bg-[#2dce89] text-white"
-                      : card.paymentColor === "#f5365c"
+                  className={`${card.paymentColor === "#2dce89"
+                    ? "bg-[#2dce89] text-white"
+                    : card.paymentColor === "#f5365c"
                       ? "bg-[#f5365c] text-white"
                       : card.paymentColor === "#ffad46"
-                      ? "bg-[#ffad46] text-black"
-                      : ""
-                  } transition-all duration-300 hover:bg-gradient-to-r hover:from-blue-300 hover:to-blue-100 hover:text-black`}
+                        ? "bg-[#ffad46] text-black"
+                        : ""
+                    } transition-all duration-300 hover:bg-gradient-to-r hover:from-blue-300 hover:to-blue-100 hover:text-black`}
                 >
                   <td>{serialNumber}</td>
                   <td>{card.thanks_from}</td>
@@ -160,53 +166,58 @@ const MoneyReceiptTable = () => {
                       : card.check_date}
                   </td>
                   <td>
-                    <div
-                      onClick={() => handleIconPreview(card._id)}
-                      className="flex flex-col items-center edit2"
-                    >
-                      <FaEye className="editIcon" />
-                    </div>
+                    <Can page='/dashboard/money-receipt-list' action='view'>
+                      <div
+                        onClick={() => handleIconPreview(card._id)}
+                        className="flex flex-col items-center edit2"
+                      >
+                        <FaEye className="editIcon" />
+                      </div>
+                    </Can>
                   </td>
                   <td>
                     <a
                       className="flex flex-col items-center edit2"
-                      href={`${
-                        import.meta.env.VITE_API_URL
-                      }/money-receipts/money/${
-                        card._id
-                      }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
-                        JSON.stringify(companyProfileData)
-                      )}`}
+                      href={`${import.meta.env.VITE_API_URL
+                        }/money-receipts/money/${card._id
+                        }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
+                          JSON.stringify(companyProfileData)
+                        )}`}
                       target="_blank"
                       rel="noreferrer"
                     >
-                      
+
                       <FaDownload className="editIcon text-yellow-300" />
                     </a>
                   </td>
                   <td>
-                    <div className="flex flex-col items-center edit">
-                      <Link
-                        to={`/dashboard/money-receipt-update?id=${card._id}`}
-                      >
-                        <FaEdit className="editIcon text-blue-500" /> 
-                      </Link>
-                    </div>
+
+                    <Can page='/dashboard/money-receipt-update' action='edit'>
+                      <div className="flex flex-col items-center edit">
+                        <Link
+                          to={`/dashboard/money-receipt-update?id=${card._id}`}
+                        >
+                          <FaEdit className="editIcon text-blue-500" />
+                        </Link>
+                      </div>
+                    </Can>
                   </td>
                   <td>
-                    <button
-                      disabled={deleteLoading}
-                      onClick={() => handleMoveRecycledbin(card._id)}
-                      className="editIconWrap"
-                      style={{                                     
-                                      background: "white",
-                                      border: "none",
-                                      padding: 5,
-                                      borderRadius: "9999px"
-                                    }}
-                    >
-                      <FaTrashAlt className="deleteIcon text-red-500" />
-                    </button>
+                    <Can page='/dashboard/money-receipt-list' action='delete'>
+                      <button
+                        disabled={deleteLoading}
+                        onClick={() => handleMoveRecycledbin(card._id)}
+                        className="editIconWrap"
+                        style={{
+                          background: "white",
+                          border: "none",
+                          padding: 5,
+                          borderRadius: "9999px"
+                        }}
+                      >
+                        <FaTrashAlt className="deleteIcon text-red-500" />
+                      </button>
+                    </Can>
                   </td>
                 </tr>
               );

@@ -33,7 +33,7 @@ export default function StockTransferForm({
   theme,
 }) {
   return (
-    <Grid container spacing={3} sx={{ mt: 0 }}>
+    <Grid container spacing={3} sx={{ mt: 0, padding:2 }} >
       {/* Date and Reference Number Fields */}
       <Grid item xs={12} md={6}>
         <TextField

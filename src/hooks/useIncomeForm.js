@@ -21,7 +21,7 @@ export const defaultIncomeValues = {
 
 export const useIncomeForm = (id) => {
   const navigate = useNavigate();
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain } = useTenantDomain();
   const [createIncome, { isLoading: createLoading }] =
     useCreateIncomeMutation();
   const [updateIncome, { isLoading: updateLoading }] =

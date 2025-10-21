@@ -30,18 +30,19 @@ import {
   useGetSingleDonationQuery,
   useUpdateDonationMutation,
 } from "../../redux/api/donationApi";
-import { useTenantDomain } from "../../hooks/useTenantDomain";
 import FormInput from "../../components/form/Input";
 import TASSelect from "../../components/form/Select";
 import { expenseInputStyle } from "../../utils/customStyle";
 import TASTextarea from "../../components/form/Textarea";
 import { paymentMethods } from "../../constant";
 import { useNavigate } from "react-router-dom";
+import { useAppOptions } from "../../hooks/useAppOptions";
+import Can from "../../components/Can";
 
 export default function DonationForm({ id }) {
   const [createDonation, { isLoading }] = useCreateDonationMutation();
   const [updateDonation] = useUpdateDonationMutation();
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain, performActionWithPermission } = useAppOptions();
   const navigate = useNavigate();
 
   const { data: singleDonation, isLoading: donationLoading } =
@@ -104,54 +105,58 @@ export default function DonationForm({ id }) {
   }, [singleDonation, reset]);
 
   const handleFormSubmit = async (data) => {
-    const toastId = toast.loading(
-      id ? "Updating donation..." : "Creating donation..."
-    );
+    performActionWithPermission(
+      "/dashboard/create-donation",
+      id ? "edit" : "create",
+      async () => {
+        const toastId = toast.loading(
+          id ? "Updating donation..." : "Creating donation..."
+        );
 
-    const submitData = {
-      ...data,
-      donation_amount: Number(data.donation_amount),
-    };
+        const submitData = {
+          ...data,
+          donation_amount: Number(data.donation_amount),
+        };
 
-    try {
-      let res;
+        try {
+          let res;
 
-      if (id) {
-        res = await updateDonation({
-          id,
-          tenantDomain,
-          ...submitData, 
-        }).unwrap();
-      } else {
-        res = await createDonation({
-          tenantDomain,
-          ...submitData,
-        }).unwrap();
-      }
+          if (id) {
+            res = await updateDonation({
+              id,
+              tenantDomain,
+              ...submitData,
+            }).unwrap();
+          } else {
+            res = await createDonation({
+              tenantDomain,
+              ...submitData,
+            }).unwrap();
+          }
 
-      if (res.success) {
-        toast.update(toastId, {
-          render: id
-            ? "Donation updated successfully!"
-            : "Donation created successfully!",
-          type: "success",
-          isLoading: false,
-          autoClose: 3000,
-        });
+          if (res.success) {
+            toast.update(toastId, {
+              render: id
+                ? "Donation updated successfully!"
+                : "Donation created successfully!",
+              type: "success",
+              isLoading: false,
+              autoClose: 3000,
+            });
 
-        methods.reset();
-        navigate("/dashboard/donation-list");
-      }
-    } catch (error) {
-      toast.update(toastId, {
-        render: error?.data?.message || "Something went wrong",
-        type: "error",
-        isLoading: false,
-        autoClose: 3000,
-      });
-    }
-  };
-
+            methods.reset();
+            navigate("/dashboard/donation-list");
+          }
+        } catch (error) {
+          toast.update(toastId, {
+            render: error?.data?.message || "Something went wrong",
+            type: "error",
+            isLoading: false,
+            autoClose: 3000,
+          });
+        }
+      }, `You don't have permission to ${id ? "edit" : "create"} donation`)
+  }
   // Show loading state while fetching donation data
   if (id && donationLoading) {
     return (
@@ -169,7 +174,7 @@ export default function DonationForm({ id }) {
   }
 
   return (
-    <Box sx={{ minHeight: "100vh", bgcolor: "grey.50", py: 8 }}>
+    <Box sx={{ minHeight: "100vh", bgcolor: "grey.50", py: { xs: 1.5, md: 8 } }}>
       <Container maxWidth="lg">
         <Grid container spacing={4}>
           <Grid item xs={12} md={12}>
@@ -190,7 +195,7 @@ export default function DonationForm({ id }) {
 
               <FormProvider {...methods}>
                 <form onSubmit={handleSubmit(handleFormSubmit)}>
-                  <Box sx={{ p: 4 }}>
+                  <Box sx={{ p: { xs: 1.5, md: 4 } }}>
                     {/* Personal Information Section */}
                     <Box sx={{ mb: 5 }}>
                       <Typography
@@ -304,7 +309,7 @@ export default function DonationForm({ id }) {
                           backgroundColor: "white",
                         }}
                       >
-                        <CardContent sx={{ p: 4 }}>
+                        <CardContent sx={{ p: { xs: 1.5, md: 4 } }}>
                           <Stack
                             direction="row"
                             spacing={2}
@@ -338,40 +343,40 @@ export default function DonationForm({ id }) {
                               "Other",
                               "Bank Transfer",
                             ].includes(methods.watch("payment_method")) && (
-                              <>
-                                <Grid item xs={12} md={3}>
-                                  <FormInput
-                                    fullWidth
-                                    name="transaction_no"
-                                    label="Account Number"
-                                    sx={expenseInputStyle}
-                                  />
-                                </Grid>
-                                <Grid item xs={12} md={3}>
-                                  <FormInput
-                                    fullWidth
-                                    name="transactionId"
-                                    label="Transaction ID"
-                                    sx={expenseInputStyle}
-                                  />
-                                </Grid>
-                              </>
-                            )}
+                                <>
+                                  <Grid item xs={12} md={3}>
+                                    <FormInput
+                                      fullWidth
+                                      name="transaction_no"
+                                      label="Account Number"
+                                      sx={expenseInputStyle}
+                                    />
+                                  </Grid>
+                                  <Grid item xs={12} md={3}>
+                                    <FormInput
+                                      fullWidth
+                                      name="transactionId"
+                                      label="Transaction ID"
+                                      sx={expenseInputStyle}
+                                    />
+                                  </Grid>
+                                </>
+                              )}
 
                             {["Cash"].includes(
                               methods.watch("payment_method")
                             ) && (
-                              <>
-                                <Grid item xs={12} md={3}>
-                                  <FormInput
-                                    fullWidth
-                                    name="referenceNo"
-                                    label="Referance Number"
-                                    sx={expenseInputStyle}
-                                  />
-                                </Grid>
-                              </>
-                            )}
+                                <>
+                                  <Grid item xs={12} md={3}>
+                                    <FormInput
+                                      fullWidth
+                                      name="referenceNo"
+                                      label="Referance Number"
+                                      sx={expenseInputStyle}
+                                    />
+                                  </Grid>
+                                </>
+                              )}
 
                             <Grid item xs={12}>
                               <TASTextarea
@@ -389,22 +394,24 @@ export default function DonationForm({ id }) {
 
                     {/* Submit Button */}
                     <Box sx={{ textAlign: "center", mt: 4 }}>
-                      <Button
-                        type="submit"
-                        variant="contained"
-                        size="large"
-                        disabled={isLoading}
-                        endIcon={
-                          isLoading ? (
-                            <CircularProgress size={20} />
-                          ) : (
-                            <Favorite />
-                          )
-                        }
-                        sx={{ px: 6, py: 1.5 }}
-                      >
-                        {isLoading ? "Processing..." : "Donate Now"}
-                      </Button>
+                      <Can page='/dashboard/create-donation' action={id ? 'edit' : 'create'}>
+                        <Button
+                          type="submit"
+                          variant="contained"
+                          size="large"
+                          disabled={isLoading}
+                          endIcon={
+                            isLoading ? (
+                              <CircularProgress size={20} />
+                            ) : (
+                              <Favorite />
+                            )
+                          }
+                          sx={{ px: 6, py: 1.5 }}
+                        >
+                          {isLoading ? "Processing..." : "Donate Now"}
+                        </Button>
+                      </Can>
                     </Box>
                   </Box>
                 </form>

@@ -29,7 +29,7 @@ const salaryApi = baseApi.injectEndpoints({
       providesTags: ["salary"],
     }),
     getSalaryByMonth: builder.query({
-      query: ({ tenantDomain, month}) => ({
+      query: ({ tenantDomain, month }) => ({
         url: '/salary/salary-month',
         method: "GET",
         params: { tenantDomain, month },
@@ -45,7 +45,7 @@ const salaryApi = baseApi.injectEndpoints({
       }),
     }),
 
-    upateSalary: builder.mutation({
+    updateSalary: builder.mutation({
       query: ({ id, data, tenantDomain }) => ({
         url: `/salary/${id}`,
         method: "PATCH",
@@ -81,6 +81,6 @@ export const {
   useGetSalaryForProfileQuery,
   usePartialyPaymentMutation,
   useDeleteSalaryMutation,
-  useUpateSalaryMutation,
+  useUpdateSalaryMutation,
   useGetSalaryByMonthQuery
 } = salaryApi;

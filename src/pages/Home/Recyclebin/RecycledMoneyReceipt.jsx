@@ -11,7 +11,7 @@ import {
 import { Pagination } from "@mui/material";
 import Loading from "../../../components/Loading/Loading";
 import { ArrowForwardIos } from "@mui/icons-material";
-import { useTenantDomain } from "../../../hooks/useTenantDomain";
+import { useAppOptions } from "../../../hooks/useAppOptions";
 
 const RecycledMoneyReceipt = () => {
   const location = useLocation();
@@ -21,8 +21,7 @@ const RecycledMoneyReceipt = () => {
   const limit = 10;
   const navigate = useNavigate();
   const textInputRef = useRef(null);
-const tenantDomain = useTenantDomain();
-
+  const { tenantDomain } = useAppOptions();
 
   useEffect(() => {
     if (search) {
@@ -30,14 +29,13 @@ const tenantDomain = useTenantDomain();
     }
   }, [search]);
 
-  
   const { data: allMoneyReceipts, isLoading: moneyReceiptLoading } =
     useGetAllMoneyReceiptsQuery({
       tenantDomain,
       limit,
       page: currentPage,
       searchTerm: filterType,
-      isRecycled:true,
+      isRecycled: true,
     });
 
   const [
@@ -75,7 +73,7 @@ const tenantDomain = useTenantDomain();
 
     if (result === "restore") {
       try {
-        await restoreFromRecycledMoneyReceipt({tenantDomain, id}).unwrap();
+        await restoreFromRecycledMoneyReceipt({ tenantDomain, id }).unwrap();
         swal({
           title: "Restored!",
           text: "Money Receipt has been restored successfully.",
@@ -92,7 +90,7 @@ const tenantDomain = useTenantDomain();
       }
     } else if (result === "delete") {
       try {
-      await permanantlyDeleteMoneyReceipt({tenantDomain, id}).unwrap();
+        await permanantlyDeleteMoneyReceipt({ tenantDomain, id }).unwrap();
         swal({
           title: "Deleted!",
           text: "Money Receipt has been permanently deleted.",
@@ -130,12 +128,10 @@ const tenantDomain = useTenantDomain();
     toast.error(deleteError?.message);
   }
 
-
-
   return (
     <div className="mt-5 overflow-x-auto">
       <div className="flex items-center justify-between mt-5 mb-8">
-        <div className="flex flex-wrap items-center justify-center">
+        <div className="flex  items-center justify-center">
           <FaFileInvoice className="invoicIcon" />
           <div className="ml-2">
             <h3 className="text-sm font-bold md:text-2xl">Money Receipt</h3>
@@ -151,7 +147,7 @@ const tenantDomain = useTenantDomain();
           <span>Money receipt</span>
         </div>
       </div>
-      <div className="flex-wrap flex items-center justify-between mb-5 bg-[#F1F3F6] py-5 px-3">
+      <div className="flex flex-col md:flex-row items-center justify-between mb-5 bg-[#F1F3F6] py-5 px-3">
         <h3 className="mb-3 text-xl font-bold md:text-3xl">
           Receycled Bin Money Receipt List:
         </h3>
@@ -172,7 +168,14 @@ const tenantDomain = useTenantDomain();
         </div>
       </div>
 
-      <div>
+      <div
+        style={{
+          width: "100%",
+          overflowX: "auto",
+          borderRadius: "12px",
+          background: "white",
+        }}
+      >
         <table className="table">
           <thead className="tableWrap">
             <tr>
@@ -236,7 +239,7 @@ const tenantDomain = useTenantDomain();
                       <Link
                         to={`/dashboard/money-receipt-update?id=${card._id}`}
                       >
-                        <FaEdit className="editIcon text-blue-500" /> 
+                        <FaEdit className="editIcon text-blue-500" />
                       </Link>
                     </div>
                   </td>
@@ -246,14 +249,12 @@ const tenantDomain = useTenantDomain();
                       onClick={() => handleDeleteOrRestore(card._id)}
                       className="editIconWrap"
                       style={{
-                                      cursor: deleteLoading
-                                        ? "not-allowed"
-                                        : "pointer",
-                                      background: "white",
-                                      border: "none",
-                                      padding: 5,
-                                      borderRadius: "9999px"
-                                    }}
+                        cursor: deleteLoading ? "not-allowed" : "pointer",
+                        background: "white",
+                        border: "none",
+                        padding: 5,
+                        borderRadius: "9999px",
+                      }}
                     >
                       <FaTrashAlt className="deleteIcon text-red-500" />
                     </button>
@@ -264,13 +265,13 @@ const tenantDomain = useTenantDomain();
           </tbody>
         </table>
         <div className="flex justify-center mt-4">
-            <Pagination
-              count={allMoneyReceipts?.data?.meta?.totalPages}
-              page={currentPage}
-              color="primary"
-              onChange={(_, page) => setCurrentPage(page)}
-            />
-          </div>
+          <Pagination
+            count={allMoneyReceipts?.data?.meta?.totalPages}
+            page={currentPage}
+            color="primary"
+            onChange={(_, page) => setCurrentPage(page)}
+          />
+        </div>
       </div>
     </div>
   );

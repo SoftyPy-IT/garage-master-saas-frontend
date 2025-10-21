@@ -18,7 +18,7 @@ import {
   useGetAllMoneyReceiptsQuery,
   useMoveRecycledMoneyReceiptMutation,
 } from "../../../../redux/api/money-receipt";
-const CustomerMoneyList = ({ id, user_type,tenantDomain, companyProfileData }) => {
+const CustomerMoneyList = ({ id, user_type, tenantDomain, companyProfileData }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [filterType, setFilterType] = useState("");
 
@@ -55,7 +55,7 @@ const CustomerMoneyList = ({ id, user_type,tenantDomain, companyProfileData }) =
 
     if (willDelete) {
       try {
-        await moveRecycledMoneyReceipt({ tenantDomain, id}).unwrap();
+        await moveRecycledMoneyReceipt({ tenantDomain, id }).unwrap();
         swal(
           "Move to Recycle bin!",
           "Move to Recycle bin successful.",
@@ -108,7 +108,7 @@ const CustomerMoneyList = ({ id, user_type,tenantDomain, companyProfileData }) =
             Start by adding your first money receipt to keep track of payments.
           </p>
           <Link
-            to={`/dashboard/money-receive?id=${id}`}
+            to={`/dashboard/money-receive-create?id=${id}`}
             className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-full transition duration-300 flex items-center"
           >
             <FaMoneyBillWave className="mr-2" />
@@ -147,15 +147,14 @@ const CustomerMoneyList = ({ id, user_type,tenantDomain, companyProfileData }) =
                 return (
                   <tr
                     key={card._id}
-                          className={`${
-                    card.paymentColor === "#2dce89"
-                      ? "bg-[#2dce89] text-white"
-                      : card.paymentColor === "#f5365c"
-                      ? "bg-[#f5365c] text-white"
-                      : card.paymentColor === "#ffad46"
-                      ? "bg-[#ffad46] text-black"
-                      : ""
-                  } transition-all duration-300 hover:bg-gradient-to-r hover:from-blue-300 hover:to-blue-100 hover:text-black`}
+                    className={`${card.paymentColor === "#2dce89"
+                        ? "bg-[#2dce89] text-white"
+                        : card.paymentColor === "#f5365c"
+                          ? "bg-[#f5365c] text-white"
+                          : card.paymentColor === "#ffad46"
+                            ? "bg-[#ffad46] text-black"
+                            : ""
+                      } transition-all duration-300 hover:bg-gradient-to-r hover:from-blue-300 hover:to-blue-100 hover:text-black`}
                   >
                     <td>{globalIndex}</td>
                     <td>{card.thanks_from}</td>
@@ -176,11 +175,10 @@ const CustomerMoneyList = ({ id, user_type,tenantDomain, companyProfileData }) =
                     <td>
                       <a
                         className="flex flex-col items-center edit2"
-                        href={`${
-                          import.meta.env.VITE_API_URL
-                        }/money-receipts/money/${card._id}?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
-                        JSON.stringify(companyProfileData)
-                      )}`}
+                        href={`${import.meta.env.VITE_API_URL
+                          }/money-receipts/money/${card._id}?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
+                            JSON.stringify(companyProfileData)
+                          )}`}
                         target="_blank"
                         rel="noreferrer"
                       >
@@ -193,7 +191,7 @@ const CustomerMoneyList = ({ id, user_type,tenantDomain, companyProfileData }) =
                         <Link
                           to={`/dashboard/money-receipt-update?id=${card._id}&user_type=${user_type}&user=${id}`}
                         >
-                          <FaEdit className="editIcon text-blue-500" /> 
+                          <FaEdit className="editIcon text-blue-500" />
                         </Link>
                       </div>
                     </td>
@@ -202,12 +200,12 @@ const CustomerMoneyList = ({ id, user_type,tenantDomain, companyProfileData }) =
                         disabled={deleteLoading}
                         onClick={() => handleMoveRecycledbin(card._id)}
                         className="editIconWrap"
-                        style={{                            
-                                      background: "white",
-                                      border: "none",
-                                      padding: 5,
-                                      borderRadius: "9999px"
-                                    }}
+                        style={{
+                          background: "white",
+                          border: "none",
+                          padding: 5,
+                          borderRadius: "9999px"
+                        }}
                       >
 
                         <FaTrashAlt className="deleteIcon text-red-500" />

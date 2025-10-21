@@ -1,11 +1,15 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react-refresh/only-export-components */
 /* eslint-disable react/prop-types */
-// src/context/PermissionContext.js
-import { createContext, useContext, useState, useEffect } from "react";
+/* eslint-disable no-unused-vars */
+/* eslint-disable react-hooks/exhaustive-deps */
+import { createContext, useContext } from "react";
 import { CircularProgress, Box, Typography, Button } from "@mui/material";
 import { useTenantDomain } from "../hooks/useTenantDomain";
 import { useSelector } from "react-redux";
-import { selectCurrentToken } from "../redux/feature/authSlice";
+import { selectCurrentUser } from "../redux/feature/authSlice";
+import { useGetUserPermissionQuery } from "../redux/api/userApi";
+import swal from "sweetalert";
+import { UserCircle2 } from "lucide-react";
 
 const PermissionContext = createContext();
 
@@ -19,92 +23,82 @@ export const usePermissions = () => {
 
 export const PermissionProvider = ({ children }) => {
   const { tenantDomain } = useTenantDomain();
-  const token = useSelector(selectCurrentToken);
+  console.log('tenant domain check this ', tenantDomain)
+  const user = useSelector(selectCurrentUser);
 
-  const [permissions, setPermissions] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  const fetchPermissions = async () => {
-    try {
-      if (!token) {
-        setLoading(false);
-        return;
-      }
-
-      if (!tenantDomain) {
-        setLoading(false);
-        return;
-      }
-
-      const response = await fetch(
-        `http://localhost:7000/api/v1/permission/my-permissions?tenantDomain=${tenantDomain}`,
-        {
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
-          credentials: "include",
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch permissions");
-      }
-
-      const data = await response.json();
-      if (data.success) {
-        setPermissions(data.data.permissions);
-      } else {
-        setError(data.message || "Unknown error");
-      }
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+  const { data: permissionData, isLoading, error, isError } = useGetUserPermissionQuery(
+    { userId: user?.userId, tenantDomain },
+    {
+      skip: !user?.userId || !tenantDomain,
     }
-  };
+  );
 
+  const permissions = permissionData?.data?.permissions || [];
   const checkPermission = (pagePath, action = "view") => {
-    if (!permissions) {
+    if (!permissions || permissions.length === 0) {
       return false;
     }
 
     const permission = permissions.find((p) => {
+      if (!p.page) {
+        return false;
+      }
+
+      const page = p.page;
+      if (!page) return false;
       const possiblePaths = [
         pagePath,
         pagePath.endsWith("/") ? pagePath.slice(0, -1) : pagePath + "/",
         pagePath.startsWith("/") ? pagePath : "/" + pagePath,
       ];
 
-      return (
-        possiblePaths.includes(p.page?.path) ||
-        possiblePaths.includes(p.route) ||
-        possiblePaths.includes(p.path)
-      );
+      const pathMatch = possiblePaths.includes(page.path) || possiblePaths.includes(page.route);
+
+      if (pathMatch) {
+        console.log(`Path match found for ${pagePath}:`, page.path, page.route);
+      }
+
+      return pathMatch;
     });
 
     if (!permission) {
       return false;
     }
 
-    return permission[action] || false;
+    const hasAction = permission[action] === true;
+
+    return hasAction;
   };
 
-  // Refetch whenever token or tenantDomain changes
-  useEffect(() => {
-    setLoading(true);
-    fetchPermissions();
-  }, [token, tenantDomain]);
+  const hasPageAccess = (pagePath) => {
+    return checkPermission(pagePath, "view");
+  };
+
+  const performActionWithPermission = (pagePath, action, callback, alertMessage) => {
+    if (checkPermission(pagePath, action)) {
+      callback();
+    } else {
+      swal({
+        title: "Access Denied!",
+        text: alertMessage || `You don't have permission to ${action} this item.`,
+        icon: "error",
+        button: "OK",
+        className: "permission-alert",
+      });
+    }
+  };
 
   const value = {
     permissions,
-    loading,
-    error,
+    loading: isLoading,
+    error: isError ? error?.message || "Failed to fetch permissions" : null,
     checkPermission,
-    fetchPermissions,
+    hasPageAccess,
+    performActionWithPermission,
+    user
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
         <Box textAlign="center">
@@ -117,12 +111,12 @@ export const PermissionProvider = ({ children }) => {
     );
   }
 
-  if (error) {
+  if (isError) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
         <Box textAlign="center">
           <Typography variant="h6" color="error">
-            Error loading permissions: {error}
+            Error loading permissions: {error?.message || "Unknown error"}
           </Typography>
           <Button
             variant="contained"

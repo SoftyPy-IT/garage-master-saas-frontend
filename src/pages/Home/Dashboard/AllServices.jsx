@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable react/no-unknown-property */
 /* eslint-disable no-unused-vars */
 import {
@@ -14,21 +15,19 @@ import Loading from "../../../components/Loading/Loading";
 import "./AllService.css";
 import { useGetAllMetaQuery } from "../../../redux/api/meta.api";
 import { AssuredWorkload } from "@mui/icons-material";
-import { useTenantDomain } from "../../../../src/hooks/useTenantDomain";
 import PropTypes from "prop-types";
 
-const AllServices = ({ showSensitiveData }) => {
-  const tenantDomain = useTenantDomain();
+const AllServices = ({ showSensitiveData, tenantDomain }) => {
+
   const {
     data: allMetaData,
     isLoading,
-    isError,
   } = useGetAllMetaQuery({ tenantDomain });
 
   if (isLoading) return <Loading />;
 
   const card =
-    "flex flex-col xl:flex-row items-center justify-center content-center gap-x-2 mt-3 xl:mt-8 space-y-2 ";
+    "flex flex-col items-center justify-center content-center gap-x-2 mt-3 space-y-2 ";
   const amount = "text-center text-[32px] font-bold ";
 
   return (

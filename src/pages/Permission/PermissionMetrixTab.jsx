@@ -36,8 +36,10 @@ const PermissionMatrixTab = ({ permissionMatrix, roles }) => {
         component={Paper}
         elevation={0}
         sx={{
+          width: "100%",
+    overflowX: "auto",
           borderRadius: 3,
-          overflow: 'hidden',
+          
           boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
         }}
       >

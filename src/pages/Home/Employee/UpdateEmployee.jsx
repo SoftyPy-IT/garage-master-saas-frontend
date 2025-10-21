@@ -28,19 +28,19 @@ import dayjs from "dayjs";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { ArrowBack } from "@mui/icons-material";
 import Loading from "../../../components/Loading/Loading";
-import { useTenantDomain } from "../../../hooks/useTenantDomain";
+import Can from "../../../components/Can";
+import { useAppOptions } from "../../../hooks/useAppOptions";
 
 const UpdateEmployee = () => {
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
-  const tenantDomain = useTenantDomain();
   const [countryCode, setCountryCode] = useState(countries[0]);
   const [guardianCountryCode, setGuardianCountryCode] = useState(countries[0]);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [guardianPhoneNumber, setGuardianPhoneNumber] = useState("");
-  const [imageLoading, setImageLoading] = useState(false);
   const location = useLocation();
   const id = new URLSearchParams(location.search).get("id");
+  const { tenantDomain, performActionWithPermission } = useAppOptions()
   const navigate = useNavigate();
 
   const {
@@ -98,23 +98,28 @@ const UpdateEmployee = () => {
   }, [reset, singleEmployee?.data]);
 
   const onSubmit = async (data) => {
-    data.country_code = countryCode.code;
-    data.guardian_country_code = guardianCountryCode.code;
-    data.image = url;
-    data.nid_number = Number(data.nid_number);
+    performActionWithPermission('/dashboard/update-employee', 'edit',
+      async () => {
+        data.country_code = countryCode.code;
+        data.guardian_country_code = guardianCountryCode.code;
+        data.image = url;
+        data.nid_number = Number(data.nid_number);
 
-    const res = await updateEmployee({
-      id: singleEmployee.data._id,
-      data: {
-        tenantDomain,
-        ...data,
-      },
-    }).unwrap();
+        const res = await updateEmployee({
+          id: singleEmployee.data._id,
+          data: {
+            tenantDomain,
+            ...data,
+          },
+        }).unwrap();
 
-    if (res.success) {
-      toast.success(res.message);
-      navigate("/dashboard/employee-list");
-    }
+        if (res.success) {
+          toast.success(res.message);
+          navigate("/dashboard/employee-list");
+        }
+
+      }, "You don't have permission to update employee."
+    )
   };
 
   const handlePhoneNumberChange = (e) => {
@@ -525,13 +530,15 @@ const UpdateEmployee = () => {
             </div>
 
             <div className="flex justify-center mt-5 ">
-              <Button
-                sx={{ color: "white" }}
-                disabled={updateLoading || loading}
-                type="submit"
-              >
-                Update Employee
-              </Button>
+              <Can page="/dashboard/update-employee" action="edit">
+                <Button
+                  sx={{ color: "white" }}
+                  disabled={updateLoading || loading}
+                  type="submit"
+                >
+                  Update Employee
+                </Button>
+              </Can>
             </div>
           </form>
         </div>

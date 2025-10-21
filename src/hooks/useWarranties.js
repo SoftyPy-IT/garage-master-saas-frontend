@@ -1,26 +1,24 @@
 /* eslint-disable no-unused-vars */
 import { useState } from "react";
 import Swal from "sweetalert2";
-import { useTenantDomain } from "./useTenantDomain";
 import { useDeleteWarrantyMutation, useGetAllWarrantyQuery } from "../redux/api/warrantyApi";
+import { useAppOptions } from "./useAppOptions";
 
 export const useWarranties = () => {
   const [openModal, setOpenModal] = useState(false);
   const [editingWarranty, setEditingWarranty] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const tenantDomain = useTenantDomain();
-  
+  const { performActionWithPermission, tenantDomain, currentPage, setCurrentPage } = useAppOptions()
   const queryParams = {
     tenantDomain,
     limit: 10,
     page: currentPage,
     searchTerm,
   };
-  
+
   const { data: warrantyData, isLoading, refetch } = useGetAllWarrantyQuery(queryParams);
   const [deleteWarranty] = useDeleteWarrantyMutation();
-  
+
   const warranties = warrantyData?.data || [];
 
   const handleOpenModal = () => {
@@ -39,42 +37,44 @@ export const useWarranties = () => {
   };
 
   const handleDeleteWarranty = async (id) => {
-    try {
-      const result = await Swal.fire({
-        title: 'Are you sure?',
-        text: "You won't be able to revert this!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#6a1b9a',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, delete it!'
-      });
+    performActionWithPermission('/dashboard/warranties', 'delete',
+      async () => {
+        try {
+          const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#6a1b9a',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+          });
 
-      if (result.isConfirmed) {
-        await deleteWarranty({ tenantDomain, id }).unwrap();
-        refetch();
-        
-        Swal.fire({
-          icon: "success",
-          title: "Deleted!",
-          text: "The warranty has been deleted successfully.",
-          showConfirmButton: false,
-          timer: 2000,
-          background: "#fff",
-          customClass: {
-            title: "text-purple-800 font-medium",
-            content: "text-gray-600",
-          },
-        });
-      }
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Error!",
-        text: "An error occurred while deleting the warranty.",
-        confirmButtonColor: "#6a1b9a",
-      });
-    }
+          if (result.isConfirmed) {
+            await deleteWarranty({ tenantDomain, id }).unwrap();
+            refetch();
+
+            Swal.fire({
+              icon: "success",
+              title: "Deleted!",
+              text: "The warranty has been deleted successfully.",
+              showConfirmButton: false,
+              timer: 2000,
+              background: "#fff",
+
+            });
+          }
+        } catch (error) {
+          Swal.fire({
+            icon: "error",
+            title: "Error!",
+            text: "An error occurred while deleting the warranty.",
+            confirmButtonColor: "#6a1b9a",
+          });
+        }
+
+      }, `You don't have permission to delete warranty`
+    )
   };
 
   return {

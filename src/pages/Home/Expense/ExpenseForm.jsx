@@ -45,13 +45,13 @@ import Loading from "../../../components/Loading/Loading";
 import TASSelect from "../../../components/form/Select";
 import { paymentMethods } from "../../../constant";
 import { expenseInputStyle } from "../../../utils/customStyle";
+import { useAppOptions } from "../../../hooks/useAppOptions";
+import Can from "../../../components/Can";
 
 const ExpenseForm = ({ id }) => {
   const navigate = useNavigate();
-  const tenantDomain = useTenantDomain();
-  const [filterType, setFilterType] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const limit = 10;
+  const { tenantDomain, performActionWithPermission, invoiceOption } = useAppOptions()
+
 
   const { data: singleExpense, isLoading } = useGetSingleExpenseQuery({
     tenantDomain,
@@ -60,22 +60,6 @@ const ExpenseForm = ({ id }) => {
 
   const [createExpense] = useCreateExpenseMutation();
   const [updateExpense] = useUpdateExpenseMutation();
-
-  const { data: allInvoices } = useGetAllInvoicesQuery({
-    tenantDomain,
-    limit,
-    page: currentPage,
-    searchTerm: filterType,
-    isRecycled: false,
-  });
-
-  const invoiceOption = useMemo(() => {
-    if (!allInvoices?.data?.invoices) return [];
-    return allInvoices.data.invoices.map((invoice) => ({
-      label: `${invoice.invoice_no} - ${invoice.Id}`,
-      _id: invoice._id,
-    }));
-  }, [allInvoices?.data?.invoices]);
 
   const defaultValues = useMemo(() => {
     if (id && singleExpense?.data) {
@@ -143,64 +127,68 @@ const ExpenseForm = ({ id }) => {
   }, [defaultValues, reset, isDirty]);
 
   const handleFormSubmit = async (data) => {
-    const cleanedExpenseItems = data.items.map((item) => ({
-      name: item.name,
-      amount: Number(item.amount),
-    }));
+    performActionWithPermission('/dashboard/add-expense', id ? 'edit' : 'create',
+      async () => {
+        const cleanedExpenseItems = data.items.map((item) => ({
+          name: item.name,
+          amount: Number(item.amount),
+        }));
 
-    const formattedDate =
-      data.date instanceof Date
-        ? data.date.toISOString().split("T")[0]
-        : data.date;
+        const formattedDate =
+          data.date instanceof Date
+            ? data.date.toISOString().split("T")[0]
+            : data.date;
 
-    const expenseData = {
-      date: formattedDate,
-      invoice_id: data.invoice_id || "",
-      invoiceCost: Number(data.invoiceCost) || 0,
-      expense_items: cleanedExpenseItems,
-      payment_method: data.payment_method,
-      accountNumber: data.accountNumber || "",
-      transactionNumber: data.transactionNumber || "",
-      note: data.note || "",
-    };
+        const expenseData = {
+          date: formattedDate,
+          invoice_id: data.invoice_id || "",
+          invoiceCost: Number(data.invoiceCost) || 0,
+          expense_items: cleanedExpenseItems,
+          payment_method: data.payment_method,
+          accountNumber: data.accountNumber || "",
+          transactionNumber: data.transactionNumber || "",
+          note: data.note || "",
+        };
 
 
-    const toastId = toast.loading(
-      id ? "Updating Expense..." : "Creating Expense..."
-    );
+        const toastId = toast.loading(
+          id ? "Updating Expense..." : "Creating Expense..."
+        );
 
-    try {
-      let res;
-      if (id) {
-        res = await updateExpense({
-          tenantDomain,
-          id,
-          ...expenseData,
-        }).unwrap();
-      } else {
-        res = await createExpense({
-          tenantDomain,
-          expenseInfo: expenseData,
-        }).unwrap();
-      }
+        try {
+          let res;
+          if (id) {
+            res = await updateExpense({
+              tenantDomain,
+              id,
+              ...expenseData,
+            }).unwrap();
+          } else {
+            res = await createExpense({
+              tenantDomain,
+              expenseInfo: expenseData,
+            }).unwrap();
+          }
 
-      toast.update(toastId, {
-        render:
-          res.message || `Expense ${id ? "updated" : "created"} successfully!`,
-        type: "success",
-        isLoading: false,
-        autoClose: 3000,
-      });
+          toast.update(toastId, {
+            render:
+              res.message || `Expense ${id ? "updated" : "created"} successfully!`,
+            type: "success",
+            isLoading: false,
+            autoClose: 3000,
+          });
 
-      navigate("/dashboard/expense-list");
-    } catch (error) {
-      toast.update(toastId, {
-        render:   (error?.data?.message || error?.message || "Something went wrong!"),
-        type: "error",
-        isLoading: false,
-        autoClose: 3000,
-      });
-    }
+          navigate("/dashboard/expense-list");
+        } catch (error) {
+          toast.update(toastId, {
+            render: (error?.data?.message || error?.message || "Something went wrong!"),
+            type: "error",
+            isLoading: false,
+            autoClose: 3000,
+          });
+        }
+      }, `You don't have permission to ${id ? 'edit' : 'create'} an expense.`
+    )
   };
 
   if (isLoading) {
@@ -212,7 +200,8 @@ const ExpenseForm = ({ id }) => {
       sx={{
         maxWidth: "1200px",
         mx: "auto",
-        p: { xs: 2, md: 4 },
+        p: { xs: 0, md: 4 },
+        paddingY:{ xs: 1, md: 0 },
         backgroundColor: "#f8fafc",
         minHeight: "100vh",
       }}
@@ -220,7 +209,7 @@ const ExpenseForm = ({ id }) => {
       <Paper
         elevation={0}
         sx={{
-          p: { xs: 3, md: 4 },
+          p: { xs: 1.5, md: 4 },
           mb: 4,
           borderRadius: 3,
           backgroundColor: "white",
@@ -280,7 +269,7 @@ const ExpenseForm = ({ id }) => {
                   backgroundColor: "white",
                 }}
               >
-                <CardContent sx={{ p: 4 }}>
+                <CardContent sx={{ p:{ xs: 1.5, md: 4 }, }}>
                   <Stack direction="row" spacing={2} alignItems="center" mb={3}>
                     <DateRange sx={{ color: "#3b82f6", fontSize: 24 }} />
                     <Typography variant="h6" fontWeight="600" color="#1e293b">
@@ -316,7 +305,7 @@ const ExpenseForm = ({ id }) => {
                         InputProps={{
                           startAdornment: (
                             <InputAdornment position="start">
-                            ৳
+                              ৳
                             </InputAdornment>
                           ),
                         }}
@@ -338,7 +327,7 @@ const ExpenseForm = ({ id }) => {
                   backgroundColor: "white",
                 }}
               >
-                <CardContent sx={{ p: 4 }}>
+                <CardContent sx={{ p: { xs: 1.5, md: 4 } }}>
                   <Stack
                     direction="row"
                     spacing={2}
@@ -394,7 +383,7 @@ const ExpenseForm = ({ id }) => {
                               fullWidth
                               label="Amount"
                               name={`items[${index}].amount`}
-                              
+
                               InputProps={{
                                 startAdornment: (
                                   <InputAdornment position="start">
@@ -449,7 +438,7 @@ const ExpenseForm = ({ id }) => {
                   backgroundColor: "white",
                 }}
               >
-                <CardContent sx={{ p: 4 }}>
+                <CardContent sx={{ p: { xs: 1.5, md: 4 } }}>
                   <Stack direction="row" spacing={2} alignItems="center" mb={3}>
                     <Payment sx={{ color: "#8b5cf6", fontSize: 24 }} />
                     <Typography variant="h6" fontWeight="600" color="#1e293b">
@@ -474,25 +463,25 @@ const ExpenseForm = ({ id }) => {
                       "Other",
                       "Bank Transfer",
                     ].includes(methods.watch("payment_method")) && (
-                      <>
-                        <Grid item xs={12} md={3}>
-                          <TASInput
-                            fullWidth
-                            name="accountNumber"
-                            label="Account Number"
-                            sx={expenseInputStyle}
-                          />
-                        </Grid>
-                        <Grid item xs={12} md={3}>
-                          <TASInput
-                            fullWidth
-                            name="transactionNumber"
-                            label="Transaction ID"
-                            sx={expenseInputStyle}
-                          />
-                        </Grid>
-                      </>
-                    )}
+                        <>
+                          <Grid item xs={12} md={3}>
+                            <TASInput
+                              fullWidth
+                              name="accountNumber"
+                              label="Account Number"
+                              sx={expenseInputStyle}
+                            />
+                          </Grid>
+                          <Grid item xs={12} md={3}>
+                            <TASInput
+                              fullWidth
+                              name="transactionNumber"
+                              label="Transaction ID"
+                              sx={expenseInputStyle}
+                            />
+                          </Grid>
+                        </>
+                      )}
 
                     {["Cash"].includes(methods.watch("payment_method")) && (
                       <>
@@ -524,14 +513,16 @@ const ExpenseForm = ({ id }) => {
 
           {/* Submit Button */}
           <Box display="flex" justifyContent="center" mt={4}>
-            <Button
-              variant="contained"
-              type="submit"
-              size="large"
-              sx={expenseInputStyle}
-            >
-              {id ? "Update Expense" : "Create Expense"}
-            </Button>
+            <Can page='/dashboard/add-expense' action={id ? 'edit' : 'create'}>
+              <Button
+                variant="contained"
+                type="submit"
+                size="large"
+                sx={expenseInputStyle}
+              >
+                {id ? "Update Expense" : "Create Expense"}
+              </Button>
+            </Can>
           </Box>
         </form>
       </FormProvider>

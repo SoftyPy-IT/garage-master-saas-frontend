@@ -51,7 +51,6 @@ import {
   InputLabel,
   Select,
 } from "@mui/material";
-import { styled } from "@mui/material/styles";
 import {
   InventoryOutlined,
   ShoppingCartOutlined,
@@ -210,8 +209,8 @@ export default function InventoryDashboardPage() {
           currentStock === 0
             ? "out-of-stock"
             : currentStock <= 5
-            ? "low-stock"
-            : "in-stock",
+              ? "low-stock"
+              : "in-stock",
       };
     });
 
@@ -420,7 +419,7 @@ export default function InventoryDashboardPage() {
                   backgroundClip: "text",
                 }}
               >
-                <DashboardOutlined className="mr-1 align-middle" sx={{color:  "#0088FE"}}/>
+                <DashboardOutlined className="mr-1 align-middle" sx={{ color: "#0088FE" }} />
                 Inventory Dashboard
               </h3>
               <p className="text-sm md:text-base text-subtitle text-gray-500">
@@ -932,7 +931,7 @@ export default function InventoryDashboardPage() {
                         >
                           {formatCurrency(
                             processedData.totalInventoryValue -
-                              processedData.totalPurchaseValue
+                            processedData.totalPurchaseValue
                           ).slice(0, -3)}
                           K
                         </Typography>
@@ -952,11 +951,11 @@ export default function InventoryDashboardPage() {
                         >
                           {processedData.totalPurchaseValue > 0
                             ? Math.round(
-                                ((processedData.totalInventoryValue -
-                                  processedData.totalPurchaseValue) /
-                                  processedData.totalPurchaseValue) *
-                                  100
-                              )
+                              ((processedData.totalInventoryValue -
+                                processedData.totalPurchaseValue) /
+                                processedData.totalPurchaseValue) *
+                              100
+                            )
                             : 0}
                           %
                         </Typography>
@@ -1283,15 +1282,15 @@ export default function InventoryDashboardPage() {
                               category.status === "good"
                                 ? "success.main"
                                 : category.status === "warning"
-                                ? "warning.main"
-                                : "error.main"
+                                  ? "warning.main"
+                                  : "error.main"
                             }
                           >
                             {category.status === "good"
                               ? "In Stock"
                               : category.status === "warning"
-                              ? "Low Stock"
-                              : "Critical"}
+                                ? "Low Stock"
+                                : "Critical"}
                           </Typography>
                         </Box>
                         <EnhancedProgress
@@ -1301,24 +1300,22 @@ export default function InventoryDashboardPage() {
                             category.status === "good"
                               ? "success"
                               : category.status === "warning"
-                              ? "warning"
-                              : "error"
+                                ? "warning"
+                                : "error"
                           }
                           sx={{
                             "& .MuiLinearProgress-bar": {
-                              background: `linear-gradient(90deg, ${
-                                category.status === "good"
+                              background: `linear-gradient(90deg, ${category.status === "good"
                                   ? theme.palette.success.main
                                   : category.status === "warning"
-                                  ? theme.palette.warning.main
-                                  : theme.palette.error.main
-                              }, ${
-                                category.status === "good"
+                                    ? theme.palette.warning.main
+                                    : theme.palette.error.main
+                                }, ${category.status === "good"
                                   ? theme.palette.success.light
                                   : category.status === "warning"
-                                  ? theme.palette.warning.light
-                                  : theme.palette.error.light
-                              })`,
+                                    ? theme.palette.warning.light
+                                    : theme.palette.error.light
+                                })`,
                             },
                           }}
                         />
@@ -1420,15 +1417,13 @@ export default function InventoryDashboardPage() {
                                   }
                                   size="small"
                                   sx={{
-                                    background: `linear-gradient(45deg, ${
-                                      product.status === "out-of-stock"
+                                    background: `linear-gradient(45deg, ${product.status === "out-of-stock"
                                         ? theme.palette.error.dark
                                         : theme.palette.warning.dark
-                                    }, ${
-                                      product.status === "out-of-stock"
+                                      }, ${product.status === "out-of-stock"
                                         ? theme.palette.error.main
                                         : theme.palette.warning.main
-                                    })`,
+                                      })`,
                                     color: "white",
                                     fontWeight: 500,
                                     boxShadow: `0 2px 8px ${alpha(
@@ -1533,7 +1528,7 @@ export default function InventoryDashboardPage() {
                     <Chip
                       key={index}
                       label={category.name}
-                      onClick={() => {}}
+                      onClick={() => { }}
                     />
                   ))}
                 </Box>
@@ -1544,9 +1539,9 @@ export default function InventoryDashboardPage() {
                   Stock Status
                 </Typography>
                 <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-                  <Chip label="In Stock" color="success" onClick={() => {}} />
-                  <Chip label="Low Stock" color="warning" onClick={() => {}} />
-                  <Chip label="Out of Stock" color="error" onClick={() => {}} />
+                  <Chip label="In Stock" color="success" onClick={() => { }} />
+                  <Chip label="Low Stock" color="warning" onClick={() => { }} />
+                  <Chip label="Out of Stock" color="error" onClick={() => { }} />
                 </Box>
               </Box>
 

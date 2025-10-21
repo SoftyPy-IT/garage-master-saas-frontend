@@ -15,10 +15,8 @@ const categoryapi = baseApi.injectEndpoints({
       query: ({ tenantDomain, limit, page, searchTerm }) => ({
         url: `/category`,
         method: "GET",
-        params: { limit, page, searchTerm },
-        headers: {
-          "x-tenant-domain": tenantDomain,
-        },
+        params: { limit, page, searchTerm, tenantDomain },
+
       }),
       providesTags: ["category"],
     }),
@@ -48,7 +46,7 @@ const categoryapi = baseApi.injectEndpoints({
         params: {
           tenantDomain,
         },
-        
+
       }),
       invalidatesTags: ["category"],
     }),

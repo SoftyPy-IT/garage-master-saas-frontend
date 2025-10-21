@@ -8,7 +8,7 @@ export default function GarageModal({
   title,
   icon,
   children,
-  maxWidth = "sm",
+  maxWidth = "1200px",
 }) {
   return (
     <Dialog
@@ -21,9 +21,9 @@ export default function GarageModal({
       {/* Header */}
       <Box
         sx={{
-          background: "linear-gradient(135deg, #6a1b9a 0%, #42A1DA 100%)",
-          py: 2,
-          px: 3,
+          background: "linear-gradient(135deg, #499ccc 0%, #499ccc 100%)",
+          paddingY: 2,
+          paddingX: 3,
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",

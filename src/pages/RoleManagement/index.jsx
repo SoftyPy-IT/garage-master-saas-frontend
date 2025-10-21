@@ -42,6 +42,8 @@ import AddRoleModal from "./AddRoleModal";
 import { useGetAllRolesQuery, useDeleteRoleMutation } from "../../redux/api/roleApi";
 import { useTenantDomain } from "../../hooks/useTenantDomain";
 import swal from "sweetalert";
+import { useAppOptions } from "../../hooks/useAppOptions";
+import Can from "../../components/Can";
 
 const RoleManagement = () => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -49,9 +51,8 @@ const RoleManagement = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
+  const { tenantDomain, performActionWithPermission } = useAppOptions();
 
-  const { tenantDomain } = useTenantDomain();
   const { data: rolesData, isLoading, error, refetch } = useGetAllRolesQuery({ tenantDomain });
   const [deleteRole] = useDeleteRoleMutation();
 
@@ -87,25 +88,26 @@ const RoleManagement = () => {
 
 
   const handleDeleteRole = async (id) => {
-    const willDelete = await swal({
-      title: "Are you sure?",
-      text: " You want to move  this supplier recycle bin?",
-      icon: "warning",
-      dangerMode: true,
-    });
-
-    if (willDelete) {
-      try {
-        await deleteRole({ id: selectedRole._id, tenantDomain, }).unwrap();
-        swal(
-          "Move to Recycle bin!",
-          "Move to Recycle bin successful.",
-          "success"
-        );
-      } catch (error) {
-        swal("Error", "An error occurred while deleting the card.", "error");
+    performActionWithPermission('/dashboard/role-management', 'delete', async () => {
+      const willDelete = await swal({
+        title: "Are you sure?",
+        text: " You want to move  this supplier recycle bin?",
+        icon: "warning",
+        dangerMode: true,
+      });
+      if (willDelete) {
+        try {
+          await deleteRole({ id: selectedRole._id, tenantDomain, }).unwrap();
+          swal(
+            "Move to Recycle bin!",
+            "Move to Recycle bin successful.",
+            "success"
+          );
+        } catch (error) {
+          swal("Error", "An error occurred while deleting the card.", "error");
+        }
       }
-    }
+    }, "You don't have permission to delete roles !")
   };
 
 
@@ -380,15 +382,21 @@ const RoleManagement = () => {
         onClose={handleMenuClose}
       >
         <MenuItem onClick={handleEditRole}>
-          <Edit fontSize="small" sx={{ mr: 1 }} /> Edit Role
+          <Can page='/dashboard/role-management' action='edit'>
+            <Edit fontSize="small" sx={{ mr: 1 }} /> Edit Role
+          </Can>
+
         </MenuItem>
         <MenuItem onClick={handleDeleteRole} sx={{ color: 'error.main' }}>
-          <Delete fontSize="small" sx={{ mr: 1 }} /> Delete Role
+          <Can page='/dashboard/role-management' action='delete'>
+            <Delete fontSize="small" sx={{ mr: 1 }} /> Delete Role
+          </Can>
         </MenuItem>
       </Menu>
 
       {/* Role Dialog */}
       <AddRoleModal
+        performActionWithPermission={performActionWithPermission}
         open={openDialog}
         onClose={handleCloseDialog}
         editMode={editMode}

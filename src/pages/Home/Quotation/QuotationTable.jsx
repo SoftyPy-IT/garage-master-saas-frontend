@@ -27,10 +27,13 @@ import {
 import { Search } from "lucide-react";
 import { useTenantDomain } from "../../../hooks/useTenantDomain";
 import { useGetCompanyProfileQuery } from "../../../redux/api/companyProfile";
+import { usePermissions } from "../../../context/PermissionContext";
+import Can from "../../../components/Can";
 
-const QuotationTable = ({title}) => {
+const QuotationTable = ({ title }) => {
   const location = useLocation();
   const search = new URLSearchParams(location.search).get("search");
+  const { performActionWithPermission } = usePermissions();
 
   const [filterType, setFilterType] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -38,10 +41,14 @@ const QuotationTable = ({title}) => {
   const textInputRef = useRef(null);
   const navigate = useNavigate();
   const limit = 10;
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain } = useTenantDomain();
 
   const handleIconPreview = async (e) => {
-    navigate(`/dashboard/quotation-view?id=${e}`);
+    performActionWithPermission('/dashboard/quotation-view', 'view',
+      async () => {
+        navigate(`/dashboard/quotation-view?id=${e}`);
+      }, "You don't have permission to view quotation"
+    )
   };
   const { data: profileData } = useGetCompanyProfileQuery({
     tenantDomain,
@@ -70,25 +77,29 @@ const QuotationTable = ({title}) => {
       isRecycled: false,
     });
   const handleMoveToRecycled = async (id) => {
-    const willDelete = await swal({
-      title: "Are you sure?",
-      text: " You want to move this quotation to Recycle Bin?",
-      icon: "warning",
-      dangerMode: true,
-    });
+    performActionWithPermission('/dashboard/quotation-list', 'delete',
+      async () => {
+        const willDelete = await swal({
+          title: "Are you sure?",
+          text: " You want to move this quotation to Recycle Bin?",
+          icon: "warning",
+          dangerMode: true,
+        });
 
-    if (willDelete) {
-      try {
-        await moveRecycledQuotation({ tenantDomain, id }).unwrap();
-        swal(
-          "Move to Recycle bin!",
-          "Move to Recycle bin successful.",
-          "success"
-        );
-      } catch (error) {
-        swal("Error", "An error occurred while deleting the card.", "error");
-      }
-    }
+        if (willDelete) {
+          try {
+            await moveRecycledQuotation({ tenantDomain, id }).unwrap();
+            swal(
+              "Move to Recycle bin!",
+              "Move to Recycle bin successful.",
+              "success"
+            );
+          } catch (error) {
+            swal("Error", "An error occurred while deleting the card.", "error");
+          }
+        }
+      }, "You don't have permission to delete this quotation"
+    )
   };
 
   useEffect(() => {
@@ -106,7 +117,7 @@ const QuotationTable = ({title}) => {
         <div className="w-full mt-3 md:mt-5 ">
           <div className="mb-6 block md:flex justify-between items-center gap-0 md:gap-1">
             <h2 className="text-xl md:text-2xl font-semibold text-center mb-2">
-            {title}
+              {title}
             </h2>
             <div className="flex items-center">
               <TextField
@@ -166,7 +177,7 @@ const QuotationTable = ({title}) => {
                         let rowClass = "";
                         if (card.status === "running") {
                           rowClass = "bg-[#f5365c] text-white";
-                        } else{
+                        } else {
                           rowClass = "bg-[#2dce89] text-white";
                         }
                         return (
@@ -178,8 +189,8 @@ const QuotationTable = ({title}) => {
                             <td>{card.quotation_no}</td>
                             <td>{card.job_no}</td>
                             {card?.customer?.customer_name ||
-                            card?.company?.company_name ||
-                            card?.showRoom?.showRoom_name ? (
+                              card?.company?.company_name ||
+                              card?.showRoom?.showRoom_name ? (
                               <>
                                 {card?.customer && (
                                   <td>{card?.customer?.customer_name}</td>
@@ -206,8 +217,8 @@ const QuotationTable = ({title}) => {
                               {card?.vehicle?.car_registration_no}
                             </td>
                             {card?.customer?.fullCustomerNum ||
-                            card?.company?.fullCompanyNum ||
-                            card?.showRoom?.fullCompanyNum ? (
+                              card?.company?.fullCompanyNum ||
+                              card?.showRoom?.fullCompanyNum ? (
                               <>
                                 {card?.customer && (
                                   <td>{card?.customer?.fullCustomerNum}</td>
@@ -232,7 +243,7 @@ const QuotationTable = ({title}) => {
                               >
                                 <a
                                   className="flex justify-center edit2"
-                                  href={`/dashboard/invoice?order_no=${card?.job_no}&id=${card._id}`}
+                                  href={`/dashboard/create-invoice?order_no=${card?.job_no}&id=${card._id}`}
                                   rel="noreferrer"
                                 >
                                   <FaFileInvoice className="editIcon text-purple-600" />
@@ -248,13 +259,11 @@ const QuotationTable = ({title}) => {
                               >
                                 <a
                                   className="flex flex-col items-center edit2"
-                                  href={`${
-                                    import.meta.env.VITE_API_URL
-                                  }/quotations/quotation/${
-                                    card._id
-                                  }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
-                                    JSON.stringify(companyProfileData)
-                                  )}`}
+                                  href={`${import.meta.env.VITE_API_URL
+                                    }/quotations/quotation/${card._id
+                                    }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
+                                      JSON.stringify(companyProfileData)
+                                    )}`}
                                   target="_blank"
                                   rel="noreferrer"
                                 >
@@ -265,13 +274,15 @@ const QuotationTable = ({title}) => {
 
                             <td>
                               <Tooltip title="Preview" arrow placement="top">
-                                <div
-                                  onClick={() => handleIconPreview(card._id)}
-                                  className="flex flex-col items-center edit2"
-                                  style={{ cursor: "pointer" }}
-                                >
-                                  <FaEye className="editIcon" />
-                                </div>
+                                <Can page='/dashboard/quotation-view' action='view'>
+                                  <div
+                                    onClick={() => handleIconPreview(card._id)}
+                                    className="flex flex-col items-center edit2"
+                                    style={{ cursor: "pointer" }}
+                                  >
+                                    <FaEye className="editIcon" />
+                                  </div>
+                                </Can>
                               </Tooltip>
                             </td>
 
@@ -281,13 +292,15 @@ const QuotationTable = ({title}) => {
                                 arrow
                                 placement="top"
                               >
-                                <div className="flex flex-col items-center edit">
-                                  <Link
-                                    to={`/dashboard/update-quotation?id=${card._id}`}
-                                  >
-                                    <FaEdit className="editIcon text-blue-500" /> 
-                                  </Link>
-                                </div>
+                                <Can page='/dashboard/update-quotation' action='edit'>
+                                  <div className="flex flex-col items-center edit">
+                                    <Link
+                                      to={`/dashboard/update-quotation?id=${card._id}`}
+                                    >
+                                      <FaEdit className="editIcon text-blue-500" />
+                                    </Link>
+                                  </div>
+                                </Can>
                               </Tooltip>
                             </td>
 
@@ -301,26 +314,28 @@ const QuotationTable = ({title}) => {
                                 arrow
                                 placement="top"
                               >
-                                <span>
-                                  <button
-                                    disabled={deleteLoading}
-                                    onClick={() =>
-                                      handleMoveToRecycled(card._id)
-                                    }
-                                    className="editIconWrap rounded-full"
-                                    style={{
-                                      cursor: deleteLoading
-                                        ? "not-allowed"
-                                        : "pointer",
-                                      background: "white",
-                                      border: "none",
-                                      padding: 5,
-                                      borderRadius: "9999px"
-                                    }}
-                                  >
-                                    <FaTrashAlt className="deleteIcon text-red-500" />
-                                  </button>
-                                </span>
+                                <Can page="/dashboard/company-list" action='delete'>
+                                  <span>
+                                    <button
+                                      disabled={deleteLoading}
+                                      onClick={() =>
+                                        handleMoveToRecycled(card._id)
+                                      }
+                                      className="editIconWrap rounded-full"
+                                      style={{
+                                        cursor: deleteLoading
+                                          ? "not-allowed"
+                                          : "pointer",
+                                        background: "white",
+                                        border: "none",
+                                        padding: 5,
+                                        borderRadius: "9999px"
+                                      }}
+                                    >
+                                      <FaTrashAlt className="deleteIcon text-red-500" />
+                                    </button>
+                                  </span>
+                                </Can>
                               </Tooltip>
                             </td>
                           </tr>

@@ -12,13 +12,11 @@ const unitApi = baseApi.injectEndpoints({
     }),
 
     getAllIUnit: builder.query({
-      query: ({tenantDomain, limit, page, searchTerm }) => ({
+      query: ({ tenantDomain, limit, page, searchTerm }) => ({
         url: `/unit`,
         method: "GET",
-        params: { limit, page, searchTerm },
-        headers: {
-          "x-tenant-domain": tenantDomain,
-        },
+        params: { limit, page, searchTerm, tenantDomain },
+
       }),
       providesTags: ["unit"],
     }),

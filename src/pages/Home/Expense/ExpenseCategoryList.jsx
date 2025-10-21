@@ -251,7 +251,7 @@ export default function ExpenseCategoryList() {
 
   return (
     <>
-      <Box sx={{ padding: "24px" }}>
+      <Box sx={{ padding: 0 }}>
         {/* Header */}
         <Box mb={3}>
           <Typography variant="h5" fontWeight="600" color="#333" mb={1}>
@@ -283,10 +283,10 @@ export default function ExpenseCategoryList() {
         </Box>
 
         {/* Main Content */}
-        <StyledCard>
+        <StyledCard sx={{padding:2}}>
           <CardContent sx={{ p: 0 }}>
             {/* Toolbar */}
-            <Box sx={{ p: 3, borderBottom: "1px solid #eee" }}>
+            <Box sx={{ p: { xs: 0, md: 4 }, borderBottom: "1px solid #eee" }}>
               <Stack
                 direction={{ xs: "column", sm: "row" }}
                 justifyContent="space-between"
@@ -299,7 +299,7 @@ export default function ExpenseCategoryList() {
                   size="small"
                   value={search}
                   onChange={handleSearch}
-                  sx={{ minWidth: 300 }}
+                  sx={{ minWidth: { xs: 100, md: 300 } }}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
@@ -309,7 +309,7 @@ export default function ExpenseCategoryList() {
                   }}
                 />
 
-                <Stack direction="row" spacing={1}>
+                <Stack direction="row" spacing={.5} sx={{paddingBottom:1}}>
                   <Tooltip title="Refresh">
                     <IconButton onClick={() => refetch()}>
                       <Refresh />
@@ -333,6 +333,7 @@ export default function ExpenseCategoryList() {
                     startIcon={<ControlPoint />}
                     onClick={handleOpen}
                     sx={{
+                      padding:{ xs: 1, md: 2 },
                       bgcolor: "#42A1DA",
                       "&:hover": { bgcolor: "#3589b9" },
                       textTransform: "none",
@@ -359,7 +360,7 @@ export default function ExpenseCategoryList() {
                 ))}
               </Box>
             ) : filteredRows.length === 0 ? (
-              <Box p={5} textAlign="center">
+              <Box p={{ xs: 1.5, md: 5 }} textAlign="center">
                 <Typography variant="h6" color="text.secondary" gutterBottom>
                   No expense categories found
                 </Typography>
@@ -408,7 +409,7 @@ export default function ExpenseCategoryList() {
             )}
 
             {/* Pagination */}
-            <Box p={2} display="flex" justifyContent="center">
+            <Box p={{ xs: 0, md: 2 }} display="flex" justifyContent="center">
               <Pagination
                 count={totalPage}
                 page={currentPage}

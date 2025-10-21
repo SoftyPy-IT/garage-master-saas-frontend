@@ -20,6 +20,7 @@ import {
   alpha,
   useTheme,
   Typography,
+  Button,
 } from "@mui/material";
 import {
   Search as SearchIcon,
@@ -39,6 +40,7 @@ const PageList = ({
   searchTerm,
   handleSearchChange,
   handleMenuClick,
+  handleCreatePage,
 }) => {
   const theme = useTheme();
 
@@ -89,11 +91,12 @@ const PageList = ({
                 size="small"
               />
             </Grid>
+            <Grid item xs={12} md={6}>
+              <Button sx={{ color: '#fff' }} onClick={handleCreatePage}>Create Page </Button>
+            </Grid>
           </Grid>
         </CardContent>
       </Card>
-
-      {/* Tabs */}
       <Box sx={{ mb: 3 }}>
         <Card sx={{ borderRadius: 3, boxShadow: "0 4px 20px rgba(0,0,0,0.1)" }}>
           <TableContainer component={Paper}>
@@ -149,7 +152,7 @@ const PageList = ({
                     </TableCell>
                     <TableCell>
                       <Box display="flex" alignItems="center">
-                        
+
                         <Chip
                           icon={getStatusIcon(page.status)}
                           label={
@@ -175,15 +178,7 @@ const PageList = ({
             </Table>
           </TableContainer>
 
-          {/* <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component="div"
-          count={filteredPages.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        /> */}
+
         </Card>
       </Box>
     </>

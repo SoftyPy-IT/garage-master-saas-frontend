@@ -51,9 +51,12 @@ import FormSelect from "../../../components/form/FormSelect";
 import FormTextArea from "../../../components/form/FormTextArea";
 import GarageForm from "../../../components/form/Form";
 import { useTenantDomain } from "../../../hooks/useTenantDomain";
+import { usePermissions } from "../../../context/PermissionContext";
+import Can from "../../../components/Can";
+import { useAppOptions } from "../../../hooks/useAppOptions";
 
 const FormSection = ({ children }) => (
-  <div className="mb-6 p-4 border rounded-lg shadow-sm">{children}</div>
+  <div className="mb-6 p-2 lg:p-4 border rounded-lg shadow-sm">{children}</div>
 );
 
 const CountryCodeAutocomplete = ({
@@ -95,13 +98,15 @@ const SupplierForm = ({ id }) => {
   const [countryCode, setCountryCode] = useState(countries[0]);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [showHelpTips, setShowHelpTips] = useState(true);
-
   const isEditing = !!id;
-  const [createSupplier, { isLoading: createLoading }] =
-    useCreateSupplierMutation();
-  const [updateSupplier, { isLoading: updateLoading }] =
-    useUpdateSupplierMutation();
-  const tenantDomain = useTenantDomain();
+  const {
+    createSupplier,
+    updateSupplier,
+    performActionWithPermission,
+    createLoading,
+    updateSupplierLoading
+  } = useAppOptions();
+  const { tenantDomain } = useTenantDomain();
   const { data: singleSupplier, isLoading: isSingleSupplierLoading } =
     useGetSingleSupplierQuery({
       tenantDomain: tenantDomain,
@@ -116,7 +121,7 @@ const SupplierForm = ({ id }) => {
       singleSupplier?.data?.country_code ||
       (countries[0] ? countries[0].code : ""),
     email: singleSupplier?.data?.email || "",
- 
+
     tax_id: singleSupplier?.data?.tax_id || "",
     street_address: singleSupplier?.data?.street_address || "",
     country: singleSupplier?.data?.country || "",
@@ -144,40 +149,64 @@ const SupplierForm = ({ id }) => {
     }
   };
 
-  const handleFormSubmission = async (data) => {
-    const values = {
-      ...data,
-      country_code: countryCode.code,
-    };
+  const handleSubmit = async (data) => {
+    performActionWithPermission('/dashboard/add-supplier', 'create',
+      async () => {
+        const values = {
+          ...data,
+          country_code: countryCode.code,
+        };
 
-    try {
-      let response;
+        try {
+          let response;
 
-      if (isEditing) {
-        response = await updateSupplier({
-          id: id,
-          data: { ...values, tenantDomain },
-        });
-      } else {
-        response = await createSupplier({
-          ...values,
-          tenantDomain,
-        });
+          response = await createSupplier({
+            ...values,
+            tenantDomain,
+          });
+
+          if (response?.data?.success) {
+            toast.success(response?.data?.message || `Supplier created successfully!`);
+            navigate("/dashboard/supplier-list");
+          }
+        } catch (error) {
+          toast.error(
+            error.message ||
+            `Failed to ${isEditing ? "update" : "create"} supplier.`
+          );
+        }
+      }, "You don't have permission to create supplier"
+    )
+  };
+  const handleUpdate = async (data) => {
+    performActionWithPermission('/dashboard/update-supplier', 'edit',
+      async () => {
+        const values = {
+          ...data,
+          country_code: countryCode.code,
+        };
+
+        try {
+          let response;
+          response = await updateSupplier({
+            id: id,
+            data: { ...values, tenantDomain },
+          });
+          if (response?.data?.success) {
+            toast.success(
+              response?.data?.message ||
+              `Supplier update successfully!`
+            );
+            navigate("/dashboard/supplier-list");
+          }
+        } catch (error) {
+          toast.error(
+            error.message ||
+            `Failed to ${isEditing ? "update" : "create"} supplier.`
+          );
+        }
       }
-
-      if (response?.data?.success) {
-        toast.success(
-          response?.data?.message ||
-            `Supplier ${isEditing ? "updated" : "created"} successfully!`
-        );
-        navigate("/dashboard/supplier-list");
-      }
-    } catch (error) {
-      toast.error(
-        error.message ||
-          `Failed to ${isEditing ? "update" : "create"} supplier.`
-      );
-    }
+    )
   };
 
   return (
@@ -186,7 +215,7 @@ const SupplierForm = ({ id }) => {
         <h2>Loading</h2>
       ) : (
         <section className="md:py-0" style={{ minHeight: "100vh" }}>
-          <div className="max-w-6xl mx-auto px-4 mt-10 ">
+          <div className="max-w-6xl mx-auto p-2 lg:px-4 lg:mt-10 ">
             <div className="mb-4 flex justify-between items-center">
               <h2 className="md:text-3xl font-[600] text-[#2980b9] block">
                 {isEditing ? "Edit Supplier" : "Add New Supplier"}
@@ -226,9 +255,9 @@ const SupplierForm = ({ id }) => {
             </Collapse>
 
             <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-              <CardContent sx={{ p: 3 }}>
+              <CardContent sx={{ p: { xs: 0, lg: 3 } }}>
                 <GarageForm
-                  onSubmit={handleFormSubmission}
+                  onSubmit={id ? handleUpdate : handleSubmit}
                   defaultValues={defaultSupplierValues}
                 >
                   {/* Basic Information Section */}
@@ -281,8 +310,8 @@ const SupplierForm = ({ id }) => {
                         />
                       </Grid>
                       <Grid item xs={12} md={6}>
-                        <Grid container spacing={1}>
-                          <Grid item xs={4}>
+                        <div className="md:flex items-center content-center justify-center gap-2">
+                          <Grid item xs={12} sm={3} md={3} lg={3}>
                             <CountryCodeAutocomplete
                               name="country_code"
                               label="Code"
@@ -290,7 +319,7 @@ const SupplierForm = ({ id }) => {
                               defaultValue={countryCode}
                             />
                           </Grid>
-                          <Grid item xs={8}>
+                          <Grid item xs={12} >
                             <TASInput
                               name="phone_number"
                               label="Phone Number"
@@ -299,7 +328,7 @@ const SupplierForm = ({ id }) => {
                               onChange={handlePhoneNumberChange}
                             />
                           </Grid>
-                        </Grid>
+                        </div>
                       </Grid>
                       <Grid item xs={12} md={6}>
                         <TASInput
@@ -320,7 +349,7 @@ const SupplierForm = ({ id }) => {
                       Business & Address Information
                     </h3>
                     <Grid container spacing={2}>
-                     
+
                       <Grid item xs={12} md={6}>
                         <TASInput
                           name="tax_id"
@@ -411,22 +440,43 @@ const SupplierForm = ({ id }) => {
                       gap: 2,
                     }}
                   >
-                    <Button
-                      type="submit"
-                      variant="contained"
-                      startIcon={
-                        createLoading || updateLoading ? (
-                          <CircularProgress size={20} color="inherit" />
-                        ) : (
-                          <Save />
-                        )
-                      }
-                      sx={{ minWidth: 150 }}
-                    >
-                      {createLoading || updateLoading
-                        ? "Processing..."
-                        : `${isEditing ? "Update" : "Create"}`}
-                    </Button>
+                    {
+                      id ? <Can page='/dashboard/update-supplier' action='edit'>
+                        <Button
+                          type="submit"
+                          variant="contained"
+                          startIcon={
+                            createLoading || updateSupplierLoading ? (
+                              <CircularProgress size={20} color="inherit" />
+                            ) : (
+                              <Save />
+                            )
+                          }
+                          sx={{ minWidth: 150 }}
+                        >
+                          {updateSupplierLoading
+                            ? "Processing..."
+                            : `${isEditing ? "Update" : "Create"}`}
+                        </Button>
+                      </Can> : <Can page='/dashboard/add-supplier' action='create'>
+                        <Button
+                          type="submit"
+                          variant="contained"
+                          startIcon={
+                            createLoading || updateSupplierLoading ? (
+                              <CircularProgress size={20} color="inherit" />
+                            ) : (
+                              <Save />
+                            )
+                          }
+                          sx={{ minWidth: 150 }}
+                        >
+                          {createLoading
+                            ? "Processing..."
+                            : `${isEditing ? "Update" : "Create"}`}
+                        </Button>
+                      </Can>
+                    }
                   </Box>
                 </GarageForm>
               </CardContent>

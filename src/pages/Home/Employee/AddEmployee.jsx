@@ -21,15 +21,15 @@ import { toast } from "react-toastify";
 import { countries } from "../../../constant";
 import { useCreateEmployeeMutation } from "../../../redux/api/employee";
 import uploadFile from "../../../helper/uploadFile";
-import EmployeeTable from "./EmployeeTable";
 import { ArrowBack } from "@mui/icons-material";
 import dayjs from "dayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { useTenantDomain } from "../../../hooks/useTenantDomain";
+import { useAppOptions } from "../../../hooks/useAppOptions";
+import Can from "../../../components/Can";
 const AddEmployee = () => {
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain, performActionWithPermission } = useAppOptions();
   const [url, setUrl] = useState("");
   const [imageLoading, setImageLoading] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -63,30 +63,34 @@ const AddEmployee = () => {
   };
 
   const onSubmit = async (data) => {
-    const toastId = toast.loading("Creating Employee...");
-    data.country_code = countryCode.code;
-    data.guardian_country_code = guardianCountryCode.code;
-    data.image = url;
-    data.nid_number = Number(data.nid_number);
+    performActionWithPermission('/dashboard/add-employee', 'create',
+      async () => {
+        const toastId = toast.loading("Creating Employee...");
+        data.country_code = countryCode.code;
+        data.guardian_country_code = guardianCountryCode.code;
+        data.image = url;
+        data.nid_number = Number(data.nid_number);
 
-    try {
-      const res = await createEmployee({ tenantDomain, ...data }).unwrap();
+        try {
+          const res = await createEmployee({ tenantDomain, ...data }).unwrap();
 
-      if (res.success) {
-        toast.success(res.message);
-        navigate("/dashboard/employee-list");
+          if (res.success) {
+            toast.success(res.message);
+            navigate("/dashboard/employee-list");
+          }
+        } catch (err) {
+          if (err.data && err.data.errorSources) {
+            err.data.errorSources.forEach((error) => {
+              toast.error(`${error.path}: ${error.message}`);
+            });
+          } else {
+            toast.error(err.data?.message || "Failed to creating the employee.");
+          }
+        } finally {
+          toast.dismiss(toastId);
+        }
       }
-    } catch (err) {
-      if (err.data && err.data.errorSources) {
-        err.data.errorSources.forEach((error) => {
-          toast.error(`${error.path}: ${error.message}`);
-        });
-      } else {
-        toast.error(err.data?.message || "Failed to creating the employee.");
-      }
-    } finally {
-      toast.dismiss(toastId);
-    }
+    );
   };
 
   const handlePhoneNumberChange = (e) => {
@@ -377,7 +381,7 @@ const AddEmployee = () => {
                       <TextField
                         fullWidth
                         label="Designation  "
-                        
+
                         id="Designation  "
                         {...register("designation")}
                       />
@@ -391,7 +395,7 @@ const AddEmployee = () => {
                           id="grouped-native-select"
                           label="Select Employee Status"
                           {...register("status")}
-                          
+
                         >
                           <MenuItem value="Active">Active</MenuItem>
                           <MenuItem value="Inactive">Inactive</MenuItem>
@@ -411,7 +415,7 @@ const AddEmployee = () => {
                         fullWidth
                         label="Father Name "
                         {...register("father_name")}
-                       
+
                       />
                     </Grid>
                     <Grid item lg={6} md={6} sm={12} xs={12}>
@@ -462,7 +466,7 @@ const AddEmployee = () => {
                             type="tel"
                             value={guardianPhoneNumber}
                             onChange={handleGuardianPhoneNumberChange}
-                            
+
                           />
                         </Grid>
                       </Grid>
@@ -539,13 +543,15 @@ const AddEmployee = () => {
             </div>
 
             <div className="flex justify-center mt-10 ">
-              <Button
-                sx={{ color: "white" }}
-                type="submit"
-                disabled={createLoading}
-              >
-                Add Employee
-              </Button>
+              <Can page="/dashboard/add-employee" action="create">
+                <Button
+                  sx={{ color: "white" }}
+                  type="submit"
+                  disabled={createLoading}
+                >
+                  Add Employee
+                </Button>
+              </Can>
             </div>
           </form>
         </div>

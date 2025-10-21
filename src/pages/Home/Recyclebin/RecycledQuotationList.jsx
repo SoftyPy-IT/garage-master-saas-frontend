@@ -1,31 +1,25 @@
 /* eslint-disable no-unused-vars */
 import { useEffect, useRef, useState } from "react";
 import { FaTrashAlt, FaEdit, FaEye, FaFileInvoice } from "react-icons/fa";
-import { FaUserGear } from "react-icons/fa6";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 import Loading from "../../../components/Loading/Loading";
-import { NotificationAdd } from "@mui/icons-material";
 import { Pagination } from "@mui/material";
 import {
   useGetAllQuotationsQuery,
   usePermanantlyDeleteQuotationMutation,
   useRestoreFromRecycledQuotationMutation,
 } from "../../../redux/api/quotation";
-import { useTenantDomain } from "../../../hooks/useTenantDomain";
+import { useAppOptions } from "../../../hooks/useAppOptions";
 const RecycledQuotationList = () => {
   const location = useLocation();
   const search = new URLSearchParams(location.search).get("search");
-
   const [filterType, setFilterType] = useState("");
-
   const [currentPage, setCurrentPage] = useState(1);
-
   const textInputRef = useRef(null);
   const navigate = useNavigate();
   const limit = 10;
-const tenantDomain = useTenantDomain();
-
+  const { tenantDomain } = useAppOptions()
   const handleIconPreview = async (e) => {
     navigate(`/dashboard/quotation-view?id=${e}`);
   };
@@ -121,9 +115,9 @@ const tenantDomain = useTenantDomain();
   return (
     <div>
       <div className="overflow-x-auto mt-5">
-       
 
-        <div className="flex items-center justify-between my-3 mb-8">
+
+        <div className="flex flex-col items-center justify-between my-3 mb-8">
           <div className="flex items-center justify-center ">
             <FaFileInvoice className="invoicIcon" />
             <div className="ml-2">
@@ -139,14 +133,14 @@ const tenantDomain = useTenantDomain();
         </div>
 
         <div className="w-full mt-5 mb-24">
-          <div className="flex items-center justify-between mb-5">
+          <div className="flex flex-col md:flex-row items-center justify-between mb-5">
             <h3 className="text-3xl font-bold text-center ">
               Recycled Bin Quotation List:
             </h3>
-            <div className="flex items-center">
+            <div className="flex  items-center">
               <button
                 onClick={handleAllQuotation}
-                className="mx-6 font-semibold cursor-pointer bg-[#42A1DA] px-2 py-1 rounded-md text-white"
+                className="mx-1 md:mx-6 font-semibold cursor-pointer bg-[#42A1DA] px-2 py-1 rounded-md text-white"
               >
                 All
               </button>
@@ -154,7 +148,7 @@ const tenantDomain = useTenantDomain();
                 onChange={(e) => setFilterType(e.target.value)}
                 type="text"
                 placeholder="Search"
-                className="border py-2 px-3 rounded-md border-[#ddd]"
+                className="border py-2 px-3 rounded-md border-[#ddd] w-[150px] md:w-full"
                 ref={textInputRef}
               />
               <button className="SearchBtn ">Search</button>
@@ -171,7 +165,12 @@ const tenantDomain = useTenantDomain();
                   No matching card found.
                 </div>
               ) : (
-                <section>
+                <section style={{
+    width: "100%",
+    overflowX: "auto",
+    borderRadius: "12px",
+    background: "white",
+  }}>
                   <table className="table">
                     <thead className="tableWrap">
                       <tr>
@@ -220,9 +219,8 @@ const tenantDomain = useTenantDomain();
                             <td>
                               <a
                                 className="bg-[#42A0D9] text-white px-3 py-2 text-[12px]  rounded-full "
-                                href={`${
-                                  import.meta.env.VITE_API_URL
-                                }/quotations/quotation/${card._id}`}
+                                href={`${import.meta.env.VITE_API_URL
+                                  }/quotations/quotation/${card._id}`}
                                 target="_blank"
                                 rel="noreferrer"
                               >
@@ -242,7 +240,7 @@ const tenantDomain = useTenantDomain();
                                 <Link
                                   to={`/dashboard/update-quotation?id=${card._id}`}
                                 >
-                                  <FaEdit className="editIcon text-blue-500" /> 
+                                  <FaEdit className="editIcon text-blue-500" />
                                 </Link>
                               </div>
                             </td>
@@ -252,12 +250,12 @@ const tenantDomain = useTenantDomain();
                                 onClick={() => handleDeleteOrRestore(card._id)}
                                 className="editIconWrap"
                                 style={{
-                                      
-                                      background: "white",
-                                      border: "none",
-                                      padding: 5,
-                                      borderRadius: "9999px"
-                                    }}
+
+                                  background: "white",
+                                  border: "none",
+                                  padding: 5,
+                                  borderRadius: "9999px"
+                                }}
                               >
                                 <FaTrashAlt className="deleteIcon text-red-500" />
                               </button>

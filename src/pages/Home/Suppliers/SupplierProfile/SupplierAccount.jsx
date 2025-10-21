@@ -1,4 +1,4 @@
-import {  FaInfo, FaRegEdit } from "react-icons/fa";
+import { FaInfo, FaRegEdit } from "react-icons/fa";
 import Card from "../../../../components/Card/Card";
 import invoice from "../../../../../public/assets/invoice.png";
 import { Link } from "react-router-dom";
@@ -6,14 +6,14 @@ const SupplierAccount = () => {
   return (
     <div className="customerProfileWrap">
       <div>
-    
+
         <div className="block md:flex justify-between mt-5">
           <Card>
             <h3 className="text-xl font-semibold mb-2">Supplier Contact Info </h3>
             <div className="flex items-center justify-between">
               <div>
                 <div>
-                Supplier Name: <b>Mr. Rahat </b>
+                  Supplier Name: <b>Mr. Rahat </b>
                 </div>
                 <div>
                   Phone Number: <b>0657899444</b>
@@ -21,7 +21,7 @@ const SupplierAccount = () => {
               </div>
               <div>
                 <div>
-                 Shop Name: <b>Auto Solution </b>
+                  Shop Name: <b>Auto Solution </b>
                 </div>
                 <span>
                   Email Address: <b>supplier@gmail.com</b>
@@ -34,7 +34,7 @@ const SupplierAccount = () => {
             <div className="flex items-center justify-between">
               <div>
                 <div>
-                 Country: <b>Bangladesh</b>
+                  Country: <b>Bangladesh</b>
                 </div>
                 <div>
                   City: <b>Dhaka</b>
@@ -42,18 +42,18 @@ const SupplierAccount = () => {
               </div>
               <div>
                 <div>
-                 State: <b>Dhaka</b>
+                  State: <b>Dhaka</b>
                 </div>
               </div>
             </div>
           </Card>
         </div>
-     
+
         <div className="block md:flex justify-between  mt-5">
           <Card>
             <div className="flex items-center justify-between">
               <h3 className="text-2xl font-semibold">Paid Bill </h3>
-              <Link to='/dashboard/addjob'><FaRegEdit size={30} /></Link>
+              <Link to='/dashboard/create-job-card'><FaRegEdit size={30} /></Link>
             </div>
             <div className=" mt-10 flex items-center justify-between">
               <div className="flex items-center my-3">
@@ -97,7 +97,7 @@ const SupplierAccount = () => {
           <Card>
             <div className="flex items-center justify-between">
               <h3 className="text-2xl font-semibold">Due Bill </h3>
-              <Link to='/dashboard/addjob'><FaRegEdit size={30} /></Link>
+              <Link to='/dashboard/create-job-card'><FaRegEdit size={30} /></Link>
             </div>
             <img className="w-64 mx-auto " src={invoice} alt="" />
           </Card>

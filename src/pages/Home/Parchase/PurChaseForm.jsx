@@ -17,7 +17,6 @@ import {
   Tooltip,
   InputAdornment,
   alpha,
-  useTheme,
   Autocomplete,
   Collapse,
 } from "@mui/material";
@@ -50,15 +49,13 @@ import {
   useGetSinglePurchaseQuery,
   useUpdatePurchaseMutation,
 } from "../../../redux/api/purchaseApi";
-import { useGetAllIProductQuery } from "../../../redux/api/productApi";
-import { useGetAllSuppliersQuery } from "../../../redux/api/supplier";
 import TASForm from "../../../components/form/Form";
 import TASInput from "../../../components/form/Input";
 import TASDatepicker from "../../../components/form/Datepicker";
 import TASSelect from "../../../components/form/Select";
 import TASTextarea from "../../../components/form/Textarea";
 import TASAutocomplete from "../../../components/form/Autocomplete";
-import { productCategory, purchaseStatus } from "../../../constant";
+import { purchaseStatus } from "../../../constant";
 import ImageUpload from "../../../components/form/ImageUpload";
 import {
   inputFieldSx,
@@ -66,18 +63,19 @@ import {
   outlinedInputWrapperSx,
   productBox,
   productStyle,
+  purchaseBtn,
   textInuptStyle,
 } from "../../../utils/customStyle";
 import { formatCurrency } from "../../../utils/formatter";
-import { useGetAllWarehousesQuery } from "../../../redux/api/warehouseApi";
 import { useTenantDomain } from "../../../hooks/useTenantDomain";
+import { useAppOptions } from "../../../hooks/useAppOptions";
+import Can from "../../../components/Can";
 
 const MotionCard = motion(Card);
 
 const PurChaseForm = () => {
   const navigate = useNavigate();
   const [params, setParams] = useState([]);
-  const [selectedProduct, setSelectedProduct] = useState(null);
   const [productFields, setProductFields] = useState([]);
   const [fileList, setFileList] = useState([]);
   const [totalAmount, setTotalAmount] = useState(0);
@@ -85,35 +83,12 @@ const PurChaseForm = () => {
   const [totalTax, setTotalTax] = useState(0);
   const [totalShipping, setTotalShipping] = useState(0);
   const [grandTotal, setGrandTotal] = useState(0);
-  const [searchTerm, setSearchTerm] = useState("");
   const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
   const [expandedSummary, setExpandedSummary] = useState(true);
   const productSearchRef = useRef(null);
-  const tenantDomain = useTenantDomain();
   const [updatePurchase] = useUpdatePurchaseMutation();
-  const {
-    data: productsData,
-    isLoading: productsLoading,
-    isFetching: productsFetching,
-  } = useGetAllIProductQuery({
-    tenantDomain,
-    limit: 100,
-    page: 1,
-    searchTerm: "",
-  });
+  const { performActionWithPermission, supplierOptions, warehouseOptions, productOptions, setSearchTerm, tenantDomain } = useAppOptions()
 
-  const { data: supplierData } = useGetAllSuppliersQuery({
-    tenantDomain,
-    limit: 1000000,
-    page: 1,
-    searchTerm: "",
-  });
-  const { data: warehouseData } = useGetAllWarehousesQuery({
-    tenantDomain,
-    limit: 1000000,
-    page: 1,
-    searchTerm: "",
-  });
   const id = new URLSearchParams(location.search).get("id");
 
   const { data: singlePurchase, isLoading } = useGetSinglePurchaseQuery({
@@ -122,33 +97,6 @@ const PurChaseForm = () => {
   });
   const [createPurchase, { isLoading: isSubmitting }] =
     useCreatePurchaseMutation();
-  
-  // Prepare supplier options
-  const suppliersOptions = useMemo(() => {
-    if (!supplierData?.data?.suppliers) return [];
-    return supplierData.data.suppliers.map((supplier) => ({
-      label: supplier.full_name,
-      value: supplier._id,
-    }));
-  }, [supplierData?.data?.suppliers]);
-  
-  const wareHouseOptions = useMemo(() => {
-    if (!warehouseData?.data?.warehouses) return [];
-    return warehouseData.data.warehouses.map((warehouse) => ({
-      label: warehouse.name,
-      value: warehouse._id,
-    }));
-  }, [warehouseData?.data?.warehouses]);
-
-  // Prepare product options
-  const productOptions = useMemo(() => {
-    if (!productsData?.data?.products) return [];
-    return productsData.data.products.map((product) => ({
-      label: product.product_name,
-      value: product._id,
-      product,
-    }));
-  }, [productsData?.data?.products]);
 
   // Calculate totals whenever product fields change
   useEffect(() => {
@@ -317,101 +265,106 @@ const PurChaseForm = () => {
 
   // Handle form submission
   const handleSubmit = async (data) => {
-    if (productFields.length === 0) {
-      toast.error("Please add at least one product", {
-        position: "top-right",
-        autoClose: 3000,
-      });
-      return;
-    }
-
-    const modifyData = {
-      ...data,
-      attachDocument: Array.isArray(data.attachDocument)
-        ? data.attachDocument[0]
-        : data.attachDocument,
-      shipping: Number(data.shipping),
-      products: productFields.map((product) => ({
-        ...product,
-        productPrice: Number(product.productPrice),
-        tax: Number(product.tax),
-        discount: Number(product.discount),
-        quantity: Number(product.quantity),
-        shipping: Number(product.shipping),
-      })),
-      suppliers:
-        data.suppliers &&
-        data.suppliers[0] &&
-        suppliersOptions.find((cat) => cat.label === data.suppliers[0])?.value
-          ? [
-              suppliersOptions.find((cat) => cat.label === data.suppliers[0])
-                .value,
-            ]
-          : [],
-      warehouse:
-        data.warehouse &&
-        data.warehouse[0] &&
-        wareHouseOptions.find((cat) => cat.label === data.warehouse[0])?.value
-          ? [
-              wareHouseOptions.find((cat) => cat.label === data.warehouse[0])
-                .value,
-            ]
-          : [],
-      totalAmount,
-      totalDiscount,
-      totalTax,
-      totalShipping,
-      grandTotal,
-    };
-
-    try {
-      setShowSuccessAnimation(true);
-      if (id) {
-        const res = await updatePurchase({
-          tenantDomain,
-          id,
-          ...modifyData,
-        }).unwrap();
-
-        if (res.success) {
-          toast.success(res.message || "Purchase update successfully!");
-          navigate("/dashboard/purchase-list");
+    performActionWithPermission("/dashboard/add-purchase", id ? 'edit' : 'create',
+      async () => {
+        if (productFields.length === 0) {
+          toast.error("Please add at least one product", {
+            position: "top-right",
+            autoClose: 3000,
+          });
+          return;
         }
-      } else {
-        const res = await createPurchase({
-          tenantDomain,
-          ...modifyData,
-        }).unwrap();
-        if (res.success) {
-          toast.success(res.message || "Purchase create successfully!");
-          navigate("/dashboard/purchase-list");
+
+        const modifyData = {
+          ...data,
+          attachDocument: Array.isArray(data.attachDocument)
+            ? data.attachDocument[0]
+            : data.attachDocument,
+          shipping: Number(data.shipping),
+          products: productFields.map((product) => ({
+            ...product,
+            productPrice: Number(product.productPrice),
+            tax: Number(product.tax),
+            discount: Number(product.discount),
+            quantity: Number(product.quantity),
+            shipping: Number(product.shipping),
+          })),
+          suppliers:
+            data.suppliers &&
+              data.suppliers[0] &&
+              supplierOptions.find((cat) => cat.label === data.suppliers[0])?.value
+              ? [
+                supplierOptions.find((cat) => cat.label === data.suppliers[0])
+                  .value,
+              ]
+              : [],
+          warehouse:
+            data.warehouse &&
+              data.warehouse[0] &&
+              warehouseOptions.find((cat) => cat.label === data.warehouse[0])?.value
+              ? [
+                warehouseOptions.find((cat) => cat.label === data.warehouse[0])
+                  .value,
+              ]
+              : [],
+          totalAmount,
+          totalDiscount,
+          totalTax,
+          totalShipping,
+          grandTotal,
+        };
+
+        try {
+          setShowSuccessAnimation(true);
+          if (id) {
+            const res = await updatePurchase({
+              tenantDomain,
+              id,
+              ...modifyData,
+            }).unwrap();
+
+            if (res.success) {
+              toast.success(res.message || "Purchase update successfully!");
+              navigate("/dashboard/purchase-list");
+            }
+          } else {
+            const res = await createPurchase({
+              tenantDomain,
+              ...modifyData,
+            }).unwrap();
+            if (res.success) {
+              toast.success(res.message || "Purchase create successfully!");
+              navigate("/dashboard/purchase-list");
+            }
+          }
+        } catch (error) {
+          setShowSuccessAnimation(false);
+
+          // Extract the main error message
+          const errorMessage =
+            error.data?.errorSources?.[0]?.message ||
+            error.data?.err?.issues?.[0]?.message ||
+            error.data?.message ||
+            `Failed to ${id ? "update" : "create"} purchase`;
+
+          toast.error(errorMessage, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            style: {
+              background: "#ef4444",
+              color: "#fff",
+              borderRadius: "10px",
+              boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
+            },
+          });
         }
-      }
-    } catch (error) {
-      setShowSuccessAnimation(false);
 
-      // Extract the main error message
-      const errorMessage =
-        error.data?.errorSources?.[0]?.message ||
-        error.data?.err?.issues?.[0]?.message ||
-        error.data?.message ||
-        `Failed to ${id ? "update" : "create"} purchase`;
-
-      toast.error(errorMessage, {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        style: {
-          background: "#ef4444",
-          color: "#fff",
-          borderRadius: "10px",
-          boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
-        },
-      });
-    }
+      }, `You don't have permission to ${id ? 'edit' : 'create'} purchase`
+    )
   };
 
   return (
@@ -495,7 +448,7 @@ const PurChaseForm = () => {
           </Box>
 
           <TASForm onSubmit={handleSubmit} defaultValues={defaultValues}>
-            <Box sx={{ p: { xs: 0, sm: 4 } }}>
+            <Box sx={{ p: { xs: 0, sm: 0 } }}>
               <Grid container spacing={4}>
                 {/* Left Column - Document Upload */}
                 <Grid item xs={12} md={3}>
@@ -661,7 +614,7 @@ const PurChaseForm = () => {
                         </Grid>
                         <Grid item xs={12} md={6}>
                           <TASAutocomplete
-                            options={wareHouseOptions}
+                            options={warehouseOptions}
                             size="medium"
                             fullWidth
                             name="warehouse"
@@ -688,7 +641,7 @@ const PurChaseForm = () => {
                         </Grid>
                         <Grid item xs={12} md={6}>
                           <TASAutocomplete
-                            options={suppliersOptions}
+                            options={supplierOptions}
                             size="medium"
                             fullWidth
                             name="suppliers"
@@ -910,9 +863,8 @@ const PurChaseForm = () => {
                   </Box>
                   {productFields.length > 0 && (
                     <Chip
-                      label={`${productFields.length} ${
-                        productFields.length === 1 ? "item" : "items"
-                      }`}
+                      label={`${productFields.length} ${productFields.length === 1 ? "item" : "items"
+                        }`}
                       size="small"
                       sx={{
                         color: "white",
@@ -1305,14 +1257,14 @@ const PurChaseForm = () => {
                                           borderColor: "#e2e8f0",
                                         },
                                         "&:hover .MuiOutlinedInput-notchedOutline":
-                                          {
-                                            borderColor: "#cbd5e1",
-                                          },
+                                        {
+                                          borderColor: "#cbd5e1",
+                                        },
                                         "&.Mui-focused .MuiOutlinedInput-notchedOutline":
-                                          {
-                                            borderColor: "#8b5cf6",
-                                            borderWidth: "2px",
-                                          },
+                                        {
+                                          borderColor: "#8b5cf6",
+                                          borderWidth: "2px",
+                                        },
                                       },
                                     }}
                                   />
@@ -1640,7 +1592,7 @@ const PurChaseForm = () => {
                             <Grid item xs={12}>
                               <Box
                                 sx={{
-                                  display: "flex",
+                                  display: { sm: "flex" },
                                   justifyContent: "space-between",
                                   py: 2,
                                   mt: 1,
@@ -1648,6 +1600,7 @@ const PurChaseForm = () => {
                                     "linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%)",
                                   borderRadius: "12px",
                                   px: 2,
+                                  textAlign: "center"
                                 }}
                               >
                                 <Box
@@ -1702,35 +1655,24 @@ const PurChaseForm = () => {
 
               {/* Submit Button */}
               <Box sx={{ mt: 4, display: "flex", justifyContent: "flex-end" }}>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  disabled={isSubmitting}
-                  startIcon={
-                    isSubmitting ? (
-                      <CircularProgress size={20} color="inherit" />
-                    ) : (
-                      <SaveIcon />
-                    )
-                  }
-                  sx={{
-                    borderRadius: "12px",
-                    background:
-                      "linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)",
-                    px: 4,
-                    py: 1.5,
-                    boxShadow: "0 10px 15px -3px rgba(99, 102, 241, 0.3)",
-                    "&:hover": {
-                      background:
-                        "linear-gradient(135deg, #2563eb 0%, #7c3aed 100%)",
-                      boxShadow: "0 15px 20px -3px rgba(99, 102, 241, 0.4)",
-                      transform: "translateY(-2px)",
-                    },
-                    transition: "all 0.3s ease",
-                  }}
-                >
-                  {id ? "Update Purchase" : "Create Purchase"}
-                </Button>
+                <Can action={id ? 'edit' : 'create'}
+                  page="/dashboard/add-purchase">
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    disabled={isSubmitting}
+                    startIcon={
+                      isSubmitting ? (
+                        <CircularProgress size={20} color="inherit" />
+                      ) : (
+                        <SaveIcon />
+                      )
+                    }
+                    sx={purchaseBtn}
+                  >
+                    {id ? "Update Purchase" : "Create Purchase"}
+                  </Button>
+                </Can>
               </Box>
             </Box>
           </TASForm>

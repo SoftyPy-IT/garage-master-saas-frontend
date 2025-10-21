@@ -27,18 +27,20 @@ import {
   useDeleteExpenseMutation,
   useGetAllExpensesQuery,
 } from "../../../redux/api/expense";
-import { useTenantDomain } from "../../../hooks/useTenantDomain";
 import Loading from "../../../components/Loading/Loading";
 import { useAccountSummaryQuery } from "../../../redux/api/meta.api";
 import StatisticsCard from "./StatisticsCard";
 import ExpenseBreakDown from "./ExpenseBreakDown";
+import { useAppOptions } from "../../../hooks/useAppOptions";
+import Can from "../../../components/Can";
 
 export default function ExpenseList() {
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain, performActionWithPermission } = useAppOptions()
+
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
 
-  const { data: accountSummary} =
+  const { data: accountSummary } =
     useAccountSummaryQuery({ tenantDomain });
   const { data, isLoading } = useGetAllExpensesQuery({
     tenantDomain,
@@ -50,28 +52,32 @@ export default function ExpenseList() {
   const [deleteExpense] = useDeleteExpenseMutation();
 
   const handleDelete = async (id) => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#1976d2",
-      cancelButtonColor: "#d32f2f",
-      confirmButtonText: "Yes, delete it!",
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          await deleteExpense({ tenantDomain, id }).unwrap();
-          Swal.fire("Deleted!", "The expense has been deleted.", "success");
-        } catch (error) {
-          Swal.fire(
-            "Error!",
-            "An error occurred while deleting the expense.",
-            "error"
-          );
-        }
-      }
-    });
+    performActionWithPermission('/dashboard/expense-list', 'delete',
+      async () => {
+        Swal.fire({
+          title: "Are you sure?",
+          text: "You won't be able to revert this!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#1976d2",
+          cancelButtonColor: "#d32f2f",
+          confirmButtonText: "Yes, delete it!",
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            try {
+              await deleteExpense({ tenantDomain, id }).unwrap();
+              Swal.fire("Deleted!", "The expense has been deleted.", "success");
+            } catch (error) {
+              Swal.fire(
+                "Error!",
+                "An error occurred while deleting the expense.",
+                "error"
+              );
+            }
+          }
+        });
+      }, "You don't have permission to delete expenses."
+    )
   };
 
   const rows =
@@ -97,17 +103,12 @@ export default function ExpenseList() {
   const { meta = {} } = data?.data || {};
   const { totalPage = 1, total = 0 } = meta;
 
-  // Extract expense data from account summary
-  const expenseData = accountSummary?.data?.expense || {};
 
-  const totalExpense = expenseData.total?.totalAmount || 0;
-  const invoiceCost = expenseData.monthly?.invoiceCost || 0;
-  const otherExpense = expenseData.monthly?.totalOtherExpense || 0;
 
   return (
-    <Box sx={{ p: 3, backgroundColor: "#f8fafc", minHeight: "100vh" }}>
+    <Box sx={{ p: { xs: 0, md: 3 }, backgroundColor: "#f8fafc", minHeight: "100vh" }}>
 
-     
+
       {/* Statistics Cards */}
       <StatisticsCard accountSummary={accountSummary} />
 
@@ -121,7 +122,7 @@ export default function ExpenseList() {
           boxShadow: "0 4px 6px rgba(0,0,0,0.05)",
         }}
       >
-        <Box sx={{ p: 3, borderBottom: "1px solid #e2e8f0" }}>
+        <Box sx={{ p: { xs: 1.5, md: 3 }, borderBottom: "1px solid #e2e8f0" }}>
           <Stack
             direction={{ xs: "column", sm: "row" }}
             justifyContent="space-between"
@@ -139,7 +140,7 @@ export default function ExpenseList() {
                 placeholder="Search expenses..."
                 sx={{
                   width: { xs: "100%", sm: "300px" },
-                  p: "12px 16px",
+                  p: "12px 15px",
                   borderRadius: 2,
                   border: "1px solid #d1d5db",
                   fontSize: "14px",
@@ -237,10 +238,10 @@ export default function ExpenseList() {
                       >
                         {row.date
                           ? new Date(row.date).toLocaleDateString("en-US", {
-                              year: "numeric",
-                              month: "short",
-                              day: "numeric",
-                            })
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                          })
                           : "N/A"}
                       </Typography>
                     </TableCell>
@@ -283,14 +284,13 @@ export default function ExpenseList() {
                     <TableCell sx={{ py: 2 }}>
                       <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
                         {Array.isArray(row.expense_items) &&
-                        row.expense_items.length > 0 ? (
+                          row.expense_items.length > 0 ? (
                           <>
                             {row.expense_items.slice(0, 2).map((item, idx) => (
                               <Chip
                                 key={idx}
-                                label={`${item.name}: ${
-                                  item.amount?.toLocaleString() || "0"
-                                }`}
+                                label={`${item.name}: ${item.amount?.toLocaleString() || "0"
+                                  }`}
                                 size="small"
                                 sx={{
                                   bgcolor: "#fef3c7",
@@ -329,7 +329,7 @@ export default function ExpenseList() {
                       >
                         <IconButton
                           component={Link}
-                          to={`/dashboard/update-expense/?id=৳{row.id}`}
+                          to={`/dashboard/update-expense/?id=${row.id}`}
                           size="small"
                           sx={{
                             bgcolor: "#eff6ff",
@@ -337,7 +337,9 @@ export default function ExpenseList() {
                             "&:hover": { bgcolor: "#dbeafe" },
                           }}
                         >
-                          <EditIcon fontSize="small" />
+                          <Can action='edit' page='/dashboard/expense-list'>
+                            <EditIcon fontSize="small" />
+                          </Can>
                         </IconButton>
                         <IconButton
                           size="small"
@@ -348,7 +350,9 @@ export default function ExpenseList() {
                             "&:hover": { bgcolor: "#fee2e2" },
                           }}
                         >
-                          <DeleteIcon fontSize="small" />
+                          <Can action='delete' page='/dashboard/expense-list'>
+                            <DeleteIcon fontSize="small" />
+                          </Can>
                         </IconButton>
                       </Stack>
                     </TableCell>

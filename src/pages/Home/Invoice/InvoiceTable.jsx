@@ -14,6 +14,8 @@ import { useTenantDomain } from "../../../hooks/useTenantDomain";
 import { Money } from "@mui/icons-material";
 import { getRowClass } from "../../../utils/getRowClass";
 import { useGetCompanyProfileQuery } from "../../../redux/api/companyProfile";
+import { usePermissions } from "../../../context/PermissionContext";
+import Can from "../../../components/Can";
 
 const InvoiceTable = ({ title }) => {
   const location = useLocation();
@@ -21,13 +23,18 @@ const InvoiceTable = ({ title }) => {
   const [filterType, setFilterType] = useState("");
   const [limit, setLimit] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain } = useTenantDomain();
+  const { performActionWithPermission } = usePermissions();
 
   const navigate = useNavigate();
   const textInputRef = useRef(null);
 
   const handleIconPreview = async (e) => {
-    navigate(`/dashboard/detail?id=${e}`);
+    performActionWithPermission('/dashboard/invoice-list', 'view',
+      async () => {
+        navigate(`/dashboard/invoice-view?id=${e}`);
+      }, "You don't have permission to view invoice !"
+    )
   };
 
   const [moveRecycledInvoice, { isLoading: deleteLoading }] =
@@ -55,21 +62,25 @@ const InvoiceTable = ({ title }) => {
     });
 
   const handleMoveToRecycledbin = async (id) => {
-    const willDelete = await swal({
-      title: "Are you sure?",
-      text: "You want to move this invoice to the Recycle Bin?",
-      icon: "warning",
-      dangerMode: true,
-    });
+    performActionWithPermission('/dashboard/invoice-list', 'delete',
+      async () => {
+        const willDelete = await swal({
+          title: "Are you sure?",
+          text: "You want to move this invoice to the Recycle Bin?",
+          icon: "warning",
+          dangerMode: true,
+        });
 
-    if (willDelete) {
-      try {
-        await moveRecycledInvoice({ tenantDomain, id }).unwrap();
-        swal("Moved!", "Invoice moved to Recycle Bin successfully.", "success");
-      } catch (error) {
-        swal("Error", "An error occurred while deleting the invoice.", "error");
-      }
-    }
+        if (willDelete) {
+          try {
+            await moveRecycledInvoice({ tenantDomain, id }).unwrap();
+            swal("Moved!", "Invoice moved to Recycle Bin successfully.", "success");
+          } catch (error) {
+            swal("Error", "An error occurred while deleting the invoice.", "error");
+          }
+        }
+      }, "You don't have permission to delete invoice !"
+    )
   };
 
   useEffect(() => {
@@ -187,7 +198,7 @@ const InvoiceTable = ({ title }) => {
                             >
                               <a
                                 className="editIconWrap edit2"
-                                href={`/dashboard/money-receive?order_no=${card.job_no}&id=${card?._id}&net_total=${net_total}`}
+                                href={`/dashboard/money-receive-create?order_no=${card.job_no}&id=${card?._id}&net_total=${net_total}`}
                                 rel="noreferrer"
                               >
                                 <Money className="editIcon" />
@@ -203,13 +214,11 @@ const InvoiceTable = ({ title }) => {
                             >
                               <a
                                 className="flex flex-col items-center edit2"
-                                href={`${
-                                  import.meta.env.VITE_API_URL
-                                }/invoices/invoice/${
-                                  card._id
-                                }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
-                                  JSON.stringify(companyProfileData)
-                                )}`}
+                                href={`${import.meta.env.VITE_API_URL
+                                  }/invoices/invoice/${card._id
+                                  }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
+                                    JSON.stringify(companyProfileData)
+                                  )}`}
                                 target="_blank"
                                 rel="noreferrer"
                               >
@@ -220,25 +229,29 @@ const InvoiceTable = ({ title }) => {
 
                           <td>
                             <Tooltip title="Preview" arrow placement="top">
-                              <div
-                                onClick={() => handleIconPreview(card._id)}
-                                className="flex flex-col items-center edit2"
-                                style={{ cursor: "pointer" }}
-                              >
-                                <FaEye className="editIcon" />
-                              </div>
+                              <Can page='/dashboard/invoice-list' action='view'>
+                                <div
+                                  onClick={() => handleIconPreview(card._id)}
+                                  className="flex flex-col items-center edit2"
+                                  style={{ cursor: "pointer" }}
+                                >
+                                  <FaEye className="editIcon" />
+                                </div>
+                              </Can>
                             </Tooltip>
                           </td>
 
                           <td>
                             <Tooltip title="Edit Invoice" arrow placement="top">
-                              <div className="flex flex-col items-center edit">
-                                <Link
-                                  to={`/dashboard/update-invoice?id=${card._id}`}
-                                >
-                                  <FaEdit className="editIcon text-blue-500" /> 
-                                </Link>
-                              </div>
+                              <Can page='/dashboard/update-invoice' action='edit'>
+                                <div className="flex flex-col items-center edit">
+                                  <Link
+                                    to={`/dashboard/update-invoice?id=${card._id}`}
+                                  >
+                                    <FaEdit className="editIcon text-blue-500" />
+                                  </Link>
+                                </div>
+                              </Can>
                             </Tooltip>
                           </td>
 
@@ -252,15 +265,16 @@ const InvoiceTable = ({ title }) => {
                               arrow
                               placement="top"
                             >
-                              <span>
-                                <button
-                                  disabled={deleteLoading}
-                                  onClick={() =>
-                                    handleMoveToRecycledbin(card._id)
-                                  }
-                                  className="bg-white p-1 rounded-sm"
-                                 
-                                  style={{
+                              <Can page='/dashboard/invoice-list' action='delete'>
+                                <span>
+                                  <button
+                                    disabled={deleteLoading}
+                                    onClick={() =>
+                                      handleMoveToRecycledbin(card._id)
+                                    }
+                                    className="bg-white p-1 rounded-sm"
+
+                                    style={{
                                       cursor: deleteLoading
                                         ? "not-allowed"
                                         : "pointer",
@@ -268,12 +282,13 @@ const InvoiceTable = ({ title }) => {
                                       border: "none",
                                       padding: 5,
                                       borderRadius: "9999px",
-                                       opacity: deleteLoading ? 0.7 : 1,
+                                      opacity: deleteLoading ? 0.7 : 1,
                                     }}
-                                >
-                                  <FaTrashAlt className="text-[#f5365c] size-[16px]" />
-                                </button>
-                              </span>
+                                  >
+                                    <FaTrashAlt className="text-[#f5365c] size-[16px]" />
+                                  </button>
+                                </span>
+                              </Can>
                             </Tooltip>
                           </td>
                         </tr>

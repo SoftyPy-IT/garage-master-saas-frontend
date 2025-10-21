@@ -37,8 +37,9 @@ import { deleteIconStyle, editIconStyle } from "../../style/tableStyle";
 import { useTenantDomain } from "../../hooks/useTenantDomain";
 import { useAccountSummaryQuery } from "../../redux/api/meta.api";
 import IncomeStatisticsCard from "./IncomeStatisticsCard";
+import { useAppOptions } from "../../hooks/useAppOptions";
+import Can from "../../components/Can";
 
-// Payment method icons
 const getPaymentMethodIcon = (method) => {
   switch (method.toLowerCase()) {
     case "cash":
@@ -63,9 +64,8 @@ const IncomeList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const limit = 15;
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain, performActionWithPermission } = useAppOptions()
   const { data: accountSummary } = useAccountSummaryQuery({ tenantDomain });
-
   const { data: allIncomes, isLoading: incomeLoading } = useGetAllIncomesQuery({
     tenantDomain,
     limit,
@@ -77,21 +77,25 @@ const IncomeList = () => {
     useDeleteIncomeMutation();
 
   const deletePackage = async (id) => {
-    const willDelete = await swal({
-      title: "Are you sure?",
-      text: "Are you sure that you want to delete this income record?",
-      icon: "warning",
-      dangerMode: true,
-    });
+    performActionWithPermission('/dashboard/income-list', 'delete',
+      async () => {
+        const willDelete = await swal({
+          title: "Are you sure?",
+          text: "Are you sure that you want to delete this income record?",
+          icon: "warning",
+          dangerMode: true,
+        });
 
-    if (willDelete) {
-      try {
-        await deleteIncome({ tenantDomain, id }).unwrap();
-        swal("Deleted!", "Income record deleted successfully.", "success");
-      } catch (error) {
-        swal("Error", "An error occurred while deleting the record.", "error");
-      }
-    }
+        if (willDelete) {
+          try {
+            await deleteIncome({ tenantDomain, id }).unwrap();
+            swal("Deleted!", "Income record deleted successfully.", "success");
+          } catch (error) {
+            swal("Error", "An error occurred while deleting the record.", "error");
+          }
+        }
+      }, "You don't have permission to delete income"
+    )
   };
 
   const handleSearch = (e) => {
@@ -107,9 +111,10 @@ const IncomeList = () => {
     <Box
       sx={{
         bgcolor: "white",
-        padding: 3,
+        padding: 0,
         borderRadius: 2,
         boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)",
+        paddingTop:1
       }}
     >
       <IncomeStatisticsCard accountSummary={accountSummary} />
@@ -119,6 +124,7 @@ const IncomeList = () => {
           alignItems: "center",
           justifyContent: "space-between",
           mb: 3,
+          mt:2
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -177,8 +183,8 @@ const IncomeList = () => {
         sx={{
           boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)",
           borderRadius: 2,
-          overflowX:"auto" 
-          
+          overflowX: "auto"
+
         }}
       >
         <Table sx={{ minWidth: 650 }} aria-label="income table">
@@ -273,7 +279,7 @@ const IncomeList = () => {
                           color: "#2980b9",
                         }}
                       >
-                     ৳
+                        ৳
                         {Number(row.totalAmount).toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
@@ -281,8 +287,8 @@ const IncomeList = () => {
                       </Typography>
 
                       <Box sx={{ mt: 0.5, fontSize: "0.75rem" }}>
-                       
-                      
+
+
                         <Box fontWeight="bold">
                           Total Income: ${row.totalOtherIncome}
                         </Box>
@@ -348,13 +354,15 @@ const IncomeList = () => {
 
                   <TableCell align="center">
                     <Box sx={{ display: "flex", justifyContent: "center" }}>
-                      <Link to={`/dashboard/update-income?id=${row?._id}`}>
-                        <Tooltip title="Edit">
-                          <Box sx={editIconStyle}>
-                            <Pencil size={18} />
-                          </Box>
-                        </Tooltip>
-                      </Link>
+                      <Can action="edit" page="/dashboard/income-list">
+                        <Link to={`/dashboard/update-income?id=${row?._id}`}>
+                          <Tooltip title="Edit">
+                            <Box sx={editIconStyle}>
+                              <Pencil size={18} />
+                            </Box>
+                          </Tooltip>
+                        </Link>
+                      </Can>
 
                       <Tooltip title="Delete">
                         <IconButton
@@ -363,7 +371,9 @@ const IncomeList = () => {
                           onClick={() => deletePackage(row?._id)}
                         >
                           <Box component="span" sx={deleteIconStyle}>
-                            <Trash2 size={18} />
+                            <Can action="delete" page="/dashboard/income-list">
+                              <Trash2 size={18} />
+                            </Can>
                           </Box>
                         </IconButton>
                       </Tooltip>

@@ -2,11 +2,9 @@
 
 import { ArrowBack } from "@mui/icons-material";
 import { Button } from "@mui/material";
-import { FaUserTie } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import ShowRoomListTable from "./ShowRoomListTable";
 import { backBtnStyle } from "../../../utils/customStyle";
-
 const ShowRoomList = () => {
   const navigate = useNavigate();
   const handleBack = () => {
@@ -24,7 +22,7 @@ const ShowRoomList = () => {
           >
             Back
           </Button>
-          <FaUserTie className="invoicIcon" />
+
         </div>
         <div className="productHome">
           <span>Dashboard / </span>

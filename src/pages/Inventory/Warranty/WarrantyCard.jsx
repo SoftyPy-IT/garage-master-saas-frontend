@@ -7,10 +7,11 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import InventoryIcon from "@mui/icons-material/Inventory";
 import { alpha } from "@mui/material/styles";
 import { ProductTooltip } from "./ProductTooltip";
+import Can from "../../../components/Can";
 
 export const WarrantyCard = ({ warranty, onEdit, onDelete }) => {
   const color = generateColor(warranty._id);
-  
+
   return (
     <Grid item xs={12} sm={6} md={3}>
       <Card
@@ -49,7 +50,7 @@ export const WarrantyCard = ({ warranty, onEdit, onDelete }) => {
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
             {warranty.description}
           </Typography>
-          
+
           {/* Duration Section */}
           <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
             <AccessTimeIcon fontSize="small" sx={{ mr: 1, color: color }} />
@@ -57,7 +58,7 @@ export const WarrantyCard = ({ warranty, onEdit, onDelete }) => {
               {formatDuration(warranty.duration, warranty.durationType)}
             </Typography>
           </Box>
-          
+
           {/* Products Section with Tooltip */}
           <Tooltip
             title={<ProductTooltip products={warranty.products} />}
@@ -67,10 +68,10 @@ export const WarrantyCard = ({ warranty, onEdit, onDelete }) => {
             enterDelay={0}
             leaveDelay={200}
           >
-            <Box 
-              sx={{ 
-                display: "flex", 
-                alignItems: "center", 
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
                 mb: 1,
                 cursor: 'pointer',
                 '&:hover': {
@@ -85,16 +86,16 @@ export const WarrantyCard = ({ warranty, onEdit, onDelete }) => {
               </Typography>
             </Box>
           </Tooltip>
-          
+
           <Divider sx={{ my: 1 }} />
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2, fontSize: '0.8rem' }}>
             Terms: {warranty.terms}
           </Typography>
           <Box sx={{ display: "flex", justifyContent: "space-between", pt: 1 }}>
-            <IconButton 
-              size="small" 
+            <IconButton
+              size="small"
               onClick={() => onEdit(warranty)}
-              sx={{ 
+              sx={{
                 color: color,
                 "&:hover": {
                   backgroundColor: alpha(color, 0.1),
@@ -103,18 +104,20 @@ export const WarrantyCard = ({ warranty, onEdit, onDelete }) => {
             >
               <EditIcon fontSize="small" />
             </IconButton>
-            <IconButton 
-              size="small" 
-              onClick={() => onDelete(warranty._id)}
-              sx={{ 
-                color: "#d32f2f",
-                "&:hover": {
-                  backgroundColor: alpha("#d32f2f", 0.1),
-                }
-              }}
-            >
-              <DeleteIcon fontSize="small" />
-            </IconButton>
+            <Can page='/dashboard/warranties' action='delete'>
+              <IconButton
+                size="small"
+                onClick={() => onDelete(warranty._id)}
+                sx={{
+                  color: "#d32f2f",
+                  "&:hover": {
+                    backgroundColor: alpha("#d32f2f", 0.1),
+                  }
+                }}
+              >
+                <DeleteIcon fontSize="small" />
+              </IconButton>
+            </Can>
           </Box>
         </CardContent>
       </Card>

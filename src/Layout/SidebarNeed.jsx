@@ -76,7 +76,7 @@
 //     title: 'Job Management',
 //     icon: <AssignmentIcon />,
 //     children: [
-//       { path: '/dashboard/addjob', title: 'Add Job Card', permission: 'create' },
+//       { path: '/dashboard/create-job-card', title: 'Add Job Card', permission: 'create' },
 //       { path: '/dashboard/jobcard-list', title: 'Job Card List', permission: 'view' },
 //       { path: '/dashboard/update-jobcard', title: 'Update Job Card', permission: 'edit' },
 //       { path: '/dashboard/preview', title: 'Preview Job Card', permission: 'view' },
@@ -86,7 +86,7 @@
 //     title: 'Quotations',
 //     icon: <ReceiptIcon />,
 //     children: [
-//       { path: '/dashboard/qutation', title: 'Create Quotation', permission: 'create' },
+//       { path: '/dashboard/create-quotation', title: 'Create Quotation', permission: 'create' },
 //       { path: '/dashboard/quotation-list', title: 'Quotation List', permission: 'view' },
 //       { path: '/dashboard/update-quotation', title: 'Update Quotation', permission: 'edit' },
 //       { path: '/dashboard/quotation-view', title: 'Quotation View', permission: 'view' },
@@ -96,8 +96,8 @@
 //     title: 'Invoices',
 //     icon: <ReceiptIcon />,
 //     children: [
-//       { path: '/dashboard/invoice', title: 'Create Invoice', permission: 'create' },
-//       { path: '/dashboard/invoice-list', title: 'Invoice List', permission: 'view' },
+//       { path: '/dashboard/create-invoice', title: 'Create Invoice', permission: 'create' },
+//       { path: '/dashboard/create-invoice-list', title: 'Invoice List', permission: 'view' },
 //       { path: '/dashboard/update-invoice', title: 'Update Invoice', permission: 'edit' },
 //       { path: '/dashboard/detail', title: 'Invoice Detail', permission: 'view' },
 //     ]
@@ -106,7 +106,7 @@
 //     title: 'Money Receipts',
 //     icon: <MoneyIcon />,
 //     children: [
-//       { path: '/dashboard/money-receive', title: 'Create Money Receipt', permission: 'create' },
+//       { path: '/dashboard/money-receive-create', title: 'Create Money Receipt', permission: 'create' },
 //       { path: '/dashboard/money-receipt-list', title: 'Money Receipt List', permission: 'view' },
 //       { path: '/dashboard/money-receipt-update', title: 'Update Money Receipt', permission: 'edit' },
 //       { path: '/dashboard/money-receipt-view', title: 'Money Receipt View', permission: 'view' },
@@ -171,8 +171,8 @@
 //       { path: '/dashboard/update-expense', title: 'Update Expense', permission: 'edit' },
 //       { path: '/dashboard/view-expense', title: 'View Expense', permission: 'view' },
 //       { path: '/dashboard/expense-categories', title: 'Expense Categories', permission: 'view' },
-//       { path: '/dashboard/donation', title: 'Donations', permission: 'view' },
-//       { path: '/dashboard/donation-list', title: 'Donation List', permission: 'view' },
+//       { path: '/create-donation', title: 'Donations', permission: 'view' },
+//       { path: '/create-donation-list', title: 'Donation List', permission: 'view' },
 //       { path: '/dashboard/update-donation', title: 'Update Donation', permission: 'edit' },
 //     ]
 //   },

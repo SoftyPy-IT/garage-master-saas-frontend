@@ -5,7 +5,7 @@ import { BreadcrumbNavigation } from "./BreadcrumbNavigation";
 import { PageHeader } from "./PageHeader";
 import { WarrantyCard } from "./WarrantyCard";
 import { useWarranties } from "../../../hooks/useWarranties";
-import CreateWarrantyModal from "../WarrandyModal";
+import WarrantyModal from "./WarrantyModal";
 
 export default function WarrantiesPage() {
   const theme = useTheme();
@@ -47,7 +47,7 @@ export default function WarrantiesPage() {
           0.1
         )}, ${alpha(theme.palette.background.default, 0.1)})`,
         minHeight: "100vh",
-        p: 3,
+        p: 1,
       }}
     >
       <BreadcrumbNavigation />
@@ -68,7 +68,7 @@ export default function WarrantiesPage() {
         ))}
       </Grid>
 
-      <CreateWarrantyModal
+      <WarrantyModal
         open={openModal}
         onClose={handleCloseModal}
         editingWarranty={editingWarranty}

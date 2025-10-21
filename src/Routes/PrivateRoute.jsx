@@ -1,89 +1,40 @@
-/* eslint-disable react/no-unescaped-entities */
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-// src/components/ProtectedRoute.js
+import { Box, CircularProgress } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { usePermissions } from "../context/PermissionContext";
+import AccessDenied from "../components/AccessDenied";
+import { useAuth } from "../hooks/useAuth";
+import { useDispatch } from "react-redux";
+import { logout } from "../redux/feature/authSlice";
 
-import { usePermissions } from '../context/PermissionContext';
-import {
-  Box,
-  Typography,
-  Button,
-  CircularProgress
-} from '@mui/material';
+const ProtectedRoute = ({ children, pagePath, action = "view" }) => {
+  const { checkPermission, loading: permissionsLoading, user } = usePermissions();
+  const { loading: authLoading } = useAuth();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-const ProtectedRoute = ({ children, pagePath, action = 'view' }) => {
-  const { checkPermission, loading, permissions } = usePermissions();
-
-  if (loading) {
+  // Wait until auth & permissions are fully loaded
+  if (authLoading || permissionsLoading) {
     return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        height="100vh"
-      >
+      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
         <CircularProgress size={60} />
       </Box>
     );
   }
 
-  // check permission
-  const hasPermission = checkPermission(pagePath, action);
-  console.log('ProtectedRoute - hasPermission:', hasPermission);
+  // if (!user?.accessToken || !user?.refreshToken) {
+  //   dispatch(logout());
+  //   navigate("/login", { replace: true });
+  //   return null;
+  // }
 
-  if (!hasPermission) {
-    if (permissions && Array.isArray(permissions)) {
-      permissions.forEach((p, i) => {
-        console.log(`Permission ${i}:`, {
-          path: p.page?.path || p.path || p.route,
-          view: p.view,
-          edit: p.edit,
-          create: p.create,
-          delete: p.delete
-        });
-      });
-    }
+  const hasAccess = checkPermission(pagePath, action);
 
-    return (
-      <Box
-        display="flex"
-        flexDirection="column"
-        justifyContent="center"
-        alignItems="center"
-        height="100vh"
-        textAlign="center"
-        p={3}
-      >
-        <Typography variant="h4" gutterBottom>
-          Access Denied
-        </Typography>
-        <Typography variant="body1" color="textSecondary" paragraph>
-          You don't have permission to view this page.
-        </Typography>
-        <Typography variant="body2" color="textSecondary" paragraph>
-          Required permission: {action} for {pagePath}
-        </Typography>
-        <Typography variant="body2" color="textSecondary" paragraph>
-          Available permissions are logged in the console.
-        </Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => window.history.back()}
-          sx={{ mr: 2 }}
-        >
-          Go Back
-        </Button>
-        <Button
-          variant="outlined"
-          onClick={() => window.location.href = '/dashboard'}
-        >
-          Dashboard
-        </Button>
-      </Box>
-    );
-  }
+  if (!hasAccess) return <AccessDenied pagePath={pagePath} />;
 
   return children;
 };
+
 
 export default ProtectedRoute;

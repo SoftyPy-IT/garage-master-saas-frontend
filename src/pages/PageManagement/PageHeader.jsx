@@ -17,6 +17,8 @@ import {
 
 const PageHeader = ({ pageData }) => {
   const theme = useTheme();
+  const activePages = pageData?.data?.filter(page => page.status === "active")?.length || 0;
+  const inactivePages = pageData?.data?.filter(page => page.status === "inactive")?.length || 0;
 
   return (
     <>
@@ -45,7 +47,7 @@ const PageHeader = ({ pageData }) => {
               </Avatar>
               <Box>
                 <Typography variant="h4" fontWeight="bold">
-                  {pageData?.data?.length}
+                  {pageData?.data?.length || 0}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   Total Pages
@@ -69,7 +71,7 @@ const PageHeader = ({ pageData }) => {
               </Avatar>
               <Box>
                 <Typography variant="h4" fontWeight="bold">
-                  4
+                  {activePages}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   Active Pages
@@ -93,7 +95,7 @@ const PageHeader = ({ pageData }) => {
               </Avatar>
               <Box>
                 <Typography variant="h4" fontWeight="bold">
-                  4
+                  {inactivePages}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   Inactive Pages

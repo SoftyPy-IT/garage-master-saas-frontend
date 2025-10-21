@@ -47,7 +47,6 @@ import {
   useMediaQuery,
   Stack,
 } from "@mui/material";
-import { styled } from "@mui/material/styles";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import SearchIcon from "@mui/icons-material/Search";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -77,10 +76,6 @@ import {
 } from "../../redux/api/productApi";
 import { AnimatedChip, GlassCard, GradientBreadcrumbs, GradientButton, StyledDialogTitle, StyledTableHead, StyledTableRow } from "../../utils/customStyle";
 import { useTenantDomain } from "../../hooks/useTenantDomain";
-
-// Styled components for enhanced UI
-
-
 export default function ExpiredProductsPage() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -109,25 +104,21 @@ export default function ExpiredProductsPage() {
   const [disposalSuccess, setDisposalSuccess] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
-const tenantDomain = useTenantDomain();
+  const { tenantDomain } = useTenantDomain();
 
-  // Query parameters for API
   const queryParams = {
     tenantDomain,
     page: currentPage,
     searchTerm: search,
     limit: 100,
   };
-
-  // Fetch products from API
   const {
     data: productData,
     isLoading,
     refetch,
   } = useGetAllIProductQuery(queryParams);
   const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation();
- 
-  // Process products to add expiry status
+
   const processedProducts = useMemo(() => {
     if (!productData?.data?.products) return [];
 
@@ -136,27 +127,21 @@ const tenantDomain = useTenantDomain();
 
     return productData.data.products
       .map((product) => {
-        // Check if product has expiry date
         if (!product.expiryDate) return null;
 
         const expiryDate = new Date(product.expiryDate);
         const timeDiff = expiryDate.getTime() - today.getTime();
         const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-
-        // Determine status based on days difference
         let status = "active";
         let daysExpired = 0;
 
         if (daysDiff < 0) {
-          // Product is expired
           status = "expired";
           daysExpired = Math.abs(daysDiff);
         } else if (daysDiff <= (product.expiryAlertDays || alertDays)) {
-          // Product is expiring soon
           status = "expiring-soon";
           daysExpired = daysDiff;
         } else {
-          // Product is not expired or expiring soon
           return null;
         }
 
@@ -185,8 +170,6 @@ const tenantDomain = useTenantDomain();
       })
       .filter(Boolean);
   }, [productData]);
-
-  // Handle refresh
   const handleRefresh = () => {
     setRefreshing(true);
     refetch().then(() => {
@@ -872,14 +855,14 @@ const tenantDomain = useTenantDomain();
                 Filter
                 {(selectedBrands.length > 0 ||
                   selectedCategories.length > 0) && (
-                  <Badge
-                    badgeContent={
-                      selectedBrands.length + selectedCategories.length
-                    }
-                    color="primary"
-                    sx={{ ml: 1 }}
-                  />
-                )}
+                    <Badge
+                      badgeContent={
+                        selectedBrands.length + selectedCategories.length
+                      }
+                      color="primary"
+                      sx={{ ml: 1 }}
+                    />
+                  )}
               </Button>
 
               <Button

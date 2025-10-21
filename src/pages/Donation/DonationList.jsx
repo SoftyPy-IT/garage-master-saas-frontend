@@ -25,14 +25,15 @@ import {
   useDeleteDonationMutation,
   useGetAllDonationQuery,
 } from "../../redux/api/donationApi";
-import { useTenantDomain } from "../../hooks/useTenantDomain";
 import Loading from "../../components/Loading/Loading";
 import { useAccountSummaryQuery } from "../../redux/api/meta.api";
 import DonationStatisticCard from "./DonationStatisticCard";
+import { useAppOptions } from "../../hooks/useAppOptions";
+import Can from "../../components/Can";
 
 const DonationList = () => {
   const theme = useTheme();
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain, performActionWithPermission } = useAppOptions();
   const [deleteDonation, { isLoading: isDeleting }] =
     useDeleteDonationMutation();
 
@@ -41,27 +42,32 @@ const DonationList = () => {
   const { data: accountSummary } = useAccountSummaryQuery({ tenantDomain });
 
   const handleDelete = async (id) => {
-    const willDelete = await swal({
-      title: "Are you sure?",
-      text: "Are you sure that you want to delete this donation?",
-      icon: "warning",
-      dangerMode: true,
-      buttons: ["Cancel", "Delete"],
-    });
+    performActionWithPermission('/dashboard/donation-list', 'delete',
+      async () => {
+        const willDelete = await swal({
+          title: "Are you sure?",
+          text: "Are you sure that you want to delete this donation?",
+          icon: "warning",
+          dangerMode: true,
+          buttons: ["Cancel", "Delete"],
+        });
 
-    if (willDelete) {
-      try {
-        await deleteDonation({ id, tenantDomain }).unwrap();
-        swal("Deleted!", "Donation deleted successfully.", "success");
-      } catch (error) {
-        swal(
-          "Error",
-          "An error occurred while deleting the donation.",
-          "error"
-        );
-      }
-    }
-  };
+        if (willDelete) {
+          try {
+            await deleteDonation({ id, tenantDomain }).unwrap();
+            swal("Deleted!", "Donation deleted successfully.", "success");
+          } catch (error) {
+            swal(
+              "Error",
+              "An error occurred while deleting the donation.",
+              "error"
+            );
+          }
+        }
+      }, "Are you sure you want to delete this donation? This action cannot be undone"
+    )
+  }
+
 
   if (donationLoading) {
     return <Loading />;
@@ -174,41 +180,45 @@ const DonationList = () => {
                         gap: 0.5,
                       }}
                     >
-                      <IconButton
-                        title="Edit"
-                        size="small"
-                        component={Link}
-                        to={`/dashboard/update-donation?id=${data?._id}`}
-                        sx={{
-                          backgroundColor: alpha(theme.palette.info.main, 0.1),
-                          "&:hover": {
-                            backgroundColor: alpha(
-                              theme.palette.info.main,
-                              0.2
-                            ),
-                          },
-                        }}
-                      >
-                        <EditIcon fontSize="small" />
-                      </IconButton>
-                      <IconButton
-                        onClick={() => handleDelete(data._id)}
-                        disabled={isDeleting}
-                        title="Delete"
-                        size="small"
-                        sx={{
-                          backgroundColor: alpha(theme.palette.error.main, 0.1),
-                          "&:hover": {
-                            backgroundColor: alpha(
-                              theme.palette.error.main,
-                              0.2
-                            ),
-                          },
-                          "&:disabled": { opacity: 0.5 },
-                        }}
-                      >
-                        <DeleteIcon fontSize="small" className="text-red-600" />
-                      </IconButton>
+                      <Can page='/dashboard/donation-list' action='edit'>
+                        <IconButton
+                          title="Edit"
+                          size="small"
+                          component={Link}
+                          to={`/dashboard/update-donation?id=${data?._id}`}
+                          sx={{
+                            backgroundColor: alpha(theme.palette.info.main, 0.1),
+                            "&:hover": {
+                              backgroundColor: alpha(
+                                theme.palette.info.main,
+                                0.2
+                              ),
+                            },
+                          }}
+                        >
+                          <EditIcon fontSize="small" />
+                        </IconButton>
+                      </Can>
+                      <Can page='/dashboard/donation-list' action='delete'>
+                        <IconButton
+                          onClick={() => handleDelete(data._id)}
+                          disabled={isDeleting}
+                          title="Delete"
+                          size="small"
+                          sx={{
+                            backgroundColor: alpha(theme.palette.error.main, 0.1),
+                            "&:hover": {
+                              backgroundColor: alpha(
+                                theme.palette.error.main,
+                                0.2
+                              ),
+                            },
+                            "&:disabled": { opacity: 0.5 },
+                          }}
+                        >
+                          <DeleteIcon fontSize="small" className="text-red-600" />
+                        </IconButton>
+                      </Can>
                     </Box>
                   </TableCell>
                 </TableRow>

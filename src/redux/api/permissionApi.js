@@ -20,6 +20,23 @@ const permissionApi = baseApi.injectEndpoints({
       providesTags: ["permission"],
     }),
 
+    getAllUserPermissions: builder.query({
+      query: ({ tenantDomain, limit, page, sortBy, sortOrder, role, user, searchTerm }) => ({
+        url: "/permission/user-permissions",
+        method: "GET",
+        params: {
+          tenantDomain,
+          limit,
+          page,
+          sortBy,
+          sortOrder,
+          role,
+          user,
+          searchTerm
+        },
+      }),
+      providesTags: ["permission"],
+    }),
     getSinglePermission: builder.query({
       query: ({ tenantDomain, id }) => ({
         url: `/permission/single/${id}`,
@@ -42,17 +59,37 @@ const permissionApi = baseApi.injectEndpoints({
       query: ({ tenantDomain, permissionUpdates }) => ({
         url: `/permission/batch-update?tenantDomain=${tenantDomain}`,
         method: 'PATCH',
-        body: { permissionUpdates },
+        body: permissionUpdates,
       }),
       invalidatesTags: ['Permission'],
     }),
+
+    createMultiplePermissions: builder.mutation({
+      query: ({ tenantDomain, permissionData }) => ({
+        url: `/permission/batch-create?tenantDomain=${tenantDomain}`,
+        method: 'POST',
+        body: permissionData,
+      }),
+      invalidatesTags: ['Permission'],
+    }),
+
+
     deletePermission: builder.mutation({
       query: ({ userId, tenantDomain, id }) => ({
-        url: `/permission/${userId}/${id}`,
-        method: "DELETE",
+        url: `/permission/user/${userId}/${id}`,
+        method: 'DELETE',
         params: { tenantDomain },
       }),
-      invalidatesTags: ["permission"],
+      invalidatesTags: ['Permission'],
+    }),
+    deleteMultiplePermissions: builder.mutation({
+      query: ({ userId, tenantDomain, permissionIds }) => ({
+        url: `/permission/user/${userId}/batch-delete`,
+        method: 'POST',
+        params: { tenantDomain },
+        body: { permissionIds },
+      }),
+      invalidatesTags: ['Permission'],
     }),
 
   }),
@@ -64,5 +101,8 @@ export const {
   useGetSinglePermissionQuery,
   useUpdatePermissionMutation,
   useDeletePermissionMutation,
-  useUpdateMultiplePermissionsMutation
+  useUpdateMultiplePermissionsMutation,
+  useCreateMultiplePermissionsMutation,
+  useGetAllUserPermissionsQuery,
+  useDeleteMultiplePermissionsMutation
 } = permissionApi;

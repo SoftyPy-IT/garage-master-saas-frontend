@@ -1,21 +1,16 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
-import { FaRegUser } from "react-icons/fa";
 import {
-  HiOutlineArrowNarrowRight,
   HiOutlineCheckCircle,
 } from "react-icons/hi";
-import { Link } from "react-router-dom";
 import { CircularProgressbar } from "react-circular-progressbar";
 import { useGetAllEmployeesQuery } from "../../../redux/api/employee";
 import Loading from "../../../components/Loading/Loading";
-import { useTenantDomain } from "../../../hooks/useTenantDomain";
 import DashboardLeave from "./DashboardLeave";
 
-const EmployeeStatistics = () => {
-  const tenantDomain = useTenantDomain();
+const EmployeeStatistics = ({ tenantDomain }) => {
   const {
     data: employeeData,
-    error,
     isLoading,
   } = useGetAllEmployeesQuery({
     tenantDomain,
@@ -33,7 +28,6 @@ const EmployeeStatistics = () => {
     (employee) => employee.status === "Active"
   );
   const activeEmployeeCount = activeEmployees?.length;
-  // calculate active employee percentage
   const activeEmployeePercentage =
     totalEmployee > 0 ? (activeEmployeeCount / totalEmployee) * 100 : 0;
 
@@ -112,7 +106,7 @@ const EmployeeStatistics = () => {
       <div className=" xl:flex gap-5  justify-between sectionMargin  mb-10 ">
         <div className="earningCardWrap ">
           <p className="mb-3 font-semibold">Employee Statistic</p>
-            <div className="grid grid-cols-1 md:grid-cols-2 justify-between gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 justify-between gap-3">
             <div className="flex items-center w-50 justify-between  earningCard">
               <div>
                 <div style={{ width: 60, height: 60 }}>

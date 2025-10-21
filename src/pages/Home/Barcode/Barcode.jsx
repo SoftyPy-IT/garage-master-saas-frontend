@@ -2,6 +2,7 @@ import { Box } from "@mui/material";
 import BarcodeForm from "./BarcodeForm";
 import BarcodeTable from "./BarcodeTable";
 const Barcode = () => {
+
   return (
     <div className="py-10">
       <div className="ml-5">
@@ -14,23 +15,23 @@ const Barcode = () => {
             <BarcodeForm />
           </div>
           <Box
-          sx={{
-            width: "100%", 
-            overflow: "auto", 
-            "& .MuiDataGrid-root": {
-              minWidth: "800px", 
-            },
-            "& .MuiDataGrid-columnHeaders": {
-              position: "sticky",
-              top: 0,
-              zIndex: 1,
-              backgroundColor: "white",
-            },
-            "& .MuiDataGrid-virtualScroller": {
-              overflow: "visible",
-            },
-          }}
-        >
+            sx={{
+              width: "100%",
+              overflow: "auto",
+              "& .MuiDataGrid-root": {
+                minWidth: "800px",
+              },
+              "& .MuiDataGrid-columnHeaders": {
+                position: "sticky",
+                top: 0,
+                zIndex: 1,
+                backgroundColor: "white",
+              },
+              "& .MuiDataGrid-virtualScroller": {
+                overflow: "visible",
+              },
+            }}
+          >
             <BarcodeTable />
           </Box>
         </div>

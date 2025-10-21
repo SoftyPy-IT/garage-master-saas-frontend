@@ -293,7 +293,7 @@ export default function QuantityAdjustment() {
   ];
 
   return (
-    <Box sx={{ padding: "20px" }}>
+    <Box sx={{ }}>
       {/* Header Section */}
       <Paper
         elevation={0}
@@ -348,7 +348,7 @@ export default function QuantityAdjustment() {
         {/* Search and Filter Bar */}
         <Box
           sx={{
-            p: 2,
+            p: 1,
             bgcolor: "#f8f9fa",
             borderBottom: "1px solid #e0e0e0",
           }}

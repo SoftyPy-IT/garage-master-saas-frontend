@@ -10,8 +10,8 @@ import "./Employee.css";
 import { useGetAllEmployeesQuery } from "../../../redux/api/employee";
 import {
   useCreateSalaryMutation,
-  useUpateSalaryMutation,
   useGetSalaryByMonthQuery,
+  useUpdateSalaryMutation,
 } from "../../../redux/api/salary";
 import {
   Box,
@@ -56,8 +56,8 @@ import {
 } from "@mui/icons-material";
 import { allMonths } from "../../../utils/month";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useTenantDomain } from "../../../hooks/useTenantDomain";
 import Loading from "../../../components/Loading/Loading";
+import Can from "../../../components/Can";
 
 // Constants
 const years = [{ value: "Select Year", label: "Select Year" }];
@@ -68,11 +68,10 @@ for (let year = 2024; year <= 2030; year++) {
 const initialSelectedOption = allMonths[new Date().getMonth()];
 const currentYear = new Date().getFullYear().toString();
 
-const EmployeeSalaryForm = ({ id }) => {
+const EmployeeSalaryForm = ({ id, performActionWithPermission, tenantDomain }) => {
   const location = useLocation();
   const month = new URLSearchParams(location.search).get("month");
 
-  const tenantDomain = useTenantDomain();
   const theme = useTheme();
   const [currentPage, setCurrentPage] = useState(1);
   const [filterType, setFilterType] = useState(initialSelectedOption);
@@ -80,7 +79,6 @@ const EmployeeSalaryForm = ({ id }) => {
 
   const navigate = useNavigate();
   const isEditMode = Boolean(id);
-
   // New state for employee filtering
   const [selectedEmployees, setSelectedEmployees] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -93,14 +91,14 @@ const EmployeeSalaryForm = ({ id }) => {
       searchTerm: searchTerm,
     });
 
+  console.log('all employe', getAllEmployee);
+
   const { data: singleSalary, isLoading: singleSalaryLoading } =
     useGetSalaryByMonthQuery({ tenantDomain, month });
 
   const [createSalary, { isLoading: createLoading, error: createError }] =
     useCreateSalaryMutation();
-  const [updateSalary, { isLoading: updateLoading, error: updateError }] =
-    useUpateSalaryMutation();
-
+  const [updateSalary, { isLoading: updateLoading, error: updateError }] = useUpdateSalaryMutation();
   const [selectedOption, setSelectedOption] = useState([]);
   const [selectedYear, setSelectedYear] = useState([]);
   const [bonus, setBonus] = useState([]);
@@ -328,7 +326,6 @@ const EmployeeSalaryForm = ({ id }) => {
       salaryCut[originalIndex]
     );
   };
-
   const handleOvertimeAmount = (employee, value) => {
     const originalIndex = getOriginalEmployeeIndex(employee);
     const newOvertimeAmount = [...overtimeAmount];
@@ -343,7 +340,6 @@ const EmployeeSalaryForm = ({ id }) => {
       salaryCut[originalIndex]
     );
   };
-
   const handleSalaryAmount = (employee, value) => {
     const originalIndex = getOriginalEmployeeIndex(employee);
     const newSalaryAmount = [...salaryAmount];
@@ -358,7 +354,6 @@ const EmployeeSalaryForm = ({ id }) => {
       salaryCut[originalIndex]
     );
   };
-
   const handleSalaryCut = (employee, value) => {
     const originalIndex = getOriginalEmployeeIndex(employee);
     const newSalaryCut = [...salaryCut];
@@ -413,7 +408,6 @@ const EmployeeSalaryForm = ({ id }) => {
       pay[originalIndex]
     );
   };
-
   const handlePay = (employee, value) => {
     const originalIndex = getOriginalEmployeeIndex(employee);
     const newPay = [...pay];
@@ -426,7 +420,6 @@ const EmployeeSalaryForm = ({ id }) => {
       newPay[originalIndex]
     );
   };
-
   const updateDue = (index, totalPaymentVal, advanceVal, payVal) => {
     const newDue = [...due];
     newDue[index] = totalPaymentVal - (advanceVal + payVal);
@@ -435,19 +428,22 @@ const EmployeeSalaryForm = ({ id }) => {
     newPaid[index] = newDue[index] <= 0;
     setPaid(newPaid);
   };
-
   const getPaymentStatus = (totalPayment, paidAmount) => {
     if (paidAmount <= 0) return "pending";
     if (paidAmount >= totalPayment) return "completed";
     return "partial";
   };
-
   const handleSubmitSalary = async () => {
-    if (isEditMode) {
-      await handleUpdateAllSalaries();
-    } else {
-      await handleCreateSalary();
-    }
+    performActionWithPermission("/dashboard/employee-salary", isEditMode ? "edit" : "create",
+      async () => {
+        if (isEditMode) {
+          await handleUpdateAllSalaries();
+        } else {
+          await handleCreateSalary();
+        }
+
+      }, `You don't have permission to ${isEditMode ? 'edit' : 'create'} salary`
+    );
   };
 
   const handleOvertimeHours = (employee, value) => {
@@ -746,12 +742,12 @@ const EmployeeSalaryForm = ({ id }) => {
   };
 
   return (
-    <Container maxWidth="7xl">
-      <Box sx={{ pt: 4, pb: 8 }}>
+    <Container maxWidth="7xl" sx={{p:0}}>
+      <Box sx={{ pt: 4, pb: 8, }}>
         <Paper
           elevation={3}
           sx={{
-            p: 3,
+            p: { xs: 1.5, md: 3 },
             mb: 4,
             borderRadius: 2,
             background: `linear-gradient(135deg, ${theme.palette.primary.light}15, ${theme.palette.background.paper})`,
@@ -1387,31 +1383,33 @@ const EmployeeSalaryForm = ({ id }) => {
         </Card>
 
         <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-          <Button
-            variant="contained"
-            color={isEditMode ? "warning" : "primary"}
-            size="large"
-            disabled={createLoading || updateLoading}
-            onClick={handleSubmitSalary}
-            startIcon={isEditMode ? <Edit /> : <Save />}
-            sx={{
-              px: 4,
-              py: 1.5,
-              borderRadius: 2,
-              boxShadow: 3,
-            }}
-          >
-            {createLoading || updateLoading
-              ? isEditMode
-                ? "Updating..."
-                : "Submitting..."
-              : isEditMode
-                ? "Update All Salaries"
-                : `Submit Salary ${selectedEmployees.length > 0
-                  ? `(${selectedEmployees.length} employees)`
-                  : ""
-                }`}
-          </Button>
+          <Can page='/dashboard/employee-salary' action={isEditMode ? "edit" : "add"}>
+            <Button
+              variant="contained"
+              color={isEditMode ? "warning" : "primary"}
+              size="large"
+              disabled={createLoading || updateLoading}
+              onClick={handleSubmitSalary}
+              startIcon={isEditMode ? <Edit /> : <Save />}
+              sx={{
+                px: 4,
+                py: 1.5,
+                borderRadius: 2,
+                boxShadow: 3,
+              }}
+            >
+              {createLoading || updateLoading
+                ? isEditMode
+                  ? "Updating..."
+                  : "Submitting..."
+                : isEditMode
+                  ? "Update All Salaries"
+                  : `Submit Salary ${selectedEmployees.length > 0
+                    ? `(${selectedEmployees.length} employees)`
+                    : ""
+                  }`}
+            </Button>
+          </Can>
         </Box>
       </Box>
     </Container>

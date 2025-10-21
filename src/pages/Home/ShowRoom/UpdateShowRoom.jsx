@@ -16,7 +16,6 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import InputMask from "react-input-mask";
 import { toast } from "react-toastify";
-import { HiOfficeBuilding } from "react-icons/hi";
 import { ArrowBack } from "@mui/icons-material";
 import {
   useGetSingleShowRoomQuery,
@@ -24,6 +23,8 @@ import {
 } from "../../../redux/api/showRoomApi";
 import Loading from "../../../components/Loading/Loading";
 import { useTenantDomain } from "../../../hooks/useTenantDomain";
+import { usePermissions } from "../../../context/PermissionContext";
+import Can from "../../../components/Can";
 
 const UpdateShowRoom = () => {
   const location = useLocation();
@@ -35,12 +36,13 @@ const UpdateShowRoom = () => {
   const [driverCountryCode, setDriverCountryCode] = useState(countries[0]);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [driverPhoneNumber, setDriverPhoneNumber] = useState("");
+  const { performActionWithPermission } = usePermissions();
 
   const [filteredOptions, setFilteredOptions] = useState([]);
   const [yearSelectInput, setYearSelectInput] = useState("");
   const [filteredVehicles, setFilteredVehicles] = useState([]);
   const [getDataWithChassisNo, setGetDataWithChassisNo] = useState({});
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain } = useTenantDomain();
 
   const handlePhoneNumberChange = (e) => {
     const newPhoneNumber = e.target.value;
@@ -73,8 +75,8 @@ const UpdateShowRoom = () => {
     isLoading,
     refetch,
   } = useGetSingleShowRoomQuery({ tenantDomain, id });
-  const [updateShowroom, { isLoading: updateLoading, error }] =
-    useUpdateShowRoomMutation();
+  const [updateShowroom, { isLoading: updateLoading }] =
+    useUpdateShowRoomMutation()
 
   const { register, handleSubmit, reset } = useForm();
 
@@ -125,80 +127,85 @@ const UpdateShowRoom = () => {
   ]);
 
   const onSubmit = async (data) => {
-    const toastId = toast.loading("Updating Customer...");
+    performActionWithPermission('/dashboard/update-show-room', 'edit',
+      async () => {
+        const toastId = toast.loading("Updating showroom...");
 
-    const showroom = {
-      showRoom_name: data.showRoom_name,
-      vehicle_username: data.vehicle_username,
-      showRoom_address: data.showRoom_address,
-      company_name: data.company_name,
-      company_contact: data.company_contact,
-      company_country_code: countryCode.code,
-      company_email: data.company_email,
-      company_address: data.company_address,
-      driver_name: data.driver_name,
-      whatsappNumber: data.whatsappNumber,
-      driver_contact: data.driver_contact,
-      driver_country_code: driverCountryCode.code,
-      reference_name: data.reference_name,
-    };
-    data.vehicle_model = Number(data.vehicle_model);
-    data.mileage = Number(data.mileage);
-    const newMileageValue = Number(data.mileage);
+        const showroom = {
+          showRoom_name: data.showRoom_name,
+          vehicle_username: data.vehicle_username,
+          showRoom_address: data.showRoom_address,
+          company_name: data.company_name,
+          company_contact: data.company_contact,
+          company_country_code: countryCode.code,
+          company_email: data.company_email,
+          company_address: data.company_address,
+          driver_name: data.driver_name,
+          whatsappNumber: data.whatsappNumber,
+          driver_contact: data.driver_contact,
+          driver_country_code: driverCountryCode.code,
+          reference_name: data.reference_name,
+        };
+        data.vehicle_model = Number(data.vehicle_model);
+        data.mileage = Number(data.mileage);
+        const newMileageValue = Number(data.mileage);
 
-    const updatedMileageHistory = [
-      ...(getDataWithChassisNo.mileageHistory || []),
-    ];
+        const updatedMileageHistory = [
+          ...(getDataWithChassisNo.mileageHistory || []),
+        ];
 
-    if (!isNaN(newMileageValue) && newMileageValue > 0) {
-      const mileageExists = updatedMileageHistory.some(
-        (entry) => entry.mileage === newMileageValue
-      );
+        if (!isNaN(newMileageValue) && newMileageValue > 0) {
+          const mileageExists = updatedMileageHistory.some(
+            (entry) => entry.mileage === newMileageValue
+          );
 
-      if (!mileageExists) {
-        updatedMileageHistory.push({
-          mileage: newMileageValue,
-          date: new Date().toISOString(),
-        });
-      }
-    }
-    const vehicle = {
-      carReg_no: data.carReg_no,
-      car_registration_no: data.car_registration_no,
-      chassis_no: data.chassis_no,
-      engine_no: data.engine_no,
-      vehicle_brand: data.vehicle_brand,
-      vehicle_name: data.vehicle_name,
-      vehicle_model: data.vehicle_model,
-      vehicle_category: data.vehicle_category,
-      color_code: data.color_code,
-      mileageHistory: updatedMileageHistory,
-      fuel_type: data.fuel_type,
-    };
+          if (!mileageExists) {
+            updatedMileageHistory.push({
+              mileage: newMileageValue,
+              date: new Date().toISOString(),
+            });
+          }
+        }
+        const vehicle = {
+          carReg_no: data.carReg_no,
+          car_registration_no: data.car_registration_no,
+          chassis_no: data.chassis_no,
+          engine_no: data.engine_no,
+          vehicle_brand: data.vehicle_brand,
+          vehicle_name: data.vehicle_name,
+          vehicle_model: data.vehicle_model,
+          vehicle_category: data.vehicle_category,
+          color_code: data.color_code,
+          mileageHistory: updatedMileageHistory,
+          fuel_type: data.fuel_type,
+        };
 
-    const newData = {
-      showroom,
-      vehicle,
-    };
+        const newData = {
+          showroom,
+          vehicle,
+        };
 
-    const updateData = {
-      tenantDomain,
-      ...newData,
-    };
+        const updateData = {
+          tenantDomain,
+          ...newData,
+        };
 
-    try {
-      const res = await updateShowroom({ id: id, data: updateData }).unwrap();
-      if (res.success) {
-        toast.success(res.message);
-        navigate("/dashboard/show-room-list");
-        refetch();
-        reset();
-      }
-    } catch (err) {
-      toast.error("Failed to update customer");
-    } finally {
-      toast.dismiss(toastId);
-    }
+        try {
+          const res = await updateShowroom({ id: id, data: updateData }).unwrap();
+          if (res.success) {
+            toast.success(res.message);
+            navigate("/dashboard/show-room-list");
+            refetch();
+            reset();
+          }
+        } catch (err) {
+          toast.error("Failed to update customer");
+        } finally {
+          toast.dismiss(toastId);
+        }
+
+      }, "You do't have permission to edit show room"
+    )
   };
 
   const handleBrandChange = (event, newValue) => {
@@ -649,19 +656,19 @@ const UpdateShowRoom = () => {
 
                       {(!getDataWithChassisNo?.mileageHistory ||
                         getDataWithChassisNo.mileageHistory.length === 0) && (
-                        <TextField
-                          type="number"
-                          fullWidth
-                          label="Mileage (N)"
-                          {...register("mileage", {
-                            pattern: {
-                              value: /^\d+$/,
-                              message: "Please enter a valid number.",
-                            },
-                          })}
-                          focused={getDataWithChassisNo?.mileage || ""}
-                        />
-                      )}
+                          <TextField
+                            type="number"
+                            fullWidth
+                            label="Mileage (N)"
+                            {...register("mileage", {
+                              pattern: {
+                                value: /^\d+$/,
+                                message: "Please enter a valid number.",
+                              },
+                            })}
+                            focused={getDataWithChassisNo?.mileage || ""}
+                          />
+                        )}
                     </Box>
                   </Grid>
                   <Grid item lg={12} md={12} sm={12} xs={12}>
@@ -744,13 +751,16 @@ const UpdateShowRoom = () => {
             </div>
 
             <div className="mt-8 flex justify-center ">
-              <Button
-                type="submit"
-                sx={{ color: "white" }}
-                disabled={updateLoading}
-              >
-                Update Show Room{" "}
-              </Button>
+              <Can page="/dashboard/update-show-room" action="edit">
+                <Button
+                  type="submit"
+                  sx={{ color: "white" }}
+                  disabled={isLoading}
+                >
+                  Update Show Room{" "}
+                </Button>
+              </Can>
+
             </div>
           </form>
         </div>
