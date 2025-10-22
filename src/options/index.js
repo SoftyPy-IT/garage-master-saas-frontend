@@ -112,3 +112,14 @@ export const SupplierStatusOption = [
   "Pending Approval",
   "Inactive",
 ];
+
+
+export const roleOptions = [
+  'admin',
+  'manager',
+  'technician',
+  'front-desk',
+  'accountant',
+  'warehouse',
+  'user',
+];

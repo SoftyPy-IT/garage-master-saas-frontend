@@ -26,8 +26,10 @@ export const tagTypesList = [
   'warranty',
   'warehouse',
   'tenant',
-  'page'
-  
+  'page',
+  'role',
 
-  
+
+
+
 ];
