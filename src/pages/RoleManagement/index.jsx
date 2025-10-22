@@ -17,8 +17,6 @@ import {
   Avatar,
   Chip,
   IconButton,
-  Menu,
-  MenuItem,
   Tabs,
   Tab,
   Badge,
@@ -31,7 +29,6 @@ import {
 } from "@mui/material";
 import {
   Add,
-  MoreVert,
   Edit,
   Delete,
   Person,
@@ -40,16 +37,14 @@ import {
 } from "@mui/icons-material";
 import AddRoleModal from "./AddRoleModal";
 import { useGetAllRolesQuery, useDeleteRoleMutation } from "../../redux/api/roleApi";
-import { useTenantDomain } from "../../hooks/useTenantDomain";
 import swal from "sweetalert";
 import { useAppOptions } from "../../hooks/useAppOptions";
 import Can from "../../components/Can";
 
 const RoleManagement = () => {
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [selectedRole, setSelectedRole] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [editMode, setEditMode] = useState(false);
+  const [selectedRole, setSelectedRole] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const { tenantDomain, performActionWithPermission } = useAppOptions();
 
@@ -57,16 +52,6 @@ const RoleManagement = () => {
   const [deleteRole] = useDeleteRoleMutation();
 
   const roles = rolesData?.data || [];
-
-  const handleMenuClick = (event, role) => {
-    setAnchorEl(event.currentTarget);
-    setSelectedRole(role);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-    setSelectedRole(null);
-  };
 
   const handleOpenDialog = () => {
     setEditMode(false);
@@ -80,41 +65,39 @@ const RoleManagement = () => {
     setEditMode(false);
   };
 
-  const handleEditRole = () => {
+  const handleEditRole = (role) => {
     setEditMode(true);
+    setSelectedRole(role);
     setOpenDialog(true);
-    handleMenuClose();
   };
 
-
-  const handleDeleteRole = async (id) => {
+  const handleDeleteRole = async (role) => {
     performActionWithPermission('/dashboard/role-management', 'delete', async () => {
       const willDelete = await swal({
         title: "Are you sure?",
-        text: " You want to move  this supplier recycle bin?",
+        text: "Are you sure you want to delete this role?",
         icon: "warning",
         dangerMode: true,
+        buttons: ["Cancel", "Delete"],
       });
+
       if (willDelete) {
         try {
-          await deleteRole({ id: selectedRole._id, tenantDomain, }).unwrap();
-          swal(
-            "Move to Recycle bin!",
-            "Move to Recycle bin successful.",
-            "success"
-          );
+          await deleteRole({ id: role._id, tenantDomain }).unwrap();
+          swal("Deleted!", "Role has been deleted successfully.", "success");
+          refetch();
         } catch (error) {
-          swal("Error", "An error occurred while deleting the card.", "error");
+          console.error("Delete role error:", error);
+          swal("Error", "An error occurred while deleting the role.", "error");
         }
       }
-    }, "You don't have permission to delete roles !")
+    }, "You don't have permission to delete roles!");
   };
-
-
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
   };
+
   const getRoleColor = (type) => {
     const colors = {
       admin: "error",
@@ -160,7 +143,6 @@ const RoleManagement = () => {
       </Box>
     );
   }
-
 
   return (
     <Box sx={{ p: 3 }}>
@@ -251,7 +233,6 @@ const RoleManagement = () => {
             Filter
           </Button>
         </Box>
-
 
         {/* Roles Table */}
         <TableContainer component={Paper} elevation={0} sx={{ border: 1, borderColor: 'divider', borderRadius: 2 }}>
@@ -346,16 +327,32 @@ const RoleManagement = () => {
                     </Box>
                   </TableCell>
                   <TableCell align="center">
-                    <IconButton
-                      onClick={(e) => handleMenuClick(e, role)}
-                      sx={{
-                        border: 1,
-                        borderColor: 'divider',
-                        '&:hover': { bgcolor: 'primary.main', color: 'white' }
-                      }}
-                    >
-                      <MoreVert />
-                    </IconButton>
+                    <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
+                      <Can page='/dashboard/role-management' action='edit'>
+                        <IconButton
+                          onClick={() => handleEditRole(role)}
+                          sx={{
+                            border: 1,
+                            borderColor: 'divider',
+                            '&:hover': { bgcolor: 'primary.main', color: 'white' }
+                          }}
+                        >
+                          <Edit fontSize="small" />
+                        </IconButton>
+                      </Can>
+                      <Can page='/dashboard/role-management' action='delete'>
+                        <IconButton
+                          onClick={() => handleDeleteRole(role)}
+                          sx={{
+                            border: 1,
+                            borderColor: 'divider',
+                            '&:hover': { bgcolor: 'error.main', color: 'white' }
+                          }}
+                        >
+                          <Delete fontSize="small" />
+                        </IconButton>
+                      </Can>
+                    </Box>
                   </TableCell>
                 </TableRow>
               ))}
@@ -375,25 +372,6 @@ const RoleManagement = () => {
         )}
       </Card>
 
-      {/* Action Menu */}
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleMenuClose}
-      >
-        <MenuItem onClick={handleEditRole}>
-          <Can page='/dashboard/role-management' action='edit'>
-            <Edit fontSize="small" sx={{ mr: 1 }} /> Edit Role
-          </Can>
-
-        </MenuItem>
-        <MenuItem onClick={handleDeleteRole} sx={{ color: 'error.main' }}>
-          <Can page='/dashboard/role-management' action='delete'>
-            <Delete fontSize="small" sx={{ mr: 1 }} /> Delete Role
-          </Can>
-        </MenuItem>
-      </Menu>
-
       {/* Role Dialog */}
       <AddRoleModal
         performActionWithPermission={performActionWithPermission}
@@ -404,8 +382,6 @@ const RoleManagement = () => {
         refetchRoles={refetch}
         isLoading={isLoading}
       />
-
-
     </Box>
   );
 };

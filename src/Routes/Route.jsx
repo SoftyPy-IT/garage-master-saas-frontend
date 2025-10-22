@@ -807,6 +807,7 @@ export const router = createBrowserRouter([
         <RestoreDatabase />,
         "/dashboard/restore"
       ),
+
     ],
   },
 ]);

@@ -215,6 +215,8 @@ export function useAppOptions(limit = 10, initialSearch = "") {
         supplierData,
         warehouseData,
         warrantyData,
+        userData,
+        roleData, pageData,
 
         // Mutations
         createProduct,
