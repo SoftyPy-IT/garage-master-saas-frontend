@@ -22,10 +22,7 @@ import { Tooltip } from "@mui/material";
 const Home = () => {
   const [showSensitiveData, setShowSensitiveData] = useState(false);
   const { tenantDomain } = useTenantDomain();
-  const {
-    data: allMetaData,
-    isLoading,
-  } = useGetAllMetaQuery({ tenantDomain });
+  const { data: allMetaData, isLoading } = useGetAllMetaQuery({ tenantDomain });
   const { data: accountSummary } = useAccountSummaryQuery({ tenantDomain });
 
   if (isLoading) {
@@ -42,27 +39,30 @@ const Home = () => {
         {/* Toggle Button */}
         <button
           onClick={() => setShowSensitiveData(!showSensitiveData)}
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded "
         >
           {showSensitiveData ? (
             <>
               <Tooltip title="Hide">
-
                 <VisibilityOff />
-
               </Tooltip>
             </>
           ) : (
             <>
-              <Tooltip title="Show"> <Visibility /></Tooltip>
-
+              <Tooltip title="Show">
+                {" "}
+                <Visibility />
+              </Tooltip>
             </>
           )}
         </button>
       </div>
 
       {/* Conditionally render sensitive sections */}
-      <AllServices showSensitiveData={showSensitiveData} tenantDomain={tenantDomain} />
+      <AllServices
+        showSensitiveData={showSensitiveData}
+        tenantDomain={tenantDomain}
+      />
 
       {showSensitiveData && (
         <DashboardSummary
@@ -71,10 +71,10 @@ const Home = () => {
           accountSummary={accountSummary}
         />
       )}
-      {showSensitiveData && <ProfitOverView tenantDomain={tenantDomain} />}
+      {/* {showSensitiveData && <ProfitOverView tenantDomain={tenantDomain} />} */}
       <ProjectOverView tenantDomain={tenantDomain} />
 
-      <div className="recentCardWrap gap-5  xl:flex justify-between sectionMargin">
+      <div className="recentCardWrap gap-5 grid grid-cols-1 xl:grid-cols-2 justify-between sectionMargin">
         <RecentClient tenantDomain={tenantDomain} />
         <RecentProject tenantDomain={tenantDomain} />
       </div>
