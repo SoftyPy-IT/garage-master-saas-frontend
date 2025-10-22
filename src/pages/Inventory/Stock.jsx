@@ -1123,9 +1123,11 @@ export default function StockManagement() {
       )}
       {openStockDetails && selectedProduct && (
         <StockDetailsDialog
+          setOpen={setOpenStockDetails}
           open={openStockDetails}
           onClose={handleCloseDialogs}
           product={selectedProduct}
+          tenantDomain={tenantDomain}
         />
       )}
       {openStockHistory && selectedProduct && (
