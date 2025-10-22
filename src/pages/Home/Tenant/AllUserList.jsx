@@ -48,7 +48,6 @@ const AllUserList = () => {
   const [isAddUserOpen, setIsAddUserOpen] = useState(false);
   const { tenantDomain, performActionWithPermission } = useAppOptions();
 
-
   const {
     data: userData,
     isLoading,
@@ -63,26 +62,31 @@ const AllUserList = () => {
   );
 
   const handleDeleteUser = async (userId) => {
-    performActionWithPermission('/dashboard/all-user-list', 'delete', async () => {
-      const result = await Swal.fire({
-        title: "Are you sure?",
-        text: "This action cannot be undone!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#d33",
-        cancelButtonColor: "#3085d6",
-        confirmButtonText: "Yes, delete it!",
-      });
-      if (result.isConfirmed) {
-        try {
-          await deleteUser({ tenantDomain, id: userId }).unwrap();
-          toast.success("User deleted successfully");
-          refetch();
-        } catch {
-          toast.error("Failed to delete user");
+    performActionWithPermission(
+      "/dashboard/all-user-list",
+      "delete",
+      async () => {
+        const result = await Swal.fire({
+          title: "Are you sure?",
+          text: "This action cannot be undone!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#d33",
+          cancelButtonColor: "#3085d6",
+          confirmButtonText: "Yes, delete it!",
+        });
+        if (result.isConfirmed) {
+          try {
+            await deleteUser({ tenantDomain, id: userId }).unwrap();
+            toast.success("User deleted successfully");
+            refetch();
+          } catch {
+            toast.error("Failed to delete user");
+          }
         }
-      }
-    }, "You don't have permission to delete user.")
+      },
+      "You don't have permission to delete user."
+    );
   };
 
   const handleChangePage = (e, newPage) => setPage(newPage);
@@ -94,10 +98,10 @@ const AllUserList = () => {
   const formatDate = (dateString) =>
     dateString
       ? new Date(dateString).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-      })
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        })
       : "N/A";
 
   const stats = {
@@ -107,7 +111,7 @@ const AllUserList = () => {
   };
 
   if (isLoading) {
-    return <Loading />
+    return <Loading />;
   }
 
   return (
@@ -116,7 +120,7 @@ const AllUserList = () => {
         maxWidth: 1600,
         mx: "auto",
         paddingX: { xs: 0, md: 3 },
-        paddingY:2,
+        paddingY: 2,
         background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
         minHeight: "100vh",
       }}
@@ -244,22 +248,24 @@ const AllUserList = () => {
         />
       </Paper>
 
-      <StyledPaper elevation={4} sx={{ borderRadius: 3, p:{ xs: 1, md: 3 } }} >
-        <StyledTableContainer sx={{
-    width: "100%",
-    overflowX: "auto",
-    borderRadius: 2,
-    "&::-webkit-scrollbar": {
-      height: 6,
-    },
-    "&::-webkit-scrollbar-thumb": {
-      backgroundColor: "#ccc",
-      borderRadius: 3,
-    },
-    "&::-webkit-scrollbar-thumb:hover": {
-      backgroundColor: "#999",
-    },
-  }}>
+      <StyledPaper elevation={4} sx={{ borderRadius: 3, p: { xs: 1, md: 3 } }}>
+        <StyledTableContainer
+          sx={{
+            width: "100%",
+            overflowX: "auto",
+            borderRadius: 2,
+            "&::-webkit-scrollbar": {
+              height: 6,
+            },
+            "&::-webkit-scrollbar-thumb": {
+              backgroundColor: "#ccc",
+              borderRadius: 3,
+            },
+            "&::-webkit-scrollbar-thumb:hover": {
+              backgroundColor: "#999",
+            },
+          }}
+        >
           <Table>
             <TableHead>
               <TableRow sx={{ bgcolor: "primary.main" }}>
