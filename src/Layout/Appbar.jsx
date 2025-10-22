@@ -8,34 +8,72 @@ import { FaCalendarDays } from "react-icons/fa6";
 import "./Layout.css";
 import TopSearchbar from "../components/TopSearchbar/TopSearchbar";
 import UserProfile from "../components/UserProfile/UserProfile";
-import { Box, Button, Chip, IconButton, Tooltip } from "@mui/material";
-import { MenuOpen } from "@mui/icons-material";
-import { btnStyle, btnStyle2 } from "../utils/customStyle";
 import { useGetAllMetaQuery } from "../redux/api/meta.api";
 import { useTenantDomain } from "../hooks/useTenantDomain";
 import Loading from "../components/Loading/Loading";
 import { useGetCompanyProfileQuery } from "../redux/api/companyProfile";
+import { IconButton } from "@mui/material";
+import { MenuOpen } from "@mui/icons-material";
 
 const AppBar = ({ toggle, navRef, toggleSideBar }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const { tenantDomain } = useTenantDomain();
-  const {
-    data: allMetaData,
-    isLoading,
-  } = useGetAllMetaQuery({ tenantDomain });
+  const { data: allMetaData, isLoading } = useGetAllMetaQuery({ tenantDomain });
   const { data: CompanyInfoData } = useGetCompanyProfileQuery({
     tenantDomain,
   });
+
   if (isLoading) return <Loading />;
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
   };
 
+  const SubscriptionChip = () => {
+    if (!allMetaData?.data?.subscriptionInfo) return null;
+
+    const { daysRemaining } = allMetaData.data.subscriptionInfo;
+
+    if (daysRemaining <= 0) {
+      return (
+        <div className="relative group">
+          <div className="px-4 py-2 bg-red-500 text-white text-sm font-semibold rounded-xl shadow-lg animate-pulse border border-red-300">
+            Subscription Expired
+          </div>
+          <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs rounded-lg py-2 px-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-50 shadow-xl">
+            Your subscription has expired. Please renew to continue.
+            <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+          </div>
+        </div>
+      );
+    }
+
+    const getChipColor = () => {
+      if (daysRemaining < 15) return "bg-red-500 border-red-300";
+      if (daysRemaining < 60) return "bg-orange-500 border-orange-300";
+      return "bg-green-500 border-green-300";
+    };
+
+    return (
+      <div className="relative group">
+        <div
+          className={`px-4 py-2 ${getChipColor()} text-white text-sm font-semibold rounded-xl shadow-lg border`}
+        >
+          {daysRemaining} Days Left
+        </div>
+        <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs rounded-lg py-2 px-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-50 shadow-xl">
+          Your subscription has {daysRemaining} day(s) remaining
+          <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="static w-full h-16 xl:h-16">
-      <div className="w-full h-16 xl:h-16 bg-[#42A1DA] fixed z-10 ">
+      <div className="w-full h-16 xl:h-16 bg-gradient-to-r from-blue-600 to-purple-600 fixed z-10">
         <div className="flex items-center justify-between lg:pr-8 pl-10 lg:pl-10 xl:pl-20 mt-3 md:mt-2 lg:mt-3">
+          {/* Left Sidebar Toggle */}
           <div
             className={`${toggle ? `activeToggle ` : `navActive`}`}
             ref={navRef}
@@ -45,32 +83,33 @@ const AppBar = ({ toggle, navRef, toggleSideBar }) => {
             <span className="bar" />
             <span className="bar" />
           </div>
-          <Box display="flex" alignItems="center" gap={2}>
+
+          <div className="flex items-center gap-2">
             <Link to="/dashboard">
               <h3 className="w-[250px] ml-5 lg:text-xl xl:text-xl font-semibold text-white hidden xl:block">
                 {CompanyInfoData?.data?.companyName}
               </h3>
             </Link>
-            <Box
-              display="flex"
-              alignItems="center"
-              gap={1}
-              sx={{ display: { xs: "none", lg: "flex" } }}
-            >
-              <Button
-                sx={btnStyle2}
+            <div className="hidden lg:flex items-center gap-3">
+              <button
+                className="px-6 py-2 bg-white/20 backdrop-blur-sm text-white rounded-xl hover:bg-white/30 hover:scale-105 active:scale-95 border border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 font-medium"
                 onClick={() =>
                   window.open("https://trustautosolution.com", "_blank")
                 }
               >
                 Visit Website
-              </Button>
-              <Button sx={{ ...btnStyle2, width: "100px" }}>Bd Shop</Button>
-              <Button sx={btnStyle2}>Global Shop</Button>
-            </Box>
-          </Box>
+              </button>
+              <button className="px-6 py-2 bg-white/20 backdrop-blur-sm text-white rounded-xl hover:bg-white/30 hover:scale-105 active:scale-95 border border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 font-medium w-[120px]">
+                BD Shop
+              </button>
+              <button className="px-6 py-2 bg-white/20 backdrop-blur-sm text-white rounded-xl hover:bg-white/30 hover:scale-105 active:scale-95 border border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 font-medium">
+                Global Shop
+              </button>
+            </div>
+          </div>
 
-          {/* Menu icon for small and medium devices */}
+          {/* Mobile Menu Toggle Button - Restored Original Style */}
+          {/* Menu icon for small and medium devices - Right Side */}
           <IconButton
             onClick={toggleMenu}
             sx={{
@@ -84,120 +123,67 @@ const AppBar = ({ toggle, navRef, toggleSideBar }) => {
             {/* <UserProfile />            
             <ExpandMore/>*/}
           </IconButton>
+         
 
           {/* Original navigation items - visible on lg screens */}
-          <div className="hidden lg:flex items-center space-x-5 flex-end">
-            {allMetaData?.data?.subscriptionInfo && (
-              <>
-                {allMetaData.data.subscriptionInfo.daysRemaining > 0 ? (
-                  <Tooltip
-                    title={`Your subscription has ${allMetaData.data.subscriptionInfo.daysRemaining} day(s) remaining`}
-                    arrow
-                  >
-                    <Chip
-                      label={`${allMetaData.data.subscriptionInfo.daysRemaining} Days Left`}
-                      sx={{
-                        backgroundColor:
-                          allMetaData.data.subscriptionInfo.daysRemaining < 15
-                            ? "#f44336"
-                            : allMetaData.data.subscriptionInfo.daysRemaining <
-                              60
-                              ? "#ff9800"
-                              : "#4caf50",
-                        color: "#fff",
-                        fontWeight: 600,
-                        borderRadius: "8px",
-                        px: 1.5,
-                        py: 0.5,
-                        fontSize: "0.875rem",
-                        animation:
-                          allMetaData.data.subscriptionInfo.daysRemaining < 15
-                            ? "pulseRed 2s infinite"
-                            : allMetaData.data.subscriptionInfo.daysRemaining <
-                              60
-                              ? "pulseAmber 2s infinite"
-                              : "pulseGreen 2s infinite",
-                        boxShadow: "0 0 10px rgba(0,0,0,0.1)",
-                      }}
-                    />
-                  </Tooltip>
-                ) : (
-                  <Tooltip
-                    title="Your subscription has expired. Please renew to continue."
-                    arrow
-                  >
-                    <Chip
-                      label="Subscription Expired"
-                      color="error"
-                      sx={{
-                        backgroundColor: "#b71c1c",
-                        color: "#fff",
-                        fontWeight: 600,
-                        borderRadius: "8px",
-                        px: 1.5,
-                        py: 0.5,
-                        fontSize: "0.875rem",
-                        animation: "shake 0.6s ease-in-out infinite",
-                        boxShadow: "0 0 12px rgba(244,67,54,0.6)",
-                      }}
-                    />
-                  </Tooltip>
-                )}
-              </>
-            )}
+          <div className="hidden lg:flex items-center space-x-6">
+            <SubscriptionChip />
 
+            {/* Keep original TopSearchbar component */}
             <TopSearchbar />
-            <Link to="/dashboard/holiday">
-              <FaCalendarDays size={20} className="text-[#fff]" />
+
+            <Link
+              to="/dashboard/holiday"
+              className="p-3 bg-white/20 backdrop-blur-sm rounded-xl border border-white/30 shadow-lg hover:bg-white/30 hover:scale-105 transition-all duration-300"
+            >
+              <FaCalendarDays size={20} className="text-white" />
             </Link>
+
             <UserProfile tenantDomain={tenantDomain} />
           </div>
         </div>
 
         {/* Dropdown menu for small and medium devices */}
         <div
-          className={`md:hidden w-full backdrop-blur-md bg-[#42A1DA]/80 transition-all duration-500 ease-in-out overflow-hidden rounded-b-2xl shadow-xl ${menuOpen ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"
-            }`}
-          style={{
-            boxShadow: menuOpen ? "0 10px 20px rgba(0, 0, 0, 0.15)" : "none",
-          }}
+          className={`md:hidden w-full backdrop-blur-md bg-gradient-to-b from-blue-600/95 to-purple-600/95 transition-all duration-500 ease-in-out overflow-hidden rounded-b-2xl shadow-2xl ${
+            menuOpen ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"
+          }`}
         >
           <div className="flex flex-col items-center pt-6 space-y-4">
+            {/* Keep original TopSearchbar component */}
             <TopSearchbar />
           </div>
 
-          <Box
-            display="flex"
-            flexDirection="column"
-            alignItems="stretch"
-            gap={2}
-            sx={{
-              width: "100%",
-              maxWidth: 420,
-              mx: "auto",
-              p: 2,
-            }}
-          >
-            <Button
-              sx={btnStyle}
+          <div className="flex flex-col items-stretch gap-3 w-full max-w-[420px] mx-auto p-4">
+            <button
+              className="px-6 py-4 bg-white/20 backdrop-blur-sm text-white rounded-xl hover:bg-white/30 hover:scale-105 active:scale-95 border border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 text-left flex items-center gap-3 text-lg font-medium"
               onClick={() =>
                 window.open("https://trustautosolution.com", "_blank")
               }
             >
-              🌐 Visit Website
-            </Button>
-            <Button sx={btnStyle}>🛒 BD Shop</Button>
-            <Button sx={btnStyle}>🌍 Global Shop</Button>
-          </Box>
+              <span className="text-xl">🌐</span>
+              Visit Website
+            </button>
+            <button className="px-6 py-4 bg-white/20 backdrop-blur-sm text-white rounded-xl hover:bg-white/30 hover:scale-105 active:scale-95 border border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 text-left flex items-center gap-3 text-lg font-medium">
+              <span className="text-xl">🛒</span>
+              BD Shop
+            </button>
+            <button className="px-6 py-4 bg-white/20 backdrop-blur-sm text-white rounded-xl hover:bg-white/30 hover:scale-105 active:scale-95 border border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 text-left flex items-center gap-3 text-lg font-medium">
+              <span className="text-xl">🌍</span>
+              Global Shop
+            </button>
+          </div>
 
-          <div className="flex items-center justify-center py-6 space-x-6 w-full">
+          <div className="flex items-center justify-center py-6 space-x-8 w-full">
             <Link
               to="/dashboard/holiday"
-              className="hover:scale-110 transition-transform"
+              className="p-3 lg:p-4 bg-white/20 backdrop-blur-sm rounded-xl border border-white/30 shadow-lg hover:bg-white/30 hover:scale-110 transition-all duration-300"
             >
-              <FaCalendarDays size={22} className="text-white" />
+              <FaCalendarDays size={24} className="text-white" />
             </Link>
-            <UserProfile />
+            <div className="relative z-50">
+              <UserProfile tenantDomain={tenantDomain} />
+            </div>
           </div>
         </div>
       </div>

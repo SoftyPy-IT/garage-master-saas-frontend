@@ -2,7 +2,6 @@
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable react-hooks/exhaustive-deps */
 
-
 import { FaTrashAlt, FaEdit, FaUserTie } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { useRef, useState, useEffect } from "react";
@@ -18,6 +17,7 @@ import EmptyData from "../../../components/EmptyData/EmptyData";
 import { useTenantDomain } from "../../../hooks/useTenantDomain";
 import { usePermissions } from "../../../context/PermissionContext";
 import Can from "../../../components/Can";
+import { HiOutlineSearch } from "react-icons/hi";
 const ShowRoomListTable = () => {
   const textInputRef = useRef(null);
   const [filterType, setFilterType] = useState("");
@@ -39,7 +39,6 @@ const ShowRoomListTable = () => {
   const [moveRecycledShowRoom, { isLoading: showroomDeleteLoading }] =
     useMoveRecycledShowRoomMutation();
 
-
   const handleIconPreview = async (id) => {
     performActionWithPermission(
       "/dashboard/show-room-list",
@@ -52,7 +51,9 @@ const ShowRoomListTable = () => {
   };
 
   const handleMoveToRecycled = async (id) => {
-    performActionWithPermission('', 'delete',
+    performActionWithPermission(
+      "",
+      "delete",
       async () => {
         const willDelete = await swal({
           title: "Are you sure?",
@@ -66,11 +67,16 @@ const ShowRoomListTable = () => {
             await moveRecycledShowRoom({ tenantDomain, id }).unwrap();
             swal("Moved to Recycle bin!", "Successful.", "success");
           } catch (error) {
-            swal("Error", "An error occurred while deleting the card.", "error");
+            swal(
+              "Error",
+              "An error occurred while deleting the card.",
+              "error"
+            );
           }
         }
-      }, "You don't have permission to move to recycle bin the show room!"
-    )
+      },
+      "You don't have permission to move to recycle bin the show room!"
+    );
   };
 
   useEffect(() => {
@@ -89,12 +95,18 @@ const ShowRoomListTable = () => {
               setFilterType(e.target.value);
               setCurrentPage(1);
             }}
-            type="text"
+            type="text" 
             placeholder="Search"
             className="border py-2 px-3 rounded-md border-[#ddd]"
             ref={textInputRef}
           />
-
+          <button
+            className="bg-[#42A1DA] text-white px-2 py-2 rounded-md ml-1"
+            disabled={filterType === ""}
+          >
+            {" "}
+            <HiOutlineSearch size={25} />
+          </button>
         </div>
       </div>
 
@@ -131,14 +143,17 @@ const ShowRoomListTable = () => {
                   {showRoomData?.data?.showrooms?.map((card, index) => {
                     const lastVehicle = card?.vehicles
                       ? [...card.vehicles].sort(
-                        (a, b) =>
-                          new Date(b.createdAt) - new Date(a.createdAt)
-                      )[0]
+                          (a, b) =>
+                            new Date(b.createdAt) - new Date(a.createdAt)
+                        )[0]
                       : null;
                     const displayIndex = (currentPage - 1) * limit + index + 1;
 
                     return (
-                      <tr key={card._id} className={` transition-all duration-300 hover:bg-gradient-to-r hover:from-blue-300 hover:to-blue-100 hover:text-black`}>
+                      <tr
+                        key={card._id}
+                        className={` transition-all duration-300 hover:bg-gradient-to-r hover:from-blue-300 hover:to-blue-100 hover:text-black`}
+                      >
                         <td>{displayIndex}</td>
                         <td>{card?.showRoomId}</td>
                         <td>{card?.showRoom_name}</td>
@@ -203,17 +218,15 @@ const ShowRoomListTable = () => {
                               onClick={() => handleMoveToRecycled(card._id)}
                               className="editIconWrap"
                               style={{
-
                                 background: "white",
                                 border: "none",
                                 padding: 5,
-                                borderRadius: "9999px"
+                                borderRadius: "9999px",
                               }}
                             >
                               <FaTrashAlt className="deleteIcon text-red-500" />
                             </button>
                           </Can>
-
                         </td>
                       </tr>
                     );

@@ -108,14 +108,14 @@ const AllServices = ({ showSensitiveData, tenantDomain }) => {
       {showSensitiveData && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 place-content-center gap-5">
           {/* Total Sale */}
-          <div className="modern-card amber-card group">
+          <div className="modern-card deep-blue-card group">
             <div className={card}>
               <div className="icon-wrapper">
                 <FaPercent className="text-white text-2xl" />
               </div>
               <div className="content-wrapper mt-4">
                 <h2 className={amount}>000</h2>
-                <p className={label}>Total Sale</p>
+                <p className={label}>Total Sale</p> 
               </div>
               <div className="floating-circle"></div>
             </div>
