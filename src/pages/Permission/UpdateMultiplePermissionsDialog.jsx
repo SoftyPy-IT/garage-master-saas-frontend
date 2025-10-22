@@ -41,6 +41,18 @@ const UpdateMultiplePermissionsDialog = ({
                 const permission = permissions.find(p => p._id === id);
                 if (permission) {
                     updates[id] = {
+                        // userId যোগ করুন
+                        userId: permission.userId && permission.userId.length > 0
+                            ? permission.userId.map(u => u._id || u.toString())
+                            : [],
+                        // roleId যোগ করুন
+                        roleId: permission.roleId && permission.roleId.length > 0
+                            ? permission.roleId.map(r => r._id || r.toString())
+                            : [],
+                        // pageId যোগ করুন
+                        pageId: permission.pageId && permission.pageId.length > 0
+                            ? permission.pageId.map(p => p._id || p.toString())
+                            : [],
                         create: permission.create,
                         edit: permission.edit,
                         view: permission.view,
@@ -80,7 +92,14 @@ const UpdateMultiplePermissionsDialog = ({
             const updates = selectedPermissions.map(id => ({
                 tenantDomain,
                 permissionId: id,
-                ...permissionUpdates[id]
+                // userId, roleId, এবং pageId অন্তর্ভুক্ত করুন
+                userId: permissionUpdates[id]?.userId,
+                roleId: permissionUpdates[id]?.roleId,
+                pageId: permissionUpdates[id]?.pageId,
+                create: permissionUpdates[id]?.create,
+                edit: permissionUpdates[id]?.edit,
+                view: permissionUpdates[id]?.view,
+                delete: permissionUpdates[id]?.delete,
             }));
 
             const result = await onUpdatePermissions(updates);
