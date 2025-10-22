@@ -528,11 +528,13 @@ export default function WarehouseManagement() {
       {/* View Warehouse Details Dialog */}
       <ViewWarehouseDetails
         open={viewDetailsOpen}
+        setOpen={setViewDetailsOpen}
         onClose={handleCloseDetails}
         warehouse={selectedWarehouse}
         getTypeChip={getTypeChip}
         getStatusChip={getStatusChip}
         onEdit={handleEditOpen}
+        tenantDomain={tenantDomain}
       />
 
 
