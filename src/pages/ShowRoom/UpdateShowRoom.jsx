@@ -20,6 +20,8 @@ import { ArrowBack } from "@mui/icons-material";
 import { usePermissions } from "../../context/PermissionContext";
 import { useTenantDomain } from "../../hooks/useTenantDomain";
 import { useGetSingleShowRoomQuery, useUpdateShowRoomMutation } from "../../redux/api/showRoomApi";
+import Loading from "../../components/Loading/Loading";
+import Can from "../../components/Can";
 
 const UpdateShowRoom = () => {
   const location = useLocation();

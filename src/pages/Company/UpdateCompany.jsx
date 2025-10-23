@@ -21,6 +21,8 @@ import {
 } from "../../constant";
 import { useTenantDomain } from "../../hooks/useTenantDomain";
 import { useGetSingleCompanyQuery, useUpdateCompanyMutation } from "../../redux/api/companyApi";
+import Loading from "../../components/Loading/Loading";
+import Can from "../../components/Can";
 
 const UpdateCompany = () => {
   const [filteredVehicles, setFilteredVehicles] = useState([]);

@@ -22,6 +22,8 @@ import {
   vehicleName,
   vehicleTypes,
 } from "../../constant";
+import Can from "../../components/Can";
+import CompanyListTable from "./CompanyListTable";
 
 const AddCompany = () => {
   const [registrationError, setRegistrationError] = useState("");
