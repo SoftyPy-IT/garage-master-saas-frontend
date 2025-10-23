@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import { useState } from "react";
-import VehicleDetailsModal from "../../pages/Home/Customer/CustomerProfile/VehicleDetailsModal";
+import VehicleDetailsModal from "../../pages/Customer/CustomerProfile/VehicleDetailsModal";
 import { ACCOUNT_CONFIG } from "./AccountConfig";
 import { CARD_TYPES } from "./CardTypes";
 import ContactInfoCard from "./ContactInfo";

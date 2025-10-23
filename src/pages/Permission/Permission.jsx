@@ -28,7 +28,7 @@ import { useSelector } from "react-redux";
 import AddRoleModal from "../RoleManagement/AddRoleModal";
 import PageForm from "../PageManagement/PageForm";
 import Loading from "../../components/Loading/Loading";
-import AddUserModal from "../Home/Tenant/AddUserModal";
+import AddUserModal from "../Tenant/AddUserModal";
 import MultipleAccess from "./MultipleAccess";
 import { useAppOptions } from "../../hooks/useAppOptions";
 

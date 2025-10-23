@@ -2,7 +2,7 @@
 /* eslint-disable react/prop-types */
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Button,
   TextField,
@@ -37,8 +37,6 @@ import {
   EventNote as EventNoteIcon,
   CreditCard as CreditCardIcon,
 } from "@mui/icons-material";
-import GarageForm from "../../../components/form/Form";
-import FormDatePicker from "../../../components/form/Datepicker";
 import {
   ShoppingCart as ShoppingCartIcon,
   Discount as DiscountIcon,
@@ -48,6 +46,11 @@ import {
   ExpandLess,
   ExpandMore,
 } from "@mui/icons-material";
+
+import toast from "react-hot-toast";
+import { useCreatePurchaseOrderMutation, useGetSinglePurchaseOrderQuery, useUpdatePurchaseOrderMutation } from "../../../redux/api/purchaseOrderApi";
+import { useAppOptions } from "../../../hooks/useAppOptions";
+import FormDatePicker from "../../../components/form/Datepicker";
 import {
   avatarStyle,
   avatarStyle2,
@@ -58,22 +61,14 @@ import {
   purchaseBtn,
   textInuptStyle,
 } from "../../../utils/customStyle";
-import TASInput from "../../../components/form/Input";
-import TASSelect from "../../../components/form/Select";
-import TASAutocomplete from "../../../components/form/Autocomplete";
-import { toast } from "react-toastify";
-import { AnimatePresence } from "framer-motion";
-import { motion } from "framer-motion";
-import {
-  useCreatePurchaseOrderMutation,
-  useGetSinglePurchaseOrderQuery,
-  useUpdatePurchaseOrderMutation,
-} from "../../../redux/api/purchaseOrderApi";
-import TASTextarea from "../../../components/form/Textarea";
-import { formatCurrency } from "../../../utils/formatter";
-import ImageUpload from "../../../components/form/ImageUpload";
-import { useAppOptions } from "../../../hooks/useAppOptions";
+import FormInput from "../../../components/form/Input";
+import GarageAutoCompleted from "../../../components/form/Autocomplete";
+import GarageForm from "../../../components/form/Form";
+import { formatCurrency } from "../../../utils/formateCurrency";
 import Can from "../../../components/Can";
+import FormSelect from "../../../components/form/Select";
+import ImageUpload from "../../../components/form/ImageUpload";
+import TASTextarea from "../../../components/form/Textarea";
 
 const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
   const theme = useTheme();
@@ -119,7 +114,7 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
       (acc, item) =>
         acc +
         (((item.unit_price || 0) * (item.tax || 0)) / 100) *
-          (item.product_quantity || 0),
+        (item.product_quantity || 0),
       0
     );
 
@@ -295,7 +290,7 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
         subtotal:
           product.subtotal ||
           (product.unit_price || product.productPrice) *
-            (product.product_quantity || product.quantity),
+          (product.product_quantity || product.quantity),
       })) || [],
   };
 
@@ -316,7 +311,7 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
           subtotal:
             product.subtotal ||
             (product.unit_price || product.productPrice) *
-              (product.product_quantity || product.quantity),
+            (product.product_quantity || product.quantity),
         }))
       );
     }
@@ -355,23 +350,23 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
           })),
           suppliers:
             data.suppliers &&
-            data.suppliers[0] &&
-            supplierOptions.find((cat) => cat.label === data.suppliers[0])
-              ?.value
+              data.suppliers[0] &&
+              supplierOptions.find((cat) => cat.label === data.suppliers[0])
+                ?.value
               ? [
-                  supplierOptions.find((cat) => cat.label === data.suppliers[0])
-                    .value,
-                ]
+                supplierOptions.find((cat) => cat.label === data.suppliers[0])
+                  .value,
+              ]
               : [],
           warehouse:
             data.warehouse &&
-            data.warehouse[0] &&
-            warehouseOptions.find(
-              (warehouse) => warehouse.label === data.warehouse[0]
-            )?.value
+              data.warehouse[0] &&
+              warehouseOptions.find(
+                (warehouse) => warehouse.label === data.warehouse[0]
+              )?.value
               ? warehouseOptions.find(
-                  (warehouse) => warehouse.label === data.warehouse[0]
-                ).value
+                (warehouse) => warehouse.label === data.warehouse[0]
+              ).value
               : "",
           referenceNo: Number(data.referenceNo),
           totalAmount,
@@ -408,8 +403,7 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
           toast.error(`Failed to ${orderId ? "update" : "create"} purchase`);
         }
       },
-      `You don't have permission to ${
-        orderId ? "update" : "create"
+      `You don't have permission to ${orderId ? "update" : "create"
       } purchase order`
     );
   };
@@ -435,10 +429,7 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
                   {/* Left Column - Document Upload */}
                   <Grid item xs={12} md={3}>
                     <Card
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.5, delay: 0.2 }}
-                      elevation={0}
+
                       sx={{
                         borderRadius: "20px",
                         border: "1px solid rgba(226, 232, 240, 0.8)",
@@ -594,7 +585,7 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
                             />
                           </Grid>
                           <Grid item xs={12} md={6}>
-                            <TASInput
+                            <FormInput
                               name="referenceNo"
                               label="Reference No"
                               fullWidth
@@ -611,7 +602,7 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
                             />
                           </Grid>
                           <Grid item xs={12} md={6}>
-                            <TASAutocomplete
+                            <GarageAutoCompleted
                               options={warehouseOptions}
                               size="medium"
                               fullWidth
@@ -638,7 +629,7 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
                             />
                           </Grid>
                           <Grid item xs={12} md={6}>
-                            <TASAutocomplete
+                            <GarageAutoCompleted
                               options={supplierOptions}
                               size="medium"
                               fullWidth
@@ -666,7 +657,7 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
                           </Grid>
 
                           <Grid item xs={12} md={6}>
-                            <TASSelect
+                            <FormSelect
                               items={[
                                 "Pending",
                                 "Approved",
@@ -699,7 +690,7 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
                             />
                           </Grid>
                           <Grid item xs={12} md={6}>
-                            <TASInput
+                            <FormInput
                               size="medium"
                               fullWidth
                               name="paymentMethod"
@@ -716,7 +707,7 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
                             />
                           </Grid>
                           <Grid item xs={12} md={6}>
-                            <TASSelect
+                            <FormSelect
                               items={["Unpaid", "Partial", "Paid"]}
                               size="medium"
                               fullWidth
@@ -886,9 +877,8 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
                       </Box>
                       {productFields.length > 0 && (
                         <Chip
-                          label={`${productFields.length} ${
-                            productFields.length === 1 ? "item" : "items"
-                          }`}
+                          label={`${productFields.length} ${productFields.length === 1 ? "item" : "items"
+                            }`}
                           size="small"
                           sx={{
                             color: "white",
@@ -1024,439 +1014,433 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
                             </tr>
                           </thead>
                           <tbody>
-                            <AnimatePresence>
-                              {productFields.length === 0 ? (
-                                <tr>
+
+                            {productFields.length === 0 ? (
+                              <tr>
+                                <td
+                                  colSpan={10}
+                                  style={{
+                                    padding: "40px 16px",
+                                    textAlign: "center",
+                                    color: "#64748b",
+                                  }}
+                                >
+                                  <Box
+                                    sx={{
+                                      display: "flex",
+                                      flexDirection: "column",
+                                      alignItems: "center",
+                                      gap: 2,
+                                    }}
+                                  >
+                                    <div
+
+                                    >
+                                      <Avatar
+                                        sx={{
+                                          width: 80,
+                                          height: 80,
+                                          backgroundColor: alpha(
+                                            "#8b5cf6",
+                                            0.1
+                                          ),
+                                          color: "#8b5cf6",
+                                          border: "2px dashed",
+                                          borderColor: alpha("#8b5cf6", 0.3),
+                                        }}
+                                      >
+                                        <ShoppingCartIcon
+                                          sx={{ fontSize: 40 }}
+                                        />
+                                      </Avatar>
+                                    </div>
+                                    <Typography
+                                      variant="h6"
+                                      fontWeight="600"
+                                      color="#1e293b"
+                                    >
+                                      No products added yet
+                                    </Typography>
+                                    <Typography
+                                      variant="body2"
+                                      color="#64748b"
+                                      sx={{ maxWidth: "400px" }}
+                                    >
+                                      Search for products above and add them
+                                      to your purchase order
+                                    </Typography>
+                                  </Box>
+                                </td>
+                              </tr>
+                            ) : (
+                              productFields.map((field, index) => (
+                                <tr
+                                  key={index}
+                                  style={{
+                                    borderBottom: "1px solid #e2e8f0",
+                                    backgroundColor:
+                                      index % 2 === 0
+                                        ? "white"
+                                        : alpha("#f8fafc", 0.5),
+                                  }}
+                                >
                                   <td
-                                    colSpan={10}
                                     style={{
-                                      padding: "40px 16px",
-                                      textAlign: "center",
+                                      padding: "16px",
                                       color: "#64748b",
+                                      textAlign: "left",
+                                    }}
+                                  >
+                                    <Chip
+                                      label={index + 1}
+                                      size="small"
+                                      sx={{
+                                        bgcolor: alpha("#8b5cf6", 0.1),
+                                        color: "#8b5cf6",
+                                        fontWeight: "bold",
+                                        minWidth: "30px",
+                                      }}
+                                    />
+                                  </td>
+                                  <td
+                                    style={{
+                                      padding: "16px",
+                                      color: "#1e293b",
+                                      fontWeight: 600,
+                                      textAlign: "left",
                                     }}
                                   >
                                     <Box
                                       sx={{
                                         display: "flex",
-                                        flexDirection: "column",
                                         alignItems: "center",
-                                        gap: 2,
                                       }}
                                     >
-                                      <motion.div
-                                        initial={{ scale: 0.8, opacity: 0 }}
-                                        animate={{ scale: 1, opacity: 1 }}
-                                        transition={{
-                                          type: "spring",
-                                          stiffness: 260,
-                                          damping: 20,
-                                        }}
-                                      >
-                                        <Avatar
-                                          sx={{
-                                            width: 80,
-                                            height: 80,
-                                            backgroundColor: alpha(
-                                              "#8b5cf6",
-                                              0.1
-                                            ),
-                                            color: "#8b5cf6",
-                                            border: "2px dashed",
-                                            borderColor: alpha("#8b5cf6", 0.3),
-                                          }}
-                                        >
-                                          <ShoppingCartIcon
-                                            sx={{ fontSize: 40 }}
-                                          />
-                                        </Avatar>
-                                      </motion.div>
-                                      <Typography
-                                        variant="h6"
-                                        fontWeight="600"
-                                        color="#1e293b"
-                                      >
-                                        No products added yet
-                                      </Typography>
-                                      <Typography
-                                        variant="body2"
-                                        color="#64748b"
-                                        sx={{ maxWidth: "400px" }}
-                                      >
-                                        Search for products above and add them
-                                        to your purchase order
-                                      </Typography>
-                                    </Box>
-                                  </td>
-                                </tr>
-                              ) : (
-                                productFields.map((field, index) => (
-                                  <tr
-                                    key={index}
-                                    style={{
-                                      borderBottom: "1px solid #e2e8f0",
-                                      backgroundColor:
-                                        index % 2 === 0
-                                          ? "white"
-                                          : alpha("#f8fafc", 0.5),
-                                    }}
-                                  >
-                                    <td
-                                      style={{
-                                        padding: "16px",
-                                        color: "#64748b",
-                                        textAlign: "left",
-                                      }}
-                                    >
-                                      <Chip
-                                        label={index + 1}
-                                        size="small"
+                                      <Avatar
                                         sx={{
+                                          width: 36,
+                                          height: 36,
+                                          mr: 1.5,
                                           bgcolor: alpha("#8b5cf6", 0.1),
                                           color: "#8b5cf6",
-                                          fontWeight: "bold",
-                                          minWidth: "30px",
-                                        }}
-                                      />
-                                    </td>
-                                    <td
-                                      style={{
-                                        padding: "16px",
-                                        color: "#1e293b",
-                                        fontWeight: 600,
-                                        textAlign: "left",
-                                      }}
-                                    >
-                                      <Box
-                                        sx={{
-                                          display: "flex",
-                                          alignItems: "center",
-                                        }}
-                                      >
-                                        <Avatar
-                                          sx={{
-                                            width: 36,
-                                            height: 36,
-                                            mr: 1.5,
-                                            bgcolor: alpha("#8b5cf6", 0.1),
-                                            color: "#8b5cf6",
-                                            borderRadius: "8px",
-                                          }}
-                                        >
-                                          <InventoryIcon fontSize="small" />
-                                        </Avatar>
-                                        {field.productName}
-                                      </Box>
-                                    </td>
-                                    <td
-                                      style={{
-                                        padding: "16px",
-                                        color: "#64748b",
-                                        textAlign: "center",
-                                      }}
-                                    >
-                                      <Chip
-                                        label={field.productUnit}
-                                        size="small"
-                                        sx={{
-                                          bgcolor: alpha("#3b82f6", 0.1),
-                                          color: "#3b82f6",
-                                          fontWeight: "medium",
-                                        }}
-                                      />
-                                    </td>
-                                    <td
-                                      style={{
-                                        padding: "16px",
-                                        textAlign: "center",
-                                      }}
-                                    >
-                                      <TextField
-                                        size="small"
-                                        type="number"
-                                        value={field.unit_price || ""}
-                                        onChange={(e) =>
-                                          handleUnitPriceChange(
-                                            index,
-                                            e.target.value
-                                          )
-                                        }
-                                        InputProps={{
-                                          startAdornment: (
-                                            <InputAdornment position="start">
-                                              ৳
-                                            </InputAdornment>
-                                          ),
-                                          sx: {
-                                            borderRadius: "8px",
-                                            width: "120px",
-                                            "& .MuiOutlinedInput-notchedOutline":
-                                              {
-                                                borderColor: "#e2e8f0",
-                                              },
-                                            "&:hover .MuiOutlinedInput-notchedOutline":
-                                              {
-                                                borderColor: "#cbd5e1",
-                                              },
-                                            "&.Mui-focused .MuiOutlinedInput-notchedOutline":
-                                              {
-                                                borderColor: "#8b5cf6",
-                                                borderWidth: "2px",
-                                              },
-                                          },
-                                        }}
-                                      />
-                                    </td>
-                                    <td
-                                      style={{
-                                        padding: "16px",
-                                        textAlign: "center",
-                                      }}
-                                    >
-                                      <Box
-                                        sx={{
-                                          display: "flex",
-                                          alignItems: "center",
-                                          justifyContent: "center",
-                                          gap: 1,
-                                        }}
-                                      >
-                                        <IconButton
-                                          size="small"
-                                          onClick={() =>
-                                            handleQuantityChange(index, -1)
-                                          }
-                                          sx={{
-                                            border: "1px solid #e2e8f0",
-                                            borderRadius: "8px",
-                                            p: "4px",
-                                            color: "#64748b",
-                                            transition: "all 0.2s",
-                                            "&:hover": {
-                                              backgroundColor: "#f1f5f9",
-                                              color: "#1e293b",
-                                            },
-                                          }}
-                                        >
-                                          <RemoveIcon fontSize="small" />
-                                        </IconButton>
-                                        <Typography
-                                          variant="body1"
-                                          fontWeight="600"
-                                          color="#1e293b"
-                                          sx={{
-                                            minWidth: "36px",
-                                            textAlign: "center",
-                                            bgcolor: alpha("#8b5cf6", 0.05),
-                                            borderRadius: "6px",
-                                            py: 0.5,
-                                          }}
-                                        >
-                                          {field.product_quantity}
-                                        </Typography>
-                                        <IconButton
-                                          size="small"
-                                          onClick={() =>
-                                            handleQuantityChange(index, 1)
-                                          }
-                                          sx={{
-                                            borderRadius: "8px",
-                                            p: "4px",
-                                            background:
-                                              "linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)",
-                                            color: "white",
-                                            boxShadow:
-                                              "0 2px 5px rgba(139, 92, 246, 0.3)",
-                                            "&:hover": {
-                                              boxShadow:
-                                                "0 4px 8px rgba(139, 92, 246, 0.4)",
-                                            },
-                                          }}
-                                        >
-                                          <AddIcon fontSize="small" />
-                                        </IconButton>
-                                      </Box>
-                                    </td>
-                                    <td
-                                      style={{
-                                        padding: "16px",
-                                        textAlign: "right",
-                                      }}
-                                    >
-                                      <TextField
-                                        size="small"
-                                        type="number"
-                                        value={field.productPrice || ""}
-                                        onChange={(e) =>
-                                          handlePriceChange(
-                                            index,
-                                            e.target.value
-                                          )
-                                        }
-                                        InputProps={{
-                                          startAdornment: (
-                                            <InputAdornment position="start">
-                                              ৳
-                                            </InputAdornment>
-                                          ),
-                                          sx: {
-                                            borderRadius: "8px",
-                                            width: "120px",
-                                            "& .MuiOutlinedInput-notchedOutline":
-                                              {
-                                                borderColor: "#e2e8f0",
-                                              },
-                                            "&:hover .MuiOutlinedInput-notchedOutline":
-                                              {
-                                                borderColor: "#cbd5e1",
-                                              },
-                                            "&.Mui-focused .MuiOutlinedInput-notchedOutline":
-                                              {
-                                                borderColor: "#8b5cf6",
-                                                borderWidth: "2px",
-                                              },
-                                          },
-                                        }}
-                                      />
-                                    </td>
-                                    <td
-                                      style={{
-                                        padding: "16px",
-                                        textAlign: "right",
-                                      }}
-                                    >
-                                      <TextField
-                                        size="small"
-                                        type="number"
-                                        value={field.tax || ""}
-                                        onChange={(e) =>
-                                          handleTaxChange(index, e.target.value)
-                                        }
-                                        InputProps={{
-                                          endAdornment: (
-                                            <InputAdornment position="end">
-                                              %
-                                            </InputAdornment>
-                                          ),
-                                          sx: {
-                                            borderRadius: "8px",
-                                            width: "100px",
-                                            "& .MuiOutlinedInput-notchedOutline":
-                                              {
-                                                borderColor: "#e2e8f0",
-                                              },
-                                            "&:hover .MuiOutlinedInput-notchedOutline":
-                                              {
-                                                borderColor: "#cbd5e1",
-                                              },
-                                            "&.Mui-focused .MuiOutlinedInput-notchedOutline":
-                                              {
-                                                borderColor: "#8b5cf6",
-                                                borderWidth: "2px",
-                                              },
-                                          },
-                                        }}
-                                      />
-                                    </td>
-                                    <td
-                                      style={{
-                                        padding: "16px",
-                                        textAlign: "right",
-                                      }}
-                                    >
-                                      <TextField
-                                        size="small"
-                                        type="number"
-                                        value={field.discount || ""}
-                                        onChange={(e) =>
-                                          handleDiscountChange(
-                                            index,
-                                            e.target.value
-                                          )
-                                        }
-                                        InputProps={{
-                                          startAdornment: (
-                                            <InputAdornment position="start">
-                                              ৳
-                                            </InputAdornment>
-                                          ),
-                                          sx: {
-                                            borderRadius: "8px",
-                                            width: "120px",
-                                            "& .MuiOutlinedInput-notchedOutline":
-                                              {
-                                                borderColor: "#e2e8f0",
-                                              },
-                                            "&:hover .MuiOutlinedInput-notchedOutline":
-                                              {
-                                                borderColor: "#cbd5e1",
-                                              },
-                                            "&.Mui-focused .MuiOutlinedInput-notchedOutline":
-                                              {
-                                                borderColor: "#8b5cf6",
-                                                borderWidth: "2px",
-                                              },
-                                          },
-                                        }}
-                                      />
-                                    </td>
-                                    <td
-                                      style={{
-                                        padding: "16px",
-                                        color: "#1e293b",
-                                        fontWeight: 700,
-                                        textAlign: "right",
-                                      }}
-                                    >
-                                      <Box
-                                        sx={{
-                                          bgcolor: alpha("#10b981", 0.1),
-                                          color: "#10b981",
-                                          py: 0.75,
-                                          px: 1.5,
                                           borderRadius: "8px",
-                                          display: "inline-block",
                                         }}
                                       >
-                                        {formatCurrency(
-                                          field.subtotal ||
-                                            (field.unit_price ||
-                                              field.productPrice) *
-                                              field.product_quantity
-                                        )}
-                                      </Box>
-                                    </td>
-                                    <td
-                                      style={{
-                                        padding: "16px",
-                                        textAlign: "center",
+                                        <InventoryIcon fontSize="small" />
+                                      </Avatar>
+                                      {field.productName}
+                                    </Box>
+                                  </td>
+                                  <td
+                                    style={{
+                                      padding: "16px",
+                                      color: "#64748b",
+                                      textAlign: "center",
+                                    }}
+                                  >
+                                    <Chip
+                                      label={field.productUnit}
+                                      size="small"
+                                      sx={{
+                                        bgcolor: alpha("#3b82f6", 0.1),
+                                        color: "#3b82f6",
+                                        fontWeight: "medium",
+                                      }}
+                                    />
+                                  </td>
+                                  <td
+                                    style={{
+                                      padding: "16px",
+                                      textAlign: "center",
+                                    }}
+                                  >
+                                    <TextField
+                                      size="small"
+                                      type="number"
+                                      value={field.unit_price || ""}
+                                      onChange={(e) =>
+                                        handleUnitPriceChange(
+                                          index,
+                                          e.target.value
+                                        )
+                                      }
+                                      InputProps={{
+                                        startAdornment: (
+                                          <InputAdornment position="start">
+                                            ৳
+                                          </InputAdornment>
+                                        ),
+                                        sx: {
+                                          borderRadius: "8px",
+                                          width: "120px",
+                                          "& .MuiOutlinedInput-notchedOutline":
+                                          {
+                                            borderColor: "#e2e8f0",
+                                          },
+                                          "&:hover .MuiOutlinedInput-notchedOutline":
+                                          {
+                                            borderColor: "#cbd5e1",
+                                          },
+                                          "&.Mui-focused .MuiOutlinedInput-notchedOutline":
+                                          {
+                                            borderColor: "#8b5cf6",
+                                            borderWidth: "2px",
+                                          },
+                                        },
+                                      }}
+                                    />
+                                  </td>
+                                  <td
+                                    style={{
+                                      padding: "16px",
+                                      textAlign: "center",
+                                    }}
+                                  >
+                                    <Box
+                                      sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        gap: 1,
                                       }}
                                     >
-                                      <Tooltip title="Remove Item" arrow>
-                                        <IconButton
-                                          size="small"
-                                          onClick={() =>
-                                            handleRemoveProduct(index)
-                                          }
-                                          sx={{
-                                            color: "#ef4444",
-                                            bgcolor: alpha("#ef4444", 0.1),
-                                            borderRadius: "8px",
-                                            "&:hover": {
-                                              backgroundColor: alpha(
-                                                "#ef4444",
-                                                0.2
-                                              ),
-                                            },
-                                          }}
-                                        >
-                                          <DeleteIcon fontSize="small" />
-                                        </IconButton>
-                                      </Tooltip>
-                                    </td>
-                                  </tr>
-                                ))
-                              )}
-                            </AnimatePresence>
+                                      <IconButton
+                                        size="small"
+                                        onClick={() =>
+                                          handleQuantityChange(index, -1)
+                                        }
+                                        sx={{
+                                          border: "1px solid #e2e8f0",
+                                          borderRadius: "8px",
+                                          p: "4px",
+                                          color: "#64748b",
+                                          transition: "all 0.2s",
+                                          "&:hover": {
+                                            backgroundColor: "#f1f5f9",
+                                            color: "#1e293b",
+                                          },
+                                        }}
+                                      >
+                                        <RemoveIcon fontSize="small" />
+                                      </IconButton>
+                                      <Typography
+                                        variant="body1"
+                                        fontWeight="600"
+                                        color="#1e293b"
+                                        sx={{
+                                          minWidth: "36px",
+                                          textAlign: "center",
+                                          bgcolor: alpha("#8b5cf6", 0.05),
+                                          borderRadius: "6px",
+                                          py: 0.5,
+                                        }}
+                                      >
+                                        {field.product_quantity}
+                                      </Typography>
+                                      <IconButton
+                                        size="small"
+                                        onClick={() =>
+                                          handleQuantityChange(index, 1)
+                                        }
+                                        sx={{
+                                          borderRadius: "8px",
+                                          p: "4px",
+                                          background:
+                                            "linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)",
+                                          color: "white",
+                                          boxShadow:
+                                            "0 2px 5px rgba(139, 92, 246, 0.3)",
+                                          "&:hover": {
+                                            boxShadow:
+                                              "0 4px 8px rgba(139, 92, 246, 0.4)",
+                                          },
+                                        }}
+                                      >
+                                        <AddIcon fontSize="small" />
+                                      </IconButton>
+                                    </Box>
+                                  </td>
+                                  <td
+                                    style={{
+                                      padding: "16px",
+                                      textAlign: "right",
+                                    }}
+                                  >
+                                    <TextField
+                                      size="small"
+                                      type="number"
+                                      value={field.productPrice || ""}
+                                      onChange={(e) =>
+                                        handlePriceChange(
+                                          index,
+                                          e.target.value
+                                        )
+                                      }
+                                      InputProps={{
+                                        startAdornment: (
+                                          <InputAdornment position="start">
+                                            ৳
+                                          </InputAdornment>
+                                        ),
+                                        sx: {
+                                          borderRadius: "8px",
+                                          width: "120px",
+                                          "& .MuiOutlinedInput-notchedOutline":
+                                          {
+                                            borderColor: "#e2e8f0",
+                                          },
+                                          "&:hover .MuiOutlinedInput-notchedOutline":
+                                          {
+                                            borderColor: "#cbd5e1",
+                                          },
+                                          "&.Mui-focused .MuiOutlinedInput-notchedOutline":
+                                          {
+                                            borderColor: "#8b5cf6",
+                                            borderWidth: "2px",
+                                          },
+                                        },
+                                      }}
+                                    />
+                                  </td>
+                                  <td
+                                    style={{
+                                      padding: "16px",
+                                      textAlign: "right",
+                                    }}
+                                  >
+                                    <TextField
+                                      size="small"
+                                      type="number"
+                                      value={field.tax || ""}
+                                      onChange={(e) =>
+                                        handleTaxChange(index, e.target.value)
+                                      }
+                                      InputProps={{
+                                        endAdornment: (
+                                          <InputAdornment position="end">
+                                            %
+                                          </InputAdornment>
+                                        ),
+                                        sx: {
+                                          borderRadius: "8px",
+                                          width: "100px",
+                                          "& .MuiOutlinedInput-notchedOutline":
+                                          {
+                                            borderColor: "#e2e8f0",
+                                          },
+                                          "&:hover .MuiOutlinedInput-notchedOutline":
+                                          {
+                                            borderColor: "#cbd5e1",
+                                          },
+                                          "&.Mui-focused .MuiOutlinedInput-notchedOutline":
+                                          {
+                                            borderColor: "#8b5cf6",
+                                            borderWidth: "2px",
+                                          },
+                                        },
+                                      }}
+                                    />
+                                  </td>
+                                  <td
+                                    style={{
+                                      padding: "16px",
+                                      textAlign: "right",
+                                    }}
+                                  >
+                                    <TextField
+                                      size="small"
+                                      type="number"
+                                      value={field.discount || ""}
+                                      onChange={(e) =>
+                                        handleDiscountChange(
+                                          index,
+                                          e.target.value
+                                        )
+                                      }
+                                      InputProps={{
+                                        startAdornment: (
+                                          <InputAdornment position="start">
+                                            ৳
+                                          </InputAdornment>
+                                        ),
+                                        sx: {
+                                          borderRadius: "8px",
+                                          width: "120px",
+                                          "& .MuiOutlinedInput-notchedOutline":
+                                          {
+                                            borderColor: "#e2e8f0",
+                                          },
+                                          "&:hover .MuiOutlinedInput-notchedOutline":
+                                          {
+                                            borderColor: "#cbd5e1",
+                                          },
+                                          "&.Mui-focused .MuiOutlinedInput-notchedOutline":
+                                          {
+                                            borderColor: "#8b5cf6",
+                                            borderWidth: "2px",
+                                          },
+                                        },
+                                      }}
+                                    />
+                                  </td>
+                                  <td
+                                    style={{
+                                      padding: "16px",
+                                      color: "#1e293b",
+                                      fontWeight: 700,
+                                      textAlign: "right",
+                                    }}
+                                  >
+                                    <Box
+                                      sx={{
+                                        bgcolor: alpha("#10b981", 0.1),
+                                        color: "#10b981",
+                                        py: 0.75,
+                                        px: 1.5,
+                                        borderRadius: "8px",
+                                        display: "inline-block",
+                                      }}
+                                    >
+                                      {formatCurrency(
+                                        field.subtotal ||
+                                        (field.unit_price ||
+                                          field.productPrice) *
+                                        field.product_quantity
+                                      )}
+                                    </Box>
+                                  </td>
+                                  <td
+                                    style={{
+                                      padding: "16px",
+                                      textAlign: "center",
+                                    }}
+                                  >
+                                    <Tooltip title="Remove Item" arrow>
+                                      <IconButton
+                                        size="small"
+                                        onClick={() =>
+                                          handleRemoveProduct(index)
+                                        }
+                                        sx={{
+                                          color: "#ef4444",
+                                          bgcolor: alpha("#ef4444", 0.1),
+                                          borderRadius: "8px",
+                                          "&:hover": {
+                                            backgroundColor: alpha(
+                                              "#ef4444",
+                                              0.2
+                                            ),
+                                          },
+                                        }}
+                                      >
+                                        <DeleteIcon fontSize="small" />
+                                      </IconButton>
+                                    </Tooltip>
+                                  </td>
+                                </tr>
+                              ))
+                            )}
+
                           </tbody>
                         </table>
                       </Box>
@@ -1698,7 +1682,7 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
                               <Grid item xs={12}>
                                 <Box
                                   sx={{
-                                    display: {sm:"flex"},
+                                    display: { sm: "flex" },
                                     justifyContent: "space-between",
                                     py: 2,
                                     mt: 1,
@@ -1745,7 +1729,7 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
                   </Grid>
                 </Grid>
               </div>
-              
+
               <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 3 }}>
                 <Can
                   action={orderId ? "edit" : "create"}
