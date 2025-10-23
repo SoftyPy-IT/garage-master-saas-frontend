@@ -389,7 +389,7 @@ const AllTenantList = () => {
   }
 
   return (
-    <Box sx={{ maxWidth: 1600, margin: "auto", padding: 3 }}>
+    <Box sx={{ maxWidth: 1600, margin: "auto", padding: {xs:1, sm:3}, }}>
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -565,23 +565,14 @@ const AllTenantList = () => {
       </StyledPaper>
 
       {/* Tenants Table */}
+      
       <StyledPaper>
         <StyledTableContainer sx={{
-          width: "100%",
-          overflowX: "auto",
-          borderRadius: 2,
-          "&::-webkit-scrollbar": {
-            height: 6,
-          },
-          "&::-webkit-scrollbar-thumb": {
-            backgroundColor: "#ccc",
-            borderRadius: 3,
-          },
-          "&::-webkit-scrollbar-thumb:hover": {
-            backgroundColor: "#999",
-          },
-        }}>
-          <Table>
+      overflowX: 'auto',
+      maxWidth: '100%',
+      display: 'block'
+    }}>
+          <Table >
             <TableHead>
               <TableRow>
                 <TableCell padding="checkbox">

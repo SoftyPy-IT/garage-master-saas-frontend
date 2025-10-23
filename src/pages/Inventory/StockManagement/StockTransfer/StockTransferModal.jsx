@@ -136,7 +136,7 @@ function StockTransferModal({
       )}
       {formSubmitting && <LinearProgress sx={{ mt: 3 }} />}
 
-      <div className="flex flex-col md:flex-row justify-between items-center mt-[5px] space-y-3">
+      <div className="flex flex-col md:flex-row justify-between items-center my-[10px] space-y-3">
         <Button
           onClick={handleSafeClose}
           variant="outlined"
@@ -172,7 +172,7 @@ function StockTransferModal({
           sx={{
             borderRadius: 2,
             py: 1,
-            px: 3,
+            px: 3,            
             boxShadow: `0 4px 14px ${alpha(theme.palette.primary.main, 0.4)}`,
             background: `linear-gradient(45deg, ${theme.palette.primary.main} 30%, ${theme.palette.primary.light} 90%)`,
           }}

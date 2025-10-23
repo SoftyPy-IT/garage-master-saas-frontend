@@ -840,9 +840,9 @@ export default function ProductForm({ id }) {
           </Grid>
           <Grid item xs={12} md={4}>
             <Grid container spacing={1} alignItems="center">
-              <Grid item lg={11}>
+              <Grid item xs={9} lg={11}>
                 <TASAutocomplete
-                  size="medium"
+                  // size="large"
                   name="unit"
                   label={
                     <>
@@ -854,6 +854,7 @@ export default function ProductForm({ id }) {
                   icon={Category}
                   iconPosition="start"
                   options={unitOptions}
+                  size="300px"
                 />
               </Grid>
               <Grid item lg={1} display="flex" justifyContent="center">
@@ -1210,6 +1211,7 @@ export default function ProductForm({ id }) {
                               sx={{
                                 borderRadius: 100,
                                 px: 3,
+                                mb:{xs:2, sm:0},
                                 color: "white",
                               }}
                             >

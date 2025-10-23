@@ -117,6 +117,7 @@ const PreviewJobCard = () => {
                 </div>
               </div>
             </div>
+
             <div>
               <div className="md:hidden flex justify-center items-center my-3">
                   <div className="vehicleCard previwCard2">
@@ -145,7 +146,7 @@ const PreviewJobCard = () => {
                 </div>
               </div>
 
-              <div className="flex flex-col  justify-between">
+              <div className="flex flex-col md:flex-row  justify-between">
                 <div className="inputGroup">
                   <h6 className="mb-2 font-bold">Vehicle Information </h6>
                   <div className="grid grid-cols-2 md:grid-cols-3">
@@ -414,7 +415,7 @@ const PreviewJobCard = () => {
               </div>
             </div>
 
-            <div className="flex flex-col md:flex-row md:items-center  justify-between inputGroup2">
+            <div className="flex flex-col md:flex-row md:items-center justify-between inputGroup2">
               <div>
                 <label className="block ">Technician Name</label>
                 <input
@@ -474,7 +475,7 @@ const PreviewJobCard = () => {
           </div>
         </div>
       </div>
-      <div className="printBtnGroup md:ml-[500px] mt-5 space-y-3 ">
+      <div className="printBtnGroup md:ml-[500px] mt-5 space-y-3 md:space-y-0 ">
         <Button
           sx={{ color: "white", borderRadius: "20px", padding: "7px 20px" }}
           onClick={handlePrint}

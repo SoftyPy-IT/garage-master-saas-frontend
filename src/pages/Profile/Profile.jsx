@@ -36,7 +36,7 @@ const Profile = () => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
       month: "long",
-      day: "numeric",
+      day: "numeric", 
     });
   };
 
@@ -80,7 +80,7 @@ const Profile = () => {
 
   return (
     <Box
-      sx={{ maxWidth: 1400, margin: "auto", padding: 3, minHeight: "100vh" }}
+      sx={{ maxWidth: 1400, margin: "auto", padding: 0, minHeight: "100vh" }}
     >
 
       <ProfileHeader

@@ -196,10 +196,7 @@
 }
 
 
-.printInvoiceBtnGroup {
-  margin-left: 491px;
-  margin-top: 30px;
-}
+
 
 .specificWidth {
   width: 130px !important
@@ -211,6 +208,11 @@
     position: absolute;
   }
 
+  .printInvoiceBtnGroup {
+  margin-left: 491px;
+  margin-top: 30px;
+}
+
 
 }
 
@@ -220,6 +222,8 @@
 
     left: -96%;
   }
+
+  
 
 
 }

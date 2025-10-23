@@ -141,8 +141,8 @@ const SubscriptionSection = ({
           startIcon={
             subscription?.status === "Expired" ? <FaRocket /> : <FaCog />
           }
-          fullWidth
-          size="large"
+          
+         
           sx={{
             background:
               subscription?.status === "Expired"
@@ -150,7 +150,7 @@ const SubscriptionSection = ({
                 : "linear-gradient(45deg, #667eea, #764ba2)",
             borderRadius: "12px",
             py: 1.5,
-            fontSize: "1.1rem",
+            fontSize: {xs:"13px", sm:"20px"},
             fontWeight: "bold",
             "&:hover": {
               background:

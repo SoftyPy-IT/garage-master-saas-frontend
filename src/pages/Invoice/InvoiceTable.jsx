@@ -151,6 +151,7 @@ const InvoiceTable = ({ title }) => {
                         (index + 1);
 
                       const rowClass = getRowClass(card);
+                      console.log(card)
 
                       return (
                         <tr
@@ -182,7 +183,7 @@ const InvoiceTable = ({ title }) => {
                             <td>{card?.showRoom?.fullCompanyNum}</td>
                           )}
                           <td>
-                            <span>{card.vehicle?.vehicle_name}</span>
+                            <span>{card.vehicle?.vehicle_brand}</span>
                           </td>
                           <td>
                             <span>{card.vehicle?.vehicle_name}</span>

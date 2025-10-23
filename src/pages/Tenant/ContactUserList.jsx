@@ -24,7 +24,7 @@ import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import {
   useDeleteContactUserMutation,
-  useGetAllContactUserQuery
+  useGetAllContactUserQuery,
 } from "../../redux/api/userApi";
 import { StyledPaper } from "../../utils";
 import { StyledTableContainer } from "../../utils/customStyle";
@@ -35,7 +35,8 @@ const ContactUserList = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
   const { data: userData, isLoading, refetch } = useGetAllContactUserQuery({});
-  const [deleteUser, { isLoading: deleteLoading }] = useDeleteContactUserMutation();
+  const [deleteUser, { isLoading: deleteLoading }] =
+    useDeleteContactUserMutation();
 
   const users = userData?.data?.users || [];
 
@@ -71,15 +72,16 @@ const ContactUserList = () => {
   const formatDate = (dateString) =>
     dateString
       ? new Date(dateString).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-      })
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        })
       : "N/A";
 
   // Filter users based on search term
   const filteredUsers = users.filter((user) => {
-    const searchContent = `${user.garageName} ${user.email} ${user.phone} ${user.message}`.toLowerCase();
+    const searchContent =
+      `${user.garageName} ${user.email} ${user.phone} ${user.message}`.toLowerCase();
     return searchContent.includes(searchTerm.toLowerCase());
   });
 
@@ -104,7 +106,7 @@ const ContactUserList = () => {
         transition={{ duration: 0.5 }}
       >
         <Paper elevation={3} sx={{ p: 4, mb: 4, borderRadius: 3 }}>
-          <Typography variant="h3" fontWeight="bold" gutterBottom>
+          <Typography variant="h2" fontWeight="bold" gutterBottom>
             Contact Submissions
           </Typography>
           <Typography variant="h6" color="textSecondary">
@@ -130,34 +132,31 @@ const ContactUserList = () => {
       </Paper>
 
       <StyledPaper elevation={4} sx={{ borderRadius: 3 }}>
-        <StyledTableContainer sx={{
-          width: "100%",
-          overflowX: "auto",
-          borderRadius: 2,
-          "&::-webkit-scrollbar": {
-            height: 6,
-          },
-          "&::-webkit-scrollbar-thumb": {
-            backgroundColor: "#ccc",
-            borderRadius: 3,
-          },
-          "&::-webkit-scrollbar-thumb:hover": {
-            backgroundColor: "#999",
-          },
-        }}>
+        <StyledTableContainer
+          sx={{
+            overflowX: "auto",
+            maxWidth: "100%",
+            display: "block",
+          }}
+        >
           <Table>
             <TableHead>
               <TableRow sx={{ bgcolor: "primary.main" }}>
-                {["Garage", "Email", "Phone", "Message", "Created", "Actions"].map(
-                  (head, i) => (
-                    <TableCell
-                      key={i}
-                      sx={{ color: "white", fontWeight: "bold" }}
-                    >
-                      {head}
-                    </TableCell>
-                  )
-                )}
+                {[
+                  "Garage",
+                  "Email",
+                  "Phone",
+                  "Message",
+                  "Created",
+                  "Actions",
+                ].map((head, i) => (
+                  <TableCell
+                    key={i}
+                    sx={{ color: "white", fontWeight: "bold" }}
+                  >
+                    {head}
+                  </TableCell>
+                ))}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -174,12 +173,14 @@ const ContactUserList = () => {
                     <TableCell>{user.phone}</TableCell>
                     <TableCell>
                       <Tooltip title={user.message}>
-                        <Box sx={{
-                          maxWidth: 200,
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis"
-                        }}>
+                        <Box
+                          sx={{
+                            maxWidth: 200,
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                          }}
+                        >
                           {user.message}
                         </Box>
                       </Tooltip>
