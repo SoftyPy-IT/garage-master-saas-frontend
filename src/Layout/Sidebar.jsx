@@ -1,7 +1,6 @@
+/* eslint-disable react/prop-types */
 "use client";
 
-/* eslint-disable no-unused-vars */
-/* eslint-disable react/prop-types */
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Cookies from "js-cookie";
@@ -39,10 +38,6 @@ import {
   EventNote,
   CalendarToday,
   Group,
-  HolidayVillage,
-  Storage,
-  BackupTable,
-  RestorePage,
   DeleteForever,
   Assignment,
   Add,
@@ -50,6 +45,15 @@ import {
   Savings,
   Payments,
   ReceiptLong,
+
+  Settings,
+  Backup,
+  Restore,
+  Security,
+  AdminPanelSettings,
+  Star,
+  ContactMail,
+  BrandingWatermark,
 } from "@mui/icons-material";
 
 import {
@@ -73,6 +77,9 @@ import {
   FaUserFriends,
   FaRunning,
   FaCheckCircle,
+  FaDatabase,
+  FaShieldAlt,
+  FaUserCog,
 } from "react-icons/fa";
 import {
   HiOutlineHome,
@@ -81,7 +88,6 @@ import {
   HiOutlineDocumentText,
   HiOutlineDocumentDuplicate,
   HiOutlineReceiptRefund,
-  HiOutlineClipboardList,
   HiOutlineOfficeBuilding,
   HiOutlineTrash,
   HiOutlineExclamation,
@@ -120,6 +126,7 @@ const Sidebar = ({ toggle }) => {
             <h3 className="text-xl font-semibold ml-2">Dashboard</h3>
           </NavLink>
         </div>
+
         {/* Client */}
         <Accordion
           sx={{ paddingBottom: "10px" }}
@@ -180,6 +187,7 @@ const Sidebar = ({ toggle }) => {
             </Typography>
           </AccordionDetails>
         </Accordion>
+
         {/* Vehicle Job Card */}
         <Accordion
           sx={{ paddingBottom: "10px" }}
@@ -368,6 +376,8 @@ const Sidebar = ({ toggle }) => {
             </Typography>
           </AccordionDetails>
         </Accordion>
+
+        {/* Suppliers */}
         <Accordion
           sx={{ paddingBottom: "10px" }}
           className="dashboardAccordion"
@@ -402,6 +412,8 @@ const Sidebar = ({ toggle }) => {
             </Typography>
           </AccordionDetails>
         </Accordion>
+
+        {/* Product */}
         <Accordion
           sx={{ paddingBottom: "10px" }}
           className="dashboardAccordion"
@@ -479,6 +491,8 @@ const Sidebar = ({ toggle }) => {
             ))}
           </AccordionDetails>
         </Accordion>
+
+        {/* Purchase */}
         <Accordion
           sx={{ paddingBottom: "10px" }}
           className="dashboardAccordion"
@@ -528,9 +542,9 @@ const Sidebar = ({ toggle }) => {
                 </NavLink>
               </div>
             </Typography>
-
           </AccordionDetails>
         </Accordion>
+
         {/* Inventory */}
         <Accordion
           sx={{ paddingBottom: "10px" }}
@@ -570,7 +584,6 @@ const Sidebar = ({ toggle }) => {
                   text: "Stock Transfer",
                   link: "/dashboard/stock-transfer",
                 },
-
                 {
                   icon: <HiOutlineSwitchHorizontal />,
                   text: "Quantity Adjustment",
@@ -624,7 +637,8 @@ const Sidebar = ({ toggle }) => {
           <AccordionDetails>
             <Typography className="accordionTypoGrapy">
               <div className="flex items-center">
-                ৳<NavLink to="/dashboard/add-income">Add Income</NavLink>
+                <Payments className="mr-2" />
+                <NavLink to="/dashboard/add-income">Add Income</NavLink>
               </div>
             </Typography>
             <Typography className="accordionTypoGrapy">
@@ -662,12 +676,13 @@ const Sidebar = ({ toggle }) => {
             </Typography>
             <Typography className="accordionTypoGrapy">
               <div className="flex items-center">
-                <Savings className="mr-2" />
+                <ReceiptLong className="mr-2" />
                 <NavLink to="/dashboard/donation-list">Donation List</NavLink>
               </div>
             </Typography>
           </AccordionDetails>
         </Accordion>
+
         {/* HRM */}
         <Accordion
           sx={{ paddingBottom: "10px" }}
@@ -726,12 +741,14 @@ const Sidebar = ({ toggle }) => {
 
             <Typography className="accordionTypoGrapy">
               <span className="flex items-center">
-                ৳<NavLink to="/dashboard/employee-salary">Salary</NavLink>
+                <Payments className="mr-2" />
+                <NavLink to="/dashboard/employee-salary">Salary</NavLink>
               </span>
             </Typography>
           </AccordionDetails>
         </Accordion>
 
+        {/* Tenant & UI Management */}
         {user.role == "superadmin" && (
           <Accordion
             sx={{ paddingBottom: "10px" }}
@@ -748,7 +765,7 @@ const Sidebar = ({ toggle }) => {
             >
               <Typography>
                 <div className="flex items-center dashboardItems">
-                  <FaUsers size={22} />
+                  <AdminPanelSettings size={22} />
                   <span className="ml-2">Tenant & UI Management</span>
                 </div>
               </Typography>
@@ -756,7 +773,7 @@ const Sidebar = ({ toggle }) => {
             <AccordionDetails>
               <Typography className="accordionTypoGrapy">
                 <span className="flex items-center">
-                  <FaUserPlus className="mr-2" />
+                  <Business className="mr-2" />
                   <NavLink to="/dashboard/all-tenant-list">
                     All Tenant List
                   </NavLink>
@@ -764,7 +781,7 @@ const Sidebar = ({ toggle }) => {
               </Typography>
               <Typography className="accordionTypoGrapy">
                 <span className="flex items-center">
-                  <FaUserPlus className="mr-2" />
+                  <ContactMail className="mr-2" />
                   <NavLink to="/dashboard/contact-customer">
                     Contact Customer List{" "}
                   </NavLink>
@@ -772,27 +789,31 @@ const Sidebar = ({ toggle }) => {
               </Typography>
               <Typography className="accordionTypoGrapy">
                 <span className="flex items-center">
-                  <FaUserPlus className="mr-2" />
+                  <BrandingWatermark className="mr-2" />
                   <NavLink to="/dashboard/company-brand">Company Brand</NavLink>
                 </span>
               </Typography>
               <Typography className="accordionTypoGrapy">
                 <span className="flex items-center">
-                  <FaUserPlus className="mr-2" />
-                  <NavLink to="/dashboard/review">Client Reivew</NavLink>
+                  <Star className="mr-2" />
+                  <NavLink to="/dashboard/review">Client Review</NavLink>
                 </span>
               </Typography>
             </AccordionDetails>
           </Accordion>
         )}
+
+        {/* All User List */}
         <div className="pl-4 space-y-3 mt-3 ">
           <Link to="/dashboard/all-user-list">
             <div className="flex items-center dashboardItems cursor-pointer">
-              <Logout size={22} />
+              <Group size={22} />
               <span className="ml-2">All User List</span>
             </div>
           </Link>
         </div>
+
+        {/* Permission */}
         <Accordion
           sx={{ paddingBottom: "10px" }}
           className="dashboardAccordion"
@@ -807,7 +828,7 @@ const Sidebar = ({ toggle }) => {
           >
             <Typography>
               <span className="flex items-center justify-center ">
-                <Storage />
+                <Security />
                 <span className="ml-2"> Permission </span>
               </span>
             </Typography>
@@ -815,24 +836,25 @@ const Sidebar = ({ toggle }) => {
           <AccordionDetails>
             <Typography className="accordionTypoGrapy">
               <div className="flex items-center">
-                <BackupTable className="mr-2" />
+                <FaUserCog className="mr-2" />
                 <NavLink to="/dashboard/user-permission">User Permission</NavLink>
               </div>
             </Typography>
             <Typography className="accordionTypoGrapy">
               <div className="flex items-center">
-                <RestorePage className="mr-2" />
+                <FaShieldAlt className="mr-2" />
                 <NavLink to="/dashboard/role-management">Role Management </NavLink>
               </div>
             </Typography>
             <Typography className="accordionTypoGrapy">
               <div className="flex items-center">
-                <RestorePage className="mr-2" />
+                <Settings className="mr-2" />
                 <NavLink to="/dashboard/page-management">Page Management </NavLink>
               </div>
             </Typography>
           </AccordionDetails>
         </Accordion>
+
         {/* Recycle Bin */}
         <Accordion
           sx={{ paddingBottom: "10px" }}
@@ -928,6 +950,8 @@ const Sidebar = ({ toggle }) => {
             </Typography>
           </AccordionDetails>
         </Accordion>
+
+        {/* Database Backup */}
         <Accordion
           sx={{ paddingBottom: "10px" }}
           className="dashboardAccordion"
@@ -942,7 +966,7 @@ const Sidebar = ({ toggle }) => {
           >
             <Typography>
               <span className="flex items-center justify-center ">
-                <Storage />
+                <FaDatabase size={22} />
                 <span className="ml-2"> Database Backup </span>
               </span>
             </Typography>
@@ -950,18 +974,19 @@ const Sidebar = ({ toggle }) => {
           <AccordionDetails>
             <Typography className="accordionTypoGrapy">
               <div className="flex items-center">
-                <BackupTable className="mr-2" />
+                <Backup className="mr-2" />
                 <NavLink to="/dashboard/backup">Backup Database </NavLink>
               </div>
             </Typography>
             <Typography className="accordionTypoGrapy">
               <div className="flex items-center">
-                <RestorePage className="mr-2" />
+                <Restore className="mr-2" />
                 <NavLink to="/dashboard/restore">Restore Database </NavLink>
               </div>
             </Typography>
           </AccordionDetails>
         </Accordion>
+
         {/* Logout */}
         <div className="pl-4 space-y-3 mt-3  mb-20 ">
           <div
@@ -973,6 +998,7 @@ const Sidebar = ({ toggle }) => {
           </div>
         </div>
       </div>
+
       {/* bar here  */}
       <div
         className={`${toggle ? `rightSideBarWrap` : `activeRightSideBarWrap`}`}
