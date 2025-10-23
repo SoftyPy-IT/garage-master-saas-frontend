@@ -12,6 +12,9 @@ import { toast } from "react-toastify";
 import Loading from "../../components/Loading/Loading";
 import EmptyData from "../../components/EmptyData/EmptyData";
 import Can from "../../components/Can";
+import { usePermissions } from "../../context/PermissionContext";
+import { useTenantDomain } from "../../hooks/useTenantDomain";
+import { useGetAllCustomersQuery, useMoveRecycledCustomerMutation } from "../../redux/api/customerApi";
 
 const CustomerListTable = () => {
   const textInputRef = useRef(null);

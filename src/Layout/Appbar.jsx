@@ -71,9 +71,8 @@ const AppBar = ({ toggle, navRef, toggleSideBar }) => {
 
   return (
     <div className="static w-full h-16 xl:h-16">
-      <div className="w-full h-16 xl:h-16 bg-[#42A1DA] fixed z-10">
+      <div className="w-full h-16 xl:h-16 bg-[#42A0D9] fixed z-10">
         <div className="flex items-center justify-between lg:pr-8 pl-10 lg:pl-10 xl:pl-20 mt-3 md:mt-2 lg:mt-3">
-          {/* Left Sidebar Toggle */}
           <div
             className={`${toggle ? `activeToggle ` : `navActive`}`}
             ref={navRef}
@@ -123,7 +122,7 @@ const AppBar = ({ toggle, navRef, toggleSideBar }) => {
             {/* <UserProfile />            
             <ExpandMore/>*/}
           </IconButton>
-         
+
 
           {/* Original navigation items - visible on lg screens */}
           <div className="hidden lg:flex items-center space-x-6">
@@ -145,9 +144,8 @@ const AppBar = ({ toggle, navRef, toggleSideBar }) => {
 
         {/* Dropdown menu for small and medium devices */}
         <div
-          className={`md:hidden w-full backdrop-blur-md bg-[#42A1DA] transition-all duration-500 ease-in-out overflow-hidden rounded-b-2xl shadow-2xl ${
-            menuOpen ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"
-          }`}
+          className={`md:hidden w-full backdrop-blur-md bg-[#42A1DA] transition-all duration-500 ease-in-out overflow-hidden rounded-b-2xl shadow-2xl ${menuOpen ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"
+            }`}
         >
           <div className="flex flex-col items-center pt-6 space-y-4">
             {/* Keep original TopSearchbar component */}

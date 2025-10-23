@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { ArrowBack, ArrowForwardIos } from "@mui/icons-material";
 import { Button } from "@mui/material";
 import CustomerListTable from "./CustomerListTable";
+import { backBtnStyle } from "../../utils/customStyle";
 const CustomerList = () => {
   const navigate = useNavigate();
 

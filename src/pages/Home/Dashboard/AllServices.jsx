@@ -18,21 +18,19 @@ import { useTenantDomain } from "../../../../src/hooks/useTenantDomain";
 import PropTypes from "prop-types";
 
 const AllServices = ({ showSensitiveData }) => {
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain } = useTenantDomain();
   const {
     data: allMetaData,
     isLoading,
-    isError,
   } = useGetAllMetaQuery({ tenantDomain });
 
   if (isLoading) return <Loading />;
 
   const card = "flex flex-col md:flex-row items-center justify-center content-center gap-x-2 mt-3 md:mt-8 space-y-2 "
-  const amount = "text-center text-[32px] font-bold " 
+  const amount = "text-center text-[32px] font-bold "
 
   return (
     <div className="dashBoardRight mt-5 lg:mt-0 ">
-      {/* Always visible cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 place-content-center gap-3 lg:gap-3 xl:gap-7 mb-5">
         {/* Completed Services - Green (success) */}
         <div className="invoice-card completed-card">
