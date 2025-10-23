@@ -271,6 +271,7 @@ const WarehouseModal = ({ open, onClose, warehouseId }) => {
                     py: 1,
                     px: 3,
                     color: "white",
+                    mb:2
 
                   }}
                 >

@@ -1,9 +1,3 @@
-// export const InvoiceOption = [
-//   { title: "INV-2023-001 - 1250.0" },
-//   { title: "INV-2023-001 - 1250.0" },
-//   { title: "INV-2023-002 - 780.5" },
-//   { title: "INV-2023-003 - 2340.75" },
-// ];
 
 export const InvoiceOption = [
   { label: "INV-2023-001 - 1250.0", value: "INV-2023-001 - 1250.0" },

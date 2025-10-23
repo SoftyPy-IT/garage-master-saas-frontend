@@ -1,16 +1,14 @@
-
-
-import CustomerAccount from "../../pages/Home/Customer/CustomerProfile/CustomerAccount";
-import CustomerInvoiceList from "../../pages/Home/Customer/CustomerProfile/CustomerInvoiceList";
-import CustomerJobCardList from "../../pages/Home/Customer/CustomerProfile/CustomerJobCardList";
-import VehicleDetails from "../../pages/Home/Customer/CustomerProfile/VehicleDetails";
-import CustomerQoutationList from "../../pages/Home/Customer/CustomerProfile/CustomerQoutationList";
-import CustomerMoneyList from "../../pages/Home/Customer/CustomerProfile/CustomerMoneyList";
-import CustomerNote from "../../pages/Home/Customer/CustomerProfile/CustomerNote";
+import CompanyAccount from "../../pages/Company/CompanyProfile/CompanyAccount";
+import CustomerAccount from "../../pages/Customer/CustomerProfile/CustomerAccount";
+import CustomerInvoiceList from "../../pages/Customer/CustomerProfile/CustomerInvoiceList";
+import CustomerJobCardList from "../../pages/Customer/CustomerProfile/CustomerJobCardList";
+import CustomerMoneyList from "../../pages/Customer/CustomerProfile/CustomerMoneyList";
+import CustomerNote from "../../pages/Customer/CustomerProfile/CustomerNote";
+import CustomerQoutationList from "../../pages/Customer/CustomerProfile/CustomerQoutationList";
+import VehicleDetails from "../../pages/Customer/CustomerProfile/VehicleDetails";
+import SupplierPaymentList from "../../pages/Suppliers/SupplierPaymentList";
+import ShowRoomAccount from "../../pages/ShowRoom/ShowRoomProfile/ShowRoomAccount";
 import Message from "../../shared/Message/Message";
-import ShowRoomAccount from "../../pages/Home/ShowRoom/ShowRoomProfile/ShowRoomAccount";
-import CompanyAccount from "../../pages/Home/Company/CompanyProfile/CompanyAccount";
-import SupplierPaymentList from "../../pages/Home/Suppliers/SupplierPaymentList";
 
 export const PROFILE_CONFIG = {
     customer: {

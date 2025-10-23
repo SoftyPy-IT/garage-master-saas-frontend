@@ -784,7 +784,7 @@ const Sidebar = ({ toggle }) => {
               </Typography>
             </AccordionDetails>
           </Accordion>
-        )}
+         )}
         <div className="pl-4 space-y-3 mt-3 ">
           <Link to="/dashboard/all-user-list">
             <div className="flex items-center dashboardItems cursor-pointer">
