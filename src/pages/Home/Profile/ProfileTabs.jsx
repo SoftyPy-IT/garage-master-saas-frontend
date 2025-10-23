@@ -135,10 +135,11 @@ const ProfileTabs = ({
   };
 
   return (
-    <StyledPaper>
+    <StyledPaper sx={{p:1.5}}>
       <Tabs
         value={activeTab}
         onChange={handleTabChange}
+        variant="scrollable"
         sx={{
           mb: 3,
           "& .MuiTab-root": {
@@ -180,12 +181,13 @@ const ProfileTabs = ({
                               variant="h6"
                               color="primary"
                               gutterBottom
+                              className="flex items-center"
                             >
                               <FaUserCog style={{ marginRight: 8 }} />
                               Account Details
                             </Typography>
                             <Typography sx={{ mb: 1 }}>
-                              <strong>User ID:</strong> {userData?._id}
+                              {/* <strong>User ID:</strong> {userData?._id} */}
                             </Typography>
                             <Typography sx={{ mb: 1 }}>
                               <strong>Status:</strong>
@@ -259,7 +261,7 @@ const ProfileTabs = ({
                               />
                             </Typography>
                             <Typography>
-                              <strong>Tenant ID:</strong> {userData.tenantId}
+                              {/* <strong>Tenant ID:</strong> {userData.tenantId} */}
                             </Typography>
                           </Paper>
                         </Grid>

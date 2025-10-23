@@ -22,7 +22,7 @@ const ProjectOverView = ({ tenantDomain }) => {
       user: allMetaData?.data?.totalCustomers,
       icon: <HiOutlineUserGroup className="stat-icon" />,
       path: "/dashboard/customer-list",
-      color: "cyan-card"
+      color: "blue-card"
     },
     {
       id: 2,
@@ -30,7 +30,7 @@ const ProjectOverView = ({ tenantDomain }) => {
       user: allMetaData?.data?.totalShowRooms,
       icon: <HiOutlineUsers className="stat-icon" />,
       path: "/dashboard/show-room-list",
-      color: "emerald-card"
+      color: "green-card"
     },
     {
       id: 3,
@@ -38,7 +38,7 @@ const ProjectOverView = ({ tenantDomain }) => {
       user: allMetaData?.data?.totalCompanies,
       icon: <HiOutlineUsers className="stat-icon" />,
       path: "/dashboard/company-list",
-      color: "violet-card"
+      color: "purple-card"
     },
     {
       id: 5,
@@ -46,7 +46,7 @@ const ProjectOverView = ({ tenantDomain }) => {
       user: allMetaData?.data?.totalJobCard,
       icon: <HiOutlineBriefcase className="stat-icon" />,
       path: "/dashboard/jobcard-list",
-      color: "amber-card"
+      color: "orange-card"
     },
     {
       id: 6,
@@ -54,7 +54,7 @@ const ProjectOverView = ({ tenantDomain }) => {
       user: allMetaData?.data?.totalQuotation,
       icon: <FaCarSide className="stat-icon" />,
       path: "/dashboard/quotation-list",
-      color: "rose-card"
+      color: "red-card"
     },
     {
       id: 7,
@@ -68,63 +68,36 @@ const ProjectOverView = ({ tenantDomain }) => {
 
   return (
     <div className="project-overview-page">
-      {/* Animated Background */}
-      <div className="background-animation">
-        <div className="floating-circle circle-1"></div>
-        <div className="floating-circle circle-2"></div>
-        <div className="floating-circle circle-3"></div>
-        <div className="floating-circle circle-4"></div>
-      </div>
-
-      {/* Main Content */}
+      {/* Main Content */} 
       <div className="project-content">
         {/* Header */}
         <div className="project-header">
           <h1 className="project-title">
-            Project <span className="title-accent">Overview</span>
+            Project Overview
           </h1>
-          <div className="header-decoration">
-            <div className="decoration-line"></div>
-            <div className="decoration-dot"></div>
-          </div>
         </div>
 
         <div className="project-grid">
           {/* Stats Grid */}
           <div className="stats-container">
             <div className="stats-grid">
-              {userData?.map((data, index) => (
+              {userData?.map((data) => (
                 <Link key={data.id} to={data.path} className="stat-link">
-                  <div className={`stat-card ${data.color} card-${index + 1}`}>
-                    {/* Animated Border */}
-                    <div className="card-border"></div>
-                    
-                    {/* Card Content */}
+                  <div className={`stat-card ${data.color}`}>
                     <div className="card-content">
                       <div className="icon-wrapper">
                         {data.icon}
-                        <div className="icon-pulse"></div>
                       </div>
                       
                       <div className="stat-info">
-                        <div className="stat-number animate-count">
+                        <div className="stat-number">
                           {data.user}
                         </div>
                         <div className="stat-label">
                           {data.name}
                         </div>
                       </div>
-
-                      {/* Hover Arrow */}
-                      <div className="action-arrow">
-                        <svg className="arrow-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                        </svg>
-                      </div>
                     </div>
-
-                    {/* Shimmer Effect */}
-                    <div className="card-shimmer"></div>
                   </div>
                 </Link>
               ))}
@@ -135,14 +108,8 @@ const ProjectOverView = ({ tenantDomain }) => {
           <div className="chart-section">
             <div className="chart-card">
               <div className="chart-header">
-                <div className="chart-title-group">
-                  <h3 className="chart-title">Revenue Analytics</h3>
-                  <p className="chart-subtitle">Real-time income & expense tracking</p>
-                </div>
-                <div className="chart-indicator">
-                  <div className="indicator-dot"></div>
-                  <span>Live Data</span>
-                </div>
+                <h3 className="chart-title">Revenue Analytics</h3>
+                <p className="chart-subtitle">Income & expense tracking</p>
               </div>
               <div className="chart-content">
                 <ExpanseIncomeChart />
