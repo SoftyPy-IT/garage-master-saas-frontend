@@ -46,12 +46,10 @@ const DashboardSummary = ({ accountSummary }) => {
 
     const categoryData = accountSummary.data[category];
 
-    // Handle direct number values (donation, salary, netProfit)
     if (typeof categoryData[timeRange] === "number") {
       return subCategory ? categoryData[timeRange] : categoryData[timeRange];
     }
 
-    // Handle object values (income, expense)
     if (typeof categoryData[timeRange] === "object") {
       if (subCategory) {
         return categoryData[timeRange]?.[subCategory] || 0;
@@ -61,28 +59,23 @@ const DashboardSummary = ({ accountSummary }) => {
 
     return subCategory ? 0 : {};
   };
-
-  // Get all data for the selected time range
   const incomeData = getDataByTimeRange("income");
   const expenseData = getDataByTimeRange("expense");
   const donationAmount = getDataByTimeRange("donation");
   const salaryAmount = getDataByTimeRange("salary");
   const netProfitAmount = getDataByTimeRange("netProfit");
 
-  // Calculate values
   const totalIncome = incomeData.totalAmount || 0;
-  const totalExpense = accountSummary?.data?.netTotalExpense?.total || 0 ;
+  const totalExpense = accountSummary?.data?.netTotalExpense?.total || 0;
   const netProfit = netProfitAmount || totalIncome - totalExpense;
   const profitColor = netProfit >= 0 ? "success" : "error";
   const profitIcon = netProfit >= 0 ? <TrendingUp /> : <TrendingDown />;
   const profitLabel = netProfit >= 0 ? "Profit" : "Loss";
 
-  // Calculate percentages for progress indicators
   const maxValue = Math.max(totalIncome, totalExpense);
   const incomePercentage = maxValue > 0 ? (totalIncome / maxValue) * 100 : 0;
   const expensePercentage = maxValue > 0 ? (totalExpense / maxValue) * 100 : 0;
 
-  // Time range selector
   const TimeRangeSelector = () => (
     <Paper
       sx={{
@@ -117,7 +110,6 @@ const DashboardSummary = ({ accountSummary }) => {
     </Paper>
   );
 
-  // StatCard component for consistent styling
   const StatCard = ({ title, value, icon, color, subtitle, progress }) => (
     <Card
       sx={{
@@ -209,9 +201,8 @@ const DashboardSummary = ({ accountSummary }) => {
         </Typography>
         <Chip
           icon={<CalendarMonth />}
-          label={`${
-            timeRange.charAt(0).toUpperCase() + timeRange.slice(1)
-          } View`}
+          label={`${timeRange.charAt(0).toUpperCase() + timeRange.slice(1)
+            } View`}
           color="primary"
           variant="outlined"
         />
@@ -356,7 +347,7 @@ const DashboardSummary = ({ accountSummary }) => {
           >
             <Box display="flex" alignItems="center" mb={3}>
               <Avatar sx={{ bgcolor: "success.main", mr: 2 }}>
-               ৳
+                ৳
               </Avatar>
               <Box>
                 <Typography variant="h6" fontWeight="bold" color="success.dark">
@@ -372,27 +363,20 @@ const DashboardSummary = ({ accountSummary }) => {
                 <StatCard
                   title="Total Income"
                   value={totalIncome}
-                 
+
                   color="success"
                   progress={incomePercentage}
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={6} md={12}>
                 <StatCard
-                  title="Service Income"
+                  title="Invoice Income"
                   value={incomeData.serviceIncomeAmount || 0}
                   icon={<AccountTree color="info" />}
                   color="info"
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
-                <StatCard
-                  title="Parts Income"
-                  value={incomeData.partsIncomeAmount || 0}
-                  icon={<Receipt color="warning" />}
-                  color="warning"
-                />
-              </Grid>
+
               <Grid item xs={12}>
                 <StatCard
                   title="Other Income"

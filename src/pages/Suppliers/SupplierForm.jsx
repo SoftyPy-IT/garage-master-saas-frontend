@@ -51,49 +51,17 @@ import GarageForm from "../../components/form/Form";
 import { useTenantDomain } from "../../hooks/useTenantDomain";
 import Can from "../../components/Can";
 import { useAppOptions } from "../../hooks/useAppOptions";
+import CountryCodeAutocomplete from "../../components/form/CountryAutoCompleted";
 
 const FormSection = ({ children }) => (
   <div className="mb-6 p-2 lg:p-4 border rounded-lg shadow-sm">{children}</div>
 );
 
-const CountryCodeAutocomplete = ({
-  name,
-  label,
-  options,
-  defaultValue,
-  ...props
-}) => {
-  const { setValue } = useFormContext();
-  const [value, setValueState] = useState(defaultValue);
-  useEffect(() => {
-    setValue(name, value?.code);
-  }, [value, name, setValue]);
-  return (
-    <FormControl fullWidth variant="outlined">
-      <InputLabel>{label}</InputLabel>
-      <Select
-        value={value?.code || ""}
-        onChange={(e) =>
-          setValueState(options.find((o) => o.code === e.target.value))
-        }
-        label={label}
-        {...props}
-      >
-        {options.map((option) => (
-          <MenuItem key={option.code} value={option.code}>
-            {option.code} ({option.label})
-          </MenuItem>
-        ))}
-      </Select>
-    </FormControl>
-  );
-};
-
 const SupplierForm = ({ id }) => {
   const navigate = useNavigate();
   const theme = useTheme();
-  const [countryCode, setCountryCode] = useState(countries[0]);
-  const [phoneNumber, setPhoneNumber] = useState("");
+  const [countryCode] = useState(countries[0]);
+  const [setPhoneNumber] = useState("");
   const [showHelpTips, setShowHelpTips] = useState(true);
   const isEditing = !!id;
   const {
@@ -136,7 +104,7 @@ const SupplierForm = ({ id }) => {
     defaultValues: defaultSupplierValues,
     mode: "onChange",
   });
-  const { reset, setValue } = methods;
+  const { setValue } = methods;
 
   const handlePhoneNumberChange = (e) => {
     const newPhoneNumber = e.target.value;
@@ -257,7 +225,6 @@ const SupplierForm = ({ id }) => {
                   onSubmit={id ? handleUpdate : handleSubmit}
                   defaultValues={defaultSupplierValues}
                 >
-                  {/* Basic Information Section */}
                   <FormSection>
                     <h3 className="text-xl font-semibold mb-4 flex items-center">
                       <FaUserTie className="mr-2" />
@@ -378,7 +345,6 @@ const SupplierForm = ({ id }) => {
                     </Grid>
                   </FormSection>
 
-                  {/* Financial & Other Details */}
                   <FormSection>
                     <h3 className="text-xl font-semibold mb-4 flex items-center">
                       <MdPayment className="mr-2" />

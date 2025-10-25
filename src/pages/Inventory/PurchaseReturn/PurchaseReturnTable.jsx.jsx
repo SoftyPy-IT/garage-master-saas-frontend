@@ -37,7 +37,6 @@ const PurchaseReturnTable = ({
 }) => {
   const theme = useTheme();
 
-  // Helper functions
   const getAvatarColor = (initial) => {
     if (!initial) return theme.palette.primary.main;
     const colors = [

@@ -51,7 +51,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import CalendarMonth from "@mui/icons-material/CalendarMonth";
 import EditNote from "@mui/icons-material/EditNote";
-
+import Loading from '@/components/Loading/Loading'
 import { useNavigate } from "react-router-dom";
 import {
   useCreatePurchaseReturnMutation,
@@ -71,7 +71,7 @@ export default function PurchaseReturnForm({ id }) {
   const navigate = useNavigate();
   const [returnItems, setReturnItems] = useState([]);
   const [activeStep, setActiveStep] = useState(1);
-  const [selectedSupplier, setSelectedSupplier] = useState("");
+  const [setSelectedSupplier] = useState("");
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
@@ -96,7 +96,7 @@ export default function PurchaseReturnForm({ id }) {
   const watchedWarehouse = watch("warehouse");
   const watchedSuppliers = watch("suppliers");
   const watchedPurchase = watch("purchase");
-  const { performActionWithPermission, supplierOptions, warehouseOptions, productOptions, tenantDomain } = useAppOptions()
+  const { performActionWithPermission, supplierOptions, warehouseOptions, tenantDomain } = useAppOptions()
 
 
 
@@ -125,12 +125,9 @@ export default function PurchaseReturnForm({ id }) {
       const initialReturnItems = stockData.data.map((item, index) => {
         const productId = item.product?._id;
 
-        // Check if this product is in the return items (for edit mode)
         const existingItem = singlePurchaseReturn?.data?.items?.find(
           (returnItem) => returnItem.productId?._id === productId
         );
-
-        // Fixed supplier name extraction
         const supplierName =
           item.product?.suppliers && item.product.suppliers[0]
             ? item.product.suppliers[0].full_name
@@ -143,18 +140,18 @@ export default function PurchaseReturnForm({ id }) {
             name: item.product?.product_name || "Unknown Product",
             unit: item.product?.unit?.unit || "Unit",
           },
-          maxQuantity: item.stock || 0, // Use actual stock quantity
+          maxQuantity: item.stock || 0,
           returnQuantity: existingItem ? existingItem.quantity : 0,
-          price: item.productPurchasePrice || item.product?.purchasePrice || 0, // Use stock purchase price
+          price: item.productPurchasePrice || item.product?.purchasePrice || 0,
           total: existingItem ? existingItem.totalAmount : 0,
-          selected: !!existingItem, // Select if it exists in the return
+          selected: !!existingItem,
           productId: productId,
           tax: item.product?.product_tax || 0,
           discount: item.product?.discount || 0,
           shipping: item.product?.shipping || 0,
           purchaseId: item._id,
           purchaseReferenceNo: item.referenceType || "N/A",
-          supplierName: supplierName, // Fixed supplier name
+          supplierName: supplierName,
           warehouse: item.warehouse?._id,
           warehouseName: item.warehouse?.name || "Unknown",
         };
@@ -170,7 +167,6 @@ export default function PurchaseReturnForm({ id }) {
 
   useEffect(() => {
     if (singlePurchaseReturn?.data) {
-      // Set form values from singlePurchaseReturn data
       setValue(
         "returnDate",
         singlePurchaseReturn.data.returnDate
@@ -180,16 +176,12 @@ export default function PurchaseReturnForm({ id }) {
           : new Date().toISOString().split("T")[0]
       );
       setValue("referenceNo", singlePurchaseReturn.data.referenceNo || "");
-
-      // Handle supplier for both create and update
       if (
         singlePurchaseReturn.data.suppliers &&
         singlePurchaseReturn.data.suppliers.length > 0
       ) {
-        // If we have suppliers array, use it
         setValue("suppliers", singlePurchaseReturn.data.suppliers.map(s => s._id));
       } else if (singlePurchaseReturn.data.supplier) {
-        // If we have a single supplier, convert to array
         setValue("suppliers", [singlePurchaseReturn.data.supplier]);
       } else {
         setValue("suppliers", []);
@@ -203,7 +195,6 @@ export default function PurchaseReturnForm({ id }) {
   }, [singlePurchaseReturn, setValue]);
 
   useEffect(() => {
-    // Filter stocks based on selected warehouse
     if (watchedWarehouse) {
       setSearchTerm("");
       setCurrentPage(1);
@@ -211,7 +202,6 @@ export default function PurchaseReturnForm({ id }) {
   }, [watchedWarehouse]);
 
   useEffect(() => {
-    // Filter stocks based on selected supplier
     if (watchedSuppliers && watchedSuppliers.length > 0) {
       setSearchTerm("");
       setCurrentPage(1);
@@ -219,7 +209,6 @@ export default function PurchaseReturnForm({ id }) {
   }, [watchedSuppliers]);
 
   useEffect(() => {
-    // Filter stocks based on selected purchase
     if (watchedPurchase) {
       setSearchTerm("");
       setCurrentPage(1);
@@ -232,14 +221,9 @@ export default function PurchaseReturnForm({ id }) {
         if (item.id === id) {
           const newSelected = !item.selected;
           let newReturnQuantity = item.returnQuantity;
-
-          // When selecting an item, preserve the existing quantity
-          // Only set to 1 if it's the first time selecting (quantity is 0)
           if (newSelected && item.returnQuantity === 0) {
             newReturnQuantity = 1;
           }
-
-          // When deselecting, set quantity to 0
           if (!newSelected) {
             newReturnQuantity = 0;
           }
@@ -271,18 +255,16 @@ export default function PurchaseReturnForm({ id }) {
       )
     );
   };
+  const calculateTotalItems = () => {
+    return returnItems.filter((item) => item.selected && item.returnQuantity > 0).length;
+  };
 
   const calculateTotalReturn = () => {
     return returnItems.reduce(
-      (sum, item) => (item.selected ? sum + item.total : sum),
+      (sum, item) => (item.selected && item.returnQuantity > 0 ? sum + item.total : sum),
       0
     );
   };
-
-  const calculateTotalItems = () => {
-    return returnItems.filter((item) => item.selected).length;
-  };
-
   const onSubmit = async (formData) => {
     performActionWithPermission("/dashboard/purchase-return-add", id ? 'edit' : 'create',
       async () => {
@@ -300,8 +282,6 @@ export default function PurchaseReturnForm({ id }) {
             );
             return;
           }
-
-          // Check if any selected item has invalid quantity
           const invalidItems = selectedItems.filter(
             (item) =>
               item.returnQuantity <= 0 || item.returnQuantity > item.maxQuantity
@@ -313,14 +293,10 @@ export default function PurchaseReturnForm({ id }) {
             );
             return;
           }
-
-          // Check if suppliers array is not empty
           if (!formData.suppliers || formData.suppliers.length === 0) {
             toast.error("Please select at least one supplier");
             return;
           }
-
-          // Prepare items data
           const items = selectedItems.map((item) => ({
             productId: item.productId,
             productCode: item.product.code,
@@ -409,18 +385,7 @@ export default function PurchaseReturnForm({ id }) {
   const steps = ["Select Filters", "Select Return Items", "Review & Submit"];
 
   if (isLoading || !stockData || singlePurchaseReturnLoading) {
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-        }}
-      >
-        <CircularProgress />
-      </Box>
-    );
+    return <Loading />;
   }
 
   if (!stockData || !stockData.data || stockData.data.length === 0) {
@@ -523,8 +488,6 @@ export default function PurchaseReturnForm({ id }) {
           Go Back
         </Button>
       </Box>
-
-      {/* Stepper */}
       <Paper
         sx={{
           p: 3,
@@ -1153,7 +1116,6 @@ export default function PurchaseReturnForm({ id }) {
         </Grid>
       </form>
 
-      {/* Confirmation Dialog */}
       <Dialog
         open={openConfirmDialog}
         onClose={handleCloseConfirmDialog}

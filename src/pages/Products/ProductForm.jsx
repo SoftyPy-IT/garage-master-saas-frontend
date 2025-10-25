@@ -1211,7 +1211,7 @@ export default function ProductForm({ id }) {
                               sx={{
                                 borderRadius: 100,
                                 px: 3,
-                                mb:{xs:2, sm:0},
+                                mb: { xs: 2, sm: 0 },
                                 color: "white",
                               }}
                             >
@@ -1306,6 +1306,7 @@ export default function ProductForm({ id }) {
       {supplierOpen && (
         <AddSupplierModal open={supplierOpen} setOpen={handleSupplierClose} />
       )}
+
       {unitOpen && (
         <UnitModal open={unitOpen} setOpen={handleUnitClose} />
       )}

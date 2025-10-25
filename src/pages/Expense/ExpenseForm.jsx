@@ -202,6 +202,7 @@ const ExpenseForm = ({ id }) => {
         paddingY: { xs: 1, md: 0 },
         backgroundColor: "#f8fafc",
         minHeight: "100vh",
+
       }}
     >
       <Paper
@@ -257,7 +258,6 @@ const ExpenseForm = ({ id }) => {
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(handleFormSubmit)}>
           <Grid container spacing={4}>
-            {/* Invoice & Date Section */}
             <Grid item xs={12}>
               <Card
                 sx={{

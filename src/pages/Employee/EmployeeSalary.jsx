@@ -7,8 +7,6 @@ import EmployeeSalaryForm from "./EmployeeSalaryForm";
 import EmployeeSalaryListTable from "./EmployeeSalaryListTable";
 import { allMonths } from "../../utils/month";
 import { useAppOptions } from "../../hooks/useAppOptions";
-
-// Constants
 const years = [{ value: "Select Year", label: "Select Year" }];
 for (let year = 2024; year <= 2030; year++) {
   years.push({ value: String(year), label: String(year) });
@@ -22,7 +20,6 @@ const EmployeeSalary = () => {
 
   const {
     data: getAllSalary,
-    isLoading: salaryLoading,
   } = useGetAllSalaryQuery({
     searchTerm: filterType,
   });

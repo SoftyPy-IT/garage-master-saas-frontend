@@ -43,7 +43,6 @@ function PurchaseReturnList() {
     setFilterWarehouse,
   } = usePurchaseReturns();
 
-  // Stats data for summary cards
   const statsData = [
     {
       id: 1,
