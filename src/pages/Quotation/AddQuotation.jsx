@@ -73,7 +73,7 @@ const AddQuotation = () => {
   const [activeInputIndex, setActiveInputIndex] = useState(null);
   const { tenantDomain } = useTenantDomain();
   const { performActionWithPermission } = usePermissions();
-
+  console.log('product suggestion ', productSuggestions)
   const {
     register,
     handleSubmit,
@@ -1145,38 +1145,21 @@ const AddQuotation = () => {
                                     handleSelectSuggestion(product)
                                   }
                                 >
-                                  <div
-                                    style={
-                                      suggestionStyles.suggestionItemContent
-                                    }
-                                  >
-                                    <span
-                                      style={
-                                        suggestionStyles.suggestionItemName
-                                      }
-                                    >
+                                  <div style={suggestionStyles.suggestionItemContent}>
+                                    <span style={suggestionStyles.suggestionItemName}>
                                       {product.product.product_name}
                                     </span>
-                                    <span
-                                      style={
-                                        suggestionStyles.suggestionItemPrice
-                                      }
-                                    >
-                                      {product.stock}
+                                    <span style={suggestionStyles.suggestionItemPrice}>
+                                      Stock: {product.stock}
                                     </span>
-                                    <span
-                                      style={
-                                        suggestionStyles.suggestionItemPrice
-                                      }
-                                    >
+                                    <span style={suggestionStyles.suggestionItemPrice}>
                                       {product.product.unit?.short_name}
                                     </span>
-                                    <span
-                                      style={
-                                        suggestionStyles.suggestionItemPrice
-                                      }
-                                    >
+                                    <span style={suggestionStyles.suggestionItemPrice}>
                                       {product.product?.sellingPrice}
+                                    </span>
+                                    <span style={suggestionStyles.suggestionItemPrice}>
+                                      WH: {product.warehouse?.name}
                                     </span>
                                   </div>
                                 </div>
@@ -1326,28 +1309,21 @@ const AddQuotation = () => {
                                 }}
                                 onClick={() => handleSelectSuggestion(product)}
                               >
-                                <div
-                                  style={suggestionStyles.suggestionItemContent}
-                                >
-                                  <span
-                                    style={suggestionStyles.suggestionItemName}
-                                  >
+                                <div style={suggestionStyles.suggestionItemContent}>
+                                  <span style={suggestionStyles.suggestionItemName}>
                                     {product.product.product_name}
                                   </span>
-                                  <span
-                                    style={suggestionStyles.suggestionItemPrice}
-                                  >
-                                    {product.stock}
+                                  <span style={suggestionStyles.suggestionItemPrice}>
+                                    Stock: {product.stock}
                                   </span>
-                                  <span
-                                    style={suggestionStyles.suggestionItemPrice}
-                                  >
+                                  <span style={suggestionStyles.suggestionItemPrice}>
                                     {product.product.unit?.short_name}
                                   </span>
-                                  <span
-                                    style={suggestionStyles.suggestionItemPrice}
-                                  >
+                                  <span style={suggestionStyles.suggestionItemPrice}>
                                     {product.product?.sellingPrice}
+                                  </span>
+                                  <span style={suggestionStyles.suggestionItemPrice}>
+                                    WH: {product.warehouse?.name}
                                   </span>
                                 </div>
                               </div>

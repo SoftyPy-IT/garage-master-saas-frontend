@@ -1437,7 +1437,16 @@ const UpdateQuotation = () => {
                                       {product.product.product_name}
                                     </span>
                                     <span style={suggestionStyles.suggestionItemPrice}>
-                                      ${product.product.sellingPrice}
+                                      Stock: {product.stock}
+                                    </span>
+                                    <span style={suggestionStyles.suggestionItemPrice}>
+                                      {product.product.unit?.short_name}
+                                    </span>
+                                    <span style={suggestionStyles.suggestionItemPrice}>
+                                      {product.product?.sellingPrice}
+                                    </span>
+                                    <span style={suggestionStyles.suggestionItemPrice}>
+                                      WH: {product.warehouse?.name}
                                     </span>
                                   </div>
                                 </div>
@@ -1709,7 +1718,16 @@ const UpdateQuotation = () => {
                                       {product.product.product_name}
                                     </span>
                                     <span style={suggestionStyles.suggestionItemPrice}>
-                                      ${product.product.sellingPrice}
+                                      Stock: {product.stock}
+                                    </span>
+                                    <span style={suggestionStyles.suggestionItemPrice}>
+                                      {product.product.unit?.short_name}
+                                    </span>
+                                    <span style={suggestionStyles.suggestionItemPrice}>
+                                      {product.product?.sellingPrice}
+                                    </span>
+                                    <span style={suggestionStyles.suggestionItemPrice}>
+                                      WH: {product.warehouse?.name}
                                     </span>
                                   </div>
                                 </div>
