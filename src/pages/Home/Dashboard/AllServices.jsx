@@ -18,7 +18,7 @@ import { useTenantDomain } from "../../../../src/hooks/useTenantDomain";
 import PropTypes from "prop-types";
 
 const AllServices = ({ showSensitiveData }) => {
-  const tenantDomain = useTenantDomain();
+const {tenantDomain} = useTenantDomain();
   const {
     data: allMetaData,
     isLoading,
@@ -35,7 +35,7 @@ const WaveBg = () => (
     <div className="wave-background">
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        viewBox="100 0 550 190"
+        viewBox="100 10 390 190"
         className="wave-svg"
         preserveAspectRatio="none"
       >

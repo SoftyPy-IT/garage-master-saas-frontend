@@ -56,8 +56,10 @@ const CreateNoteModal = ({ id, open, onClose, tenantDomain, editingNote, setOpen
       setOpen={setOpen}
       title={title}
       maxWidth="sm"
+      
     >
-      <GarageForm onSubmit={handleSubmit} defaultValues={editingNote || {}}>
+      
+      <GarageForm onSubmit={handleSubmit} defaultValues={editingNote || {}} >
 
         <FormInput
           fullWidth

@@ -98,10 +98,10 @@ const ProjectOverView = () => {
   </div>
 
   {/* Icon & Text */}
-  <div className="relative z-10 w-20 h-20 rounded-2xl flex items-center justify-center bg-white/20 backdrop-blur-sm border border-white/30 transition-all duration-300 hover:scale-110">
+  <div className="relative z-0 w-20 h-20 rounded-2xl flex items-center justify-center bg-white/20 backdrop-blur-sm border border-white/30 transition-all duration-300 hover:scale-110">
     {data.icon}
   </div>
-  <div className="mt-4 relative z-10">
+  <div className="mt-4 relative z-0">
     <span className="text-2xl font-bold block">{data.user}</span>
     <h2 className="mt-2 text-lg font-semibold">{data.name}</h2>
   </div>
