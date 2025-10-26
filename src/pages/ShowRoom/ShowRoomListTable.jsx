@@ -39,7 +39,7 @@ const ShowRoomListTable = () => {
   const handleIconPreview = async (id) => {
     performActionWithPermission(
       "/dashboard/show-room-list",
-      "view",
+      "delete",
       () => {
         navigate(`/dashboard/show-room-profile?id=${id}`);
       },
@@ -49,7 +49,7 @@ const ShowRoomListTable = () => {
 
   const handleMoveToRecycled = async (id) => {
     performActionWithPermission(
-      "",
+      "/dashboard/show-room-list",
       "delete",
       async () => {
         const willDelete = await swal({

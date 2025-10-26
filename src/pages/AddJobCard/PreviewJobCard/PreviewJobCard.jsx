@@ -13,10 +13,10 @@ import { useGetCompanyProfileQuery } from "../../../redux/api/companyProfile";
 import Loading from "../../../components/Loading/Loading";
 import { useTenantDomain } from "../../../hooks/useTenantDomain";
 const PreviewJobCard = () => {
-  const { componentRef } = useContext(PrintContext);
-  const [setVehicleInterior] = useState("");
-  const [setReportedDefect] = useState("");
-  const [setReportedAction] = useState("");
+  const { componentRef, targetRef } = useContext(PrintContext);
+  const [vehicleInterior, setVehicleInterior] = useState("");
+  const [reportedDefect, setReportedDefect] = useState("");
+  const [reportedAction, setReportedAction] = useState("");
   const { tenantDomain } = useTenantDomain();
 
   const location = useLocation();
@@ -61,7 +61,7 @@ const PreviewJobCard = () => {
       const extractedText = extractTextFromHTML(previewData?.reported_action);
       setReportedAction(extractedText);
     }
-  }, [previewData, setReportedAction, setReportedDefect, setVehicleInterior]);
+  }, [previewData]);
 
   if (isLoading) {
     return <Loading />;
@@ -87,6 +87,8 @@ const PreviewJobCard = () => {
   };
 
   const urlToShare = window.location.href;
+  const title = "Check this out!";
+
   return (
     <main className="jobCardViewWrap">
       <div ref={componentRef}>
