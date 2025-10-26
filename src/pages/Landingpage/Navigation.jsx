@@ -244,7 +244,7 @@ export const Navigation = ({ scrollToSection }) => {
                     <Button
                        variant="text"
                       onClick={() => handleNavClick(item.id)}
-                      sx={{
+                      sx={{ 
                         fontWeight: {
                           md: 500,
                           lg: 600,
