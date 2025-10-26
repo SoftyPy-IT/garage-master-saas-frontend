@@ -57,7 +57,7 @@ const companyApi = baseApi.injectEndpoints({
       ],
     }),
     permanantlyDeleteCompany: builder.mutation({
-      query: ({tenantDomain,id}) => ({
+      query: ({ tenantDomain, id }) => ({
         url: `/companies/${id}`,
         method: "DELETE",
         params: {
@@ -90,10 +90,10 @@ const companyApi = baseApi.injectEndpoints({
     }),
 
     restoreFromRecycledCompany: builder.mutation({
-      query: ({tenantDomain, id}) => ({
+      query: ({ tenantDomain, id }) => ({
         url: `/companies/restore/${id}`,
         method: "PATCH",
-         params: {
+        params: {
           tenantDomain,
         },
       }),

@@ -13,10 +13,10 @@ import { useGetCompanyProfileQuery } from "../../../redux/api/companyProfile";
 import Loading from "../../../components/Loading/Loading";
 import { useTenantDomain } from "../../../hooks/useTenantDomain";
 const PreviewJobCard = () => {
-  const { componentRef, targetRef } = useContext(PrintContext);
-  const [vehicleInterior, setVehicleInterior] = useState("");
-  const [reportedDefect, setReportedDefect] = useState("");
-  const [reportedAction, setReportedAction] = useState("");
+  const { componentRef } = useContext(PrintContext);
+  const [setVehicleInterior] = useState("");
+  const [setReportedDefect] = useState("");
+  const [setReportedAction] = useState("");
   const { tenantDomain } = useTenantDomain();
 
   const location = useLocation();
@@ -61,7 +61,7 @@ const PreviewJobCard = () => {
       const extractedText = extractTextFromHTML(previewData?.reported_action);
       setReportedAction(extractedText);
     }
-  }, [previewData]);
+  }, [previewData, setReportedAction, setReportedDefect, setVehicleInterior]);
 
   if (isLoading) {
     return <Loading />;
@@ -87,8 +87,6 @@ const PreviewJobCard = () => {
   };
 
   const urlToShare = window.location.href;
-  const title = "Check this out!";
-
   return (
     <main className="jobCardViewWrap">
       <div ref={componentRef}>
@@ -120,12 +118,12 @@ const PreviewJobCard = () => {
 
             <div>
               <div className="md:hidden flex justify-center items-center my-3">
-                  <div className="vehicleCard previwCard2">
-                    Vehicle Job Card{" "}
-                  </div>
+                <div className="vehicleCard previwCard2">
+                  Vehicle Job Card{" "}
                 </div>
+              </div>
               <div className=" flex text-[12px] justify-between items-center my-2">
-                
+
                 <div>
                   <b>
                     Job No: <span>{previewData?.job_no}</span>
@@ -360,7 +358,7 @@ const PreviewJobCard = () => {
                 </div>
               </div>
               <div className="fullTextArea mt-2">
-                <label>                  
+                <label>
                   Vehicle Interior Parts, Papers, Tools, Meter Light & Others
                 </label>
                 <textarea

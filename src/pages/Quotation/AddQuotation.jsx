@@ -356,14 +356,12 @@ const AddQuotation = () => {
 
     const newItems = [...serviceItems];
     const parsedValue = Number.parseFloat(cleanValue) || 0;
-    newItems[index].quantity = cleanValue; // Store as string to preserve decimal input
+    newItems[index].quantity = cleanValue;
     newItems[index].total =
       parsedValue * (Number.parseFloat(newItems[index].rate) || 0);
     newItems[index].total = Number.parseFloat(newItems[index].total.toFixed(2));
     setServiceItems(newItems);
   };
-
-  // Fixed rate change handlers to properly handle decimals without formatNumber interference
   const handleRateChange = (index, value) => {
     const numericValue = value.replace(/[^0-9.]/g, "");
     const parts = numericValue.split(".");
@@ -385,7 +383,6 @@ const AddQuotation = () => {
   const handleServiceRateChange = (index, value) => {
     const numericValue = value.replace(/[^0-9.]/g, "");
 
-    // Prevent multiple decimal points
     const parts = numericValue.split(".");
     const cleanValue =
       parts.length > 2
