@@ -18,22 +18,44 @@ import { useTenantDomain } from "../../../../src/hooks/useTenantDomain";
 import PropTypes from "prop-types";
 
 const AllServices = ({ showSensitiveData }) => {
-  const { tenantDomain } = useTenantDomain();
+  const tenantDomain = useTenantDomain();
   const {
     data: allMetaData,
     isLoading,
+    isError,
   } = useGetAllMetaQuery({ tenantDomain });
 
   if (isLoading) return <Loading />;
 
-  const card = "flex flex-col md:flex-row items-center justify-center content-center gap-x-2 mt-3 md:mt-8 space-y-2 "
-  const amount = "text-center text-[32px] font-bold "
+  const card =
+    "flex flex-col md:flex-row items-center justify-center content-center gap-x-2 mt-3 md:mt-8 space-y-2 ";
+  const amount = "text-center text-[32px] font-bold ";
+
+const WaveBg = () => (
+    <div className="wave-background">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="100 0 550 190"
+        className="wave-svg"
+        preserveAspectRatio="none"
+      >
+        <path
+          fill="#ffffff"
+          fillOpacity="0.25"
+          d="M0,96L48,112C96,128,192,160,288,154.7C384,149,480,107,576,90.7C672,75,768,85,864,85.3C960,85,1056,75,1152,90.7C1248,107,1344,149,1392,170.7L1440,192L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"
+        />
+      </svg>
+    </div>
+);
 
   return (
     <div className="dashBoardRight mt-5 lg:mt-0 ">
+      {/* Always visible cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 place-content-center gap-3 lg:gap-3 xl:gap-7 mb-5">
-        {/* Completed Services - Green (success) */}
-        <div className="invoice-card completed-card">
+        {/* Completed Services */}
+        <div className="invoice-card">
+          <WaveBg />
+
           <Link to="/dashboard/complete-project">
             <div className={card}>
               <div className="dashboardCardIconWrap">
@@ -49,8 +71,9 @@ const AllServices = ({ showSensitiveData }) => {
           </Link>
         </div>
 
-        {/* Running Services - Orange/Yellow (in progress) */}
-        <div className="invoice-card running-card">
+        {/* Running Services */}
+        <div className="invoice-card">
+          <WaveBg />
           <Link to="/dashboard/running-project">
             <div className={card}>
               <div className="dashboardCardIconWrap2 ">
@@ -66,8 +89,9 @@ const AllServices = ({ showSensitiveData }) => {
           </Link>
         </div>
 
-        {/* Total Product - Purple (inventory) */}
-        <div className="invoice-card product-card">
+        {/* Total Product (always visible) */}
+        <div className="invoice-card">
+          <WaveBg />
           <div className={card}>
             <div className="dashboardCardIconWrap4">
               <FaCarSide className="dashboardCardIcon" />
@@ -79,8 +103,9 @@ const AllServices = ({ showSensitiveData }) => {
           </div>
         </div>
 
-        {/* All Customers - Pink (people) */}
-        <div className="invoice-card customer-card">
+        {/* All Customers (always visible) */}
+        <div className="invoice-card invoice-card">
+          <WaveBg />
           <Link to="/dashboard/all-customer">
             <div className={card}>
               <div className="dashboardCardIconWrap7">
@@ -102,8 +127,9 @@ const AllServices = ({ showSensitiveData }) => {
       {/* Sensitive Cards (toggle these) */}
       {showSensitiveData && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 place-content-center gap-3 lg:gap-3 xl:gap-7 mb-5">
-          {/* Total Sale - Blue (sales) */}
-          <div className="invoice-card sale-card">
+          {/* Total Sale */}
+          <div className="invoice-card">
+            <WaveBg />
             <div className={card}>
               <div className="dashboardCardIconWrap3">
                 <FaPercent className="dashboardCardIcon" />
@@ -115,8 +141,9 @@ const AllServices = ({ showSensitiveData }) => {
             </div>
           </div>
 
-          {/* Total Amount - Teal (revenue) */}
-          <div className="invoice-card amount-card">
+          {/* Total Amount */}
+          <div className="invoice-card invoice-card2">
+            <WaveBg />
             <div className={card}>
               <div className="dashboardCardIconWrap">
                 <AssuredWorkload className="dashboardCardIcon" />
@@ -128,8 +155,9 @@ const AllServices = ({ showSensitiveData }) => {
             </div>
           </div>
 
-          {/* Paid Services Bill - Green (paid) */}
-          <div className="invoice-card paid-card">
+          {/* Paid Services Bill */}
+          <div className="invoice-card invoice-card2">
+            <WaveBg />
             <div className={card}>
               <div className="dashboardCardIconWrap5">
                 <FaFileInvoice className="dashboardCardIcon" />
@@ -141,8 +169,9 @@ const AllServices = ({ showSensitiveData }) => {
             </div>
           </div>
 
-          {/* Due Service Bill - Red (due/overdue) */}
-          <div className="invoice-card due-card">
+          {/* Due Service Bill */}
+          <div className="invoice-card invoice-card2">
+            <WaveBg />
             <Link to="/dashboard/money-receipt-due">
               <div className={card}>
                 <div className="dashboardCardIconWrap6">

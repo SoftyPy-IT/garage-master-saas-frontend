@@ -76,7 +76,7 @@ export const Navigation = ({ scrollToSection }) => {
       extraLarge: { variant: "h5", size: "1.8rem" },
     },
     navButton: {
-      extraSmall: { px: 0.8, fontSize: "0.65rem", minWidth: "auto" },
+      extraSmall: {  },
       small: { px: 1, fontSize: "0.7rem", minWidth: "auto" },
       medium: { px: 1.2, fontSize: "0.75rem", minWidth: "auto" },
       large: { px: 3, fontSize: "0.8rem", minWidth: "auto" },
@@ -242,7 +242,7 @@ export const Navigation = ({ scrollToSection }) => {
                 {navItems.map((item) => (
                   <motion.div key={item.id} whileHover={{ y: -2 }}>
                     <Button
-                      color="inherit"
+                       variant="text"
                       onClick={() => handleNavClick(item.id)}
                       sx={{
                         fontWeight: {
@@ -274,7 +274,8 @@ export const Navigation = ({ scrollToSection }) => {
                         transition: "all 0.2s ease",
                       }}
                     >
-                      {item.label}
+                      
+                    {item.label}
                     </Button>
                   </motion.div>
                 ))}

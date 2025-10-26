@@ -1,6 +1,5 @@
-/* AllService.css */
-
 .invoice-card {
+  background: linear-gradient(to bottom, #4581f9, #80aafb);
   border-radius: 15px;
   padding: 15px;
   color: white;
@@ -8,39 +7,6 @@
   position: relative;
   overflow: hidden;
   height: 170px;
-}
-
-/* Unique colors for each card */
-.completed-card {
-  background: linear-gradient(to bottom, #10b981, #059669); /* Green - success */
-}
-
-.running-card {
-  background: linear-gradient(to bottom, #f59e0b, #d97706); /* Orange - in progress */
-}
-
-.product-card {
-  background: linear-gradient(to bottom, #8b5cf6, #7c3aed); /* Purple - inventory */
-}
-
-.customer-card {
-  background: linear-gradient(to bottom, #ec4899, #db2777); /* Pink - people */
-}
-
-.sale-card {
-  background: linear-gradient(to bottom, #3b82f6, #2563eb); /* Blue - sales */
-}
-
-.amount-card {
-  background: linear-gradient(to bottom, #06b6d4, #0891b2); /* Cyan - revenue */
-}
-
-.paid-card {
-  background: linear-gradient(to bottom, #84cc16, #65a30d); /* Lime - paid */
-}
-
-.due-card {
-  background: linear-gradient(to bottom, #ef4444, #dc2626); /* Red - due */
 }
 
 .icon-container {
@@ -63,6 +29,11 @@
   z-index: 1;
 }
 
+/* .amount {
+  font-size: 32px;
+  font-weight: bold;
+} */
+
 .label {
   font-size: 14px;
   font-weight: 500;
@@ -70,7 +41,7 @@
 
 .wave-background {
   position: absolute;
-  bottom: -38px;
+  bottom: 0px;
   left: 0;
   width: 100%;
   height: 100%;
@@ -82,7 +53,40 @@
   height: 100%;
 }
 
-/* Icon backgrounds - all same light style */
+.invoice-card:nth-child(2) {
+  background: linear-gradient(to bottom, #00bc8a, #54d2b1);
+}
+
+.invoice-card:nth-child(4) {
+  background: linear-gradient(to bottom, #8d7cfc, #b8affe);
+}
+
+.invoice-card:nth-child(3) {
+  background: linear-gradient(to bottom, #00bc8a, #4247ce);
+}
+
+.dashboardCardIconWrap:nth-child(3) {
+  background: #05a182;
+}
+
+.invoice-card2 {
+  background: linear-gradient(to bottom, #9f11aa, #f7a90027);
+}
+
+.invoice-card2:nth-child(2) {
+  background: linear-gradient(to bottom, #feb800, #fed76d);
+  
+}
+
+.invoice-card2:nth-child(3) {
+  
+  background: linear-gradient(to bottom, #17c6f1, #4247ce);
+}
+
+.invoice-card2:nth-child(4) {
+  background: linear-gradient(to bottom, red, #f7a90088);
+}
+
 .dashboardCardIconWrap,
 .dashboardCardIconWrap2,
 .dashboardCardIconWrap3,
@@ -90,7 +94,7 @@
 .dashboardCardIconWrap5,
 .dashboardCardIconWrap6,
 .dashboardCardIconWrap7 {
-  background: rgba(255, 255, 255, 0.3);
+  background: #3d71d6;
   border-radius: 100%;
   padding: 5px;
   display: flex;
@@ -102,7 +106,26 @@
   z-index: 1;
 }
 
-.dashboardCardIcon {
-  color: white;
-  font-size: 24px;
+.dashboardCardIconWrap2 {
+  background: #06a182;
+}
+
+.dashboardCardIconWrap3 {
+  background: #d09f0b;
+}
+
+.dashboardCardIconWrap4 {
+  background: #776ee2;
+}
+
+.dashboardCardIconWrap5 {
+  background: #c3d00b7e;
+}
+
+.dashboardCardIconWrap6 {
+  background: #ff7f17e0;
+}
+
+.dashboardCardIconWrap7 {
+  background: #BF5EB9;
 }
