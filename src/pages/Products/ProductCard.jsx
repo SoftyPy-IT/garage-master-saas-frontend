@@ -6,6 +6,7 @@ import {
     Delete as DeleteIcon,
     ShoppingBag,
     QrCode as QrCodeIcon,
+    Visibility,
 } from "@mui/icons-material";
 import ActionIconButton from "../../components/ActionIconButton";
 import Can from "../../components/Can";
@@ -160,6 +161,16 @@ export const ProductCard = ({ product, onEdit, onDelete }) => {
                         Stock: {product.product_quantity} {product.unit?.short_name || ""}
                     </Typography>
                     <Box>
+                        <ActionIconButton
+                            title="Details"
+                            colorVariant="primary"
+                            icon={
+                                <Can page="#" action="details">
+                                    <Visibility fontSize="small" /> 
+                                </Can>
+                            }
+                            // onClick={() => onEdit(product._id)}
+                        />
                         <ActionIconButton
                             title="Edit"
                             colorVariant="warning"
