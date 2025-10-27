@@ -20,6 +20,15 @@ const warehouseApi = baseApi.injectEndpoints({
       }),
       providesTags: ["warehouse"],
     }),
+    getWareHouseStocks: builder.query({
+      query: ({ tenantDomain, limit, page, searchTerm }) => ({
+        url: "/warehouse-stocks",
+        method: "GET",
+        params: { limit, page, searchTerm, tenantDomain },
+
+      }),
+      providesTags: ["warehouse"],
+    }),
 
     getSingleWarehouse: builder.query({
       query: ({ tenantDomain, id }) => ({
@@ -71,4 +80,5 @@ export const {
   useUpdateWarehouseMutation,
   useRemoveWarehouseMutation,
   useDeleteWarehouseMutation,
+  useGetWareHouseStocksQuery
 } = warehouseApi;

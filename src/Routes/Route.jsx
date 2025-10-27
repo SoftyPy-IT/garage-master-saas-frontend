@@ -653,9 +653,9 @@ export const router = createBrowserRouter([
         "/dashboard/warehouse"
       ),
       createProtectedRoute(
-        "StockFlow",
+        "warehouse-stock",
         <WarehouseStocks />,
-        "/dashboard/StockFlow"
+        "/dashboard/warehouse-stock"
       ),
       createProtectedRoute("variants", <Variants />, "/dashboard/variants"),
       createProtectedRoute(
