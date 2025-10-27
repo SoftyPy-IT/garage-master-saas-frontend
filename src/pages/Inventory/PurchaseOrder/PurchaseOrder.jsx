@@ -2,138 +2,98 @@
 "use client";
 
 import { useState } from "react";
-import { Box, Typography, Breadcrumbs, Link, Grid, Paper } from "@mui/material";
-
+import { Box } from "@mui/material";
+import { Home, Receipt } from "@mui/icons-material";
+import { DeleteIcon, EditIcon, ShoppingCart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 import { toast } from "react-toastify";
-import UpdatePurchaseOrderModal from "../UpdatePurchaseOrderModal";
 import { useDeletePurchaseOrderMutation, useGetAllPurchaseOrdersQuery } from "../../../redux/api/purchaseOrderApi";
+import { useAppOptions } from "../../../hooks/useAppOptions";
 import PageHeader from "./PurchaseHeader";
 import FiltersSection from "./PurchaseFilter";
-import PurchaseOrdersTable from "./PurchaseOrdersTable";
-import ActionMenu from "./ActionMenu";
-
-import { Home, NavigateNext, Receipt } from "@mui/icons-material";
-import { ShoppingCart } from "lucide-react";
-import Swal from "sweetalert2";
-import ReceiveDialog from "./ReceiveDialog";
-import { useAppOptions } from "../../../hooks/useAppOptions";
 import PurchaseOrderModal from "./PurchaseOrderModal";
+import UpdatePurchaseOrderModal from "../UpdatePurchaseOrderModal";
+import ReceiveDialog from "./ReceiveDialog";
 import SummaryCards from "./PurchaseSummaryCards";
-
+import { Package } from "lucide-react";
+import Table from "../../../components/Table";
+import Breadcrumb from "../../../components/Breadcrumb";
+import { wrapBoxStyle } from "../../../utils/customStyle";
 export default function PurchaseOrder() {
   const navigate = useNavigate();
-  const [anchorEl, setAnchorEl] = useState(null);
+  const { tenantDomain, search, setSearch, searchTerm, setSearchTerm, performActionWithPermission } = useAppOptions();
+  const [page, setPage] = useState(1);
+  const [dateRange, setDateRange] = useState({ startDate: "", endDate: "" });
+  const [filterStatus, setFilterStatus] = useState("all");
+
+  const [openPurchaseModal, setOpenPurchaseModal] = useState(false);
+  const [openUpdateModal, setOpenUpdateModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
+
   const [openReceiveDialog, setOpenReceiveDialog] = useState(false);
-  const [receiveDate, setReceiveDate] = useState(
-    new Date().toISOString().split("T")[0]
-  );
-  const { tenantDomain, search, setSearch, searchTerm, setSearchTerm, performActionWithPermission } = useAppOptions()
+  const [receiveDate, setReceiveDate] = useState(new Date().toISOString().split("T")[0]);
   const [receiveStatus, setReceiveStatus] = useState("received");
   const [receiveNote, setReceiveNote] = useState("");
-  const [dateRange, setDateRange] = useState({
-    startDate: "",
-    endDate: "",
-  });
-  const [filterStatus, setFilterStatus] = useState("all");
-  const [isLoading, setIsLoading] = useState(false);
-  const [page, setPage] = useState(1);
-
-
   const [receivingOrderId, setReceivingOrderId] = useState(null);
 
   const [deletePurchase] = useDeletePurchaseOrderMutation();
-  const { data: purchaseOrderData, refetch } = useGetAllPurchaseOrdersQuery({
+  const { data: purchaseOrderData, refetch, isLoading } = useGetAllPurchaseOrdersQuery({
     tenantDomain,
     limit: 10,
     page,
     searchTerm: search,
   });
+  const handlePageChange = (newPage) => setPage(newPage);
 
-  const [openPurchaseModal, setOpenPurchaseModal] = useState(false);
-  const [openUpdateModal, setOpenUpdateModal] = useState(false);
+  const handleSearch = (value) => {
+    setSearch(value);
+    setSearchTerm(value);
+    setPage(1);
+  };
 
-  const handleMenuOpen = (event, order) => {
-    setAnchorEl(event.currentTarget);
+  const handleAddOrder = () => setOpenPurchaseModal(true);
+
+  const handleEditOrder = (order) => {
     setSelectedOrder(order);
+    setOpenUpdateModal(true);
   };
 
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-    setSelectedOrder(null);
-  };
+  const handleViewOrder = (order) => navigate(`/purchase/${order.id || order._id}`);
 
-  const handleViewOrder = () => {
-    if (selectedOrder) {
-      setIsLoading(true);
-      setTimeout(() => {
-        navigate(`/purchase/${selectedOrder.id}`);
-        setIsLoading(false);
-      }, 300);
-    }
-    handleMenuClose();
-  };
-
-  const handleEditOrder = () => {
-    if (selectedOrder) {
-      setOpenUpdateModal(true);
-      setAnchorEl(null);
-    }
-  };
-
-  const handleDeleteOrder = async () => {
-    performActionWithPermission('/dashboard/purchase-order', 'delete',
-      async () => {
-        if (!selectedOrder) return;
-
-        Swal.fire({
-          title: "Are you sure?",
-          text: "This action cannot be undone.",
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonColor: "#d33",
-          cancelButtonColor: "#3085d6",
-          confirmButtonText: "Yes, delete it!",
-          cancelButtonText: "Cancel",
-          reverseButtons: true,
-        }).then(async (result) => {
-          if (result.isConfirmed) {
-            try {
-              const res = await deletePurchase({
-                tenantDomain,
-                id: selectedOrder._id,
-              }).unwrap();
-
-              if (res.success) {
-                toast.success("Purchase order deleted successfully!");
-                refetch();
-
-                Swal.fire("Deleted!", "The purchase order has been deleted.", "success");
-              }
-            } catch (error) {
-              Swal.fire("Error", "Failed to delete purchase order", "error");
-              console.error(error);
+  const handleDeleteOrder = (order) => {
+    performActionWithPermission("/dashboard/purchase-order", "delete", async () => {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "This action cannot be undone.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Yes, delete it!",
+        cancelButtonText: "Cancel",
+        reverseButtons: true,
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            const res = await deletePurchase({ tenantDomain, id: order._id }).unwrap();
+            if (res.success) {
+              toast.success("Purchase order deleted successfully!");
+              refetch();
+              Swal.fire("Deleted!", "The purchase order has been deleted.", "success");
             }
+          } catch (error) {
+            Swal.fire("Error", "Failed to delete purchase order", "error");
+            console.error(error);
           }
-        });
-
-        handleMenuClose();
-
-      }, "You don't have permission to delete order"
-    )
+        }
+      });
+    }, "You don't have permission to delete order");
   };
 
-  const handleAddOrder = () => {
-    setOpenPurchaseModal(true);
-  };
-
-  const handleOpenReceiveDialog = () => {
-    if (selectedOrder) {
-      setReceivingOrderId(selectedOrder._id);
-      setOpenReceiveDialog(true);
-    }
-    handleMenuClose();
+  const handleOpenReceiveDialog = (order) => {
+    setReceivingOrderId(order._id);
+    setOpenReceiveDialog(true);
   };
 
   const handleCloseReceiveDialog = () => {
@@ -141,59 +101,61 @@ export default function PurchaseOrder() {
     setReceivingOrderId(null);
   };
 
-
-
   const handleDateRangeChange = (e) => {
     const { name, value } = e.target;
-    setDateRange({
-      ...dateRange,
-      [name]: value,
-    });
+    setDateRange({ ...dateRange, [name]: value });
   };
+  const columns = [
+    { key: "referenceNo", label: "Order No" },
+    { key: "suppliers.0.full_name", label: "Supplier" },
+    { key: "totalQuantity", label: "Total Quantity", render: (order) => order.products?.reduce((sum, p) => sum + (p.quantity || 0), 0) || 0 },
+    { key: "products.0.unit_price", label: "Product Price (৳)" },
+    { key: "grandTotal", label: "Total Amount (৳)", render: (order) => order.grandTotal?.toLocaleString("en-US") || "-" },
+    { key: "status", label: "Status" },
+    { key: "orderDate", label: "Order Date", render: (order) => new Date(order.orderDate).toLocaleDateString() },
+    { key: "expectedDeliveryDate", label: "Expected Delivery", render: (order) => new Date(order.expectedDeliveryDate).toLocaleDateString() },
+  ];
 
-  const handlePageChange = (event, newPage) => {
-    setPage(newPage);
-  };
+  const actions = [
 
-  const handleSearch = (e) => {
-    setSearchTerm(e.target.value);
-    setSearch(e.target.value);
-  };
+    {
+      key: "edit",
+      icon: EditIcon,
+      tooltip: "Edit",
+      onClick: handleEditOrder,
+    },
+    {
+      key: "receive",
+      icon: Package,
+      tooltip: "Receive",
+      onClick: handleOpenReceiveDialog,
+    },
+    {
+      key: "delete",
+      icon: DeleteIcon,
+      tooltip: "Delete",
+      onClick: handleDeleteOrder,
+      requirePermission: true,
+      permissionPage: "/dashboard/purchase-order",
+      permissionAction: "delete",
+      permissionMessage: "You don't have permission to delete this order",
+    },
+  ];
+
+  const breadcrumbItems = [
+    { label: "Dashboard", href: "/dashboard", icon: Home },
+    { label: "Purchase", href: "/purchase", icon: ShoppingCart },
+    { label: "Purchase Orders", icon: Receipt },
+  ];
+
 
   return (
-    <Box sx={{ p: 1, borderRadius: 2, mt: 2 }}>
-      <Breadcrumbs
-        separator={<NavigateNext fontSize="small" />}
-        aria-label="breadcrumb"
-        sx={{ mb: 3 }}
-      >
-        <Link
-          color="inherit"
-          href="/dashboard"
-          sx={{ display: "flex", alignItems: "center" }}
-        >
-          <Home sx={{ mr: 0.5, fontSize: 18 }} />
-          Dashboard
-        </Link>
-        <Link
-          color="inherit"
-          href="/purchase"
-          sx={{ display: "flex", alignItems: "center" }}
-        >
-          <ShoppingCart sx={{ mr: 0.5, fontSize: 18 }} />
-          Purchase
-        </Link>
-        <Typography
-          color="text.primary"
-          sx={{ display: "flex", alignItems: "center" }}
-        >
-          <Receipt sx={{ mr: 0.5, fontSize: 18 }} />
-          Purchase Orders
-        </Typography>
-      </Breadcrumbs>
+    <Box sx={wrapBoxStyle}>
+
+
+      <Breadcrumb items={breadcrumbItems} />;
 
       <PageHeader onAddOrder={handleAddOrder} />
-
       <SummaryCards purchaseOrderData={purchaseOrderData} />
 
       <FiltersSection
@@ -205,34 +167,16 @@ export default function PurchaseOrder() {
         onFilterStatusChange={setFilterStatus}
       />
 
-      <PurchaseOrdersTable
-        purchaseOrderData={purchaseOrderData}
-        isLoading={isLoading}
-        onMenuOpen={handleMenuOpen}
-        page={page}
+      <Table
+        title="Purchase Orders"
+        columns={columns}
+        data={purchaseOrderData?.data?.orders || []}
+        loading={isLoading}
+        currentPage={page}
+        totalPages={purchaseOrderData?.data?.meta?.totalPage || 1}
         onPageChange={handlePageChange}
-      />
-
-      <ActionMenu
-        anchorEl={anchorEl}
-        selectedOrder={selectedOrder}
-        onMenuClose={handleMenuClose}
-        onViewOrder={handleViewOrder}
-        onEditOrder={handleEditOrder}
-        onOpenReceiveDialog={handleOpenReceiveDialog}
-        onDeleteOrder={handleDeleteOrder}
-      />
-
-      <ReceiveDialog
-        open={openReceiveDialog}
-        receiveDate={receiveDate}
-        receiveStatus={receiveStatus}
-        receiveNote={receiveNote}
-        purchaseId={receivingOrderId}
-        onClose={handleCloseReceiveDialog}
-        onReceiveDateChange={setReceiveDate}
-        onReceiveStatusChange={setReceiveStatus}
-        onReceiveNoteChange={setReceiveNote}
+        onSearch={handleSearch}
+        actions={actions}
       />
 
       <PurchaseOrderModal
@@ -249,6 +193,19 @@ export default function PurchaseOrder() {
           orderId={selectedOrder._id}
         />
       )}
+
+      <ReceiveDialog
+        setOpen={setOpenReceiveDialog}
+        open={openReceiveDialog}
+        receiveDate={receiveDate}
+        receiveStatus={receiveStatus}
+        receiveNote={receiveNote}
+        purchaseId={receivingOrderId}
+        onClose={handleCloseReceiveDialog}
+        onReceiveDateChange={setReceiveDate}
+        onReceiveStatusChange={setReceiveStatus}
+        onReceiveNoteChange={setReceiveNote}
+      />
     </Box>
   );
 }

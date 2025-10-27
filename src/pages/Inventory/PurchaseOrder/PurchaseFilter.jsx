@@ -1,105 +1,47 @@
 /* eslint-disable react/prop-types */
-import { CalendarToday, FilterList } from "@mui/icons-material";
-import { Paper, Typography, Grid, TextField, InputAdornment, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
-import { SearchIcon } from "lucide-react";
+import { CalendarToday } from "@mui/icons-material";
+import { Paper, Grid, TextField, InputAdornment, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 
-const FiltersSection = ({
-  searchTerm,
-  onSearch,
-  dateRange,
-  onDateRangeChange,
-  filterStatus,
-  onFilterStatusChange,
-}) => {
+const FiltersSection = ({ dateRange, onDateRangeChange, filterStatus, onFilterStatusChange }) => {
+  const dateFields = ["startDate", "endDate"];
+  const statusOptions = ["all", "pending", "confirmed", "shipped", "received", "cancelled"];
+
   return (
-    <>
-      <Paper sx={{ p: 1, mb: 3, borderRadius: 3, boxShadow: "0 4px 20px rgba(0,0,0,0.08)" }}>
-        <Typography variant="h6" gutterBottom sx={{ mb: 2, fontWeight: "bold", display: "flex", alignItems: "center" }}>
-          <FilterList sx={{ mr: 1 }} />
-          Filter Options
-        </Typography>
-        <Grid container spacing={2}>
-          <Grid item xs={12} md={6}>
+    <Paper sx={{ p: 2, mb: 3, borderRadius: 3, boxShadow: "0 4px 20px rgba(0,0,0,0.08)" }}>
+
+
+      <Grid container spacing={2} sx={{ mb: 2 }}>
+
+
+        {dateFields.map((field, i) => (
+          <Grid item xs={6} md={3} key={i}>
             <TextField
               fullWidth
-              variant="outlined"
-              placeholder="Search..."
-              value={searchTerm}
-              onChange={onSearch}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
-                sx: { borderRadius: 2 },
-              }}
+              type="date"
+              name={field}
+              label={field === "startDate" ? "Start Date" : "End Date"}
+              value={dateRange[field]}
+              onChange={onDateRangeChange}
+              InputLabelProps={{ shrink: true }}
+              InputProps={{ startAdornment: <InputAdornment position="start"><CalendarToday fontSize="small" /></InputAdornment>, sx: { borderRadius: 2 } }}
             />
           </Grid>
-          <Grid item xs={12} md={6}>
-            <Grid container spacing={2}>
-              <Grid item xs={6}>
-                <TextField
-                  fullWidth
-                  label="Start Date"
-                  type="date"
-                  name="startDate"
-                  value={dateRange.startDate}
-                  onChange={onDateRangeChange}
-                  InputLabelProps={{ shrink: true }}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <CalendarToday fontSize="small" />
-                      </InputAdornment>
-                    ),
-                    sx: { borderRadius: 2 },
-                  }}
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <TextField
-                  fullWidth
-                  label="End Date"
-                  type="date"
-                  name="endDate"
-                  value={dateRange.endDate}
-                  onChange={onDateRangeChange}
-                  InputLabelProps={{ shrink: true }}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <CalendarToday fontSize="small" />
-                      </InputAdornment>
-                    ),
-                    sx: { borderRadius: 2 },
-                  }}
-                />
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
-      </Paper>
+        ))}
 
-      <Paper sx={{ p: 3, mb: 3, borderRadius: 3, boxShadow: "0 4px 20px rgba(0,0,0,0.08)" }}>
-        <FormControl fullWidth>
-          <InputLabel>Status Filter</InputLabel>
-          <Select
-            value={filterStatus}
-            label="Status Filter"
-            onChange={(e) => onFilterStatusChange(e.target.value)}
-            sx={{ borderRadius: 2 }}
-          >
-            <MenuItem value="all">All Statuses</MenuItem>
-            <MenuItem value="pending">Pending</MenuItem>
-            <MenuItem value="confirmed">Confirmed</MenuItem>
-            <MenuItem value="shipped">Shipped</MenuItem>
-            <MenuItem value="received">Received</MenuItem>
-            <MenuItem value="cancelled">Cancelled</MenuItem>
-          </Select>
-        </FormControl>
-      </Paper>
-    </>
+        <Grid item xs={12} md={3}>
+
+          <FormControl fullWidth>
+            <InputLabel>Status Filter</InputLabel>
+            <Select value={filterStatus} onChange={(e) => onFilterStatusChange(e.target.value)} sx={{ borderRadius: 2 }}>
+              {statusOptions.map((status) => (
+                <MenuItem key={status} value={status}>{status.charAt(0).toUpperCase() + status.slice(1)}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Grid>
+      </Grid>
+
+    </Paper>
   );
 };
 

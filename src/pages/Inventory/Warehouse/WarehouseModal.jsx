@@ -1,5 +1,5 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
+
 "use client";
 import {
   Typography,
@@ -7,8 +7,7 @@ import {
   DialogTitle,
   Grid,
   Divider,
-  useTheme,
-  Box,
+
 } from "@mui/material";
 import {
   Warehouse as WarehouseIcon,
@@ -38,7 +37,6 @@ import { useAppOptions } from "../../../hooks/useAppOptions";
 import Can from "../../../components/Can";
 
 const WarehouseModal = ({ open, onClose, warehouseId }) => {
-  const theme = useTheme();
   const [createWarehouse] = useCreateWarehouseMutation();
   const [updateWarehouse] = useUpdateWarehouseMutation();
   const { tenantDomain, performActionWithPermission } = useAppOptions()
@@ -125,13 +123,13 @@ const WarehouseModal = ({ open, onClose, warehouseId }) => {
         >
           <GarageForm onSubmit={handleSubmit} defaultValues={defaultValue}>
             <DialogTitle sx={{ pb: 1 }}>
-              <Typography variant="" sx={{ fontWeight: "bold", display:"flex" }}>
+              <Typography variant="" sx={{ fontWeight: "bold", display: "flex" }}>
                 {warehouseId ? "Update" : "Add New"} Warehouse
               </Typography>
             </DialogTitle>
             <Divider />
 
-            <Grid container spacing={3} sx={{ mt: 0, padding:2 }}>
+            <Grid container spacing={3} sx={{ mt: 0, padding: 2 }}>
               {/* Warehouse Name (Required) */}
               <Grid item xs={12}>
                 <TASInput
@@ -271,7 +269,7 @@ const WarehouseModal = ({ open, onClose, warehouseId }) => {
                     py: 1,
                     px: 3,
                     color: "white",
-                    mb:2
+                    mb: 2
 
                   }}
                 >

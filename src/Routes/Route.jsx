@@ -38,7 +38,7 @@ import ViewEmployeeAttendance from "../pages/Attendance/ViewEmployeeAttendance";
 import EmployeeHoliday from "../pages/Holiday/Holiday";
 import UpdateBillPay from "../pages/BillPay/UpdateBillPay";
 import BillPayInvoice from "../pages/BillPay/BillPayInvoice";
-import PurchaseList from "../pages/Parchase/PurchasList";
+
 import Income from "../pages/Income/Income";
 import IncomeList from "../pages/Income/IncomeList";
 import UpdateIncome from "../pages/Income/UpdateIncome";
@@ -133,6 +133,8 @@ import AllCustomerList from "../pages/Customer/AllCustomerList";
 import InvoiceList from "../pages/Invoice/InvoiceList";
 import Attendance from "../pages/Employee/EmployeeProfile/Attendance";
 import Home from "../pages/Home/Home";
+import PurchaseList from "../pages/Parchase/PurchaseList";
+import WarehouseStocks from "../pages/Inventory/Warehouse/WareHouseList";
 
 const createProtectedRoute = (path, element, pagePath, action = "view") => {
   return {
@@ -649,6 +651,11 @@ export const router = createBrowserRouter([
         "warehouse",
         <WarehouseManagement />,
         "/dashboard/warehouse"
+      ),
+      createProtectedRoute(
+        "StockFlow",
+        <WarehouseStocks />,
+        "/dashboard/StockFlow"
       ),
       createProtectedRoute("variants", <Variants />, "/dashboard/variants"),
       createProtectedRoute(

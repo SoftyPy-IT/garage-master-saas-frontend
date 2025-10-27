@@ -2,6 +2,7 @@
 import { AddIcCallOutlined } from "@mui/icons-material";
 import { Box, Typography, Button } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import { purchaseBtn } from "../../../utils/customStyle";
 
 const PageHeader = ({ onAddOrder }) => {
   const theme = useTheme();
@@ -35,18 +36,9 @@ const PageHeader = ({ onAddOrder }) => {
       </Typography>
       <Button
         variant="contained"
-        startIcon={<AddIcCallOutlined/>}
+        startIcon={<AddIcCallOutlined />}
         onClick={onAddOrder}
-        sx={{
-          borderRadius: "8px",
-          boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
-          background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`,
-          transition: "all 0.3s",
-          "&:hover": {
-            boxShadow: "0 6px 15px rgba(0,0,0,0.2)",
-            transform: "translateY(-2px)",
-          },
-        }}
+        sx={purchaseBtn}
       >
         New Order
       </Button>

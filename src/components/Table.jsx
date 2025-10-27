@@ -168,14 +168,13 @@ const TableRow = ({
 
     return (
         <tr className={`${rowClass} hover:bg-blue-300 transition-colors duration-200 hover:text-black`}>
-            {/* Data Columns */}
+
             {columns.map((column) => (
                 <td key={column.key}>
                     {renderCellContent(column, data)}
                 </td>
             ))}
 
-            {/* Action Columns */}
             {actions.map((action) => {
                 const ActionIcon = action.icon;
 
