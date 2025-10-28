@@ -18,7 +18,7 @@ import { useTenantDomain } from "../../../../src/hooks/useTenantDomain";
 import PropTypes from "prop-types";
 
 const AllServices = ({ showSensitiveData }) => {
-const {tenantDomain} = useTenantDomain();
+  const { tenantDomain } = useTenantDomain();
   const {
     data: allMetaData,
     isLoading,
@@ -28,10 +28,10 @@ const {tenantDomain} = useTenantDomain();
   if (isLoading) return <Loading />;
 
   const card =
-    "flex flex-col md:flex-row items-center justify-center content-center gap-x-2 mt-3 md:mt-8 space-y-2 ";
+    "flex flex-col  items-center justify-center content-center gap-x-2 mt-3 md:mt-4 space-y-2 ";
   const amount = "text-center text-[32px] font-bold ";
 
-const WaveBg = () => (
+  const WaveBg = () => (
     <div className="wave-background">
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -46,7 +46,7 @@ const WaveBg = () => (
         />
       </svg>
     </div>
-);
+  );
 
   return (
     <div className="dashBoardRight mt-5 lg:mt-0 ">
@@ -93,6 +93,9 @@ const WaveBg = () => (
         <div className="invoice-card">
           <WaveBg />
           <div className={card}>
+            {/* <div className="relative z-0 w-20 h-20 rounded-2xl flex items-center justify-center bg-white/20 backdrop-blur-sm border border-white/30 transition-all duration-300 hover:scale-110">
+              <FaCarSide className="w-10 h-10" />
+            </div> */}
             <div className="dashboardCardIconWrap4">
               <FaCarSide className="dashboardCardIcon" />
             </div>
@@ -104,10 +107,13 @@ const WaveBg = () => (
         </div>
 
         {/* All Customers (always visible) */}
-        <div className="invoice-card invoice-card">
+        <div className="invoice-card">
           <WaveBg />
           <Link to="/dashboard/all-customer">
-            <div className={card}>
+            <div className={card} >
+              {/* <div className=" relative z-0 w-14 h-14 rounded-2xl flex items-center justify-center bg-black/20 backdrop-blur-sm border border-white/30 transition-all duration-300 hover:scale-110">
+                <FaUsers className="w-10 h-10" />
+              </div> */}
               <div className="dashboardCardIconWrap7">
                 <FaUsers className="dashboardCardIcon" />
               </div>
@@ -128,7 +134,7 @@ const WaveBg = () => (
       {showSensitiveData && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 place-content-center gap-3 lg:gap-3 xl:gap-7 mb-5">
           {/* Total Sale */}
-          <div className="invoice-card">
+          <div className="invoice-card invoice-card2">
             <WaveBg />
             <div className={card}>
               <div className="dashboardCardIconWrap3">

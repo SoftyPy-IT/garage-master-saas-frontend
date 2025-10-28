@@ -36,12 +36,10 @@ export const Navigation = ({ scrollToSection }) => {
   const isSmall = useMediaQuery(theme.breakpoints.between("sm", "md")); // Tablets
   const isMedium = useMediaQuery(theme.breakpoints.between("md", "lg")); // Small laptops
   const isLarge = useMediaQuery(theme.breakpoints.up("lg")); // Large screens
-  // const isExtraLarge = useMediaQuery(theme.breakpoints.up("xl")) // Extra large screens
-
-  const isMobile = useMediaQuery(theme.breakpoints.down("md")); // Mobile & tablets
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [showFullMenu, setShowFullMenu] = useState(true);
 
   const navItems = [
     { label: "Features", id: "features" },
@@ -61,6 +59,28 @@ export const Navigation = ({ scrollToSection }) => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Check if there's enough space for all menu items
+  useEffect(() => {
+    const checkMenuSpace = () => {
+      const navContainer = document.getElementById('nav-container');
+      const navContent = document.getElementById('nav-content');
+      
+      if (navContainer && navContent) {
+        const containerWidth = navContainer.offsetWidth;
+        const contentWidth = navContent.scrollWidth;
+        
+        // If content is wider than container, show drawer menu
+        setShowFullMenu(contentWidth <= containerWidth);
+      }
+    };
+
+    // Check initially and on resize
+    checkMenuSpace();
+    window.addEventListener('resize', checkMenuSpace);
+    
+    return () => window.removeEventListener('resize', checkMenuSpace);
+  }, []);
+
   const handleNavClick = (sectionId) => {
     scrollToSection(sectionId);
     setIsMenuOpen(false);
@@ -76,17 +96,17 @@ export const Navigation = ({ scrollToSection }) => {
       extraLarge: { variant: "h5", size: "1.8rem" },
     },
     navButton: {
-      extraSmall: {  },
+      extraSmall: { },
       small: { px: 1, fontSize: "0.7rem", minWidth: "auto" },
       medium: { px: 1.2, fontSize: "0.75rem", minWidth: "auto" },
-      large: { px: 3, fontSize: "0.8rem", minWidth: "auto" },
+      large: { px: 1.5, fontSize: "0.8rem", minWidth: "auto" },
       extraLarge: { px: 2, fontSize: "0.85rem", minWidth: "auto" },
     },
     authButton: {
       extraSmall: { px: 1.5, fontSize: "0.65rem" },
       small: { px: 2, fontSize: "0.7rem" },
       medium: { px: 2.5, fontSize: "0.75rem" },
-      large: { px: 1.5, fontSize: "0.8rem" },
+      large: { px: 2, fontSize: "0.8rem" },
       extraLarge: { px: 3.5, fontSize: "0.85rem" },
     },
     spacing: {
@@ -110,6 +130,9 @@ export const Navigation = ({ scrollToSection }) => {
 
   const currentSize = getCurrentSize();
 
+  // Determine if we should show drawer menu
+  const shouldShowDrawer = !showFullMenu || isExtraSmall || isSmall;
+
   return (
     <>
       <AppBar
@@ -126,6 +149,7 @@ export const Navigation = ({ scrollToSection }) => {
       >
         <Container
           maxWidth="xl"
+          id="nav-container"
           sx={{
             px: {
               xs: 1, 
@@ -206,7 +230,7 @@ export const Navigation = ({ scrollToSection }) => {
                 variant={responsiveStyles.logo[currentSize].variant}
                 component="div"
                 sx={{
-                  fontWeight: 900,
+                  fontWeight: {xs:400,  xl:600},
                   letterSpacing: {
                     xs: "-0.3px",
                     sm: "-0.5px",
@@ -225,24 +249,26 @@ export const Navigation = ({ scrollToSection }) => {
               </Typography>
             </Stack>
 
-            {/* Desktop Navigation - Show ALL items */}
-            {!isMobile ? (
+            {/* Desktop Navigation - Show only when there's enough space */}
+            {!shouldShowDrawer ? (
               <Stack
+                id="nav-content"
                 direction="row"
                 spacing={responsiveStyles.spacing[currentSize]}
                 alignItems="center"
                 sx={{
-                  display: { xs: "none", md: "flex" },
+                  display: { xs: "none", sm: "flex" },
                   flexWrap: "nowrap",
                   flexShrink: 1,
                   minWidth: 0,
+                  transition: "all 0.3s ease",
                 }}
               >
                 {/* Show ALL navigation items with responsive text */}
                 {navItems.map((item) => (
                   <motion.div key={item.id} whileHover={{ y: -2 }}>
                     <Button
-                       variant="text"
+                      variant="text"
                       onClick={() => handleNavClick(item.id)}
                       sx={{ 
                         fontWeight: {
@@ -274,8 +300,7 @@ export const Navigation = ({ scrollToSection }) => {
                         transition: "all 0.2s ease",
                       }}
                     >
-                      
-                    {item.label}
+                      {item.label}
                     </Button>
                   </motion.div>
                 ))}
@@ -372,18 +397,18 @@ export const Navigation = ({ scrollToSection }) => {
                         transition: "all 0.2s ease",
                       }}
                     >
-                      {isMedium ? "🚀 Trial" : "🚀 Start Free Trial"}
+                      {isMedium ? "🚀 Trial" : "🚀 Free Trial"}
                     </Button>
                   </motion.div>
                 </Stack>
               </Stack>
             ) : (
-              /* Mobile Menu Button */
+              /* Mobile Menu Button - Shows when not enough space or small devices */
               <IconButton
                 color="inherit"
                 onClick={() => setIsMenuOpen(true)}
                 sx={{
-                  display: { md: "none" },
+                  display: { xs: "flex", sm: shouldShowDrawer ? "flex" : "none" },
                   p: { xs: 1, sm: 1.2 },
                 }}
               >
@@ -403,7 +428,7 @@ export const Navigation = ({ scrollToSection }) => {
         </Container>
       </AppBar>
 
-      {/* Mobile Drawer */}
+      {/* Mobile Drawer - Shows full menu when space is limited */}
       <Drawer
         anchor="right"
         open={isMenuOpen}
@@ -561,7 +586,7 @@ export const Navigation = ({ scrollToSection }) => {
               transition: "all 0.2s ease",
             }}
           >
-            Start Free Trial
+            Free Trial
           </Button>
         </Box>
       </Drawer>
