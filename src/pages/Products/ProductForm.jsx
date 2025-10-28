@@ -269,6 +269,23 @@ export default function ProductForm({ id }) {
   }
 
   const handleSubmit = async (data) => {
+    const requiredFields = [
+      { key: 'product_type', label: 'Product Type' },
+      { key: 'category', label: 'Category' },
+      { key: 'brand', label: 'Brand' },
+      { key: 'warehouse', label: 'Warehouse' },
+      { key: 'suppliers', label: 'Suppliers' },
+      { key: 'warranties', label: 'Warranties' },
+      { key: 'unit', label: 'Unit' },
+    ];
+
+    const missingField = requiredFields.find(field => !data[field.key]?.length);
+
+    if (missingField) {
+      toast.error(`Please select ${missingField.label}!`);
+      return;
+    }
+
     performActionWithPermission(
       '/dashboard/add-product',
       id ? 'edit' : 'create',

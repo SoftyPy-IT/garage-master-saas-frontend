@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { Box, Button, Container, Typography } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import Breadcrumb from "../../components/Breadcrumb";
 import {
     ArrowBack as ArrowBackIcon,
@@ -12,7 +12,7 @@ export const ProductHeader = ({ id, navigate }) => {
     ];
 
     return (
-        <Container maxWidth="xl">
+        <>
             <Breadcrumb items={breadcrumbItems} />
 
             <Box sx={{ display: "flex", alignItems: "center", mb: 2, justifyContent: 'space-between' }}>
@@ -38,6 +38,6 @@ export const ProductHeader = ({ id, navigate }) => {
 
             </Box>
 
-        </Container>
+        </>
     );
 };
