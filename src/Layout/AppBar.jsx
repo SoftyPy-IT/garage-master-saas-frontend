@@ -85,23 +85,23 @@ const AppBar = ({ toggle, navRef, toggleSideBar }) => {
 
           <div className="flex items-center gap-2">
             <Link to="/dashboard">
-              <h3 className="w-[250px] ml-5 lg:text-xl xl:text-xl font-semibold text-white hidden xl:block">
+              <h3 className="w-[250px] ml-0 lg:text-xl xl:text-xl font-semibold text-white hidden xl:block">
                 {CompanyInfoData?.data?.companyName}
               </h3>
             </Link>
             <div className="hidden lg:flex items-center gap-3">
               <button
-                className="px-6 py-2 bg-white/20 backdrop-blur-sm text-white rounded-xl hover:bg-white/30 hover:scale-105 active:scale-95 border border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 font-medium"
+                className="lg:px-6 py-2 bg-white/20 backdrop-blur-sm text-white rounded-xl hover:bg-white/30 hover:scale-105 active:scale-95 border border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 font-medium"
                 onClick={() =>
                   window.open("https://trustautosolution.com", "_blank")
                 }
               >
                 Visit Website
               </button>
-              <button className="px-6 py-2 bg-white/20 backdrop-blur-sm text-white rounded-xl hover:bg-white/30 hover:scale-105 active:scale-95 border border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 font-medium w-[120px]">
+              <button className="lg:px-6 py-2 bg-white/20 backdrop-blur-sm text-white rounded-xl hover:bg-white/30 hover:scale-105 active:scale-95 border border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 font-medium lg:w-[120px]">
                 BD Shop
               </button>
-              <button className="px-6 py-2 bg-white/20 backdrop-blur-sm text-white rounded-xl hover:bg-white/30 hover:scale-105 active:scale-95 border border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 font-medium">
+              <button className="lg:px-6 py-2 bg-white/20 backdrop-blur-sm text-white rounded-xl hover:bg-white/30 hover:scale-105 active:scale-95 border border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 font-medium">
                 Global Shop
               </button>
             </div>
@@ -133,7 +133,7 @@ const AppBar = ({ toggle, navRef, toggleSideBar }) => {
 
             <Link
               to="/dashboard/holiday"
-              className="p-3 bg-white/20 backdrop-blur-sm rounded-xl border border-white/30 shadow-lg hover:bg-white/30 hover:scale-105 transition-all duration-300"
+              className="lg:p-3 bg-white/20 backdrop-blur-sm rounded-xl border border-white/30 shadow-lg hover:bg-white/30 hover:scale-105 transition-all duration-300"
             >
               <FaCalendarDays size={20} className="text-white" />
             </Link>
