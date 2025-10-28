@@ -307,10 +307,10 @@ const Sidebar = ({ toggle }) => {
       title: "Report",
       icon: <Report />,
       items: [
-        { icon: <RequestQuote className="mr-2" />, text: "Income Report", link: "/dashboard/user-permission" },
-        { icon: <CurrencyExchange className="mr-2" />, text: "Expense Report", link: "/dashboard/role-management" },
-        { icon: <VolunteerActivism className="mr-2" />, text: "Donation Report", link: "/dashboard/page-management" },
-        { icon: <Receipt className="mr-2" />, text: "Invoice Report", link: "/dashboard/page-management" }
+        { icon: <RequestQuote className="mr-2" />, text: "Income Report", link: "/dashboard/income-report" },
+        { icon: <CurrencyExchange className="mr-2" />, text: "Expense Report", link: "/dashboard/expense-report" },
+        { icon: <VolunteerActivism className="mr-2" />, text: "Donation Report", link: "/dashboard/donation-report" },
+        { icon: <Receipt className="mr-2" />, text: "Invoice Report", link: "/dashboard/invoice-report" }
       ]
     },
     {
@@ -405,7 +405,7 @@ const Sidebar = ({ toggle }) => {
         sx={{ paddingBottom: "10px" }}
         className="dashboardAccordion"
         expanded={expanded === item.id}
-        onChange={handleChange(item.id)}
+        onChange={handleChange(item.id)} 
       >
         <AccordionSummary
           sx={{ marginBottom: "-10px" }}

@@ -134,6 +134,10 @@ import PurchaseList from "../pages/Parchase/PurchaseList";
 import WarehouseStocks from "../pages/Inventory/Warehouse/WareHouseList";
 import PurchaseReturn from "../pages/Inventory/PurchaseReturn/PurchaseReturn";
 import PurchaseReturnUpdate from "../pages/Inventory/PurchaseReturn/PurchaseReturnUpdate";
+import IncomeReport from "../pages/Report/IncomeReport";
+import ExpenseReport from "../pages/Report/ExpenseReport";
+import InvoiceReport from "../pages/Report/InvoiceReport";
+import DonationReport from "../pages/Report/DonationReport";
 
 const createProtectedRoute = (path, element, pagePath, action = "view") => {
   return {
@@ -798,6 +802,29 @@ export const router = createBrowserRouter([
         <RestoreDatabase />,
         "/dashboard/restore"
       ),
+      // =============== report start here ================
+      createProtectedRoute(
+        "income-report",
+        <IncomeReport />,
+        "/dashboard/income-report"
+      ),
+      createProtectedRoute(
+        "expense-report",
+        <ExpenseReport />,
+        "/dashboard/expense-report"
+      ),
+      createProtectedRoute(
+        "invoice-report",
+        <InvoiceReport />,
+        "/dashboard/invoice-report"
+      ),
+      createProtectedRoute(
+        "donation-report",
+        <DonationReport />,
+        "/dashboard/donation-report"
+      ),
+
+      //=============== report End here ================
 
     ],
   },
