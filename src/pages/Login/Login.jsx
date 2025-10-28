@@ -28,30 +28,23 @@ const Login = () => {
         const accessToken = res?.data?.accessToken;
         const user = res?.data?.user;
 
-        // Redux এ সেট করা
         dispatch(setUser({ user, token: accessToken }));
-
-        // Browser cookie এ token সেট করো যাতে redirect পরেও access থাকে
         document.cookie = `accessToken=${accessToken}; path=/; domain=.localhost; SameSite=Lax;`;
 
         toast.success(res.message || "Login successful!");
 
-        const tenantKey = user?.tenantDomain || data.tenantDomain;
+        const tenantKey = user?.tenantId ? user.domain : "superadmin"; // domain from backend
         const isLocalhost = window.location.hostname.includes("localhost");
 
-        let redirectURL;
+        const redirectURL =
+          tenantKey === "superadmin"
+            ? isLocalhost
+              ? "http://localhost:5173/dashboard"
+              : "https://garage.trustautosolution.com/dashboard/all-tenant-list"
+            : isLocalhost
+              ? `http://${tenantKey}.localhost:5173/dashboard`
+              : `https://${tenantKey}/dashboard`;
 
-        if (tenantKey === "superadmin") {
-          redirectURL = isLocalhost
-            ? "http://localhost:5173/dashboard"
-            : "https://garage.trustautosolution.com/dashboard/all-tenant-list";
-        } else {
-          redirectURL = isLocalhost
-            ? `http://${tenantKey}.localhost:5173/dashboard`
-            : `https://${tenantKey}/dashboard`;
-        }
-
-        // Redirect করার আগে Redux persist state নিশ্চিতভাবে save হবে
         setTimeout(() => {
           window.location.href = redirectURL;
         }, 100);
@@ -65,6 +58,7 @@ const Login = () => {
       setLoading(false);
     }
   };
+
 
 
   return (
@@ -87,13 +81,7 @@ const Login = () => {
           icon={Person}
           iconPosition="start"
         />
-        <FormInput
-          name="tenantDomain"
-          label="Domain"
-          required
-          icon={Person}
-          iconPosition="start"
-        />
+
         <FormInput
           name="password"
           label="User password"

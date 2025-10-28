@@ -9,7 +9,6 @@ import Sidebar from "./Sidebar";
 import AppBar from "./AppBar";
 
 const DashboardLayout = () => {
-  const [expanded, setExpanded] = useState(false);
   const navRef = useRef();
   const [toggle, setToggle] = useState(false);
   const toggleSideBar = () => {

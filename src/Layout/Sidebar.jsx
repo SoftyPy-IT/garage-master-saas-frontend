@@ -3,7 +3,6 @@
 
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import Cookies from "js-cookie";
 import "./Layout.css";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
@@ -97,20 +96,32 @@ import {
 } from "react-icons/hi";
 
 import LeftHoberSidebar from "../components/Appbar/LeftHoberSidebar";
-
+import { useDispatch } from "react-redux";
+import { useTenantLogoutMutation } from "../redux/api/authApi";
+import { logout } from "../redux/feature/authSlice";
+import { toast } from "react-toastify";
 const Sidebar = ({ toggle }) => {
   const [expanded, setExpanded] = useState(false);
+  const dispatch = useDispatch();
+  const [tenantLogout] = useTenantLogoutMutation()
 
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
   };
 
   const navigate = useNavigate();
-  const handleLogout = () => {
-    Cookies.remove("tas-auth");
-    navigate("/");
+  const handleLogout = async () => {
+    try {
+      const res = await tenantLogout().unwrap();
+      dispatch(logout());
+      if (res.success) {
+        toast.success("Logged out successfully!");
+        navigate("/");
+      }
+    } catch (err) {
+      toast.error("Logout failed!");
+    }
   };
-
   const user = JSON.parse(localStorage.getItem("user") || "{}");
 
   // Menu configuration data
