@@ -1,7 +1,5 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable react/no-unescaped-entities */
 /* eslint-disable react/prop-types */
-/* eslint-disable no-unused-vars */
+
 "use client";
 
 import { useMemo, useEffect } from "react";
@@ -27,7 +25,6 @@ import {
 import {
   Save as SaveIcon,
   Clear as ClearIcon,
-  ArrowBack as ArrowBackIcon,
   ShoppingBag,
   MonetizationOn,
   Inventory,
@@ -54,7 +51,7 @@ import ProductStatusSelector from "../../components/form/Status";
 import { toast } from "react-toastify";
 import TASSelect from "../../components/form/Select";
 import FormDatePicker from "../../components/form/Datepicker";
-import { addButtonStyle, pBtnStyle } from "../../utils/customStyle";
+import { addButtonStyle, pBtnStyle, wrapBoxStyle } from "../../utils/customStyle";
 import { CreateBrandModal } from "../Brand/CreateBrandModal";
 import { CreateProductTypeModal } from "../ProductType/CreateProductTypeModal";
 import { AddSupplierModal } from "../Suppliers/AddSupplierModal";
@@ -66,6 +63,7 @@ import { useFormController } from "../../hooks/useFormController";
 import WarrantyModal from "../Inventory/Warranty/WarrantyModal";
 import WarehouseModal from "../Inventory/Warehouse/WarehouseModal";
 import { CreateCategoryModal } from "../Category/CreateCategoryModal";
+import { ProductHeader } from "./ProductHeader";
 
 export default function ProductForm({ id }) {
   const {
@@ -606,7 +604,13 @@ export default function ProductForm({ id }) {
                 <TASAutocomplete
                   size="medium"
                   name="warranties"
-                  label="Warranty"
+                  label={
+                    <>
+                      Warranty
+                      <span style={{ color: "red", fontSize: "25px" }}> *</span>
+                    </>
+                  }
+
                   placeholder="Warranty"
                   icon={Category}
                   iconPosition="start"
@@ -964,7 +968,7 @@ export default function ProductForm({ id }) {
                 <MenuItem value="none">No Expiration Date</MenuItem>
               </Select>
               <FormHelperText>
-                Select how you want to track this product's expiration
+                Select how you want to track this products expiration
               </FormHelperText>
             </FormControl>
           </Grid>
@@ -1125,52 +1129,11 @@ export default function ProductForm({ id }) {
   ) : (
     <>
       <Box
-        sx={{
-          minHeight: "100vh",
-          background: "linear-gradient(to bottom, #f9f9f9, #f0f0f0)",
-          pt: 2,
-          pb: 8,
-        }}
+        sx={wrapBoxStyle}
       >
-        {/* Header */}
-        <Box
-          sx={{
-            background: "#42A0D9",
-            color: "white",
-            py: 3,
-            mb: 2,
-            borderRadius: { xs: "0 0 20px 20px", md: "0 0 20px 20px" },
-            boxShadow: "0 4px 20px rgba(106, 27, 154, 0.4)",
-          }}
-        >
-          <Container maxWidth="xl">
-            <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-              <ShoppingBag sx={{ fontSize: 40, mr: 2 }} />
-              <span className="font-[700] text-[30px] md:text-[35px]">
-                {id ? 'Edit Product' : 'Create New Product'}
-              </span>
-            </Box>
-            <Typography variant="body1" sx={{ opacity: 0.9, maxWidth: 700 }}>
-              {id ? 'Edit the product information.' : 'Create a new product by filling in the required information. Follow the steps to complete the process.'}
-            </Typography>
-          </Container>
-        </Box>
+
+        <ProductHeader id={id} navigate={navigate} />
         <Container maxWidth="xl" sx={{ p: { xs: 1, md: 2 } }}>
-          <Box sx={{ mb: 3 }}>
-            <Button
-              startIcon={<ArrowBackIcon />}
-              variant="outlined"
-              onClick={() => navigate(-1)}
-              sx={{
-                borderRadius: 100,
-                borderColor: "rgba(0,0,0,0.12)",
-                color: "text.secondary",
-                px: 3,
-              }}
-            >
-              Back to Product List
-            </Button>
-          </Box>
 
           <Paper
             elevation={3}

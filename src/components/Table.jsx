@@ -136,18 +136,14 @@ const TableRow = ({
     const rowClass = getRowClass(data);
 
     const renderCellContent = (column, item) => {
-        // Handle index type
         if (column.type === "index") return globalIndex;
 
-        // Use custom render function if provided
         if (column.render) return column.render(item, index, externalHooks);
 
-        // Handle nested objects (e.g., "user.name")
         if (column.key.includes('.')) {
             return column.key.split('.').reduce((obj, key) => obj?.[key], item);
         }
 
-        // Default value
         return item[column.key] ?? "N/A";
     };
 

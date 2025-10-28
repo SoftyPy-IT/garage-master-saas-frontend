@@ -2,14 +2,15 @@ import { Toaster } from "react-hot-toast";
 import { Box, useTheme, alpha } from "@mui/material";
 import AssignmentReturnIcon from "@mui/icons-material/AssignmentReturn";
 import ReceiptIcon from "@mui/icons-material/Receipt";
-import DeleteIcon from "@mui/icons-material/Delete";
 import { usePurchaseReturns } from "../../../hooks/usePurchaseReturns.js";
 import PageHeader from "./PageHeader.jsx";
 import BreadcrumbNav from "./BreadcrumbNav.jsx";
 import FilterSection from "./FilterSection.jsx";
-import PurchaseReturnTable from "./PurchaseReturnTable.jsx.jsx";
 import ActionMenu from "./ActionMenu.jsx";
-import StatsSection from "./StatsSection.jsx";
+import Table from "../../../components/Table.jsx";
+import { DeleteIcon, EditIcon } from "lucide-react";
+import PurchaseReturnStatusChip from "./StatusChip.jsx";
+import SummaryCards from "../../../components/SummaryCard.jsx";
 
 function PurchaseReturnList() {
   const theme = useTheme();
@@ -17,7 +18,6 @@ function PurchaseReturnList() {
     searchTerm,
     anchorEl,
     dateRange,
-
     filterStatus,
     filterWarehouse,
     isLoading,
@@ -38,55 +38,75 @@ function PurchaseReturnList() {
     handleDateRangeChange,
     handlePageChange,
     handleSearchChange,
-
     setFilterStatus,
     setFilterWarehouse,
   } = usePurchaseReturns();
 
-  const statsData = [
+  const cardsData = [
     {
-      id: 1,
-      value: totalReturns,
       title: "Total Returns",
-      icon: <AssignmentReturnIcon className="text-[30px]" />,
-      gradient: `linear-gradient(135deg, ${alpha(
-        theme.palette.primary.light,
-        0.2
-      )}, ${alpha(theme.palette.primary.main, 0.05)})`,
-      avatarColor: theme.palette.primary.main,
+      value: totalReturns,
+      color: theme.palette.primary.main,
+      bgColor: theme.palette.primary.light,
+      icon: <AssignmentReturnIcon />,
     },
     {
-      id: 2,
-      value: pendingReturns,
       title: "Pending Returns",
-      icon: <ReceiptIcon className="text-[30px]" />,
-      gradient: `linear-gradient(135deg, ${alpha(
-        theme.palette.warning.light,
-        0.2
-      )}, ${alpha(theme.palette.warning.main, 0.05)})`,
-      avatarColor: theme.palette.warning.main,
+      value: pendingReturns,
+      color: theme.palette.warning.main,
+      bgColor: theme.palette.warning.light,
+      icon: <ReceiptIcon />,
     },
     {
-      id: 3,
-      value: completedReturns,
       title: "Completed Returns",
-      icon: <AssignmentReturnIcon className="text-[30px]" />,
-      gradient: `linear-gradient(135deg, ${alpha(
-        theme.palette.success.light,
-        0.2
-      )}, ${alpha(theme.palette.success.main, 0.05)})`,
-      avatarColor: theme.palette.success.main,
+      value: completedReturns,
+      color: theme.palette.success.main,
+      bgColor: theme.palette.success.light,
+      icon: <AssignmentReturnIcon />,
     },
     {
-      id: 4,
-      value: cancelledReturns,
       title: "Cancelled Returns",
-      icon: <DeleteIcon className="text-[30px]" />,
-      gradient: `linear-gradient(135deg, ${alpha(
-        theme.palette.error.light,
-        0.2
-      )}, ${alpha(theme.palette.error.main, 0.05)})`,
-      avatarColor: theme.palette.error.main,
+      value: cancelledReturns,
+      color: theme.palette.error.main,
+      bgColor: theme.palette.error.light,
+      icon: <DeleteIcon />,
+    },
+  ];
+
+  const columns = [
+    { key: "referenceNo", label: "Return No" },
+    {
+      key: "returnDate",
+      label: "Date",
+      render: (item) => new Date(item.returnDate).toLocaleDateString(),
+    },
+    { key: "suppliers.0.full_name", label: "Supplier" },
+    { key: "warehouse.name", label: "Warehouse" },
+    { key: "items", label: "Items", render: (item) => item.items?.length || 0 },
+    {
+      key: "totalReturnAmount",
+      label: "Amount",
+      render: (item) => `৳ ${item.totalReturnAmount?.toLocaleString() || "0"}`,
+    },
+    {
+      key: "status",
+      label: "Status",
+      render: (item) => <PurchaseReturnStatusChip status={item.status} />,
+    },
+  ];
+
+  const actions = [
+    {
+      key: "edit",
+      icon: EditIcon,
+      tooltip: "Edit",
+      onClick: (item) => handleEditReturn(item._id),
+    },
+    {
+      key: "delete",
+      icon: DeleteIcon,
+      tooltip: "Delete",
+      onClick: (item) => handleDeleteReturn(item._id),
     },
   ];
 
@@ -105,7 +125,7 @@ function PurchaseReturnList() {
       <BreadcrumbNav />
       <PageHeader onAddReturn={handleAddReturn} />
 
-      <StatsSection stats={statsData} />
+      <SummaryCards cards={cardsData} />
 
       <FilterSection
         searchTerm={searchTerm}
@@ -119,15 +139,17 @@ function PurchaseReturnList() {
         onWarehouseChange={(e) => setFilterWarehouse(e.target.value)}
       />
 
-      <PurchaseReturnTable
-        returns={purchaseReturnData?.data?.returns}
-        isLoading={isLoading || purchaseLoading}
-        onView={handleViewReturn}
-        onEdit={handleEditReturn}
-        onDelete={handleDeleteReturn}
-        page={page}
+      <Table
+        title="Purchase Returns"
+        columns={columns}
+        data={purchaseReturnData?.data?.returns || []}
+        actions={actions}
+        loading={isLoading || purchaseLoading}
+        currentPage={page}
         totalPages={purchaseReturnData?.data?.meta?.totalPage || 1}
         onPageChange={handlePageChange}
+        onSearch={handleSearchChange}
+        emptyMessage="No purchase returns found"
       />
 
       <ActionMenu

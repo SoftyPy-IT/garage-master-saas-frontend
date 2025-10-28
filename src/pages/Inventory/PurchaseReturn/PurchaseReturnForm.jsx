@@ -57,14 +57,14 @@ import {
   useCreatePurchaseReturnMutation,
   useGetSinglePurchaseReturnQuery,
   useUpdatePurchaseReturnMutation,
-} from "../../redux/api/purchaseReturnApi";
+} from "../../../redux/api/purchaseReturnApi";
 import { useForm, Controller } from "react-hook-form";
 import { toast } from "react-toastify";
-import { useGetAllStocksQuery } from "../../redux/api/stocksApi";
-import { returnStatuses } from "../../constant/constant";
-import { useAppOptions } from "../../hooks/useAppOptions";
-import Can from "../../components/Can";
-import { purchaseBtn } from "../../utils/customStyle";
+import { useGetAllStocksQuery } from "../../../redux/api/stocksApi";
+import { returnStatuses } from "../../../constant/constant";
+import { useAppOptions } from "../../../hooks/useAppOptions";
+import Can from "../../../components/Can";
+import { purchaseBtn } from "../../../utils/customStyle";
 
 export default function PurchaseReturnForm({ id }) {
   const theme = useTheme();
@@ -75,6 +75,8 @@ export default function PurchaseReturnForm({ id }) {
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isFormLoading, setIsFormLoading] = useState(true);
+
   const {
     control,
     handleSubmit,
@@ -93,12 +95,11 @@ export default function PurchaseReturnForm({ id }) {
       status: "pending",
     },
   });
+
   const watchedWarehouse = watch("warehouse");
   const watchedSuppliers = watch("suppliers");
   const watchedPurchase = watch("purchase");
   const { performActionWithPermission, supplierOptions, warehouseOptions, tenantDomain } = useAppOptions()
-
-
 
   const queryParams = {
     tenantDomain,
@@ -120,14 +121,18 @@ export default function PurchaseReturnForm({ id }) {
     id,
   });
 
+  console.log('single purchase return ', singlePurchaseReturn)
+
   useEffect(() => {
     if (stockData && stockData.data && stockData.data.length > 0) {
       const initialReturnItems = stockData.data.map((item, index) => {
         const productId = item.product?._id;
 
+        // Find existing item from singlePurchaseReturn
         const existingItem = singlePurchaseReturn?.data?.items?.find(
-          (returnItem) => returnItem.productId?._id === productId
+          (returnItem) => returnItem.productId?._id === productId || returnItem.productId === productId
         );
+
         const supplierName =
           item.product?.suppliers && item.product.suppliers[0]
             ? item.product.suppliers[0].full_name
@@ -136,13 +141,13 @@ export default function PurchaseReturnForm({ id }) {
         return {
           id: index,
           product: {
-            code: item.product?.product_code || "N/A",
-            name: item.product?.product_name || "Unknown Product",
-            unit: item.product?.unit?.unit || "Unit",
+            code: item.product?.product_code || existingItem?.productCode || "N/A",
+            name: item.product?.product_name || existingItem?.productName || "Unknown Product",
+            unit: item.product?.unit?.unit || existingItem?.unit || "Unit",
           },
-          maxQuantity: item.stock || 0,
+          maxQuantity: item.stock || existingItem?.maxQuantity || 0,
           returnQuantity: existingItem ? existingItem.quantity : 0,
-          price: item.productPurchasePrice || item.product?.purchasePrice || 0,
+          price: item.productPurchasePrice || item.product?.purchasePrice || existingItem?.unitPrice || 0,
           total: existingItem ? existingItem.totalAmount : 0,
           selected: !!existingItem,
           productId: productId,
@@ -162,11 +167,40 @@ export default function PurchaseReturnForm({ id }) {
       if (stockData.data[0]?.warehouse && !watchedWarehouse) {
         setValue("warehouse", stockData.data[0].warehouse._id);
       }
+      setIsFormLoading(false);
+    } else if (singlePurchaseReturn?.data?.items && singlePurchaseReturn.data.items.length > 0) {
+      // If no stock data but we have single purchase return data, create items from it
+      const itemsFromPurchaseReturn = singlePurchaseReturn.data.items.map((item, index) => ({
+        id: index,
+        product: {
+          code: item.productCode || "N/A",
+          name: item.productName || "Unknown Product",
+          unit: item.unit || "Unit",
+        },
+        maxQuantity: item.maxQuantity || 0,
+        returnQuantity: item.quantity || 0,
+        price: item.unitPrice || 0,
+        total: item.totalAmount || 0,
+        selected: true,
+        productId: item.productId?._id || item.productId,
+        tax: 0,
+        discount: 0,
+        shipping: 0,
+        purchaseId: item._id,
+        purchaseReferenceNo: singlePurchaseReturn.data.referenceNo || "N/A",
+        supplierName: singlePurchaseReturn.data.suppliers?.[0]?.full_name || "Unknown",
+        warehouse: singlePurchaseReturn.data.warehouse,
+        warehouseName: "Unknown",
+      }));
+
+      setReturnItems(itemsFromPurchaseReturn);
+      setIsFormLoading(false);
     }
-  }, [stockData, setValue, singlePurchaseReturn]);
+  }, [stockData, setValue, singlePurchaseReturn, watchedWarehouse]);
 
   useEffect(() => {
     if (singlePurchaseReturn?.data) {
+      setIsFormLoading(true);
       setValue(
         "returnDate",
         singlePurchaseReturn.data.returnDate
@@ -191,6 +225,7 @@ export default function PurchaseReturnForm({ id }) {
       setValue("returnReason", singlePurchaseReturn.data.returnReason || "");
       setValue("returnNote", singlePurchaseReturn.data.returnNote || "");
       setValue("status", singlePurchaseReturn.data.status || "pending");
+      setIsFormLoading(false);
     }
   }, [singlePurchaseReturn, setValue]);
 
@@ -255,6 +290,7 @@ export default function PurchaseReturnForm({ id }) {
       )
     );
   };
+
   const calculateTotalItems = () => {
     return returnItems.filter((item) => item.selected && item.returnQuantity > 0).length;
   };
@@ -265,6 +301,7 @@ export default function PurchaseReturnForm({ id }) {
       0
     );
   };
+
   const onSubmit = async (formData) => {
     performActionWithPermission("/dashboard/purchase-return-add", id ? 'edit' : 'create',
       async () => {
@@ -299,12 +336,12 @@ export default function PurchaseReturnForm({ id }) {
           }
           const items = selectedItems.map((item) => ({
             productId: item.productId,
-            productCode: item.product.code,
-            productName: item.product.name,
+            productCode: item.product?.code || "N/A",
+            productName: item.product?.name || "Unknown Product",
             quantity: item.returnQuantity,
             maxQuantity: item.maxQuantity,
             unitPrice: item.price,
-            unit: item.product.unit,
+            unit: item.product?.unit || "Unit",
             totalAmount: item.total,
           }));
 
@@ -327,6 +364,7 @@ export default function PurchaseReturnForm({ id }) {
             items: items,
             totalReturnAmount,
           };
+
           if (id && singlePurchaseReturn?.data?._id) {
             res = await updatePurchaseReturn({
               id,
@@ -339,12 +377,9 @@ export default function PurchaseReturnForm({ id }) {
               tenantDomain,
               ...submitData,
             }).unwrap();
-
-
           }
 
           if (res.success) {
-
             toast.dismiss(loadingToast);
             toast.success(`Purchase return ${id ? 'update' : 'create'} successfully`);
             setTimeout(() => {
@@ -355,7 +390,6 @@ export default function PurchaseReturnForm({ id }) {
           console.error("Error processing purchase return:", error);
           toast.error(error.data?.message || "Failed to process purchase return");
         }
-
       }, `You don't have permission to ${id ? 'edit' : 'create'} purchase return `
     )
   };
@@ -384,7 +418,7 @@ export default function PurchaseReturnForm({ id }) {
 
   const steps = ["Select Filters", "Select Return Items", "Review & Submit"];
 
-  if (isLoading || !stockData || singlePurchaseReturnLoading) {
+  if (isLoading || !stockData || singlePurchaseReturnLoading || isFormLoading) {
     return <Loading />;
   }
 
@@ -734,18 +768,18 @@ export default function PurchaseReturnForm({ id }) {
                           </TableCell>
                           <TableCell>
                             <Typography variant="body2" color="text.secondary">
-                              {item.product.code}
+                              {item.product?.code || "N/A"}
                             </Typography>
                             <Typography
                               variant="body1"
                               sx={{ fontWeight: "medium" }}
                             >
-                              {item.product.name}
+                              {item.product?.name || "Unknown Product"}
                             </Typography>
                           </TableCell>
                           <TableCell>
                             <Chip
-                              label={item.warehouseName}
+                              label={item.warehouseName || "Unknown"}
                               size="small"
                               sx={{
                                 backgroundColor: alpha(
@@ -765,12 +799,12 @@ export default function PurchaseReturnForm({ id }) {
                           </TableCell>
                           <TableCell>
                             <Typography variant="body2">
-                              {item.supplierName}
+                              {item.supplierName || "Unknown"}
                             </Typography>
                           </TableCell>
                           <TableCell>
                             <Chip
-                              label={item.product.unit}
+                              label={item.product?.unit || "Unit"}
                               size="small"
                               sx={{
                                 backgroundColor: alpha(
@@ -785,7 +819,7 @@ export default function PurchaseReturnForm({ id }) {
                           </TableCell>
                           <TableCell align="right">
                             <Chip
-                              label={item.maxQuantity}
+                              label={item.maxQuantity || 0}
                               size="small"
                               sx={{
                                 backgroundColor: alpha(
@@ -808,15 +842,18 @@ export default function PurchaseReturnForm({ id }) {
                               }
                               disabled={!item.selected}
                               InputProps={{
-                                inputProps: { min: 0, max: item.maxQuantity },
+                                inputProps: {
+                                  min: 0,
+                                  max: item.maxQuantity || 0
+                                },
                                 sx: { borderRadius: 2 },
                               }}
                               sx={{ width: 80 }}
                             />
                           </TableCell>
-                          <TableCell align="right">৳ {item.price}</TableCell>
+                          <TableCell align="right">৳ {item.price || 0}</TableCell>
                           <TableCell align="right" sx={{ fontWeight: "bold" }}>
-                            ৳ {item.total}
+                            ৳ {item.total || 0}
                           </TableCell>
                         </TableRow>
                       ))}
@@ -1168,7 +1205,6 @@ export default function PurchaseReturnForm({ id }) {
               {isSubmitting || isUpdating ? "Processing..." : "Confirm"}
             </Button>
           </Can>
-
         </DialogActions>
       </Dialog>
     </Box>
