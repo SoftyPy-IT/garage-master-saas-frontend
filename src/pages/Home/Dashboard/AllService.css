@@ -57,13 +57,14 @@
   background: linear-gradient(to bottom, #00bc8a, #54d2b1);
 }
 
+.invoice-card:nth-child(3) {
+  background: linear-gradient(to bottom, #00bc8a, #4247ce);
+}
+
 .invoice-card:nth-child(4) {
   background: linear-gradient(to bottom, #8d7cfc, #b8affe);
 }
 
-.invoice-card:nth-child(3) {
-  background: linear-gradient(to bottom, #00bc8a, #4247ce);
-}
 
 .dashboardCardIconWrap:nth-child(3) {
   background: #05a182;
@@ -74,7 +75,7 @@
 }
 
 .invoice-card2:nth-child(2) {
-  background: linear-gradient(to bottom, #feb800, #fed76d);
+  background: linear-gradient(to bottom, #05a905, #246c05);
   
 }
 
