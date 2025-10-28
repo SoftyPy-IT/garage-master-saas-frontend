@@ -85,7 +85,7 @@ const AppBar = ({ toggle, navRef, toggleSideBar }) => {
 
           <div className="flex items-center gap-2">
             <Link to="/dashboard">
-              <h3 className="w-[200px] xl:w-[250px] ml-0 lg:text-xl xl:text-xl font-semibold text-white hidden xl:block">
+              <h3 className="w-[200px] ml-0 lg:text-xl xl:text-xl font-semibold text-white hidden xl:block">
                 {CompanyInfoData?.data?.companyName}
               </h3>
             </Link>
