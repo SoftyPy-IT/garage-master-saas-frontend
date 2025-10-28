@@ -55,11 +55,10 @@ import Can from "../../../components/Can"
 
 const AddAdjustmentForm = () => {
   const theme = useTheme()
-  const [params, setParams] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
   const [searchTerm, setSearchTerm] = useState("")
   const navigate = useNavigate()
-  const { tenantDomain, performActionWithPermission, productData, productOptions, warehouseOptions } = useAppOptions()
+  const { tenantDomain, performActionWithPermission, warehouseOptions } = useAppOptions()
 
 
   const queryParams = { tenantDomain, page: currentPage, limit: 100, searchTerm: searchTerm }
@@ -67,14 +66,12 @@ const AddAdjustmentForm = () => {
   const { data: stockData, isLoading } = useGetAllStocksQuery(queryParams)
 
   const [createAdjustment, { isLoading: isSubmitting }] = useCreateAdjustmentMutation()
-  const [selectedProduct, setSelectedProduct] = useState(null)
-  const [quantity, setQuantity] = useState(1)
   const [productFields, setProductFields] = useState([])
   const [fileList, setFileList] = useState([])
 
 
   const onAddProductField = (product) => {
-    // Check if product already exists
+
     const existingProductIndex = productFields.findIndex((field) => field.productId === product.stock.product._id)
 
     if (existingProductIndex !== -1) {
@@ -167,24 +164,10 @@ const AddAdjustmentForm = () => {
         }
 
         try {
-          const res = await createAdjustment(formData).unwrap()
+          const res = await createAdjustment({ data: formData, tenantDomain }).unwrap()
 
           if (res.success) {
-            toast.success("Adjustment created successfully", {
-              position: "top-right",
-              autoClose: 3000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              style: {
-                background: "#10b981",
-                color: "#fff",
-                borderRadius: "10px",
-                boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
-              },
-            })
+            toast.success(res.message | "Adjustment created successfully",)
           }
           navigate("/dashboard/quantity-adjustment")
         } catch (error) {
@@ -201,12 +184,7 @@ const AddAdjustmentForm = () => {
             closeOnClick: true,
             pauseOnHover: true,
             draggable: true,
-            style: {
-              background: "#ef4444",
-              color: "#fff",
-              borderRadius: "10px",
-              boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
-            },
+
           });
         }
 
@@ -222,7 +200,6 @@ const AddAdjustmentForm = () => {
 
   return (
     <TASForm onSubmit={handleSubmit}>
-      {/* Header Section */}
       <Box
         sx={{
           mb: 4,
@@ -262,9 +239,8 @@ const AddAdjustmentForm = () => {
         </Button>
       </Box>
 
-      {/* Document Upload and Basic Info */}
+
       <Grid container spacing={4}>
-        {/* Left Column - Document Upload */}
         <Grid item xs={12} md={3}>
           <Card
 
@@ -286,7 +262,7 @@ const AddAdjustmentForm = () => {
           >
             <Box
               sx={{
-                background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)",
+                background: "#42A0D9",
                 py: 2,
                 px: 3,
                 display: "flex",
@@ -317,7 +293,6 @@ const AddAdjustmentForm = () => {
           </Card>
         </Grid>
 
-        {/* Right Column - Basic Info */}
         <Grid item xs={12} md={9}>
           <Card
 
@@ -331,7 +306,7 @@ const AddAdjustmentForm = () => {
           >
             <Box
               sx={{
-                background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)",
+                background: "#42A0D9",
                 py: 2,
                 px: 3,
                 display: "flex",
@@ -443,7 +418,7 @@ const AddAdjustmentForm = () => {
       >
         <Box
           sx={{
-            background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)",
+            background: "#42A0D9",
             py: 2,
             px: 3,
             display: "flex",
@@ -558,58 +533,27 @@ const AddAdjustmentForm = () => {
         <>
           {productFields.length === 0 ? (
             <Box
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.5 }}
-              sx={{
-                p: 6,
-                borderRadius: "20px",
-                border: "2px dashed #e2e8f0",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundColor: alpha("#f8fafc", 0.5),
-              }}
+
+
             >
-              <Avatar
-                sx={{
-                  width: 80,
-                  height: 80,
-                  backgroundColor: alpha("#6366f1", 0.1),
-                  color: "#6366f1",
-                  mb: 2,
-                }}
-              >
-                <InventoryIcon sx={{ fontSize: 40 }} />
-              </Avatar>
+
               <Typography variant="h6" fontWeight="600" color="#1e293b" textAlign="center">
                 No Products Added Yet
               </Typography>
-              <Typography variant="body2" color="#64748b" textAlign="center" sx={{ mt: 1, maxWidth: "400px" }}>
-                Search for products above and add them to make inventory adjustments
-              </Typography>
+
             </Box>
           ) : (
             productFields.map((field, index) => (
               <Card
                 key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.3, delay: index * 0.05 }}
-                elevation={0}
+
                 sx={{
                   borderRadius: "16px",
                   border: "1px solid rgba(226, 232, 240, 0.8)",
                   mb: 3,
                   overflow: "hidden",
-                  background:
-                    field.type === "Addition"
-                      ? "linear-gradient(to right, rgba(240, 253, 244, 0.5), white)"
-                      : "linear-gradient(to right, rgba(254, 242, 242, 0.5), white)",
-                  boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)",
+
+                  color: '#fff'
                 }}
               >
                 <Box sx={{ p: 3, position: "relative" }}>
@@ -843,7 +787,6 @@ const AddAdjustmentForm = () => {
         </>
       </Box>
 
-      {/* Notes Section */}
       <Card
 
         sx={{
@@ -857,7 +800,7 @@ const AddAdjustmentForm = () => {
       >
         <Box
           sx={{
-            background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)",
+            background: "#42A0D9",
             py: 2,
             px: 3,
             display: "flex",

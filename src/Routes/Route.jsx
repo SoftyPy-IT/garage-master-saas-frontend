@@ -73,15 +73,12 @@ import ExpiredProduct from "../pages/Inventory/ExpiredProduct";
 import LowStock from "../pages/Inventory/LowStock";
 import Variants from "../pages/Inventory/Variants";
 import StockPage from "../pages/Inventory/Stock";
-import RemoveStock from "../pages/Inventory/RemoveStock";
-import PurchaseReturn from "../pages/Inventory/PurchaseReturn";
 import StockTransferPage from "../pages/Inventory/StockTransper";
 import ExpiredProductsReportPage from "../pages/Reports/ExpiredProductReport";
 import LowStockReportPage from "../pages/Reports/LowStockReport";
 import ProductStockReportPage from "../pages/Reports/ProductStockReport";
 import DailyStockMovementReportPage from "../pages/Reports/DailyStockReport";
 import ReportsPage from "../pages/Reports/Report";
-import PurchaseReturnUpdate from "../pages/Inventory/PurchaseReturnUpdate"
 import StockAdjustment from "../pages/Inventory/Adjustment/AdjustmentList";
 import AddAdjustment from "../pages/Inventory/Adjustment/AddAdjustment";
 import QuantityAdjustment from "../pages/Inventory/Adjustment/AdjustmentList";
@@ -135,6 +132,8 @@ import Attendance from "../pages/Employee/EmployeeProfile/Attendance";
 import Home from "../pages/Home/Home";
 import PurchaseList from "../pages/Parchase/PurchaseList";
 import WarehouseStocks from "../pages/Inventory/Warehouse/WareHouseList";
+import PurchaseReturn from "../pages/Inventory/PurchaseReturn/PurchaseReturn";
+import PurchaseReturnUpdate from "../pages/Inventory/PurchaseReturn/PurchaseReturnUpdate";
 import IncomeReport from "../pages/Report/IncomeReport";
 import ExpenseReport from "../pages/Report/ExpenseReport";
 import InvoiceReport from "../pages/Report/InvoiceReport";
@@ -164,10 +163,6 @@ export const router = createBrowserRouter([
         path: "login",
         element: <Login />,
       },
-      // {
-      //   path: "create-tenant",
-      //   element: <CreateTenant/>,
-      // },
       {
         path: "unauthorized",
         element: <Unauthorized />,
@@ -677,12 +672,7 @@ export const router = createBrowserRouter([
         <StockTransferPage />,
         "/dashboard/stock-transfer"
       ),
-      createProtectedRoute(
-        "remove-stock",
-        <RemoveStock />,
-        "/dashboard/remove-stock",
-        "delete"
-      ),
+
       createProtectedRoute(
         "expired-product-report",
         <ExpiredProductsReportPage />,
@@ -804,6 +794,7 @@ export const router = createBrowserRouter([
         <CompanyBrand />,
         "/dashboard/company-brand"
       ),
+
       createProtectedRoute("review", <Review />, "/dashboard/review"),
       createProtectedRoute("backup", <Backup />, "/dashboard/backup"),
       createProtectedRoute(

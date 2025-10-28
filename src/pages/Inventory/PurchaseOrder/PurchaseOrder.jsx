@@ -5,7 +5,6 @@ import { useState } from "react";
 import { Box } from "@mui/material";
 import { Home, Receipt } from "@mui/icons-material";
 import { DeleteIcon, EditIcon, ShoppingCart } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { toast } from "react-toastify";
 import { useDeletePurchaseOrderMutation, useGetAllPurchaseOrdersQuery } from "../../../redux/api/purchaseOrderApi";
@@ -21,7 +20,6 @@ import Table from "../../../components/Table";
 import Breadcrumb from "../../../components/Breadcrumb";
 import { wrapBoxStyle } from "../../../utils/customStyle";
 export default function PurchaseOrder() {
-  const navigate = useNavigate();
   const { tenantDomain, search, setSearch, searchTerm, setSearchTerm, performActionWithPermission } = useAppOptions();
   const [page, setPage] = useState(1);
   const [dateRange, setDateRange] = useState({ startDate: "", endDate: "" });
@@ -58,8 +56,6 @@ export default function PurchaseOrder() {
     setSelectedOrder(order);
     setOpenUpdateModal(true);
   };
-
-  const handleViewOrder = (order) => navigate(`/purchase/${order.id || order._id}`);
 
   const handleDeleteOrder = (order) => {
     performActionWithPermission("/dashboard/purchase-order", "delete", async () => {
