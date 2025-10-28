@@ -57,7 +57,6 @@ export default function EnhancedSupplierProfile() {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      {/* Header */}
       <Box sx={{ p: 3, backgroundColor: "#f5f5f5", minHeight: "100vh" }}>
         <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
           <Typography
@@ -72,14 +71,10 @@ export default function EnhancedSupplierProfile() {
             onMenuClose={handleMenuClose}
           />
         </Box>
-
-        {/* Profile Header */}
         <SupplierProfileHeader
           supplier={singleSupplier}
           onNewOrder={handleOpenPurchaseModal}
         />
-
-        {/* Purchase Order Modal */}
         {openPurchaseModal && (
           <PurchaseOrderModal
             open={openPurchaseModal}
@@ -87,14 +82,10 @@ export default function EnhancedSupplierProfile() {
             tenantDomain={tenantDomain}
           />
         )}
-
-        {/* Key Metrics */}
         <SupplierMetrics
           supplier={singleSupplier}
           paymentStats={supplierWithBillPay?.data?.paymentStats}
         />
-
-        {/* Tabs Navigation */}
         <Box sx={{ mb: 3 }}>
           <StyledTabs
             value={tabValue}
@@ -118,8 +109,6 @@ export default function EnhancedSupplierProfile() {
             <StyledTab icon={<Payments sx={{ mb: 0.5 }} />} label="Bill Pay" />
           </StyledTabs>
         </Box>
-
-        {/* Tab Content */}
         <SupplierTabsContent
           tabValue={tabValue}
           supplier={singleSupplier}
