@@ -232,6 +232,7 @@ const Sidebar = ({ toggle }) => {
       icon: <ShoppingBag />,
       items: [
         { icon: <Inventory2 />, text: "Mange Stock", link: "/dashboard/stock" },
+        { icon: <HiOutlineSwitchHorizontal />, text: "Warehouse Stock", link: "/dashboard/warehouse-stock" },
         { icon: <HiOutlineSwitchHorizontal />, text: "Manage Warehouse", link: "/dashboard/warehouse" },
         { icon: <HiOutlineSwitchHorizontal />, text: "Stock Transfer", link: "/dashboard/stock-transfer" },
         { icon: <HiOutlineSwitchHorizontal />, text: "Quantity Adjustment", link: "/dashboard/quantity-adjustment" },
@@ -350,7 +351,7 @@ const Sidebar = ({ toggle }) => {
 
   const renderSingleItem = (item) => {
     if (item.condition === false) return null;
-    
+
     if (item.action) {
       return (
         <div key={item.id} className="pl-4 space-y-3 mt-3 mb-20">
@@ -431,8 +432,8 @@ const Sidebar = ({ toggle }) => {
           : `fixed overflow-y-scroll overflow-x-hidden sideBarActive h-screen text-lg font-semibold bg-[#2C3136] text-white`
           }`}
       >
-        {menuItems.map((item) => 
-          item.type === "single" 
+        {menuItems.map((item) =>
+          item.type === "single"
             ? renderSingleItem(item)
             : renderAccordionItem(item)
         )}
