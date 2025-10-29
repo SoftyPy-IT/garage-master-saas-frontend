@@ -89,7 +89,7 @@ const AppBar = ({ toggle, navRef, toggleSideBar }) => {
                 {CompanyInfoData?.data?.companyName}
               </h3>
             </Link>
-            <div className="hidden lg:flex items-center gap-3">
+            {/* <div className="hidden lg:flex items-center gap-3">
               <button
                 className="lg:px-3 xl:px-6 py-2 bg-white/20 backdrop-blur-sm text-white rounded-xl hover:bg-white/30 hover:scale-105 active:scale-95 border border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 font-medium"
                 onClick={() =>
@@ -104,7 +104,7 @@ const AppBar = ({ toggle, navRef, toggleSideBar }) => {
               <button className="lg:px-3 xl:px-6 py-2 bg-white/20 backdrop-blur-sm text-white rounded-xl hover:bg-white/30 hover:scale-105 active:scale-95 border border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 font-medium">
                 Global Shop
               </button>
-            </div>
+            </div> */}
           </div>
 
           {/* Mobile Menu Toggle Button - Restored Original Style */}
