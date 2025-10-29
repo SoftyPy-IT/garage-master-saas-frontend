@@ -73,7 +73,6 @@ import ExpiredProduct from "../pages/Inventory/ExpiredProduct";
 import LowStock from "../pages/Inventory/LowStock";
 import Variants from "../pages/Inventory/Variants";
 import StockPage from "../pages/Inventory/Stock";
-import StockTransferPage from "../pages/Inventory/StockTransper";
 import ExpiredProductsReportPage from "../pages/Reports/ExpiredProductReport";
 import LowStockReportPage from "../pages/Reports/LowStockReport";
 import ProductStockReportPage from "../pages/Reports/ProductStockReport";
@@ -138,6 +137,7 @@ import IncomeReport from "../pages/Report/IncomeReport";
 import ExpenseReport from "../pages/Report/ExpenseReport";
 import InvoiceReport from "../pages/Report/InvoiceReport";
 import DonationReport from "../pages/Report/DonationReport";
+import StockTransfer from "../pages/Inventory/StockTransfer/StockTransper";
 
 const createProtectedRoute = (path, element, pagePath, action = "view") => {
   return {
@@ -669,7 +669,7 @@ export const router = createBrowserRouter([
       ),
       createProtectedRoute(
         "stock-transfer",
-        <StockTransferPage />,
+        <StockTransfer />,
         "/dashboard/stock-transfer"
       ),
 
