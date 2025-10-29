@@ -9,21 +9,21 @@ import {
   useTheme,
 } from "@mui/material";
 
-import StockTransferHeader from "./StockTransfer/StockTransferHeader";
-import StockTransferSummaryCards from "./StockTransfer/StockTransferSummaryCards";
-import StockTransferModal from "./StockManagement/StockTransfer/StockTransferModal";
+import StockTransferHeader from "./StockTransferHeader";
+import StockTransferSummaryCards from "./StockTransferSummaryCards";
+import StockTransferModal from "../StockManagement/StockTransfer/StockTransferModal";
 
-import { useAppOptions } from "../../hooks/useAppOptions";
-import { useGetAllStockTransfersQuery, useDeleteStockTransferMutation } from "../../redux/api/stocktransferApi";
+import { useAppOptions } from "../../../hooks/useAppOptions";
+import { useGetAllStockTransfersQuery, useDeleteStockTransferMutation } from "../../../redux/api/stocktransferApi";
 
 import Swal from "sweetalert2";
-import Table from "../../components/Table";
+import Table from "../../../components/Table";
 import { DeleteIcon, EditIcon, Eye } from "lucide-react";
-import StockTransferActions from "./StockTransfer/StockTransferActions";
+import StockTransferActions from "./StockTransferActions";
 
 
 
-export default function StockTransferPage() {
+export default function StockTransfer() {
   const theme = useTheme();
   const [open, setOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState("all");
@@ -40,6 +40,7 @@ export default function StockTransferPage() {
 
   const { data: stockTransferData, refetch } = useGetAllStockTransfersQuery(queryParams);
   const [deleteStockTransfer] = useDeleteStockTransferMutation();
+
 
   const transfers = stockTransferData?.data || [];
   const loading = !stockTransferData;
@@ -211,7 +212,6 @@ export default function StockTransferPage() {
         open={open}
         onClose={handleClose}
         onSubmit={handleSubmit}
-        // employees={employees}
         products={products}
         tenantDomain={tenantDomain}
         performActionWithPermission={performActionWithPermission}

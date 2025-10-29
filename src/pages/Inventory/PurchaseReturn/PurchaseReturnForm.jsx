@@ -121,7 +121,7 @@ export default function PurchaseReturnForm({ id }) {
     id,
   });
 
-  console.log('single purchase return ', singlePurchaseReturn)
+  console.log('stock data ', stockData)
 
   useEffect(() => {
     if (stockData && stockData.data && stockData.data.length > 0) {
