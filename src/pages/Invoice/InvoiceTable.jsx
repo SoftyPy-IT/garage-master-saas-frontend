@@ -12,7 +12,7 @@ import { useGetCompanyProfileQuery } from "../../redux/api/companyProfile";
 import { getRowClass } from "../../utils/getRowClass";
 import Table from "../../components/Table";
 
-const InvoiceTable = ({ title = "Invoices" }) => {
+const InvoiceTable = ({ title = "Invoices", status }) => {
   const location = useLocation();
   const search = new URLSearchParams(location.search).get("search");
   const [filterType, setFilterType] = useState("");
@@ -26,6 +26,7 @@ const InvoiceTable = ({ title = "Invoices" }) => {
     page: currentPage,
     searchTerm: filterType,
     isRecycled: false,
+    status
   });
 
   const [moveRecycledInvoice, { isLoading: deleteLoading }] = useMoveRecycledInvoiceMutation();

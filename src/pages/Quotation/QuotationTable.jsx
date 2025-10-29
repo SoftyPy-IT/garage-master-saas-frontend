@@ -21,7 +21,7 @@ import { useTenantDomain } from "../../hooks/useTenantDomain";
 import { useGetCompanyProfileQuery } from "../../redux/api/companyProfile";
 import Table from "../../components/Table";
 
-const QuotationTable = ({ title = "Quotations" }) => {
+const QuotationTable = ({ title = "Quotations", status }) => {
   const location = useLocation();
   const search = new URLSearchParams(location.search).get("search");
 
@@ -42,6 +42,7 @@ const QuotationTable = ({ title = "Quotations" }) => {
       page: currentPage,
       searchTerm: filterType,
       isRecycled: false,
+      status,
     });
 
   const { data: profileData } = useGetCompanyProfileQuery({ tenantDomain });
@@ -238,5 +239,6 @@ const QuotationTable = ({ title = "Quotations" }) => {
     </Paper>
   );
 };
+
 
 export default QuotationTable;
