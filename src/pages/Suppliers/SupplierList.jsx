@@ -1,26 +1,22 @@
-import { Box, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import SupplierListTable from "./SupplierListTable";
-import { FaUsers } from "react-icons/fa";
+import { Home, Store } from "lucide-react";
+import Breadcrumb from "../../components/Breadcrumb";
+import { wrapBoxStyle } from "../../utils/customStyle";
 
 const SupplierList = () => {
+  const breadcrumbItems = [
+    { label: "Home", icon: Home, href: "/" },
+    { label: "Suppliers", icon: Store },
+  ];
+
   return (
-    <>
-      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 4, mt:5 }}>
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          <FaUsers size={40} color="#42A1DA" />
-          <Box sx={{ ml: 2 }}>
-            <Typography variant="h4" fontWeight="bold">
-              Supplier Management
-            </Typography>
-            <Typography variant="subtitle1" color="text.secondary">
-              Manage and track your suppliers
-            </Typography>
-          </Box>
-        </Box>
-      </Box>
+    <Box sx={wrapBoxStyle}>
+      <Breadcrumb items={breadcrumbItems} />
       <SupplierListTable />
-    </>
+    </Box>
   );
 };
+
 
 export default SupplierList;
