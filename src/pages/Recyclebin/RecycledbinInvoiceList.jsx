@@ -17,7 +17,7 @@ const InvoiceTable = () => {
   const location = useLocation();
   const search = new URLSearchParams(location.search).get("search");
   const [filterType, setFilterType] = useState("");
-  const { tenantDomain } = useAppOptions()
+  const { tenantDomain } = useAppOptions();
   const [limit, setLimit] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -285,8 +285,9 @@ const InvoiceTable = () => {
                           <td>
                             <a
                               className="bg-[#42A0D9] text-white px-3 py-2 text-[12px]  rounded-full "
-                              href={`${import.meta.env.VITE_API_URL
-                                }/invoices/invoice/${card._id}`}
+                              href={`${
+                                import.meta.env.VITE_API_URL
+                              }/invoices/invoice/${card._id}`}
                               target="_blank"
                               rel="noreferrer"
                             >
@@ -322,7 +323,7 @@ const InvoiceTable = () => {
                                 background: "white",
                                 border: "none",
                                 padding: 5,
-                                borderRadius: "9999px"
+                                borderRadius: "9999px",
                               }}
                             >
                               <FaTrashAlt className="text-[#f5365c] size-[16px]" />

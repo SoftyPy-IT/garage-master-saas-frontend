@@ -1,35 +1,42 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { FaTrashAlt, FaEdit, FaEye, FaDownload } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import { Money } from "@mui/icons-material";
+import { ArrowBack, Money } from "@mui/icons-material";
 import swal from "sweetalert";
-import { useGetAllInvoicesQuery, useMoveRecycledInvoiceMutation } from "../../redux/api/invoice";
+import {
+  useGetAllInvoicesQuery,
+  useMoveRecycledInvoiceMutation,
+} from "../../redux/api/invoice";
 import { useTenantDomain } from "../../hooks/useTenantDomain";
 import { useGetCompanyProfileQuery } from "../../redux/api/companyProfile";
 import { getRowClass } from "../../utils/getRowClass";
 import Table from "../../components/Table";
+import { Box, Button } from "@mui/material";
+import Breadcrumb from "../../components/Breadcrumb";
 
-const InvoiceTable = ({ title = "Invoices", status }) => {
+const InvoiceTable = ({ title = "Invoices", status, isRecycled }) => {
   const location = useLocation();
   const search = new URLSearchParams(location.search).get("search");
   const [filterType, setFilterType] = useState("");
   const [limit] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const { tenantDomain } = useTenantDomain();
+  const navigate = useNavigate();
+  const { data: allInvoices, isLoading: invoiceLoading } =
+    useGetAllInvoicesQuery({
+      tenantDomain,
+      limit,
+      page: currentPage,
+      searchTerm: filterType,
+      isRecycled,
+      status,
+    });
 
-  const { data: allInvoices, isLoading: invoiceLoading } = useGetAllInvoicesQuery({
-    tenantDomain,
-    limit,
-    page: currentPage,
-    searchTerm: filterType,
-    isRecycled: false,
-    status
-  });
-
-  const [moveRecycledInvoice, { isLoading: deleteLoading }] = useMoveRecycledInvoiceMutation();
+  const [moveRecycledInvoice, { isLoading: deleteLoading }] =
+    useMoveRecycledInvoiceMutation();
   const { data: profileData } = useGetCompanyProfileQuery({ tenantDomain });
 
   const invoiceColumns = [
@@ -43,12 +50,13 @@ const InvoiceTable = ({ title = "Invoices", status }) => {
         if (data.company) return data.company.company_name;
         if (data.showRoom) return data.showRoom.showRoom_name;
         return "N/A";
-      }
+      },
     },
     {
       key: "vehicle",
       label: "Car Reg No",
-      render: (data) => data.vehicle?.carReg_no || data.vehicle?.car_registration_no || "N/A"
+      render: (data) =>
+        data.vehicle?.carReg_no || data.vehicle?.car_registration_no || "N/A",
     },
     {
       key: "contact",
@@ -58,19 +66,19 @@ const InvoiceTable = ({ title = "Invoices", status }) => {
         if (data.company) return data.company.fullCompanyNum;
         if (data.showRoom) return data.showRoom.fullCompanyNum;
         return "N/A";
-      }
+      },
     },
     {
       key: "vehicle_brand",
       label: "Vehicle Brand",
-      render: (data) => data.vehicle?.vehicle_brand || "N/A"
+      render: (data) => data.vehicle?.vehicle_brand || "N/A",
     },
     {
       key: "vehicle_name",
       label: "Vehicle Name",
-      render: (data) => data.vehicle?.vehicle_name || "N/A"
+      render: (data) => data.vehicle?.vehicle_name || "N/A",
     },
-    { key: "date", label: "Date" }
+    { key: "date", label: "Date" },
   ];
   const invoiceActions = [
     {
@@ -79,10 +87,15 @@ const InvoiceTable = ({ title = "Invoices", status }) => {
       label: "Money Receipt",
       tooltip: "Money Receipt",
       className: "editIconWrap edit2",
-      href: (data) => `/dashboard/money-receive-create?order_no=${data.job_no}&id=${data._id}&net_total=${data.net_total === data.advance ? data.net_total : data.due}`,
+      href: (data) =>
+        `/dashboard/money-receive-create?order_no=${data.job_no}&id=${
+          data._id
+        }&net_total=${
+          data.net_total === data.advance ? data.net_total : data.due
+        }`,
       requirePermission: true,
-      permissionPage: '/dashboard/invoice-list',
-      permissionAction: 'view'
+      permissionPage: "/dashboard/invoice-list",
+      permissionAction: "view",
     },
     {
       key: "download",
@@ -92,22 +105,26 @@ const InvoiceTable = ({ title = "Invoices", status }) => {
       className: "flex flex-col items-center edit2",
       href: (data, hooks) => {
         const companyProfileData = {
-          companyName: hooks.profileData?.data?.companyName,
-          address: hooks.profileData?.data?.address,
-          website: hooks.profileData?.data?.website,
-          phone: hooks.profileData?.data?.phone,
-          email: hooks.profileData?.data?.email,
-          logo: hooks.profileData?.data?.logo?.[0],
-          companyNameBN: hooks.profileData?.data?.companyNameBN,
+          companyName: hooks?.profileData?.data?.companyName,
+          address: hooks?.profileData?.data?.address,
+          website: hooks?.profileData?.data?.website,
+          phone: hooks?.profileData?.data?.phone,
+          email: hooks?.profileData?.data?.email,
+          logo: hooks?.profileData?.data?.logo?.[0],
+          companyNameBN: hooks?.profileData?.data?.companyNameBN,
         };
-        return `${import.meta.env.VITE_API_URL}/invoices/invoice/${data._id}?tenantDomain=${hooks.tenantDomain}&companyProfileData=${encodeURIComponent(
+        return `${import.meta.env.VITE_API_URL}/invoices/invoice/${
+          data._id
+        }?tenantDomain=${
+          hooks?.tenantDomain
+        }&companyProfileData=${encodeURIComponent(
           JSON.stringify(companyProfileData)
         )}`;
       },
       target: "_blank",
       requirePermission: true,
-      permissionPage: '/dashboard/invoice-list',
-      permissionAction: 'view'
+      permissionPage: "/dashboard/invoice-list",
+      permissionAction: "view",
     },
     {
       key: "preview",
@@ -119,9 +136,9 @@ const InvoiceTable = ({ title = "Invoices", status }) => {
         hooks.navigate(`/dashboard/invoice-view?id=${data._id}`);
       },
       requirePermission: true,
-      permissionPage: '/dashboard/invoice-list',
-      permissionAction: 'view',
-      permissionMessage: "You don't have permission to view invoice!"
+      permissionPage: "/dashboard/invoice-list",
+      permissionAction: "view",
+      permissionMessage: "You don't have permission to view invoice!",
     },
     {
       key: "edit",
@@ -132,14 +149,15 @@ const InvoiceTable = ({ title = "Invoices", status }) => {
       LinkComponent: Link,
       link: (data) => `/dashboard/update-invoice?id=${data._id}`,
       requirePermission: true,
-      permissionPage: '/dashboard/update-invoice',
-      permissionAction: 'edit'
+      permissionPage: "/dashboard/update-invoice",
+      permissionAction: "edit",
     },
     {
       key: "delete",
       icon: FaTrashAlt,
       label: "Move to Recycled Bin",
-      tooltip: (data, hooks) => hooks.deleteLoading ? "Deleting..." : "Move to Recycled Bin",
+      tooltip: (data, hooks) =>
+        hooks.deleteLoading ? "Deleting..." : "Move to Recycled Bin",
       className: "bg-white p-1 rounded-sm",
       style: {
         background: "white",
@@ -158,19 +176,32 @@ const InvoiceTable = ({ title = "Invoices", status }) => {
 
         if (willDelete) {
           try {
-            await hooks.moveRecycledInvoice({ tenantDomain: hooks.tenantDomain, id: data._id }).unwrap();
-            swal("Moved!", "Invoice moved to Recycle Bin successfully.", "success");
+            await hooks
+              ?.moveRecycledInvoice({
+                tenantDomain: hooks?.tenantDomain,
+                id: data?._id,
+              })
+              .unwrap();
+            swal(
+              "Moved!",
+              "Invoice moved to Recycle Bin successfully.",
+              "success"
+            );
           } catch (error) {
-            swal("Error", "An error occurred while deleting the invoice.", "error");
+            swal(
+              "Error",
+              "An error occurred while deleting the invoice.",
+              "error"
+            );
           }
         }
       },
-      disabled: (data, hooks) => hooks.deleteLoading,
+      disabled: (data, hooks) => hooks?.deleteLoading,
       requirePermission: true,
-      permissionPage: '/dashboard/invoice-list',
-      permissionAction: 'delete',
-      permissionMessage: "You don't have permission to delete invoice!"
-    }
+      permissionPage: "/dashboard/invoice-list",
+      permissionAction: "delete",
+      permissionMessage: "You don't have permission to delete invoice!",
+    },
   ];
 
   const externalHooks = {
@@ -178,7 +209,7 @@ const InvoiceTable = ({ title = "Invoices", status }) => {
     profileData,
     deleteLoading,
     moveRecycledInvoice,
-    swal
+    swal,
   };
 
   useEffect(() => {
@@ -187,22 +218,42 @@ const InvoiceTable = ({ title = "Invoices", status }) => {
     }
   }, [search]);
 
+  const breadcrumbItems = [
+    { label: "Home", href: "/" },
+    { label: "Invoice", href: "/dashboard/invoice-list" },
+    { label: title },
+  ];
+  const handleBack = () => navigate(-1);
+
   return (
-    <Table
-      title={title}
-      columns={invoiceColumns}
-      data={allInvoices?.data?.invoices || []}
-      actions={invoiceActions}
-      loading={invoiceLoading}
-      currentPage={currentPage}
-      totalPages={allInvoices?.data?.meta?.totalPages || 1}
-      onPageChange={setCurrentPage}
-      onSearch={setFilterType}
-      searchPlaceholder="Search invoices..."
-      externalHooks={externalHooks}
-      emptyMessage="No matching invoice found."
-      getRowClass={getRowClass}
-    />
+    <Box>
+      <Box display="flex" justifyContent="space-between">
+        <Breadcrumb items={breadcrumbItems} />
+        <Button
+          variant="outlined"
+          startIcon={<ArrowBack />}
+          onClick={handleBack}
+          sx={{ borderRadius: 5 }}
+        >
+          Back
+        </Button>
+      </Box>
+      <Table
+        title={title}
+        columns={invoiceColumns}
+        data={allInvoices?.data?.invoices || []}
+        actions={invoiceActions}
+        loading={invoiceLoading}
+        currentPage={currentPage}
+        totalPages={allInvoices?.data?.meta?.totalPages || 1}
+        onPageChange={setCurrentPage}
+        onSearch={setFilterType}
+        searchPlaceholder="Search invoices..."
+        externalHooks={externalHooks}
+        emptyMessage="No matching invoice found."
+        getRowClass={getRowClass}
+      />
+    </Box>
   );
 };
 
