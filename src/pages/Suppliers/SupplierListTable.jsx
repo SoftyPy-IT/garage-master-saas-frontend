@@ -16,33 +16,30 @@ import {
   Email as EmailIcon,
 } from "@mui/icons-material";
 import { Link } from "react-router-dom";
-import swal from "sweetalert";
+import { Home, Store } from "lucide-react";
 
 import Table from "@/components/Table";
-import { useGetAllSuppliersQuery, useMoveRecycledSupplierMutation } from "@/redux/api/supplier";
+import { useGetAllSuppliersQuery } from "@/redux/api/supplier";
 import { useTenantDomain } from "@/hooks/useTenantDomain";
 import { StatusChip, SupplierAvatar } from "@/utils/customStyle";
-import { usePermissions } from "@/context/PermissionContext";
 import { purchaseBtn } from "../../utils/customStyle";
+import Breadcrumb from "../../components/Breadcrumb";
 
-const SupplierListTable = () => {
+const SupplierListTable = ({ isRecycled, handleDeleteSupplier, title }) => {
   const theme = useTheme();
-  const [, setSearch] = useState("");
-  const [, setPage] = useState(0);
+  const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
   const limit = 15;
   const { tenantDomain } = useTenantDomain();
-  const { performActionWithPermission } = usePermissions();
-  const [moveRecycledSupplier] = useMoveRecycledSupplierMutation();
 
   const { data: allSuppliers, isLoading } = useGetAllSuppliersQuery({
     tenantDomain,
     limit,
     page: currentPage,
-    isRecycled: true,
+    isRecycled,
+    searchTerm,
   });
-
 
   const totalPages = allSuppliers?.data?.meta?.totalPage || 1;
   const totalCount = allSuppliers?.data?.meta?.total || 0;
@@ -60,34 +57,6 @@ const SupplierListTable = () => {
     }
   };
 
-
-
-
-  const handleDeleteSupplier = async (id) => {
-    performActionWithPermission(
-      "/dashboard",
-      "delete",
-      async () => {
-        const willDelete = await swal({
-          title: "Move Supplier to Recycle Bin?",
-          text: "This supplier will be moved to the recycle bin. Continue?",
-          icon: "warning",
-          dangerMode: true,
-        });
-
-        if (willDelete) {
-          try {
-            await moveRecycledSupplier({ tenantDomain, id }).unwrap();
-            swal("Moved!", "Supplier successfully moved to recycle bin.", "success");
-          } catch {
-            swal("Error", "An error occurred while moving the supplier.", "error");
-          }
-        }
-      },
-      "You don't have permission to delete supplier!"
-    );
-  };
-
   const columns = [
     {
       key: "supplierId",
@@ -99,10 +68,7 @@ const SupplierListTable = () => {
       label: "Supplier",
       render: (item) => (
         <Box sx={{ display: "flex", alignItems: "center" }}>
-          <SupplierAvatar
-            src={item.supplier_photo}
-            alt={item.full_name}
-          >
+          <SupplierAvatar src={item.supplier_photo} alt={item.full_name}>
             {item.full_name?.charAt(0) || "S"}
           </SupplierAvatar>
           <Box sx={{ ml: 2 }}>
@@ -146,42 +112,58 @@ const SupplierListTable = () => {
       ),
     },
   ];
-  const actions = [
-    {
-      key: "view",
-      label: "View",
-      icon: VisibilityIcon,
-      link: (item) => `/dashboard/supplier-profile?id=${item._id}`,
-      LinkComponent: Link,
-      tooltip: "View Details",
-    },
-    {
-      key: "edit",
-      label: "Edit",
-      icon: EditIcon,
-      link: (item) => `/dashboard/update-supplier?id=${item._id}`,
-      LinkComponent: Link,
-      tooltip: "Edit Supplier",
-      requirePermission: true,
-      permissionPage: "/dashboard/update-supplier",
-      permissionAction: "edit",
-    },
-    {
-      key: "delete",
-      label: "Delete",
-      icon: DeleteIcon,
-      onClick: (item) => handleDeleteSupplier(item._id),
-      tooltip: "Delete Supplier",
-      className: "text-red-500 hover:text-red-700",
-      requirePermission: true,
-      permissionPage: "/dashboard/supplier-list",
-      permissionAction: "delete",
-    },
+
+  const actions = isRecycled
+    ? [
+        {
+          key: "restoreOrDelete",
+          label: "Restore/Delete",
+          icon: DeleteIcon,
+          onClick: (item) => handleDeleteSupplier(item._id), // ✅ fixed
+          tooltip: "Restore or Permanently Delete Supplier",
+          className: "text-red-500 hover:text-red-700",
+        },
+      ]
+    : [
+        {
+          key: "view",
+          label: "View",
+          icon: VisibilityIcon,
+          link: (item) => `/dashboard/supplier-profile?id=${item._id}`,
+          LinkComponent: Link,
+          tooltip: "View Details",
+        },
+        {
+          key: "edit",
+          label: "Edit",
+          icon: EditIcon,
+          link: (item) => `/dashboard/update-supplier?id=${item._id}`,
+          LinkComponent: Link,
+          tooltip: "Edit Supplier",
+        },
+        {
+          key: "delete",
+          label: "Delete",
+          icon: DeleteIcon,
+          onClick: (item) => handleDeleteSupplier(item._id),
+          tooltip: "Move to Recycle Bin",
+          className: "text-red-500 hover:text-red-700",
+        },
+      ];
+
+  const handleSearch = (value) => {
+    setSearchTerm(value);
+    setCurrentPage(1);
+  };
+
+  const breadcrumbItems = [
+    { label: "Home", icon: Home, href: "/" },
+    { label: "Suppliers", icon: Store },
   ];
-  const handleSearch = (value) => { setSearch(value); setPage(0); };
 
   return (
     <div className="w-full mt-5 px-0">
+      <Breadcrumb items={breadcrumbItems} />
       <Box
         sx={{
           p: 4,
@@ -190,25 +172,28 @@ const SupplierListTable = () => {
           boxShadow: "0 4px 20px rgba(0,0,0,0.05)",
         }}
       >
-        <div className="flex justify-between items-center mb-6 flex-wrap gap-2">
-          <h2 className="text-2xl font-bold flex items-center">
-            <BusinessIcon sx={{ mr: 1, color: theme.palette.primary.main }} />
-            Supplier Management
-          </h2>
+        {!isRecycled && (
+          <div className="flex justify-between items-center mb-6 flex-wrap gap-2">
+            <h2 className="text-2xl font-bold flex items-center">
+              <BusinessIcon sx={{ mr: 1, color: theme.palette.primary.main }} />
+              Supplier Management
+            </h2>
 
-          <Button sx={purchaseBtn}
-            to="/dashboard/add-supplier"
-            component={Link}
-            startIcon={<AddIcon />}
-          >
-            Add Supplier
-          </Button>
-        </div>
+            <Button
+              sx={purchaseBtn}
+              to="/dashboard/add-supplier"
+              component={Link}
+              startIcon={<AddIcon />}
+            >
+              Add Supplier
+            </Button>
+          </div>
+        )}
 
         <Table
-          title="Suppliers"
+          title={title || "Suppliers"}
           columns={columns}
-          data={allSuppliers?.data?.suppliers}
+          data={allSuppliers?.data?.suppliers || []}
           actions={actions}
           loading={isLoading}
           currentPage={currentPage}
@@ -219,7 +204,8 @@ const SupplierListTable = () => {
           emptyMessage="No suppliers found"
         />
         <p className="text-xs text-gray-500 mt-3">
-          Showing page {currentPage} of {totalPages} — Total {totalCount} suppliers
+          Showing page {currentPage} of {totalPages} — Total {totalCount}{" "}
+          suppliers
         </p>
       </Box>
     </div>
