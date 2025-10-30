@@ -1,247 +1,177 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable react/no-unescaped-entities */
+/* eslint-disable react/prop-types */
 /* eslint-disable react-hooks/exhaustive-deps */
+import { ArrowBack, Store } from "@mui/icons-material";
+import { useEffect, useState } from "react";
+import { FaEdit, FaUserTie } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
-import { FaTrashAlt, FaEdit, FaUserTie } from "react-icons/fa";
-import { Link, useNavigate } from "react-router-dom";
-import { useRef, useState, useEffect } from "react";
-import swal from "sweetalert";
-import { Pagination } from "@mui/material";
-import { Store } from "@mui/icons-material";
-import { HiOutlineSearch } from "react-icons/hi";
-import { useTenantDomain } from "../../hooks/useTenantDomain";
-import { useGetAllShowRoomsQuery, useMoveRecycledShowRoomMutation } from "../../redux/api/showRoomApi";
-import Can from "../../components/Can";
+import { Box, Button } from "@mui/material";
+import { DeleteIcon } from "lucide-react";
+import Breadcrumb from "../../components/Breadcrumb";
 import EmptyData from "../../components/EmptyData/EmptyData";
-import { usePermissions } from "../../context/PermissionContext";
 import Loading from "../../components/Loading/Loading";
-const ShowRoomListTable = () => {
-  const textInputRef = useRef(null);
+import Table from "../../components/Table";
+import { usePermissions } from "../../context/PermissionContext";
+import { useTenantDomain } from "../../hooks/useTenantDomain";
+import { useGetAllShowRoomsQuery } from "../../redux/api/showRoomApi";
+import { purchaseBtn } from "../../utils/customStyle";
+
+const ShowRoomListTable = ({ handleDeleteAction, title, isRecycled }) => {
   const [filterType, setFilterType] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const search = new URLSearchParams(location.search).get("search");
-  const { performActionWithPermission } = usePermissions();
 
-  const navigate = useNavigate();
-  const limit = 10;
+  const { performActionWithPermission } = usePermissions();
   const { tenantDomain } = useTenantDomain();
+  const navigate = useNavigate();
+
+  const limit = 10;
 
   const { data: showRoomData, isLoading: loading } = useGetAllShowRoomsQuery({
     tenantDomain,
     limit,
     page: currentPage,
     searchTerm: filterType,
-    isRecycled: false,
+    isRecycled,
   });
-  const [moveRecycledShowRoom, { isLoading: showroomDeleteLoading }] =
-    useMoveRecycledShowRoomMutation();
 
-  const handleIconPreview = async (id) => {
+  // Handle direct search query from URL (?search=)
+  useEffect(() => {
+    const search = new URLSearchParams(location.search).get("search");
+    if (search) setFilterType(search);
+  }, []);
+
+  const handleIconPreview = (id) => {
     performActionWithPermission(
       "/dashboard/show-room-list",
-      "delete",
-      () => {
-        navigate(`/dashboard/show-room-profile?id=${id}`);
-      },
+      "view",
+      () => navigate(`/dashboard/show-room-profile?id=${id}`),
       "You don't have permission to view show room details."
     );
   };
 
-  const handleMoveToRecycled = async (id) => {
-    performActionWithPermission(
-      "/dashboard/show-room-list",
-      "delete",
-      async () => {
-        const willDelete = await swal({
-          title: "Are you sure?",
-          text: "You want to move this Show Room to the Recycle Bin?",
-          icon: "warning",
-          dangerMode: true,
-        });
-
-        if (willDelete) {
-          try {
-            await moveRecycledShowRoom({ tenantDomain, id }).unwrap();
-            swal("Moved to Recycle bin!", "Successful.", "success");
-          } catch (error) {
-            swal(
-              "Error",
-              "An error occurred while deleting the card.",
-              "error"
-            );
-          }
-        }
-      },
-      "You don't have permission to move to recycle bin the show room!"
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center text-xl">
+        <Loading />
+      </div>
     );
-  };
+  }
 
-  useEffect(() => {
-    if (search) {
-      setFilterType(search);
-    }
-  }, [search]);
+  const showrooms = showRoomData?.data?.showrooms || [];
+  const totalPages = showRoomData?.data?.meta?.totalPages || 1;
+
+  // --- Define Table Columns ---
+  const columns = [
+    { key: "index", label: "SL No", type: "index" },
+    { key: "showRoomId", label: "Show Room ID" },
+    { key: "showRoom_name", label: "Show Room Name" },
+    { key: "vehicle_username", label: "Show Room Customer Name" },
+    {
+      key: "vehicles",
+      label: "Car Reg No.",
+      render: (item) => {
+        const lastVehicle = item?.vehicles
+          ? [...item.vehicles].sort(
+              (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+            )[0]
+          : null;
+        return lastVehicle?.fullRegNum || "N/A";
+      },
+    },
+    { key: "fullCompanyNum", label: "Mobile No." },
+    {
+      key: "vehicles",
+      label: "Vehicle Name",
+      render: (item) => {
+        const lastVehicle = item?.vehicles
+          ? [...item.vehicles].sort(
+              (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+            )[0]
+          : null;
+        return lastVehicle?.vehicle_name || "N/A";
+      },
+    },
+  ];
+
+  // --- Define Actions ---
+  const actions = [
+    {
+      key: "view",
+      icon: FaUserTie,
+      color: "#0EA5E9",
+      tooltip: "View Showroom Profile",
+      onClick: (item) => handleIconPreview(item._id),
+      requirePermission: true,
+      permissionPage: "/dashboard/show-room-list",
+      permissionAction: "view",
+    },
+    {
+      key: "edit",
+      icon: FaEdit,
+      color: "#2563EB",
+      tooltip: "Edit Showroom",
+      link: (item) => `/dashboard/update-show-room?id=${item._id}`,
+      requirePermission: true,
+      permissionPage: "/dashboard/update-show-room",
+      permissionAction: "edit",
+    },
+    {
+      key: "delete",
+      icon: DeleteIcon,
+      color: "#EF4444",
+      tooltip: "Delete Showroom",
+      onClick: (item) => handleDeleteAction(item._id),
+      requirePermission: true,
+      permissionPage: "/dashboard/show-room-list",
+      permissionAction: "delete",
+    },
+  ];
+
+  const breadcrumbItems = [
+    { label: "Home", href: "/" },
+    { label: "Show Room", href: "/dashboard/show-room-list" },
+    { label: title },
+  ];
 
   return (
     <div className="w-full mt-5 mb-24">
-      <div className="flex-wrap flex items-center justify-between mb-5 px-3 ">
-        <h3 className="mb-3 text-xl md:text-3xl font-bold"> Show Room List:</h3>
-        <div className="flex items-center">
-          <input
-            onChange={(e) => {
-              setFilterType(e.target.value);
-              setCurrentPage(1);
-            }}
-            type="text"
-            placeholder="Search"
-            className="border py-2 px-3 rounded-md border-[#ddd]"
-            ref={textInputRef}
-          />
-          <button
-            className="bg-[#42A1DA] text-white px-2 py-2 rounded-md ml-1"
-            disabled={filterType === ""}
-          >
-            {" "}
-            <HiOutlineSearch size={25} />
-          </button>
-        </div>
-      </div>
-
-      {loading ? (
-        <div className="flex items-center justify-center text-xl">
-          <Loading />
-        </div>
-      ) : (
-        <div>
-          {showRoomData?.data?.showrooms?.length === 0 ? (
-            <EmptyData
-              icon={Store}
-              title="No Showrooms Found"
-              message="We couldn't find any showrooms matching your search criteria."
-              subMessage="Try adjusting your filters or add a new showroom."
-            />
-          ) : (
-            <section className="tableContainer overflow-x-auto">
-              <table className="customTable">
-                <thead>
-                  <tr>
-                    <th>SL No</th>
-                    <th>Show Room ID </th>
-                    <th>Show Room Name</th>
-                    <th>Show Room Customer Name </th>
-                    {/* <th>Mileage History </th> */}
-                    <th>Car Reg No. </th>
-                    <th>Mobile No.</th>
-                    <th>Vehicle Name </th>
-                    <th colSpan={3}>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {showRoomData?.data?.showrooms?.map((card, index) => {
-                    const lastVehicle = card?.vehicles
-                      ? [...card.vehicles].sort(
-                        (a, b) =>
-                          new Date(b.createdAt) - new Date(a.createdAt)
-                      )[0]
-                      : null;
-                    const displayIndex = (currentPage - 1) * limit + index + 1;
-
-                    return (
-                      <tr
-                        key={card._id}
-                        className={` transition-all duration-300 hover:bg-gradient-to-r hover:from-blue-300 hover:to-blue-100 hover:text-black`}
-                      >
-                        <td>{displayIndex}</td>
-                        <td>{card?.showRoomId}</td>
-                        <td>{card?.showRoom_name}</td>
-                        <td>{card?.vehicle_username}</td>
-                        {/* <td>
-                        {card?.vehicles?.slice(0,1)?.map((vehicle, idx) => (
-                          <div key={idx} className="flex flex-wrap gap-1">
-                            {vehicle?.mileageHistory?.length > 0 ? (
-                              vehicle.mileageHistory.map(
-                                (history, historyIdx) => (
-                                  <Tooltip
-                                    key={historyIdx}
-                                    title={new Date(
-                                      history.date
-                                    ).toLocaleDateString()}
-                                    arrow
-                                  >
-                                    <Chip
-                                      bg="primary"
-                                      color="primary"
-                                      label={`${history.mileage} km`}
-                                      size="small"
-                                      variant="outlined"
-                                      sx={mileageStyle}
-                                    />
-                                  </Tooltip>
-                                )
-                              )
-                            ) : (
-                              <span>No mileage data</span>
-                            )}
-                          </div>
-                        ))}
-                        </td> */}
-                        <td>{lastVehicle?.fullRegNum}</td>
-                        <td>{card?.fullCompanyNum}</td>
-                        <td>{lastVehicle?.vehicle_name}</td>
-                        <td>
-                          <div
-                            onClick={() => handleIconPreview(card._id)}
-                            className="flex items-center justify-center cursor-pointer"
-                          >
-                            <FaUserTie size={25} className="" />
-                          </div>
-                        </td>
-
-                        <td>
-                          <Can page="/dashboard/update-show-room" action="edit">
-                            <div className="editIconWrap edit">
-                              <Link
-                                to={`/dashboard/update-show-room?id=${card._id}`}
-                              >
-                                <FaEdit className="editIcon text-blue-500" />
-                              </Link>
-                            </div>
-                          </Can>
-                        </td>
-                        <td>
-                          <Can page="/dashboard/show-room-list" action="delete">
-                            <button
-                              disabled={showroomDeleteLoading}
-                              onClick={() => handleMoveToRecycled(card._id)}
-                              className="editIconWrap"
-                              style={{
-                                background: "white",
-                                border: "none",
-                                padding: 5,
-                                borderRadius: "9999px",
-                              }}
-                            >
-                              <FaTrashAlt className="deleteIcon text-red-500" />
-                            </button>
-                          </Can>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </section>
-          )}
-        </div>
-      )}
-      <div className="flex justify-center mt-4">
-        <Pagination
-          count={showRoomData?.meta?.totalPages}
-          page={currentPage}
-          color="primary"
-          onChange={(_, page) => setCurrentPage(page)}
+      <Box display="flex" justifyContent="space-between" mb={2}>
+        <Breadcrumb items={breadcrumbItems} />
+        <Button
+          startIcon={<ArrowBack />}
+          onClick={() => navigate(-1)}
+          sx={{ ...purchaseBtn, height: "40px" }}
+        >
+          Back
+        </Button>
+      </Box>
+      {showrooms.length === 0 ? (
+        <EmptyData
+          icon={Store}
+          title="No Showrooms Found"
+          message="We couldn't find any showrooms matching your search criteria."
+          subMessage="Try adjusting your filters or add a new showroom."
         />
-      </div>
+      ) : (
+        <Table
+          title={title || "Show Room List"}
+          columns={columns}
+          data={showrooms}
+          actions={actions}
+          loading={loading}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={(page) => setCurrentPage(page)}
+          onSearch={(value) => {
+            setFilterType(value);
+            setCurrentPage(1);
+          }}
+          searchPlaceholder="Search showroom..."
+          getRowClass={() =>
+            "transition-all duration-300 hover:bg-gradient-to-r hover:from-blue-300 hover:to-blue-100 hover:text-black"
+          }
+        />
+      )}
     </div>
   );
 };

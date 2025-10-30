@@ -1,23 +1,21 @@
 import swal from "sweetalert";
-import {
-  usePermanantlyDeleteMoneyReceiptMutation,
-  useRestoreFromRecycledMoneyReceiptMutation,
-} from "../../redux/api/money-receipt";
 import { useAppOptions } from "../../hooks/useAppOptions";
-import MoneyReceiptTable from "../MoneyReceived/MoneyReceiptTable";
-
-const RecycledMoneyReceipt = () => {
+import {
+  usePermanentlyDeleteShowRoomMutation,
+  useRestoreFromRecycledShowRoomMutation,
+} from "../../redux/api/showRoomApi";
+import ShowRoomListTable from "../ShowRoom/ShowRoomListTable";
+const RecycledBinShowRoomList = () => {
   const { tenantDomain } = useAppOptions();
-
-  const [permanantlyDeleteMoneyReceipt] =
-    usePermanantlyDeleteMoneyReceiptMutation();
-  const [restoreFromRecycledMoneyReceipt] =
-    useRestoreFromRecycledMoneyReceiptMutation();
+  const isRecycled = true;
+  const [permanentlyDeleteShowRoom] = usePermanentlyDeleteShowRoomMutation();
+  const [restoreFromRecycledShowRoom] =
+    useRestoreFromRecycledShowRoomMutation();
 
   const handleDeleteOrRestore = async (id) => {
     const result = await swal({
       title: "Select Action",
-      text: "Choose what you want to do with this Money Receipt.",
+      text: "Choose what you want to do with this Show Room.",
       icon: "warning",
       buttons: {
         restore: {
@@ -38,10 +36,13 @@ const RecycledMoneyReceipt = () => {
 
     if (result === "restore") {
       try {
-        await restoreFromRecycledMoneyReceipt({ tenantDomain, id }).unwrap();
+        await restoreFromRecycledShowRoom({
+          tenantDomain,
+          id,
+        }).unwrap();
         swal({
           title: "Restored!",
-          text: "Money Receipt has been restored successfully.",
+          text: "Show Room has been restored successfully.",
           icon: "success",
           button: "OK",
         });
@@ -55,10 +56,10 @@ const RecycledMoneyReceipt = () => {
       }
     } else if (result === "delete") {
       try {
-        await permanantlyDeleteMoneyReceipt({ tenantDomain, id }).unwrap();
+        await permanentlyDeleteShowRoom({ tenantDomain, id }).unwrap();
         swal({
           title: "Deleted!",
-          text: "Money Receipt has been permanently deleted.",
+          text: "Show Room has been permanently deleted.",
           icon: "error",
           button: "OK",
         });
@@ -73,17 +74,13 @@ const RecycledMoneyReceipt = () => {
     }
   };
 
-  const isRecycled = true;
-
   return (
-    <>
-      <MoneyReceiptTable
-        isRecycled={isRecycled}
-        title=" Recycle Money Receipt List"
-        handleDeleteAction={handleDeleteOrRestore}
-      />
-    </>
+    <ShowRoomListTable
+      title="Show Room List"
+      handleDeleteAction={handleDeleteOrRestore}
+      isRecycled={isRecycled}
+    />
   );
 };
 
-export default RecycledMoneyReceipt;
+export default RecycledBinShowRoomList;

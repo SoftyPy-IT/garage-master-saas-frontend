@@ -1,89 +1,26 @@
-/* eslint-disable no-undef */
-/* eslint-disable no-unused-vars */
-import { NavLink, useNavigate } from "react-router-dom";
 import {
-  useEffect,
-  useRef,
-  useState
-} from "react";
-import Cookies from "js-cookie";
-import {
-  Home,
-  Logout,
-  Receipt,
+  AccountBalance,
+  Business,
   CurrencyExchange,
   DirectionsCar,
-  RequestQuote,
-  AccountBalance,
-  MoneyOff,
-  CalendarToday,
-  Storage,
-  BackupTable,
-  PersonAdd,
-  Business,
-  Store,
-  Storefront,
   Group,
-  LocalShipping,
-  Recycling,
-  DeleteForever,
-  RestorePage,
+  Home,
   Inventory,
-  ShoppingCart,
+  LocalShipping,
+  Logout,
+  Receipt,
+  Recycling,
+  RequestQuote,
   ShoppingBag,
-  Inventory2,
-  Category,
-  LocalOffer,
-  Widgets,
-  Difference,
-  PointOfSale,
-  AddShoppingCart,
-  MonetizationOn,
-  Savings,
-  Payments,
-  ReceiptLong,
-  Assignment,
-  EventNote,
-  HolidayVillage,
-  ExpandLess
+  ShoppingCart,
+  Storage,
 } from "@mui/icons-material";
-import {
-  FaProjectDiagram,
-  FaUsers,
-  FaCalendarAlt,
-  FaUserPlus,
-  FaUserFriends,
-  FaClipboardList,
-  FaFileInvoice,
-  FaFileInvoiceDollar,
-  FaMoneyBillWave,
-  FaMoneyBill,
-  FaRunning,
-  FaCheckCircle,
-  FaTrash,
-  FaTrashRestore,
-  FaHospitalUser,
-  FaTruck,
-  FaTags,
-  FaBarcode,
-  FaExclamationTriangle,
-  FaMoneyBillAlt
-} from "react-icons/fa";
-import {
-  HiOutlineOfficeBuilding,
-  HiOutlineUserGroup,
-  HiOutlineUserAdd,
-  HiOutlineDocumentText,
-  HiOutlineDocumentDuplicate,
-  HiOutlineTrash,
-  HiOutlineReceiptRefund,
-  HiOutlineClipboardList,
-  HiOutlineExclamation,
-  HiOutlineSwitchHorizontal,
-  HiOutlineShieldCheck
-} from "react-icons/hi";
+import Cookies from "js-cookie";
+import { FaProjectDiagram, FaUsers } from "react-icons/fa";
+import { HiOutlineUserGroup } from "react-icons/hi";
+import { NavLink, useNavigate } from "react-router-dom";
 
-const LeftHoberSidebar = () => {
+const LeftSideBar = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -278,4 +215,4 @@ const LeftHoberSidebar = () => {
   );
 };
 
-export default LeftHoberSidebar;
+export default LeftSideBar;

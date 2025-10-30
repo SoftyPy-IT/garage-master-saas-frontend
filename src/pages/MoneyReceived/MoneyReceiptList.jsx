@@ -1,47 +1,51 @@
-
 import MoneyReceiptTable from "./MoneyReceiptTable";
-import { ArrowBack, ArrowForwardIos } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
-import { Button } from "@mui/material";
-import { backBtnStyle } from "../../utils/customStyle";
-
+import { useMoveRecycledMoneyReceiptMutation } from "../../redux/api/money-receipt";
+import swal from "sweetalert";
+import { useAppOptions } from "../../hooks/useAppOptions";
 const MoneyReceiptList = () => {
-  const navigate = useNavigate();
+  const [moveRecycledMoneyReceipt] = useMoveRecycledMoneyReceiptMutation();
+  const isRecycled = false;
+  const { performActionWithPermission, tenantDomain } = useAppOptions();
+  const handleMoveRecycledBin = async (id) => {
+    performActionWithPermission(
+      "/dashboard/money-receipt-list",
+      "delete",
+      async () => {
+        const willDelete = await swal({
+          title: "Are you sure?",
+          text: " You want to move  this Money Receipt Recycle Bin?",
+          icon: "warning",
+          dangerMode: true,
+        });
 
-  const handleBack = () => {
-    navigate(-1);
+        if (willDelete) {
+          try {
+            await moveRecycledMoneyReceipt({ tenantDomain, id }).unwrap();
+            swal(
+              "Move to Recycle bin!",
+              "Move to Recycle bin successful.",
+              "success"
+            );
+          } catch (error) {
+            swal(
+              "Error",
+              "An error occurred while deleting the card.",
+              "error"
+            );
+          }
+        }
+      },
+      "You don't have permission to delete money receive !"
+    );
   };
   return (
-    <div className="mt-3 md:mt-5 overflow-x-auto">
-      <div className="flex flex-wrap items-center justify-center gap-3 text-center  md:justify-between md:mt-5 mb-8">
-        <div className="flex flex-wrap items-center justify-center">
-          <Button
-            onClick={handleBack}
-            startIcon={<ArrowBack />}
-            sx={backBtnStyle}
-          >
-            Back
-          </Button>
-
-        </div>
-        <div className="flex flex-wrap items-center justify-center">
-
-          <div className="ml-2">
-            <h3 className="text-sm font-bold md:text-2xl">Money Receipt</h3>
-            <span>
-              Money Receipt <ArrowForwardIos sx={{ fontSize: "15px" }} /> Manage
-              Money Receipt
-            </span>
-          </div>
-        </div>
-        <div className="productHome">
-          <span>Home / </span>
-          <span>Money / </span>
-          <span>Money receipt</span>
-        </div>
-      </div>
-      <MoneyReceiptTable />
-    </div>
+    <>
+      <MoneyReceiptTable
+        isRecycled={isRecycled}
+        title=" Money Receipt List"
+        handleDeleteAction={handleMoveRecycledBin}
+      />
+    </>
   );
 };
 

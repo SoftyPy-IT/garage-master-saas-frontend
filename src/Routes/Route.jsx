@@ -54,7 +54,6 @@ import RecycledQuotationList from "../pages/Recyclebin/RecycledQuotationList";
 import RecycledMoneyReceipt from "../pages/Recyclebin/RecycledMoneyReceipt";
 import RecycledbinCustomerList from "../pages/Recyclebin/RecycledbinCustomerList";
 import RecycledbinCompanyList from "../pages/Recyclebin/RecycledbinCompanyList";
-import RecycledbinShowRoomList from "../pages/Recyclebin/RecycledbinShowRoomList";
 import RecycledbinEmployeeList from "../pages/Recyclebin/RecycledbinEmployeeList";
 import RecyclebinSupplierList from "../pages/Recyclebin/RecyclebinSupplierList";
 import RecycledbinInvoiceList from "../pages/Recyclebin/RecycledbinInvoiceList";
@@ -138,6 +137,7 @@ import ExpenseReport from "../pages/Report/ExpenseReport";
 import InvoiceReport from "../pages/Report/InvoiceReport";
 import DonationReport from "../pages/Report/DonationReport";
 import StockTransfer from "../pages/Inventory/StockTransfer/StockTransper";
+import RecycledBinShowRoomList from "../pages/Recyclebin/RecycledBinShowRoomList";
 
 const createProtectedRoute = (path, element, pagePath, action = "view") => {
   return {
@@ -206,7 +206,11 @@ export const router = createBrowserRouter([
         "edit"
       ),
       createProtectedRoute("profile", <Profile />, "/dashboard/profile"),
-      createProtectedRoute("create-invoice", <Invoice />, "/dashboard/create-invoice"),
+      createProtectedRoute(
+        "create-invoice",
+        <Invoice />,
+        "/dashboard/create-invoice"
+      ),
       createProtectedRoute(
         "product-list",
         <ProductList />,
@@ -426,7 +430,11 @@ export const router = createBrowserRouter([
         "/dashboard/update-invoice",
         "edit"
       ),
-      createProtectedRoute("invoice-view", <InvoiceView />, "/dashboard/invoice-view"),
+      createProtectedRoute(
+        "invoice-view",
+        <InvoiceView />,
+        "/dashboard/invoice-view"
+      ),
       createProtectedRoute(
         "invoice-list",
 
@@ -738,7 +746,7 @@ export const router = createBrowserRouter([
       ),
       createProtectedRoute(
         "recycle-bin-showroom-list",
-        <RecycledbinShowRoomList />,
+        <RecycledBinShowRoomList />,
         "/dashboard/recycle-bin-showroom-list"
       ),
       createProtectedRoute(
@@ -783,7 +791,6 @@ export const router = createBrowserRouter([
         "/dashboard/all-user-list"
       ),
 
-
       createProtectedRoute(
         "contact-customer",
         <ContactUserList />,
@@ -825,7 +832,6 @@ export const router = createBrowserRouter([
       ),
 
       //=============== report End here ================
-
     ],
   },
 ]);

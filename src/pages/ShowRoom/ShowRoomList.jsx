@@ -1,37 +1,48 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import { ArrowBack } from "@mui/icons-material";
-import { Button } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useAppOptions } from "../../hooks/useAppOptions";
+import { useMoveRecycledShowRoomMutation } from "../../redux/api/showRoomApi";
 import ShowRoomListTable from "./ShowRoomListTable";
-import { backBtnStyle } from "../../utils/customStyle";
+import swal from "sweetalert";
 const ShowRoomList = () => {
-  const navigate = useNavigate();
-  const handleBack = () => {
-    navigate(-1);
+  const isRecycled = false;
+  const [moveRecycledShowRoom] = useMoveRecycledShowRoomMutation();
+  const { tenantDomain, performActionWithPermission } = useAppOptions();
+  const handleMoveToRecycled = async (id) => {
+    performActionWithPermission(
+      "/dashboard/show-room-list",
+      "delete",
+      async () => {
+        const willDelete = await swal({
+          title: "Are you sure?",
+          text: "You want to move this Show Room to the Recycle Bin?",
+          icon: "warning",
+          dangerMode: true,
+        });
+
+        if (willDelete) {
+          try {
+            await moveRecycledShowRoom({ tenantDomain, id }).unwrap();
+            swal("Moved to Recycle bin!", "Successful.", "success");
+          } catch (error) {
+            swal(
+              "Error",
+              "An error occurred while deleting the card.",
+              "error"
+            );
+          }
+        }
+      },
+      "You don't have permission to move to recycle bin the show room!"
+    );
   };
 
   return (
-    <div className="w-full mt-5 mb-24">
-      <div className="flex  flex-wrap items-center justify-center  gap-3  md:justify-between my-3 mb-8">
-        <div className="flex items-center justify-center ">
-          <Button
-            onClick={handleBack}
-            startIcon={<ArrowBack />}
-            sx={backBtnStyle}
-          >
-            Back
-          </Button>
-
-        </div>
-        <div className="productHome">
-          <span>Dashboard / </span>
-          <span>Show Room / </span>
-          <span>Show Room List </span>
-        </div>
-      </div>
-      <ShowRoomListTable />
-    </div>
+    <ShowRoomListTable
+      title="Show Room List"
+      handleDeleteAction={handleMoveToRecycled}
+      isRecycled={isRecycled}
+    />
   );
 };
 

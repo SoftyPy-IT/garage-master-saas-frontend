@@ -1,30 +1,34 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { FaTrashAlt, FaEdit, FaEye, FaDownload } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { useLocation, useNavigate, Link } from "react-router-dom";
+import { FaEye, FaDownload } from "react-icons/fa";
 import { ArrowBack, Money } from "@mui/icons-material";
-import swal from "sweetalert";
-import {
-  useGetAllInvoicesQuery,
-  useMoveRecycledInvoiceMutation,
-} from "../../redux/api/invoice";
+import { Box, Button } from "@mui/material";
+import Table from "../../components/Table";
+import Breadcrumb from "../../components/Breadcrumb";
+
+import { useGetAllInvoicesQuery } from "../../redux/api/invoice";
 import { useTenantDomain } from "../../hooks/useTenantDomain";
 import { useGetCompanyProfileQuery } from "../../redux/api/companyProfile";
 import { getRowClass } from "../../utils/getRowClass";
-import Table from "../../components/Table";
-import { Box, Button } from "@mui/material";
-import Breadcrumb from "../../components/Breadcrumb";
+import { wrapBoxStyle } from "../../utils/customStyle";
+import { DeleteIcon, EditIcon } from "lucide-react";
 
-const InvoiceTable = ({ title = "Invoices", status, isRecycled }) => {
+const InvoiceTable = ({
+  title = "Invoices",
+  status,
+  isRecycled,
+  handleDeleteAction,
+}) => {
   const location = useLocation();
-  const search = new URLSearchParams(location.search).get("search");
-  const [filterType, setFilterType] = useState("");
-  const [limit] = useState(10);
-  const [currentPage, setCurrentPage] = useState(1);
-  const { tenantDomain } = useTenantDomain();
   const navigate = useNavigate();
+  const search = new URLSearchParams(location.search).get("search");
+
+  const [filterType, setFilterType] = useState(search || "");
+  const [currentPage, setCurrentPage] = useState(1);
+  const limit = 10;
+
+  const { tenantDomain } = useTenantDomain();
   const { data: allInvoices, isLoading: invoiceLoading } =
     useGetAllInvoicesQuery({
       tenantDomain,
@@ -35,8 +39,6 @@ const InvoiceTable = ({ title = "Invoices", status, isRecycled }) => {
       status,
     });
 
-  const [moveRecycledInvoice, { isLoading: deleteLoading }] =
-    useMoveRecycledInvoiceMutation();
   const { data: profileData } = useGetCompanyProfileQuery({ tenantDomain });
 
   const invoiceColumns = [
@@ -45,12 +47,11 @@ const InvoiceTable = ({ title = "Invoices", status, isRecycled }) => {
     {
       key: "customer",
       label: "Customer Name",
-      render: (data) => {
-        if (data.customer) return data.customer.customer_name;
-        if (data.company) return data.company.company_name;
-        if (data.showRoom) return data.showRoom.showRoom_name;
-        return "N/A";
-      },
+      render: (data) =>
+        data.customer?.customer_name ||
+        data.company?.company_name ||
+        data.showRoom?.showRoom_name ||
+        "N/A",
     },
     {
       key: "vehicle",
@@ -61,12 +62,11 @@ const InvoiceTable = ({ title = "Invoices", status, isRecycled }) => {
     {
       key: "contact",
       label: "Mobile No.",
-      render: (data) => {
-        if (data.customer) return data.customer.fullCustomerNum;
-        if (data.company) return data.company.fullCompanyNum;
-        if (data.showRoom) return data.showRoom.fullCompanyNum;
-        return "N/A";
-      },
+      render: (data) =>
+        data.customer?.fullCustomerNum ||
+        data.company?.fullCompanyNum ||
+        data.showRoom?.fullCompanyNum ||
+        "N/A",
     },
     {
       key: "vehicle_brand",
@@ -80,13 +80,12 @@ const InvoiceTable = ({ title = "Invoices", status, isRecycled }) => {
     },
     { key: "date", label: "Date" },
   ];
+
   const invoiceActions = [
     {
       key: "money_receipt",
       icon: Money,
       label: "Money Receipt",
-      tooltip: "Money Receipt",
-      className: "editIconWrap edit2",
       href: (data) =>
         `/dashboard/money-receive-create?order_no=${data.job_no}&id=${
           data._id
@@ -101,8 +100,6 @@ const InvoiceTable = ({ title = "Invoices", status, isRecycled }) => {
       key: "download",
       icon: FaDownload,
       label: "Download Invoice",
-      tooltip: "Download Invoice",
-      className: "flex flex-col items-center edit2",
       href: (data, hooks) => {
         const companyProfileData = {
           companyName: hooks?.profileData?.data?.companyName,
@@ -130,11 +127,8 @@ const InvoiceTable = ({ title = "Invoices", status, isRecycled }) => {
       key: "preview",
       icon: FaEye,
       label: "Preview",
-      tooltip: "Preview",
-      className: "flex flex-col items-center edit2",
-      onClick: (data, hooks) => {
-        hooks.navigate(`/dashboard/invoice-view?id=${data._id}`);
-      },
+      onClick: (data, hooks) =>
+        hooks.navigate(`/dashboard/invoice-view?id=${data._id}`),
       requirePermission: true,
       permissionPage: "/dashboard/invoice-list",
       permissionAction: "view",
@@ -142,10 +136,8 @@ const InvoiceTable = ({ title = "Invoices", status, isRecycled }) => {
     },
     {
       key: "edit",
-      icon: FaEdit,
+      icon: EditIcon,
       label: "Edit Invoice",
-      tooltip: "Edit Invoice",
-      className: "flex flex-col items-center edit",
       LinkComponent: Link,
       link: (data) => `/dashboard/update-invoice?id=${data._id}`,
       requirePermission: true,
@@ -154,48 +146,11 @@ const InvoiceTable = ({ title = "Invoices", status, isRecycled }) => {
     },
     {
       key: "delete",
-      icon: FaTrashAlt,
-      label: "Move to Recycled Bin",
-      tooltip: (data, hooks) =>
-        hooks.deleteLoading ? "Deleting..." : "Move to Recycled Bin",
-      className: "bg-white p-1 rounded-sm",
-      style: {
-        background: "white",
-        border: "none",
-        padding: 5,
-        borderRadius: "9999px",
-      },
-      iconClassName: "text-[#f5365c] size-[16px]",
-      onClick: async (data, hooks) => {
-        const willDelete = await swal({
-          title: "Are you sure?",
-          text: "You want to move this invoice to the Recycle Bin?",
-          icon: "warning",
-          dangerMode: true,
-        });
-
-        if (willDelete) {
-          try {
-            await hooks
-              ?.moveRecycledInvoice({
-                tenantDomain: hooks?.tenantDomain,
-                id: data?._id,
-              })
-              .unwrap();
-            swal(
-              "Moved!",
-              "Invoice moved to Recycle Bin successfully.",
-              "success"
-            );
-          } catch (error) {
-            swal(
-              "Error",
-              "An error occurred while deleting the invoice.",
-              "error"
-            );
-          }
-        }
-      },
+      icon: DeleteIcon,
+      label: isRecycled
+        ? "Delete Permanently / Restore"
+        : "Move to Recycled Bin",
+      onClick: handleDeleteAction,
       disabled: (data, hooks) => hooks?.deleteLoading,
       requirePermission: true,
       permissionPage: "/dashboard/invoice-list",
@@ -204,18 +159,10 @@ const InvoiceTable = ({ title = "Invoices", status, isRecycled }) => {
     },
   ];
 
-  const externalHooks = {
-    tenantDomain,
-    profileData,
-    deleteLoading,
-    moveRecycledInvoice,
-    swal,
-  };
+  const externalHooks = { tenantDomain, profileData };
 
   useEffect(() => {
-    if (search) {
-      setFilterType(search);
-    }
+    if (search) setFilterType(search);
   }, [search]);
 
   const breadcrumbItems = [
@@ -223,21 +170,21 @@ const InvoiceTable = ({ title = "Invoices", status, isRecycled }) => {
     { label: "Invoice", href: "/dashboard/invoice-list" },
     { label: title },
   ];
-  const handleBack = () => navigate(-1);
 
   return (
-    <Box>
-      <Box display="flex" justifyContent="space-between">
+    <Box sx={wrapBoxStyle}>
+      <Box display="flex" justifyContent="space-between" mb={2}>
         <Breadcrumb items={breadcrumbItems} />
         <Button
           variant="outlined"
           startIcon={<ArrowBack />}
-          onClick={handleBack}
+          onClick={() => navigate(-1)}
           sx={{ borderRadius: 5 }}
         >
           Back
         </Button>
       </Box>
+
       <Table
         title={title}
         columns={invoiceColumns}

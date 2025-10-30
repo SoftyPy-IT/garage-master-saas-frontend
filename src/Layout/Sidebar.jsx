@@ -97,12 +97,11 @@ import {
 import { TbAdjustmentsCheck, TbTransformFilled } from "react-icons/tb";
 import { MdOutlineInventory, MdOutlineWarehouse } from "react-icons/md";
 
-
-import LeftHoberSidebar from "../components/Appbar/LeftHoberSidebar";
 import { useDispatch } from "react-redux";
 import { useTenantLogoutMutation } from "../redux/api/authApi";
 import { logout } from "../redux/feature/authSlice";
 import { toast } from "react-toastify";
+import LeftSideBar from "../components/Appbar/LeftSideBar";
 const Sidebar = ({ toggle }) => {
   const [expanded, setExpanded] = useState(false);
   const dispatch = useDispatch();
@@ -127,7 +126,6 @@ const Sidebar = ({ toggle }) => {
   };
   const user = JSON.parse(localStorage.getItem("user") || "{}");
 
-  // Menu configuration data
   const menuItems = [
     {
       id: "dashboard",
@@ -369,39 +367,43 @@ const Sidebar = ({ toggle }) => {
       title: "Inventory",
       icon: <ShoppingBag />,
       items: [
-        { icon: <Inventory2 className="h-5 w-5"/>, text: "Mange Stock", link: "/dashboard/stock" },
         {
-          icon: <MdOutlineWarehouse className="h-6 w-6"/>,
+          icon: <Inventory2 className="h-5 w-5" />,
+          text: "Mange Stock",
+          link: "/dashboard/stock",
+        },
+        {
+          icon: <MdOutlineWarehouse className="h-6 w-6" />,
           text: "Warehouse Stock",
           link: "/dashboard/warehouse-stock",
         },
         {
-          icon: <MdOutlineInventory className="h-6 w-6"/>,
+          icon: <MdOutlineInventory className="h-6 w-6" />,
           text: "Manage Warehouse",
           link: "/dashboard/warehouse",
         },
         {
-          icon: <HiOutlineSwitchHorizontal className="h-6 w-6"/>,
+          icon: <HiOutlineSwitchHorizontal className="h-6 w-6" />,
           text: "Stock Transfer",
           link: "/dashboard/stock-transfer",
         },
         {
-          icon: <TbAdjustmentsCheck className="h-6 w-6"/>,
+          icon: <TbAdjustmentsCheck className="h-6 w-6" />,
           text: "Quantity Adjustment",
           link: "/dashboard/quantity-adjustment",
         },
         {
-          icon: <HiOutlineShieldCheck className="h-6 w-6"/>,
+          icon: <HiOutlineShieldCheck className="h-6 w-6" />,
           text: "Warranties",
           link: "/dashboard/warranties",
         },
         {
-          icon: <FaExclamationTriangle className="h-6 w-6"/>,
+          icon: <FaExclamationTriangle className="h-6 w-6" />,
           text: "Low Stock Alert",
           link: "/dashboard/low-stocks",
         },
         {
-          icon: <TbTransformFilled className="h-5 w-5"/>,
+          icon: <TbTransformFilled className="h-5 w-5" />,
           text: "Stock Transaction",
           link: "/dashboard/stock-transaction",
         },
@@ -515,7 +517,7 @@ const Sidebar = ({ toggle }) => {
           link: "/dashboard/review",
         },
       ],
-      condition: user.role === "superadmin",
+      condition: user.role === "admin",
     },
     {
       id: "all-user-list",
@@ -757,7 +759,7 @@ const Sidebar = ({ toggle }) => {
       <div
         className={`${toggle ? `rightSideBarWrap` : `activeRightSideBarWrap`}`}
       >
-        <LeftHoberSidebar />
+        <LeftSideBar />
       </div>
     </aside>
   );

@@ -389,7 +389,7 @@ const AllTenantList = () => {
   }
 
   return (
-    <Box sx={{ maxWidth: 1600, margin: "auto", padding: {xs:1, sm:3}, }}>
+    <Box sx={{ maxWidth: 1600, margin: "auto", padding: { xs: 1, sm: 3 } }}>
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -565,14 +565,16 @@ const AllTenantList = () => {
       </StyledPaper>
 
       {/* Tenants Table */}
-      
+
       <StyledPaper>
-        <StyledTableContainer sx={{
-      overflowX: 'auto',
-      maxWidth: '100%',
-      display: 'block'
-    }}>
-          <Table >
+        <StyledTableContainer
+          sx={{
+            overflowX: "auto",
+            maxWidth: "100%",
+            display: "block",
+          }}
+        >
+          <Table>
             <TableHead>
               <TableRow>
                 <TableCell padding="checkbox">

@@ -56,7 +56,7 @@ const companyApi = baseApi.injectEndpoints({
         "vehicle",
       ],
     }),
-    permanantlyDeleteCompany: builder.mutation({
+    permanentlyDeleteCompany: builder.mutation({
       query: ({ tenantDomain, id }) => ({
         url: `/companies/${id}`,
         method: "DELETE",
@@ -116,5 +116,5 @@ export const {
   useDeleteCompanyMutation,
   useMoveRecycledCompanyMutation,
   useRestoreFromRecycledCompanyMutation,
-  usePermanantlyDeleteCompanyMutation,
+  usePermanentlyDeleteCompanyMutation,
 } = companyApi;
