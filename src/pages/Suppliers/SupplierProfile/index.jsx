@@ -21,7 +21,7 @@ import SupplierMetrics from "./SupplierMetrics";
 import SupplierProfileHeader from "./SupplierProfileHeader";
 import SupplierTabsContent from "./SupplierTabsContent";
 import PurchaseOrderModal from "../../Inventory/PurchaseOrder/PurchaseOrderModal";
-export default function EnhancedSupplierProfile() {
+export default function SupplierProfile() {
   const [tabValue, setTabValue] = useState(0);
   const [anchorEl, setAnchorEl] = useState(null);
   const [openPurchaseModal, setOpenPurchaseModal] = useState(false);
@@ -105,14 +105,14 @@ export default function EnhancedSupplierProfile() {
             />
             <StyledTab icon={<Inventory sx={{ mb: 0.5 }} />} label="Products" />
             <StyledTab icon={<Payments sx={{ mb: 0.5 }} />} label="Purchase" />
-            <StyledTab icon={<Payments sx={{ mb: 0.5 }} />} label="Purchase Return" />
+            <StyledTab
+              icon={<Payments sx={{ mb: 0.5 }} />}
+              label="Purchase Return"
+            />
             <StyledTab icon={<Payments sx={{ mb: 0.5 }} />} label="Bill Pay" />
           </StyledTabs>
         </Box>
-        <SupplierTabsContent
-          tabValue={tabValue}
-          supplier={singleSupplier}
-        />
+        <SupplierTabsContent tabValue={tabValue} supplier={singleSupplier} />
       </Box>
     </Box>
   );

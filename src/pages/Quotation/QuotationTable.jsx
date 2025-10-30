@@ -2,17 +2,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  FaTrashAlt,
-  FaEdit,
-  FaEye,
-  FaDownload,
-  FaFileInvoice,
-} from "react-icons/fa";
-import { Link, useLocation } from "react-router-dom";
+import { FaEye, FaDownload, FaFileInvoice } from "react-icons/fa";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 
-import { Paper } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import {
   useGetAllQuotationsQuery,
   useMoveRecycledQuotationMutation,
@@ -20,8 +14,17 @@ import {
 import { useTenantDomain } from "../../hooks/useTenantDomain";
 import { useGetCompanyProfileQuery } from "../../redux/api/companyProfile";
 import Table from "../../components/Table";
+import Breadcrumb from "../../components/Breadcrumb";
+import { ArrowBack } from "@mui/icons-material";
+import { wrapBoxStyle } from "../../utils/customStyle";
+import { DeleteIcon, EditIcon } from "lucide-react";
 
-const QuotationTable = ({ title = "Quotations", status }) => {
+const QuotationTable = ({
+  isRecycled,
+  title = "Quotations",
+  status,
+  handleMoveAction,
+}) => {
   const location = useLocation();
   const search = new URLSearchParams(location.search).get("search");
 
@@ -30,10 +33,8 @@ const QuotationTable = ({ title = "Quotations", status }) => {
   const limit = 10;
   const { tenantDomain } = useTenantDomain();
 
-  const [
-    moveRecycledQuotation,
-    { isLoading: deleteLoading },
-  ] = useMoveRecycledQuotationMutation();
+  const [moveRecycledQuotation, { isLoading: deleteLoading }] =
+    useMoveRecycledQuotationMutation();
 
   const { data: allQuotations, isLoading: quotationLoading } =
     useGetAllQuotationsQuery({
@@ -41,7 +42,7 @@ const QuotationTable = ({ title = "Quotations", status }) => {
       limit,
       page: currentPage,
       searchTerm: filterType,
-      isRecycled: false,
+      isRecycled,
       status,
     });
 
@@ -58,23 +59,23 @@ const QuotationTable = ({ title = "Quotations", status }) => {
         if (data?.company) return data.company.company_name;
         if (data?.showRoom) return data.showRoom.showRoom_name;
         return "N/A";
-      }
+      },
     },
     {
       key: "vehicle_name",
       label: "Vehicle Name",
-      render: (data) => data.vehicle?.vehicle_name || "N/A"
+      render: (data) => data.vehicle?.vehicle_name || "N/A",
     },
     {
       key: "vehicle_brand",
       label: "Vehicle Brand",
-      render: (data) => data.vehicle?.vehicle_brand || "N/A"
+      render: (data) => data.vehicle?.vehicle_brand || "N/A",
     },
     {
       key: "car_no",
       label: "Car No.",
       render: (data) =>
-        data.vehicle?.carReg_no || data.vehicle?.car_registration_no || "N/A"
+        data.vehicle?.carReg_no || data.vehicle?.car_registration_no || "N/A",
     },
     {
       key: "mobile_no",
@@ -84,9 +85,9 @@ const QuotationTable = ({ title = "Quotations", status }) => {
         if (data?.company) return data.company.fullCompanyNum;
         if (data?.showRoom) return data.showRoom.fullCompanyNum;
         return "N/A";
-      }
+      },
     },
-    { key: "date", label: "Date" }
+    { key: "date", label: "Date" },
   ];
 
   const quotationActions = [
@@ -96,10 +97,11 @@ const QuotationTable = ({ title = "Quotations", status }) => {
       label: "View Invoice",
       tooltip: "View Invoice",
       className: "flex justify-center edit2",
-      href: (data) => `/dashboard/create-invoice?order_no=${data?.job_no}&id=${data._id}`,
+      href: (data) =>
+        `/dashboard/create-invoice?order_no=${data?.job_no}&id=${data._id}`,
       requirePermission: true,
-      permissionPage: '/dashboard/quotation-view',
-      permissionAction: 'view'
+      permissionPage: "/dashboard/quotation-view",
+      permissionAction: "view",
     },
     {
       key: "download",
@@ -109,22 +111,26 @@ const QuotationTable = ({ title = "Quotations", status }) => {
       className: "flex flex-col items-center edit2",
       href: (data, hooks) => {
         const companyProfileData = {
-          companyName: hooks.profileData?.data?.companyName,
-          address: hooks.profileData?.data?.address,
-          website: hooks.profileData?.data?.website,
-          phone: hooks.profileData?.data?.phone,
-          email: hooks.profileData?.data?.email,
-          logo: hooks.profileData?.data?.logo?.[0],
-          companyNameBN: hooks.profileData?.data?.companyNameBN,
+          companyName: hooks?.profileData?.data?.companyName,
+          address: hooks?.profileData?.data?.address,
+          website: hooks?.profileData?.data?.website,
+          phone: hooks?.profileData?.data?.phone,
+          email: hooks?.profileData?.data?.email,
+          logo: hooks?.profileData?.data?.logo?.[0],
+          companyNameBN: hooks?.profileData?.data?.companyNameBN,
         };
-        return `${import.meta.env.VITE_API_URL}/quotations/quotation/${data._id}?tenantDomain=${hooks.tenantDomain}&companyProfileData=${encodeURIComponent(
+        return `${import.meta.env.VITE_API_URL}/quotations/quotation/${
+          data._id
+        }?tenantDomain=${
+          hooks?.tenantDomain
+        }&companyProfileData=${encodeURIComponent(
           JSON.stringify(companyProfileData)
         )}`;
       },
       target: "_blank",
       requirePermission: true,
-      permissionPage: '/dashboard/quotation-view',
-      permissionAction: 'view'
+      permissionPage: "/dashboard/quotation-view",
+      permissionAction: "view",
     },
     {
       key: "preview",
@@ -136,33 +142,34 @@ const QuotationTable = ({ title = "Quotations", status }) => {
         hooks.navigate(`/dashboard/quotation-view?id=${data._id}`);
       },
       requirePermission: true,
-      permissionPage: '/dashboard/quotation-view',
-      permissionAction: 'view',
-      permissionMessage: "You don't have permission to view quotation"
+      permissionPage: "/dashboard/quotation-view",
+      permissionAction: "view",
+      permissionMessage: "You don't have permission to view quotation",
     },
     {
       key: "edit",
-      icon: FaEdit,
+      icon: EditIcon,
       label: "Edit Quotation",
       tooltip: "Edit Quotation",
       className: "flex flex-col items-center edit",
       LinkComponent: Link,
       link: (data) => `/dashboard/update-quotation?id=${data._id}`,
       requirePermission: true,
-      permissionPage: '/dashboard/update-quotation',
-      permissionAction: 'edit'
+      permissionPage: "/dashboard/update-quotation",
+      permissionAction: "edit",
     },
     {
       key: "delete",
-      icon: FaTrashAlt,
+      icon: DeleteIcon,
       label: "Move to Recycled",
-      tooltip: (data, hooks) => hooks.deleteLoading ? "Deleting..." : "Move to Recycled",
+      tooltip: (data, hooks) =>
+        hooks.deleteLoading ? "Deleting..." : "Move to Recycled",
       className: "editIconWrap rounded-full",
       style: {
         background: "white",
         border: "none",
         padding: 5,
-        borderRadius: "9999px"
+        borderRadius: "9999px",
       },
       iconClassName: "deleteIcon text-red-500",
       onClick: async (data, hooks) => {
@@ -175,23 +182,32 @@ const QuotationTable = ({ title = "Quotations", status }) => {
 
         if (willDelete) {
           try {
-            await hooks.moveRecycledQuotation({ tenantDomain: hooks.tenantDomain, id: data._id }).unwrap();
+            await hooks
+              ?.moveRecycledQuotation({
+                tenantDomain: hooks?.tenantDomain,
+                id: data._id,
+              })
+              .unwrap();
             swal(
               "Move to Recycle bin!",
               "Move to Recycle bin successful.",
               "success"
             );
           } catch (error) {
-            swal("Error", "An error occurred while deleting the card.", "error");
+            swal(
+              "Error",
+              "An error occurred while deleting the card.",
+              "error"
+            );
           }
         }
       },
-      disabled: (data, hooks) => hooks.deleteLoading,
+      disabled: (data, hooks) => hooks?.deleteLoading,
       requirePermission: true,
-      permissionPage: '/dashboard/quotation-list',
-      permissionAction: 'delete',
-      permissionMessage: "You don't have permission to delete this quotation"
-    }
+      permissionPage: "/dashboard/quotation-list",
+      permissionAction: "delete",
+      permissionMessage: "You don't have permission to delete this quotation",
+    },
   ];
 
   const getQuotationRowClass = (data) => {
@@ -207,7 +223,7 @@ const QuotationTable = ({ title = "Quotations", status }) => {
     profileData,
     deleteLoading,
     moveRecycledQuotation,
-    swal
+    swal,
   };
 
   useEffect(() => {
@@ -216,11 +232,33 @@ const QuotationTable = ({ title = "Quotations", status }) => {
     }
   }, [search]);
 
+  const breadcrumbItems = [
+    { label: "Home", href: "/" },
+    { label: "Quotation", href: "/dashboard/quotation-list" },
+    { label: title },
+  ];
+  const navigate = useNavigate();
+
+  const handleBack = () => {
+    navigate(-1);
+  };
+
   return (
-    <Paper
-      elevation={2}
-      sx={{ px: { xs: 1, md: 2 }, py: 1, mt: { xs: 1, md: 2 } }}
-    >
+    <Box sx={wrapBoxStyle}>
+      <Box display="flex" justifyContent="space-between">
+        <Breadcrumb items={breadcrumbItems} />
+        <Button
+          variant="outlined"
+          startIcon={<ArrowBack />}
+          onClick={handleBack}
+          sx={{
+            alignSelf: { xs: "flex-start", sm: "center" },
+            borderRadius: 5,
+          }}
+        >
+          Back
+        </Button>
+      </Box>
       <Table
         title={title}
         columns={quotationColumns}
@@ -236,9 +274,8 @@ const QuotationTable = ({ title = "Quotations", status }) => {
         emptyMessage="No matching quotation found."
         getRowClass={getQuotationRowClass}
       />
-    </Paper>
+    </Box>
   );
 };
-
 
 export default QuotationTable;

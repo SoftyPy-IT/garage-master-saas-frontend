@@ -1,17 +1,15 @@
 /* eslint-disable react/prop-types */
-import { Grid, Paper, Typography, Box } from '@mui/material';
+import { Grid, Paper, Typography, Box } from "@mui/material";
 import {
   AccountBalanceWallet as WalletIcon,
   Payment as PaymentIcon,
-  TrendingUp as TrendingIcon
-} from '@mui/icons-material';
-import { useTheme } from '@mui/material/styles';
-
+  TrendingUp as TrendingIcon,
+} from "@mui/icons-material";
+import { useTheme } from "@mui/material/styles";
 
 const SummaryCards = ({ supplier }) => {
   const theme = useTheme();
-  
-  // Using the single supplier object instead of an array
+
   const totalDue = supplier?.purchasesSummary?.dueAmount || 0;
   const totalPaid = supplier?.purchasesSummary?.paidAmount || 0;
   const totalBalance = supplier?.purchasesSummary?.totalAmount || 0;
@@ -19,25 +17,25 @@ const SummaryCards = ({ supplier }) => {
 
   const cards = [
     {
-      title: 'Total Due',
+      title: "Total Due",
       value: `৳${totalDue.toLocaleString()}`,
-      icon: '৳',
+      icon: "৳",
       color: theme.palette.primary.main,
     },
     {
-      title: 'Total Paid',
+      title: "Total Paid",
       value: `৳${totalPaid.toLocaleString()}`,
       icon: <PaymentIcon />,
       color: theme.palette.success.main,
     },
     {
-      title: 'Outstanding Balance',
+      title: "Outstanding Balance",
       value: `৳${totalBalance.toLocaleString()}`,
       icon: <WalletIcon />,
       color: theme.palette.warning.main,
     },
     {
-      title: 'Pending Suppliers',
+      title: "Pending Suppliers",
       value: pendingSuppliers,
       icon: <TrendingIcon />,
       color: theme.palette.info.main,
@@ -52,12 +50,12 @@ const SummaryCards = ({ supplier }) => {
             elevation={2}
             sx={{
               p: 3,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
               borderRadius: 2,
               background: `linear-gradient(45deg, ${card.color}, ${card.color}30)`,
-              color: 'white',
+              color: "white",
             }}
           >
             <Box>
@@ -69,11 +67,11 @@ const SummaryCards = ({ supplier }) => {
             <Box
               sx={{
                 p: 1,
-                borderRadius: '50%',
-                backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
+                borderRadius: "50%",
+                backgroundColor: "rgba(255, 255, 255, 0.2)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
               }}
             >
               {card.icon}

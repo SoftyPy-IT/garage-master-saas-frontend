@@ -10,39 +10,13 @@ import {
   alpha,
   Snackbar,
   Alert,
-  Paper,
-  IconButton,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Chip,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
 } from "@mui/material";
-import {
-  Add as AddIcon,
-  Edit as EditIcon,
-  Delete as DeleteIcon,
-  Payment as PaymentIcon,
-  History as HistoryIcon,
-  Close as CloseIcon,
-} from "@mui/icons-material";
+import { Add as AddIcon } from "@mui/icons-material";
 import SummaryCards from "./SummaryCards";
 import SuppliersTable from "./SuppliersTable";
 import PaymentModal from "./PaymentModal";
 import PaymentHistoryModal from "./PaymentHistory";
 
-// Main Component
 const SupplierBillPay = ({ supplier }) => {
   const [suppliers, setSuppliers] = useState([]);
   const [selectedSupplier, setSelectedSupplier] = useState(null);
@@ -56,37 +30,7 @@ const SupplierBillPay = ({ supplier }) => {
   const theme = useTheme();
 
   useEffect(() => {
-    // Load sample data initially
-    setSuppliers([
-      {
-        _id: "1",
-        supplierId: "SUP-001",
-        full_name: "Global Electronics Ltd.",
-        totalDue: 15000,
-        totalPaid: 10000,
-        balance: 5000,
-        payments: [
-          {
-            _id: "p1",
-            amount: 5000,
-            method: "Bank Transfer",
-            transactionId: "TXN123456",
-            accountNumber: "0123456789",
-            note: "Payment for invoice #123",
-            date: new Date("2023-10-15"),
-          },
-          {
-            _id: "p2",
-            amount: 5000,
-            method: "Credit Card",
-            transactionId: "TXN789012",
-            accountNumber: "9876543210",
-            note: "Advance payment",
-            date: new Date("2023-09-20"),
-          },
-        ],
-      },
-    ]);
+    setSuppliers([]);
   }, []);
 
   const showNotification = (message, severity = "success") => {
@@ -141,8 +85,6 @@ const SupplierBillPay = ({ supplier }) => {
           const updatedPayments = s.payments.map((p) =>
             p._id === paymentId ? { ...p, ...paymentData } : p
           );
-
-          // Recalculate totals
           const totalPaid = updatedPayments.reduce(
             (sum, payment) => sum + payment.amount,
             0
@@ -168,8 +110,6 @@ const SupplierBillPay = ({ supplier }) => {
       prev.map((s) => {
         if (s._id === supplierId) {
           const updatedPayments = s.payments.filter((p) => p._id !== paymentId);
-
-          // Recalculate totals
           const totalPaid = updatedPayments.reduce(
             (sum, payment) => sum + payment.amount,
             0
@@ -229,7 +169,6 @@ const SupplierBillPay = ({ supplier }) => {
         />
       </Grid>
 
-
       <PaymentModal
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -241,7 +180,6 @@ const SupplierBillPay = ({ supplier }) => {
         open={historyModalOpen}
         onClose={() => setHistoryModalOpen(false)}
         supplier={selectedSupplier}
-   
         onUpdatePayment={handleUpdatePayment}
         onDeletePayment={handleDeletePayment}
       />

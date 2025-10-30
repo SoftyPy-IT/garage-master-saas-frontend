@@ -1,226 +1,226 @@
 /* eslint-disable react/prop-types */
 import { useRef, useState } from "react";
 import { Pagination, Tooltip } from "@mui/material";
-import { useNavigate } from "react-router-dom";
-import { usePermissions } from "@/context/PermissionContext";
-import Can from "@/components/Can";
-import Loading from "@/components/Loading/Loading";
+import { Link, useNavigate } from "react-router-dom";
+import Loading from "./Loading/Loading";
+import Can from "./Can";
+
 const Table = ({
-    title = "Table",
-    columns = [],
-    data = [],
-    actions = [],
-    loading = false,
-    currentPage = 1,
-    totalPages = 1,
-    onPageChange,
-    onSearch,
-    searchPlaceholder = "Search...",
-    externalHooks = {},
-    renderExtraContent,
-    emptyMessage = "No data found",
-    getRowClass = () => ""
+  title = "Table",
+  columns = [],
+  data = [],
+  actions = [],
+  loading = false,
+  currentPage = 1,
+  totalPages = 1,
+  onPageChange,
+  onSearch,
+  searchPlaceholder = "Search...",
+  renderExtraContent,
+  emptyMessage = "No data found",
+  getRowClass = () => "",
 }) => {
-    const textInputRef = useRef(null);
-    const [localSearch, setLocalSearch] = useState("");
-    const navigate = useNavigate();
-    const { performActionWithPermission } = usePermissions();
+  const textInputRef = useRef(null);
+  const [localSearch, setLocalSearch] = useState("");
+  const navigate = useNavigate();
 
-    const handleSearch = (value) => {
-        setLocalSearch(value);
-        onSearch?.(value);
-        if (onPageChange) onPageChange(1);
-    };
+  const handleSearch = (value) => {
+    setLocalSearch(value);
+    onSearch?.(value);
+    if (onPageChange) onPageChange(1);
+  };
 
-    return (
-        <div className="mt-5 overflow-x-auto">
-            <div className="overflow-x-auto">
-
-                <div className="flex flex-wrap items-center justify-between mb-5">
-                    <h3 className="mb-3 text-xl md:text-3xl font-bold">
-                        {title}: {data.length}
-                    </h3>
-                    {onSearch && (
-                        <div className="flex items-center searcList">
-                            <div className="searchGroup">
-                                <input
-                                    onChange={(e) => handleSearch(e.target.value)}
-                                    autoComplete="off"
-                                    type="text"
-                                    placeholder={searchPlaceholder}
-                                    ref={textInputRef}
-                                    value={localSearch}
-                                />
-                            </div>
-                            <button className="SearchBtn">Search</button>
-                        </div>
-                    )}
-                </div>
-                {loading ? (
-                    <div className="flex items-center justify-center text-xl">
-                        <Loading />
-                    </div>
-                ) : (
-                    <div>
-                        {data.length === 0 ? (
-                            <div className="flex items-center justify-center h-full text-xl text-center">
-                                {emptyMessage}
-                            </div>
-                        ) : (
-                            <section className="tableContainer overflow-x-auto">
-                                <table className="customTable">
-                                    <thead>
-                                        <tr>
-                                            {columns.map((column) => (
-                                                <th key={column.key}>{column.label}</th>
-                                            ))}
-                                            {actions.length > 0 && (
-                                                <th colSpan={actions.length}>Actions</th>
-                                            )}
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {data.map((item, index) => (
-                                            <TableRow
-                                                key={item._id || item.id || index}
-                                                data={item}
-                                                index={index}
-                                                columns={columns}
-                                                actions={actions}
-                                                currentPage={currentPage}
-                                                pageSize={data.length}
-                                                externalHooks={externalHooks}
-                                                navigate={navigate}
-                                                performActionWithPermission={performActionWithPermission}
-                                                getRowClass={getRowClass}
-                                            />
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </section>
-                        )}
-                    </div>
-                )}
-
-
-                {renderExtraContent && renderExtraContent()}
-                {totalPages > 1 && onPageChange && (
-                    <div className="flex justify-center mt-4">
-                        <Pagination
-                            count={totalPages}
-                            page={currentPage}
-                            color="primary"
-                            onChange={(_, page) => onPageChange(page)}
-                        />
-                    </div>
-                )}
+  return (
+    <div className="mt-5 overflow-x-auto">
+      <div className="overflow-x-auto">
+        <div className="flex flex-wrap items-center justify-between mb-5">
+          <h3 className="mb-3 text-xl md:text-3xl font-bold">
+            {title}: {data.length}
+          </h3>
+          {onSearch && (
+            <div className="flex items-center searcList">
+              <div className="searchGroup">
+                <input
+                  onChange={(e) => handleSearch(e.target.value)}
+                  autoComplete="off"
+                  type="text"
+                  placeholder={searchPlaceholder}
+                  ref={textInputRef}
+                  value={localSearch}
+                />
+              </div>
+              <button className="SearchBtn">Search</button>
             </div>
+          )}
         </div>
-    );
+
+        {loading ? (
+          <div className="flex items-center justify-center text-xl">
+            <Loading />
+          </div>
+        ) : data.length === 0 ? (
+          <div className="flex items-center justify-center h-full text-xl text-center">
+            {emptyMessage}
+          </div>
+        ) : (
+          <section className="tableContainer overflow-x-auto">
+            <table className="customTable">
+              <thead>
+                <tr>
+                  {columns.map((col) => (
+                    <th key={col.key}>{col.label}</th>
+                  ))}
+                  {actions.length > 0 && (
+                    <th colSpan={actions.length}>Actions</th>
+                  )}
+                </tr>
+              </thead>
+              <tbody>
+                {data.map((item, index) => (
+                  <TableRow
+                    key={item._id || index}
+                    item={item}
+                    index={index}
+                    columns={columns}
+                    actions={actions}
+                    currentPage={currentPage}
+                    pageSize={data.length}
+                    navigate={navigate}
+                    getRowClass={getRowClass}
+                  />
+                ))}
+              </tbody>
+            </table>
+          </section>
+        )}
+
+        {renderExtraContent && renderExtraContent()}
+
+        {totalPages > 1 && onPageChange && (
+          <div className="flex justify-center mt-4">
+            <Pagination
+              count={totalPages}
+              page={currentPage}
+              color="primary"
+              onChange={(_, page) => onPageChange(page)}
+            />
+          </div>
+        )}
+      </div>
+    </div>
+  );
 };
 
-
+// --- TableRow Component ---
 const TableRow = ({
-    data,
-    index,
-    columns,
-    actions,
-    currentPage,
-    pageSize,
-    externalHooks,
-    navigate,
-    performActionWithPermission,
-    getRowClass
+  item,
+  index,
+  columns,
+  actions,
+  currentPage,
+  pageSize,
+  navigate,
+  getRowClass,
 }) => {
-    const globalIndex = (currentPage - 1) * pageSize + (index + 1);
-    const rowClass = getRowClass(data);
+  const globalIndex = (currentPage - 1) * pageSize + (index + 1);
+  const rowClass = getRowClass(item);
 
-    const renderCellContent = (column, item) => {
-        if (column.type === "index") return globalIndex;
+  return (
+    <tr
+      className={`${rowClass} hover:bg-blue-300 transition-colors duration-200 hover:text-black`}
+    >
+      {columns.map((col) => {
+        let value = null;
+        if (col.type === "index") value = globalIndex;
+        else if (col.render) value = col.render(item, index);
+        else if (col.key.includes(".")) {
+          value =
+            col.key.split(".").reduce((obj, k) => obj?.[k], item) ?? "N/A";
+        } else value = item[col.key] ?? "N/A";
+        return <td key={col.key}>{value}</td>;
+      })}
 
-        if (column.render) return column.render(item, index, externalHooks);
+      {actions.map((action) => {
+        const Icon = action.icon;
+        return (
+          <td key={action.key}>
+            {action.requirePermission ? (
+              <Can
+                page={action.permissionPage}
+                action={action.permissionAction}
+              >
+                <ActionButton
+                  action={action}
+                  Icon={Icon}
+                  item={item}
+                  navigate={navigate}
+                />
+              </Can>
+            ) : (
+              <ActionButton
+                action={action}
+                Icon={Icon}
+                item={item}
+                navigate={navigate}
+              />
+            )}
+          </td>
+        );
+      })}
+    </tr>
+  );
+};
 
-        if (column.key.includes('.')) {
-            return column.key.split('.').reduce((obj, key) => obj?.[key], item);
-        }
+// --- ActionButton Component ---
 
-        return item[column.key] ?? "N/A";
-    };
+// --- ActionButton Component with consistent icon style ---
+const ActionButton = ({ action, Icon, item, navigate }) => {
+  const iconStyle = {
+    color: action.color || "#2563EB", // Default blue, can be overridden in action
+    fontSize: action.size || "18px", // Default size 18px
+    cursor: action.disabled?.(item) ? "not-allowed" : "pointer",
+  };
 
-    const handleActionClick = (action, item) => {
-        if (action.requirePermission) {
-            performActionWithPermission(
-                action.permissionPage,
-                action.permissionAction,
-                () => {
-                    if (action.onClick) action.onClick(item, { navigate, ...externalHooks });
-                },
-                action.permissionMessage
-            );
-        } else {
-            if (action.onClick) action.onClick(item, { navigate, ...externalHooks });
-        }
-    };
+  const content = () => {
+    if (action.href)
+      return (
+        <a
+          href={
+            typeof action.href === "function" ? action.href(item) : action.href
+          }
+          target={action.target}
+          rel="noreferrer"
+        >
+          <Icon style={iconStyle} />
+        </a>
+      );
+
+    if (action.link)
+      return (
+        <Link
+          to={
+            typeof action.link === "function" ? action.link(item) : action.link
+          }
+        >
+          <Icon style={iconStyle} />
+        </Link>
+      );
 
     return (
-        <tr className={`${rowClass} hover:bg-blue-300 transition-colors duration-200 hover:text-black`}>
-
-            {columns.map((column) => (
-                <td key={column.key}>
-                    {renderCellContent(column, data)}
-                </td>
-            ))}
-
-            {actions.map((action) => {
-                const ActionIcon = action.icon;
-
-                const actionContent = (
-                    <Tooltip title={action.tooltip || action.label} arrow placement="top">
-                        <div>
-                            {action.href ? (
-                                <a
-                                    className={`flex flex-col items-center ${action.className || ''}`}
-                                    href={typeof action.href === 'function' ? action.href(data, externalHooks) : action.href}
-                                    target={action.target}
-                                    rel={action.target ? "noreferrer" : undefined}
-                                >
-                                    <ActionIcon className={action.iconClassName || "editIcon"} />
-                                </a>
-                            ) : action.link ? (
-                                <action.LinkComponent
-                                    to={typeof action.link === 'function' ? action.link(data, externalHooks) : action.link}
-                                    className={`flex flex-col items-center ${action.className || ''}`}
-                                >
-                                    <ActionIcon className={action.iconClassName || "editIcon"} />
-                                </action.LinkComponent>
-                            ) : (
-                                <button
-                                    onClick={() => handleActionClick(action, data)}
-                                    className={`${action.className || 'flex flex-col items-center edit2'}`}
-                                    style={action.style}
-                                    disabled={action.disabled?.(data, externalHooks)}
-                                >
-                                    <ActionIcon className={action.iconClassName || "editIcon"} />
-                                </button>
-                            )}
-                        </div>
-                    </Tooltip>
-                );
-
-                return (
-                    <td key={action.key}>
-                        {action.requirePermission ? (
-                            <Can page={action.permissionPage} action={action.permissionAction}>
-                                {actionContent}
-                            </Can>
-                        ) : (
-                            actionContent
-                        )}
-                    </td>
-                );
-            })}
-        </tr>
+      <button
+        onClick={() => action.onClick?.(item, { navigate })}
+        disabled={action.disabled?.(item)}
+      >
+        <Icon style={iconStyle} />
+      </button>
     );
+  };
+
+  return action.tooltip ? (
+    <Tooltip title={action.tooltip}>{content()}</Tooltip>
+  ) : (
+    content()
+  );
 };
 
 export default Table;

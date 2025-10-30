@@ -8,7 +8,6 @@ import { useGetCompanyProfileQuery } from "../../redux/api/companyProfile";
 import { useCreateJobCardMutation } from "../../redux/api/jobCard";
 import { useJobCardData } from "../../hooks/useJobCardData";
 import Loading from "../../components/Loading/Loading";
-import JobCardTable from "./JobcardTable";
 import { useAppOptions } from "../../hooks/useAppOptions";
 import { getDefaultMileage, getFormattedDate } from "../../constant/jobCard";
 import { countries } from "../../constant/Vehicle.constant";
@@ -21,20 +20,17 @@ import UserInformationSection from "./UserInformationSection";
 import VehicleInformationSection from "./VehicleInformationSection";
 import VehicleReportSection from "./VehicleReportSection";
 import FormFooter from "./FormFooter";
+import JobCardTable from "./JobCardTable";
 
 const AddJobCard = () => {
-  // Hooks and Context
   const { tenantDomain } = useTenantDomain();
   const { performActionWithPermission } = useAppOptions();
   const location = useLocation();
   const navigate = useNavigate();
   const formRef = useRef();
-
-  // URL Parameters
   const id = new URLSearchParams(location.search).get("id");
   const user = new URLSearchParams(location.search).get("user_type");
 
-  // State Management
   const [currentPage] = useState(1);
   const [idType, setIdType] = useState(null);
   const [showId, setShowId] = useState([]);
@@ -49,8 +45,12 @@ const AddJobCard = () => {
   // Country Code States
   const [countryCode, setCountryCode] = useState(countries[0]);
   const [driverCountryCode, setDriverCountryCode] = useState(countries[0]);
-  const [customerOwnerCountryCode, setCustomerOwnerCountryCode] = useState(countries[0]);
-  const [companyOwnerCountryCode, setCompanyOwnerCountryCode] = useState(countries[0]);
+  const [customerOwnerCountryCode, setCustomerOwnerCountryCode] = useState(
+    countries[0]
+  );
+  const [companyOwnerCountryCode, setCompanyOwnerCountryCode] = useState(
+    countries[0]
+  );
 
   // Vehicle States
   const [filteredVehicles, setFilteredVehicles] = useState([]);
@@ -74,7 +74,8 @@ const AddJobCard = () => {
 
   // API Calls
   const { data: CompanyInfoData } = useGetCompanyProfileQuery({ tenantDomain });
-  const [createJobCard, { isLoading: createJobCardLoading }] = useCreateJobCardMutation();
+  const [createJobCard, { isLoading: createJobCardLoading }] =
+    useCreateJobCardMutation();
 
   // Custom Hooks
   const {
@@ -83,19 +84,25 @@ const AddJobCard = () => {
     showroomData,
     userDetails,
     paddedJobNumber,
-    loading: dataLoading
+    loading: dataLoading,
   } = useJobCardData(userId, newId, currentPage);
 
   const phoneHandlers = usePhoneHandlers({
     setPhoneNumber,
     setDriverPhoneNumber,
-    setOwnerPhoneNumber
+    setOwnerPhoneNumber,
   });
 
   // Effects
   useEffect(() => {
     resetFormBasedOnUserType();
-  }, [userDetails?.data, newId, phoneNumber, driverPhoneNumber, getDataWithChassisNo]);
+  }, [
+    userDetails?.data,
+    newId,
+    phoneNumber,
+    driverPhoneNumber,
+    getDataWithChassisNo,
+  ]);
 
   useEffect(() => {
     if (!userDetails?.data) {
@@ -162,7 +169,8 @@ const AddJobCard = () => {
         reference_name: userDetails.data.reference_name,
         customerOwnerName: userDetails.data.customerOwnerName,
         customerOwnerCountryCode: userDetails.data.customerOwnerCountryCode,
-        customerOwnerPhone: driverPhoneNumber || userDetails.data.customerOwnerPhone,
+        customerOwnerPhone:
+          driverPhoneNumber || userDetails.data.customerOwnerPhone,
       },
       [USER_TYPES.COMPANY]: {
         company_name: userDetails.data.company_name,
@@ -177,7 +185,8 @@ const AddJobCard = () => {
         driver_contact: driverPhoneNumber || userDetails.data.driver_contact,
         companyOwnerName: userDetails.data.companyOwnerName,
         companyOwnerCountryCode: userDetails.data.companyOwnerCountryCode,
-        companyOwnerPhone: driverPhoneNumber || userDetails.data.companyOwnerPhone,
+        companyOwnerPhone:
+          driverPhoneNumber || userDetails.data.companyOwnerPhone,
         reference_name: userDetails.data.reference_name,
       },
       [USER_TYPES.SHOWROOM]: {
@@ -193,7 +202,7 @@ const AddJobCard = () => {
         driver_country_code: userDetails.data.driver_country_code,
         driver_contact: driverPhoneNumber || userDetails.data.driver_contact,
         reference_name: userDetails.data.reference_name,
-      }
+      },
     };
 
     reset({ ...resetData, ...userTypeData[newId] });
@@ -201,8 +210,8 @@ const AddJobCard = () => {
 
   const onSubmit = async (data) => {
     performActionWithPermission(
-      '/dashboard/create-job-card',
-      'create',
+      "/dashboard/create-job-card",
+      "create",
       async () => {
         const toastId = toast.loading("Creating Jobcard...");
 
@@ -238,7 +247,7 @@ const AddJobCard = () => {
       tenantDomain,
       ...userData,
       vehicle,
-      jobCard
+      jobCard,
     };
   };
 
@@ -265,7 +274,7 @@ const AddJobCard = () => {
           customerOwnerPhone: data.customerOwnerPhone,
           customerOwnerName: data.customerOwnerName,
           customerOwnerCountryCode: customerOwnerCountryCode?.code,
-        }
+        },
       },
       [USER_TYPES.COMPANY]: {
         company: {
@@ -277,7 +286,7 @@ const AddJobCard = () => {
           companyOwnerPhone: data.companyOwnerPhone,
           companyOwnerName: data.companyOwnerName,
           companyOwnerCountryCode: companyOwnerCountryCode?.code,
-        }
+        },
       },
       [USER_TYPES.SHOWROOM]: {
         showroom: {
@@ -293,8 +302,8 @@ const AddJobCard = () => {
           driver_contact: data.driver_contact,
           driver_country_code: driverCountryCode?.code,
           reference_name: data.reference_name,
-        }
-      }
+        },
+      },
     };
 
     return userTypeData[newId];
@@ -353,10 +362,10 @@ const AddJobCard = () => {
 
   const handleNavigation = (data) => {
     const navigationMap = {
-      "preview": `/dashboard/preview?id=${data._id}`,
-      "quotation": `/dashboard/create-quotation?order_no=${data.job_no}`,
-      "invoice": `/dashboard/create-invoice?order_no=${data.job_no}`,
-      "null": "/dashboard/jobcard-list"
+      preview: `/dashboard/preview?id=${data._id}`,
+      quotation: `/dashboard/create-quotation?order_no=${data.job_no}`,
+      invoice: `/dashboard/create-invoice?order_no=${data.job_no}`,
+      null: "/dashboard/jobcard-list",
     };
 
     navigate(navigationMap[clickControl] || navigationMap["null"]);
@@ -409,7 +418,9 @@ const AddJobCard = () => {
               companyOwnerCountryCode={companyOwnerCountryCode}
               setCompanyOwnerCountryCode={setCompanyOwnerCountryCode}
               ownerPhoneNumber={ownerPhoneNumber}
-              handleOwnerPhoneNumberChange={phoneHandlers.handleOwnerPhoneNumberChange}
+              handleOwnerPhoneNumberChange={
+                phoneHandlers.handleOwnerPhoneNumberChange
+              }
             />
 
             <VehicleInformationSection
@@ -432,7 +443,9 @@ const AddJobCard = () => {
               driverCountryCode={driverCountryCode}
               setDriverCountryCode={setDriverCountryCode}
               driverPhoneNumber={driverPhoneNumber}
-              handleDriverPhoneNumberChange={phoneHandlers.handleDriverPhoneNumberChange}
+              handleDriverPhoneNumberChange={
+                phoneHandlers.handleDriverPhoneNumberChange
+              }
             />
           </div>
 
