@@ -76,7 +76,7 @@ import {
 } from "../../redux/api/productApi";
 import { AnimatedChip, GlassCard, GradientBreadcrumbs, GradientButton, StyledDialogTitle, StyledTableHead, StyledTableRow } from "../../utils/customStyle";
 import { useTenantDomain } from "../../hooks/useTenantDomain";
-export default function ExpiredProductsPage() {
+export default function ExpiredProduct() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [searchTerm, setSearchTerm] = useState("");

@@ -72,7 +72,7 @@ const PageForm = ({ open, onClose, pageData, mode, tenantDomain, setOpen }) => {
       <GarageForm onSubmit={handleSubmit} defaultValues={defaultValues}>
 
 
-        <Grid container spacing={2}>
+        <Grid container spacing={2} padding={2}>
 
           <Grid item xs={12}>
             <FormInput
@@ -122,7 +122,7 @@ const PageForm = ({ open, onClose, pageData, mode, tenantDomain, setOpen }) => {
             />
           </Grid>
         </Grid>
-        <Box sx={buttonBox}>
+        <Box sx={buttonBox} >
           <Button color="error" onClick={onClose}>Cancel</Button>
           <Button
             color='info'

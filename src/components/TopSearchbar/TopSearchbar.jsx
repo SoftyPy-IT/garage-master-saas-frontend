@@ -56,7 +56,7 @@ const TopSearchbar = () => {
 
       <div className="relative flex-grow">
         <input
-          type="text"
+          type="text" 
           placeholder="Search here"
           value={searchData}
           onChange={(e) => setSearchData(e.target.value)}

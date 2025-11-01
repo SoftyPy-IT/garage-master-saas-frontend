@@ -12,7 +12,7 @@ import { PROFILE_CONFIG } from "./ProfileConfig";
 import ErrorState from "./ErrorState";
 import ProfileTabsSection from "./ProfileTabSection";
 import ProfileHeader from "./ProfileHeader";
-import '../../../src/pages/Home/Customer/Customer.css'
+import '../../../src/pages/Customer/Customer.css'
 
 const QUERY_HOOKS = {
     useGetSingleCustomerQuery,

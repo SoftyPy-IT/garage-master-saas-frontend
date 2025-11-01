@@ -6,14 +6,14 @@ import FormSelect from "../../components/form/Select";
 import FormInput from "../../components/form/Input";
 import GarageForm from "../../components/form/Form";
 import { useCreateRoleMutation, useUpdateRoleMutation } from "../../redux/api/roleApi";
-import { useTenantDomain } from "../../hooks/useTenantDomain";
 import { toast } from "react-toastify";
+import { useAppOptions } from "../../hooks/useAppOptions";
+import { roleOptions } from "../../options";
 
-const AddRoleModal = ({ open, onClose, roleData, isLoading, performActionWithPermission }) => {
+const AddRoleModal = ({ open, onClose, roleData, isLoading }) => {
     const [createRole] = useCreateRoleMutation();
     const [updateRole] = useUpdateRoleMutation();
-    const { tenantDomain } = useTenantDomain();
-
+    const { performActionWithPermission, tenantDomain } = useAppOptions()
     const handleSubmit = async (data) => {
         performActionWithPermission('/dashboard/role-management', 'create', async () => {
 
@@ -21,8 +21,9 @@ const AddRoleModal = ({ open, onClose, roleData, isLoading, performActionWithPer
                 let res;
                 if (roleData) {
                     res = await updateRole({
-                        id: roleData,
-                        data: { data, tenantDomain },
+                        id: roleData._id,
+                        tenantDomain,
+                        data,
                     }).unwrap();
 
                 } else {
@@ -46,7 +47,7 @@ const AddRoleModal = ({ open, onClose, roleData, isLoading, performActionWithPer
                 } else if (apiError?.message) {
                     toast.error(apiError.message);
                 } else {
-                    toast.error("Failed to save warehouse");
+                    toast.error("Failed to save role");
                 }
             }
         }, "You don't have permission to create a role")
@@ -64,6 +65,8 @@ const AddRoleModal = ({ open, onClose, roleData, isLoading, performActionWithPer
         return <div>Loading............</div>
     }
 
+    const title = `${roleData ? 'Update' : 'Create'} Role`
+
 
     return (
         <>
@@ -72,11 +75,11 @@ const AddRoleModal = ({ open, onClose, roleData, isLoading, performActionWithPer
                     <GarageModal
                         open={open}
                         setOpen={onClose}
-                        title="Create New Role"
+                        title={title}
                         maxWidth="md"
                     >
                         <GarageForm onSubmit={handleSubmit} defaultValues={defaultValues}>
-                            <Grid container spacing={3}>
+                            <Grid container spacing={3} padding={2}>
                                 <Grid item xs={12} md={6}>
                                     <FormInput
                                         label="Role Name"
@@ -90,7 +93,7 @@ const AddRoleModal = ({ open, onClose, roleData, isLoading, performActionWithPer
                                     <FormSelect
                                         name="type"
                                         label="Type"
-                                        items={['admin', 'superadmin', 'manager', 'employee', 'user']}
+                                        items={roleOptions}
                                         size="normal"
                                     />
                                 </Grid>
@@ -107,6 +110,7 @@ const AddRoleModal = ({ open, onClose, roleData, isLoading, performActionWithPer
                                         name="status"
                                         label="Status"
                                         items={['active', 'inactive']}
+                                        size="medium"
 
                                     />
                                 </Grid>
@@ -133,7 +137,7 @@ const AddRoleModal = ({ open, onClose, roleData, isLoading, performActionWithPer
                                         type="submit"
                                         variant="contained"
                                     >
-                                        Create Role
+                                        {roleData ? 'Update' : 'Create'}  Role
                                     </Button>
                                 </Grid>
                             </Grid>

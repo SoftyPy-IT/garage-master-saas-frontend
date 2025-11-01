@@ -1,7 +1,6 @@
 /* eslint-disable react/prop-types */
 
 import {
-  DialogActions,
   Box,
   Typography,
   Grid,
@@ -9,7 +8,7 @@ import {
   CardContent,
   Button,
   Paper,
-} from "@mui/material"
+} from "@mui/material";
 import {
   LocationOn as LocationOnIcon,
   Person as PersonIcon,
@@ -17,10 +16,11 @@ import {
   Email as EmailIcon,
   Edit as EditIcon,
   Map as MapIcon,
-} from "@mui/icons-material"
-import { alpha, useTheme } from "@mui/material/styles"
-import { GoogleMap, Marker } from "@react-google-maps/api"
-import GarageModal from "../../../components/Share/Modal/GarageModal"
+} from "@mui/icons-material";
+import { useTheme } from "@mui/material/styles";
+import { GoogleMap, Marker } from "@react-google-maps/api";
+import GarageModal from "../../../components/Share/Modal/GarageModal";
+import { purchaseBtn } from "../../../utils/customStyle";
 
 const ViewWarehouseDetails = ({
   open,
@@ -30,35 +30,31 @@ const ViewWarehouseDetails = ({
   getTypeChip,
   getStatusChip,
   onEdit,
-  setOpen
-
+  setOpen,
 }) => {
-  const theme = useTheme()
+  const theme = useTheme();
 
-  if (!warehouse) return null
+  if (!warehouse) return null;
 
   const getValidCoordinate = (value, defaultValue) => {
-    const parsed = Number.parseFloat(value)
-    return !isNaN(parsed) ? parsed : defaultValue
-  }
+    const parsed = Number.parseFloat(value);
+    return !isNaN(parsed) ? parsed : defaultValue;
+  };
 
-  const latitude = getValidCoordinate(warehouse.latitude, 23.8103)
-  const longitude = getValidCoordinate(warehouse.longitude, 90.4125)
+  const latitude = getValidCoordinate(warehouse.latitude, 23.8103);
+  const longitude = getValidCoordinate(warehouse.longitude, 90.4125);
   const validMapCenter = {
     lat: latitude,
     lng: longitude,
-  }
-  const title = 'Warehouse details'
+  };
+  const title = "Warehouse details";
   return (
     <GarageModal
       open={open}
       setOpen={setOpen}
-      title={title}
+      title={warehouse.name}
       maxWidth="md"
     >
-
-
-
       <Grid container spacing={3}>
         <Grid item xs={12} md={6}>
           <Card sx={{ mb: 3, borderRadius: 2 }}>
@@ -71,13 +67,17 @@ const ViewWarehouseDetails = ({
                   <Typography variant="body2" color="text.secondary">
                     Type:
                   </Typography>
-                  <Typography variant="body1">{getTypeChip(warehouse.type)}</Typography>
+                  <Typography variant="body1">
+                    {getTypeChip(warehouse.type)}
+                  </Typography>
                 </Grid>
                 <Grid item xs={6}>
                   <Typography variant="body2" color="text.secondary">
                     Status:
                   </Typography>
-                  <Typography variant="body1">{getStatusChip(warehouse.status)}</Typography>
+                  <Typography variant="body1">
+                    {getStatusChip(warehouse.status)}
+                  </Typography>
                 </Grid>
                 <Grid item xs={6}>
                   <Typography variant="body2" color="text.secondary">
@@ -89,7 +89,9 @@ const ViewWarehouseDetails = ({
                   <Typography variant="body2" color="text.secondary">
                     Description:
                   </Typography>
-                  <Typography variant="body1">{warehouse.description}</Typography>
+                  <Typography variant="body1">
+                    {warehouse.description}
+                  </Typography>
                 </Grid>
               </Grid>
             </CardContent>
@@ -105,7 +107,10 @@ const ViewWarehouseDetails = ({
                   <Typography variant="body2" color="text.secondary">
                     Manager:
                   </Typography>
-                  <Typography variant="body1" sx={{ display: "flex", alignItems: "center" }}>
+                  <Typography
+                    variant="body1"
+                    sx={{ display: "flex", alignItems: "center" }}
+                  >
                     <PersonIcon
                       sx={{
                         mr: 0.5,
@@ -120,7 +125,10 @@ const ViewWarehouseDetails = ({
                   <Typography variant="body2" color="text.secondary">
                     Phone:
                   </Typography>
-                  <Typography variant="body1" sx={{ display: "flex", alignItems: "center" }}>
+                  <Typography
+                    variant="body1"
+                    sx={{ display: "flex", alignItems: "center" }}
+                  >
                     <PhoneIcon
                       sx={{
                         mr: 0.5,
@@ -135,7 +143,10 @@ const ViewWarehouseDetails = ({
                   <Typography variant="body2" color="text.secondary">
                     Email:
                   </Typography>
-                  <Typography variant="body1" sx={{ display: "flex", alignItems: "center" }}>
+                  <Typography
+                    variant="body1"
+                    sx={{ display: "flex", alignItems: "center" }}
+                  >
                     <EmailIcon
                       sx={{
                         mr: 0.5,
@@ -160,11 +171,16 @@ const ViewWarehouseDetails = ({
                   <Typography variant="body2" color="text.secondary">
                     Total Items:
                   </Typography>
-                  <Typography variant="h6" color="primary" sx={{ fontWeight: "bold" }}>
-                    {warehouse.totalItems ? warehouse.totalItems.toLocaleString() : "0"}
+                  <Typography
+                    variant="h6"
+                    color="primary"
+                    sx={{ fontWeight: "bold" }}
+                  >
+                    {warehouse.totalItems
+                      ? warehouse.totalItems.toLocaleString()
+                      : "0"}
                   </Typography>
                 </Grid>
-
               </Grid>
             </CardContent>
           </Card>
@@ -181,7 +197,10 @@ const ViewWarehouseDetails = ({
                   <Typography variant="body2" color="text.secondary">
                     Address:
                   </Typography>
-                  <Typography variant="body1" sx={{ display: "flex", alignItems: "center" }}>
+                  <Typography
+                    variant="body1"
+                    sx={{ display: "flex", alignItems: "center" }}
+                  >
                     <LocationOnIcon
                       sx={{
                         mr: 0.5,
@@ -214,14 +233,17 @@ const ViewWarehouseDetails = ({
                   <Typography variant="body2" color="text.secondary">
                     Postal Code:
                   </Typography>
-                  <Typography variant="body1">{warehouse.postalCode}</Typography>
+                  <Typography variant="body1">
+                    {warehouse.postalCode}
+                  </Typography>
                 </Grid>
                 <Grid item xs={12}>
                   <Typography variant="body2" color="text.secondary">
                     Coordinates:
                   </Typography>
                   <Typography variant="body1">
-                    {isNaN(Number.parseFloat(warehouse.latitude)) || isNaN(Number.parseFloat(warehouse.longitude)) ? (
+                    {isNaN(Number.parseFloat(warehouse.latitude)) ||
+                    isNaN(Number.parseFloat(warehouse.longitude)) ? (
                       <span style={{ color: theme.palette.error.main }}>
                         Invalid coordinates. Using default Dhaka location.
                       </span>
@@ -237,7 +259,11 @@ const ViewWarehouseDetails = ({
           <Card sx={{ borderRadius: 2, height: 300, overflow: "hidden" }}>
             <CardContent sx={{ p: 0, height: "100%" }}>
               {isLoaded ? (
-                <GoogleMap mapContainerStyle={{ width: "100%", height: "100%" }} center={validMapCenter} zoom={15}>
+                <GoogleMap
+                  mapContainerStyle={{ width: "100%", height: "100%" }}
+                  center={validMapCenter}
+                  zoom={15}
+                >
                   <Marker position={validMapCenter} />
                 </GoogleMap>
               ) : (
@@ -248,7 +274,8 @@ const ViewWarehouseDetails = ({
                     justifyContent: "center",
                     height: "100%",
                     flexDirection: "column",
-                    background: "url('/placeholder.svg?height=300&width=500') center/cover",
+                    background:
+                      "url('/placeholder.svg?height=300&width=500') center/cover",
                   }}
                 >
                   <Paper
@@ -276,38 +303,22 @@ const ViewWarehouseDetails = ({
           </Card>
         </Grid>
       </Grid>
-      <DialogActions sx={{ px: 3, pb: 3 }}>
-        <Button
-          onClick={onClose}
-          variant="outlined"
-          sx={{
-            borderRadius: 2,
-            py: 1,
-            px: 3,
-          }}
-        >
-          Close
-        </Button>
+
+      <Box display="flex" justifyContent="end">
         <Button
           onClick={() => {
-            onClose()
-            onEdit(warehouse._id)
+            onClose();
+            onEdit(warehouse._id);
           }}
           variant="contained"
           startIcon={<EditIcon />}
-          sx={{
-            borderRadius: 2,
-            py: 1,
-            px: 3,
-            boxShadow: `0 4px 14px ${alpha("#006a4e", 0.4)}`,
-            background: `linear-gradient(45deg, #006a4e 30%, #00a651 90%)`,
-          }}
+          sx={purchaseBtn}
         >
           Edit Warehouse
         </Button>
-      </DialogActions>
+      </Box>
     </GarageModal>
-  )
-}
+  );
+};
 
-export default ViewWarehouseDetails
+export default ViewWarehouseDetails;

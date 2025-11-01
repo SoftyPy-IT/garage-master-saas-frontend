@@ -1,8 +1,8 @@
 /* eslint-disable react/prop-types */
-import {  TextField } from "@mui/material";
+import { TextField } from "@mui/material";
 import { Controller, useFormContext } from "react-hook-form";
 
-const TASTextarea = ({
+const FormTextArea = ({
   name,
   label,
   placeholder,
@@ -59,4 +59,4 @@ const TASTextarea = ({
   );
 };
 
-export default TASTextarea;
+export default FormTextArea;

@@ -1,118 +1,92 @@
 // src/Routes/Route.jsx
 import { createBrowserRouter } from "react-router-dom";
 import Main from "../Layout/Main";
-import Home from "../pages/Home/Home";
-import AddEmployee from "../pages/Home/Employee/AddEmployee";
-import UpdateInvoice from "../pages/Home/Invoice/UpdateInvoice";
-import Invoice from "../pages/Home/Invoice/Invoice";
-import AddRole from "../pages/Home/Role/AddRole";
-import Role from "../pages/Home/Role/Role";
-import UpdateCustomer from "../pages/Home/Customer/UpdateCustomer";
-import AddExpense from "../pages/Home/Expense/AddExpense";
-import AddCustomer from "../pages/Home/Customer/AddCustomer";
-import AddProduct from "../pages/Home/Products/AddProduct";
-import Profile from "../pages/Home/Profile/Profile";
-import UpdateProduct from "../pages/Home/Products/UpdateProduct";
-import UpdateRole from "../pages/Home/Role/UpdateRole";
+import AddEmployee from "../pages/Employee/AddEmployee";
+import UpdateInvoice from "../pages/Invoice/UpdateInvoice";
+import Invoice from "../pages/Invoice/Invoice";
+import AddRole from "../pages/Role/AddRole";
+import Role from "../pages/Role/Role";
+import AddExpense from "../pages/Expense/AddExpense";
+import AddProduct from "../pages/Products/AddProduct";
+import Profile from "../pages/Profile/Profile";
+import UpdateProduct from "../pages/Products/UpdateProduct";
+import UpdateRole from "../pages/Role/UpdateRole";
 import DashboardLayout from "../Layout/DashboardLayout";
-import MoneyReceiptList from "../pages/Home/MoneyReceived/MoneyReceiptList";
-import MoneyReceiptView from "../pages/Home/MoneyReceived/MoneyReceiptView";
-import UpdateMoneyReceipt from "../pages/Home/MoneyReceived/UpdateMoneyReceipt";
-import AddQuotation from "../pages/Home/Quotation/AddQuotation";
-import QuotationView from "../pages/Home/Quotation/QuotationView";
-import QuotationList from "../pages/Home/Quotation/QuotationList";
-import UpdateQuotation from "../pages/Home/Quotation/UpdateQuotation";
-import CustomerList from "../pages/Home/Customer/CustomerList";
-import CustomerProfile from "../pages/Home/Customer/CustomerProfile";
-import EmployeeList from "../pages/Home/Employee/EmployeeList";
-import UpdateEmployee from "../pages/Home/Employee/UpdateEmployee";
-import EmployeeProfile from "../pages/Home/Employee/EmployeeProfile";
-import AddSuppliers from "../pages/Home/Suppliers/AddSuppliers";
-import SupplierList from "../pages/Home/Suppliers/SupplierList";
-import UpdateSupplier from "../pages/Home/Suppliers/UpdateSupplier";
-import SupplierProfile from "../pages/Home/Suppliers/SupplierProfile";
-import AddPurchase from "../pages/Home/Parchase/AddPurchase";
-import UpdatePurchase from "../pages/Home/Parchase/UpdatePurchase";
-import CompanyList from "../pages/Home/Company/CompanyList";
-import AddCompany from "../pages/Home/Company/AddCompany";
-import CompanyProfile from "../pages/Home/Company/CompanyProfile";
-import AddShowRoom from "../pages/Home/ShowRoom/AddShowRoom";
-import ShowRoomList from "../pages/Home/ShowRoom/ShowRoomList";
-import UpdateCompany from "../pages/Home/Company/UpdateCompany";
-import UpdateShowRoom from "../pages/Home/ShowRoom/UpdateShowRoom";
-import ShowRoomProfile from "../pages/Home/ShowRoom/ShowRoomProfile";
-import EmployeeLeave from "../pages/Home/Employee/EmployeeProfile/EmployeeLeave";
-import Attendance from "../pages/Home/Employee/EmployeeProfile/Attendance";
-import AddAttendance from "../pages/Home/Attendance/AddAttendance";
-import AttendanceList from "../pages/Home/Attendance/AttendanceList";
-import UpdateExpense from "../pages/Home/Expense/UpdateExpense";
-import ViewExpense from "../pages/Home/Expense/ViewExpense";
-import UpdateAttendance from "../pages/Home/Attendance/UpdateAttendance";
-import EmployeeSalary from "../pages/Home/Employee/EmployeeSalary";
-import EmployeeOvertime from "../pages/Home/Employee/EmployeeOvertime";
-import RunningProject from "../pages/Home/Projects/RunningProject";
-import CompletedProject from "../pages/Home/Projects/CompletedProject";
-import ViewEmployeeAttendance from "../pages/Home/Attendance/ViewEmployeeAttendance";
+import AddQuotation from "../pages/Quotation/AddQuotation";
+import QuotationView from "../pages/Quotation/QuotationView";
+import QuotationList from "../pages/Quotation/QuotationList";
+import UpdateQuotation from "../pages/Quotation/UpdateQuotation";
+import EmployeeList from "../pages/Employee/EmployeeList";
+import UpdateEmployee from "../pages/Employee/UpdateEmployee";
+import EmployeeProfile from "../pages/Employee/EmployeeProfile";
+import AddSuppliers from "../pages/Suppliers/AddSuppliers";
+import SupplierList from "../pages/Suppliers/SupplierList";
+import UpdateSupplier from "../pages/Suppliers/UpdateSupplier";
+import SupplierProfile from "../pages/Suppliers/SupplierProfile";
+import AddPurchase from "../pages/Parchase/AddPurchase";
+import UpdatePurchase from "../pages/Parchase/UpdatePurchase";
+import EmployeeLeave from "../pages/Employee/EmployeeProfile/EmployeeLeave";
+import AddAttendance from "../pages/Attendance/AddAttendance";
+import AttendanceList from "../pages/Attendance/AttendanceList";
+import UpdateExpense from "../pages/Expense/UpdateExpense";
+import UpdateAttendance from "../pages/Attendance/UpdateAttendance";
+import EmployeeSalary from "../pages/Employee/EmployeeSalary";
+import EmployeeOvertime from "../pages/Employee/EmployeeOvertime";
+import RunningProject from "../pages/Projects/RunningProject";
+import CompletedProject from "../pages/Projects/CompletedProject";
+import ViewEmployeeAttendance from "../pages/Attendance/ViewEmployeeAttendance";
 import EmployeeHoliday from "../pages/Holiday/Holiday";
 import UpdateBillPay from "../pages/BillPay/UpdateBillPay";
 import BillPayInvoice from "../pages/BillPay/BillPayInvoice";
-import PurchaseList from "../pages/Home/Parchase/PurchasList";
+
 import Income from "../pages/Income/Income";
 import IncomeList from "../pages/Income/IncomeList";
 import UpdateIncome from "../pages/Income/UpdateIncome";
 import Donation from "../pages/Donation/Donation";
-import Brand from "../pages/Home/Brand/Brand";
-import Unit from "../pages/Home/Unit/Unit";
-import Barcode from "../pages/Home/Barcode/Barcode";
-import ProductList from "../pages/Home/Products/ProductList";
-import ExpenseList from "../pages/Home/Expense/ExpenseList";
-import ProductType from "../pages/Home/ProductType/ProductType";
-import CategoryList from "../pages/Home/Category/CategoryList";
-import DuemoneyReceiptList from "../pages/Home/MoneyReceived/DuemoneyReceiptList";
-import RecycledQuotationList from "../pages/Home/Recyclebin/RecycledQuotationList";
-import RecycledMoneyReceipt from "../pages/Home/Recyclebin/RecycledMoneyReceipt";
-import RecycledbinCustomerList from "../pages/Home/Recyclebin/RecycledbinCustomerList";
-import RecycledbinCompanyList from "../pages/Home/Recyclebin/RecycledbinCompanyList";
-import RecycledbinShowRoomList from "../pages/Home/Recyclebin/RecycledbinShowRoomList";
-import RecycledbinEmployeeList from "../pages/Home/Recyclebin/RecycledbinEmployeeList";
-import RecyclebinSupplierList from "../pages/Home/Recyclebin/RecyclebinSupplierList";
-import RecycledbinInvoiceList from "../pages/Home/Recyclebin/RecycledbinInvoiceList";
-import ExpenseCategoryList from "../pages/Home/Expense/ExpenseCategoryList";
-import AllCustomerList from "../pages/Home/Customer/AllCustomerList";
+import Brand from "../pages/Brand/Brand";
+import Unit from "../pages/Unit/Unit";
+import Barcode from "../pages/Barcode/Barcode";
+import ProductList from "../pages/Products/ProductList";
+import ExpenseList from "../pages/Expense/ExpenseList";
+import ProductType from "../pages/ProductType/ProductType";
+import CategoryList from "../pages/Category/CategoryList";
+import RecycledQuotationList from "../pages/Recyclebin/RecycledQuotationList";
+import RecycledMoneyReceipt from "../pages/Recyclebin/RecycledMoneyReceipt";
+import RecycledbinCustomerList from "../pages/Recyclebin/RecycledbinCustomerList";
+import RecycledbinCompanyList from "../pages/Recyclebin/RecycledbinCompanyList";
+import RecycledbinEmployeeList from "../pages/Recyclebin/RecycledbinEmployeeList";
+import RecyclebinSupplierList from "../pages/Recyclebin/RecyclebinSupplierList";
+import RecycledbinInvoiceList from "../pages/Recyclebin/RecycledbinInvoiceList";
+import ExpenseCategoryList from "../pages/Expense/ExpenseCategoryList";
 import Backup from "../pages/Backup/Backup";
 import RestoreDatabase from "../pages/Backup/RestoreDatabase";
 import CreateHoliday from "../pages/Holiday/CreateHoliday";
-import CreateEmployeeOverTime from "../pages/Home/Employee/CreateEmployeeOverTime";
+import CreateEmployeeOverTime from "../pages/Employee/CreateEmployeeOverTime";
 import UpdateHoliday from "../pages/Holiday/UpdateHoliday";
 import AddPaybill from "../pages/BillPay/AddPaybill";
 import BillPayList from "../pages/BillPay/BillPayList";
 import BillPayHistory from "../pages/BillPay/BillPayHistory";
-import UpdateEmployeeSalary from "../pages/Home/Employee/UpdateEmployeeSalary";
+import UpdateEmployeeSalary from "../pages/Employee/UpdateEmployeeSalary";
 import InventoryDashboard from "../pages/Inventory/InventoryDashboard";
 import ExpiredProduct from "../pages/Inventory/ExpiredProduct";
 import LowStock from "../pages/Inventory/LowStock";
 import Variants from "../pages/Inventory/Variants";
 import StockPage from "../pages/Inventory/Stock";
-import RemoveStock from "../pages/Inventory/RemoveStock";
-import PurchaseReturn from "../pages/Inventory/PurchaseReturn";
-import StockTransferPage from "../pages/Inventory/StockTransper";
 import ExpiredProductsReportPage from "../pages/Reports/ExpiredProductReport";
 import LowStockReportPage from "../pages/Reports/LowStockReport";
 import ProductStockReportPage from "../pages/Reports/ProductStockReport";
 import DailyStockMovementReportPage from "../pages/Reports/DailyStockReport";
 import ReportsPage from "../pages/Reports/Report";
-import PurchaseReturnUpdate from "../pages/Inventory/PurchaseReturnUpdate"
 import StockAdjustment from "../pages/Inventory/Adjustment/AdjustmentList";
 import AddAdjustment from "../pages/Inventory/Adjustment/AddAdjustment";
 import QuantityAdjustment from "../pages/Inventory/Adjustment/AdjustmentList";
-import CreateTenant from "../pages/Tenant/CreateTenant";
 import LandingPage from "../pages/Login/LandingPage";
 import Login from "../pages/Login/Login";
-import AdminUserListPage from "../pages/Home/Profile/AllUserList";
-import UpdateProfile from "../pages/Home/Profile/UpdateProfile";
-import AllTenantList from "../pages/Home/Tenant/AllTenantList";
-import AllUserList from "../pages/Home/Tenant/AllUserList";
-import ContactUserList from "../pages/Home/Tenant/ContactUserList";
+import AdminUserListPage from "../pages/Profile/AllUserList";
+import UpdateProfile from "../pages/Profile/UpdateProfile";
+import AllTenantList from "../pages/Tenant/AllTenantList";
+import AllUserList from "../pages/Tenant/AllUserList";
+import ContactUserList from "../pages/Tenant/ContactUserList";
 import CompanyBrand from "../pages/CompanyBrand/CompanyBrand";
 import Review from "../pages/Review/Review";
 import DonationList from "../pages/Donation/DonationList";
@@ -121,20 +95,49 @@ import PurchaseOrder from "../pages/Inventory/PurchaseOrder/PurchaseOrder";
 import PurchaseReturnList from "../pages/Inventory/PurchaseReturn/PurchaseReturnList";
 import WarrantiesPage from "../pages/Inventory/Warranty/WarrantiesPage";
 import StockTransaction from "../pages/Inventory/StockTransaction/StockTransaction";
-import InvoiceList from "../pages/Home/Invoice/ViewInvoice";
 import ProtectedRoute from "./PrivateRoute";
 import PageManagement from "../pages/PageManagement/PageManagement";
 import RoleManagement from "../pages/RoleManagement";
 import Permission from "../pages/Permission/Permission";
 import Unauthorized from "../pages/UnAuthorized";
-import InvoiceView from "../pages/Home/Invoice/InvoiceView";
-import CreateMoneyReceived from "../pages/Home/MoneyReceived/CreateMoneyReceived";
+import InvoiceView from "../pages/Invoice/InvoiceView";
 import WarehouseManagement from "../pages/Inventory/Warehouse/WarehouseManagement";
-import RecycleBinJobCardList from "../pages/Home/Recyclebin/RecycleBinJobCardList";
+import RecycleBinJobCardList from "../pages/Recyclebin/RecycleBinJobCardList";
 import JobCardList from "../pages/AddJobCard/JobCardList";
 import AddJobCard from "../pages/AddJobCard/AddJobCard";
 import UpdateJobCard from "../pages/AddJobCard/UpdateJobCard";
 import PreviewJobCard from "../pages/AddJobCard/PreviewJobCard/PreviewJobCard";
+import MoneyReceiptList from "../pages/MoneyReceived/MoneyReceiptList";
+import CreateMoneyReceived from "../pages/MoneyReceived/CreateMoneyReceived";
+import MoneyReceiptView from "../pages/MoneyReceived/MoneyReceiptView";
+import UpdateMoneyReceipt from "../pages/MoneyReceived/UpdateMoneyReceipt";
+import AddCompany from "../pages/Company/AddCompany";
+import UpdateCompany from "../pages/Company/UpdateCompany";
+import CompanyList from "../pages/Company/CompanyList";
+import AddShowRoom from "../pages/ShowRoom/AddShowRoom";
+import UpdateShowRoom from "../pages/ShowRoom/UpdateShowRoom";
+import ShowRoomList from "../pages/ShowRoom/ShowRoomList";
+import ShowRoomProfile from "../pages/ShowRoom/ShowRoomProfile";
+import CompanyProfile from "../pages/Company/CompanyProfile";
+import CustomerList from "../pages/Customer/CustomerList";
+import UpdateCustomer from "../pages/Customer/UpdateCustomer";
+import AddCustomer from "../pages/Customer/AddCustomer";
+import CustomerProfile from "../pages/Customer/CustomerProfile";
+import AllCustomerList from "../pages/Customer/AllCustomerList";
+import InvoiceList from "../pages/Invoice/InvoiceList";
+import Attendance from "../pages/Employee/EmployeeProfile/Attendance";
+import Home from "../pages/Home/Home";
+import PurchaseList from "../pages/Parchase/PurchaseList";
+import WarehouseStocks from "../pages/Inventory/Warehouse/WareHouseList";
+import PurchaseReturn from "../pages/Inventory/PurchaseReturn/PurchaseReturn";
+import PurchaseReturnUpdate from "../pages/Inventory/PurchaseReturn/PurchaseReturnUpdate";
+import IncomeReport from "../pages/Report/IncomeReport";
+import ExpenseReport from "../pages/Report/ExpenseReport";
+import InvoiceReport from "../pages/Report/InvoiceReport";
+import DonationReport from "../pages/Report/DonationReport";
+import StockTransfer from "../pages/Inventory/StockTransfer/StockTransper";
+import RecycledBinShowRoomList from "../pages/Recyclebin/RecycledBinShowRoomList";
+import DueMoneyReceiptList from "../pages/MoneyReceived/DueMoneyReceiptList";
 
 const createProtectedRoute = (path, element, pagePath, action = "view") => {
   return {
@@ -159,10 +162,6 @@ export const router = createBrowserRouter([
       {
         path: "login",
         element: <Login />,
-      },
-      {
-        path: "create-tenant",
-        element: <CreateTenant />,
       },
       {
         path: "unauthorized",
@@ -207,7 +206,11 @@ export const router = createBrowserRouter([
         "edit"
       ),
       createProtectedRoute("profile", <Profile />, "/dashboard/profile"),
-      createProtectedRoute("create-invoice", <Invoice />, "/dashboard/create-invoice"),
+      createProtectedRoute(
+        "create-invoice",
+        <Invoice />,
+        "/dashboard/create-invoice"
+      ),
       createProtectedRoute(
         "product-list",
         <ProductList />,
@@ -427,7 +430,11 @@ export const router = createBrowserRouter([
         "/dashboard/update-invoice",
         "edit"
       ),
-      createProtectedRoute("invoice-view", <InvoiceView />, "/dashboard/invoice-view"),
+      createProtectedRoute(
+        "invoice-view",
+        <InvoiceView />,
+        "/dashboard/invoice-view"
+      ),
       createProtectedRoute(
         "invoice-list",
 
@@ -463,7 +470,7 @@ export const router = createBrowserRouter([
       ),
       createProtectedRoute(
         "money-receipt-due",
-        <DuemoneyReceiptList />,
+        <DueMoneyReceiptList />,
         "/dashboard/money-receipt-due"
       ),
       createProtectedRoute(
@@ -482,11 +489,6 @@ export const router = createBrowserRouter([
         <UpdateExpense />,
         "/dashboard/update-expense",
         "edit"
-      ),
-      createProtectedRoute(
-        "view-expense",
-        <ViewExpense />,
-        "/dashboard/view-expense"
       ),
       createProtectedRoute(
         "expense-categories",
@@ -657,6 +659,11 @@ export const router = createBrowserRouter([
         <WarehouseManagement />,
         "/dashboard/warehouse"
       ),
+      createProtectedRoute(
+        "warehouse-stock",
+        <WarehouseStocks />,
+        "/dashboard/warehouse-stock"
+      ),
       createProtectedRoute("variants", <Variants />, "/dashboard/variants"),
       createProtectedRoute(
         "stock-transaction",
@@ -670,15 +677,10 @@ export const router = createBrowserRouter([
       ),
       createProtectedRoute(
         "stock-transfer",
-        <StockTransferPage />,
+        <StockTransfer />,
         "/dashboard/stock-transfer"
       ),
-      createProtectedRoute(
-        "remove-stock",
-        <RemoveStock />,
-        "/dashboard/remove-stock",
-        "delete"
-      ),
+
       createProtectedRoute(
         "expired-product-report",
         <ExpiredProductsReportPage />,
@@ -744,7 +746,7 @@ export const router = createBrowserRouter([
       ),
       createProtectedRoute(
         "recycle-bin-showroom-list",
-        <RecycledbinShowRoomList />,
+        <RecycledBinShowRoomList />,
         "/dashboard/recycle-bin-showroom-list"
       ),
       createProtectedRoute(
@@ -789,7 +791,6 @@ export const router = createBrowserRouter([
         "/dashboard/all-user-list"
       ),
 
-
       createProtectedRoute(
         "contact-customer",
         <ContactUserList />,
@@ -800,6 +801,7 @@ export const router = createBrowserRouter([
         <CompanyBrand />,
         "/dashboard/company-brand"
       ),
+
       createProtectedRoute("review", <Review />, "/dashboard/review"),
       createProtectedRoute("backup", <Backup />, "/dashboard/backup"),
       createProtectedRoute(
@@ -807,6 +809,29 @@ export const router = createBrowserRouter([
         <RestoreDatabase />,
         "/dashboard/restore"
       ),
+      // =============== report start here ================
+      createProtectedRoute(
+        "income-report",
+        <IncomeReport />,
+        "/dashboard/income-report"
+      ),
+      createProtectedRoute(
+        "expense-report",
+        <ExpenseReport />,
+        "/dashboard/expense-report"
+      ),
+      createProtectedRoute(
+        "invoice-report",
+        <InvoiceReport />,
+        "/dashboard/invoice-report"
+      ),
+      createProtectedRoute(
+        "donation-report",
+        <DonationReport />,
+        "/dashboard/donation-report"
+      ),
+
+      //=============== report End here ================
     ],
   },
 ]);

@@ -7,11 +7,11 @@ import { useReactToPrint } from "react-to-print";
 import { Button, Link } from "@mui/material";
 import { WhatsApp } from "@mui/icons-material";
 import { WhatsappShareButton } from "react-share";
-import { PrintContext } from "../../context/PrintProvider";
 import { useGetSingleJobCardQuery } from "../../../redux/api/jobCard";
 import { useGetCompanyProfileQuery } from "../../../redux/api/companyProfile";
 import Loading from "../../../components/Loading/Loading";
 import { useTenantDomain } from "../../../hooks/useTenantDomain";
+import { PrintContext } from "../../../context/PrintProvider";
 const PreviewJobCard = () => {
   const { componentRef, targetRef } = useContext(PrintContext);
   const [vehicleInterior, setVehicleInterior] = useState("");
@@ -92,11 +92,11 @@ const PreviewJobCard = () => {
   return (
     <main className="jobCardViewWrap">
       <div ref={componentRef}>
-        <div className="jobCardPrint flex flex-col justify-between">
+        <div className="jobCardPrint flex flex-col justify-between px-2 md:px-8 py-2 md:py-10">
           <div className="headerContainer">
             <div className="mx-auto text-center border-b-[2px] ">
               <div className="mx-auto text-center border-b-[2px] border-[#110255] py-2">
-                <div className="flex flex-row justify-between items-center">
+                <div className="flex flex-col md:flex-row justify-between items-center">
                   <img
                     className="w-[110px] mb-2 md:mb-0"
                     src={CompanyInfoData?.data?.logo[0]}
@@ -117,7 +117,11 @@ const PreviewJobCard = () => {
                 </div>
               </div>
             </div>
+
             <div>
+              <div className="md:hidden flex justify-center items-center my-3">
+                <div className="vehicleCard previwCard2">Vehicle Job Card </div>
+              </div>
               <div className=" flex text-[12px] justify-between items-center my-2">
                 <div>
                   <b>
@@ -127,7 +131,7 @@ const PreviewJobCard = () => {
                     <b> ID:</b> {previewData?.Id}
                   </div>
                 </div>
-                <div>
+                <div className="hidden md:flex">
                   <div className="vehicleCard previwCard2">
                     Vehicle Job Card{" "}
                   </div>
@@ -139,10 +143,10 @@ const PreviewJobCard = () => {
                 </div>
               </div>
 
-              <div className="flex  justify-between">
+              <div className="flex flex-col md:flex-row  justify-between">
                 <div className="inputGroup">
                   <h6 className="mb-2 font-bold">Vehicle Information </h6>
-                  <div className="flex">
+                  <div className="grid grid-cols-2 md:grid-cols-3">
                     <div>
                       <div>
                         <label className="block">chassis_no</label>
@@ -159,9 +163,11 @@ const PreviewJobCard = () => {
                         <label className="block">Car Registration No</label>
                         <input
                           type="text"
-                          defaultValue={`${previewData?.vehicle?.carReg_no || "N/A"
-                            } ${previewData?.vehicle?.car_registration_no || "N/A"
-                            }`}
+                          defaultValue={`${
+                            previewData?.vehicle?.carReg_no || "N/A"
+                          } ${
+                            previewData?.vehicle?.car_registration_no || "N/A"
+                          }`}
                           disabled
                         />
                       </div>
@@ -213,7 +219,6 @@ const PreviewJobCard = () => {
                         />
                       </div>
                     </div>
-
                     <div>
                       <div>
                         <label className="block">Mileage</label>
@@ -355,22 +360,21 @@ const PreviewJobCard = () => {
               </div>
               <div className="fullTextArea mt-2">
                 <label>
-                  {" "}
                   Vehicle Interior Parts, Papers, Tools, Meter Light & Others
                 </label>
                 <textarea
                   disabled
                   defaultValue={previewData?.vehicle_interior_parts || "N/A"}
-                ></textarea>
+                />
               </div>
-              <div className="flex  justify-between ">
+              <div className="flex flex-col md:flex-row justify-between ">
                 <div className="leftSide">
                   <div>
                     <label>Reported Defect</label>
-
                     <textarea
                       defaultValue={previewData?.reported_defect || "N/A"}
                       readOnly
+                      className="w-full md:w-[445px]"
                     />
                   </div>
                   <div>
@@ -378,7 +382,8 @@ const PreviewJobCard = () => {
                     <textarea
                       defaultValue={previewData?.reported_action || "N/A"}
                       readOnly
-                    ></textarea>
+                      className="w-full md:w-[445px]"
+                    />
                   </div>
 
                   <div className="mt-">
@@ -389,7 +394,8 @@ const PreviewJobCard = () => {
                     <textarea
                       defaultValue={previewData?.vehicle_body_report || "N/A"}
                       readOnly
-                    ></textarea>
+                      className="w-full md:w-[445px]"
+                    />
                   </div>
                 </div>
                 <div className="rightSide">
@@ -408,14 +414,14 @@ const PreviewJobCard = () => {
               </div>
             </div>
 
-            <div className="flex items-center  justify-between inputGroup2">
+            <div className="flex flex-col md:flex-row md:items-center justify-between inputGroup2">
               <div>
                 <label className="block ">Technician Name</label>
                 <input
                   defaultValue={previewData?.technician_name || "N/A"}
                   disabled
                   type="text"
-                // placeholder="Technician Name"
+                  // placeholder="Technician Name"
                 />
               </div>
               <div>
@@ -424,7 +430,7 @@ const PreviewJobCard = () => {
                   // defaultValue={previewData.technician_signature}
                   disabled
                   type="text"
-                // placeholder="Technician Signature"
+                  // placeholder="Technician Signature"
                 />
               </div>
               <div>
@@ -449,7 +455,7 @@ const PreviewJobCard = () => {
             </div>
           </div>
 
-          <div >
+          <div>
             <div className="px-[8px]">
               <hr className=" border border-[#4671A1]" />
             </div>
@@ -468,7 +474,7 @@ const PreviewJobCard = () => {
           </div>
         </div>
       </div>
-      <div className="printBtnGroup ml-[500px] mt-5 ">
+      <div className="printBtnGroup md:ml-[500px] mt-5 space-y-3 md:space-y-0 ">
         <Button
           sx={{ color: "white", borderRadius: "20px", padding: "7px 20px" }}
           onClick={handlePrint}
@@ -477,10 +483,11 @@ const PreviewJobCard = () => {
         </Button>
         <a
           className="bg-[#42A0D9] text-white px-3 py-2  rounded-full mx-2 "
-          href={`${import.meta.env.VITE_API_URL}/jobCards/jobcard/${previewData?._id
-            }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
-              JSON.stringify(companyProfileData)
-            )}`}
+          href={`${import.meta.env.VITE_API_URL}/jobCards/jobcard/${
+            previewData?._id
+          }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
+            JSON.stringify(companyProfileData)
+          )}`}
           target="_blank"
           rel="noreferrer"
         >

@@ -1,87 +1,92 @@
-/* eslint-disable no-unused-vars */
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { Typography, Chip, Box, Avatar, alpha, Button } from "@mui/material";
 import {
-  Container,
-  Menu,
-  MenuItem,
-  ListItemIcon,
-  Typography,
-} from "@mui/material";
-import {
-  Edit as EditIcon,
-  Delete as DeleteIcon,
-  Visibility as ViewIcon,
+  Dashboard as DashboardIcon,
+  Route as RouteIcon,
+  Description as DescriptionIcon,
+  Settings as SettingsIcon,
+  People as PeopleIcon,
+  LocalOffer as TagIcon,
+  ToggleOn as ActiveIcon,
+  ToggleOff as InactiveIcon,
 } from "@mui/icons-material";
+import { DeleteIcon, EditIcon } from "lucide-react";
+
 import PageHeader from "./PageHeader";
-import PageList from "./PageList";
 import PageForm from "./PageForm";
-import PageDetails from "./PageDetails"; // Import the new PageDetails component
+import Table from "@/components/Table";
 import { useTenantDomain } from "../../hooks/useTenantDomain";
-import { useGetAllPagesQuery, useDeletePageMutation } from "../../redux/api/pageApi";
+import {
+  useGetAllPagesQuery,
+  useDeletePageMutation,
+} from "../../redux/api/pageApi";
 import Swal from "sweetalert2";
+import { purchaseBtn, wrapBoxStyle } from "../../utils/customStyle";
+
+const PAGE_SIZE = 10;
 
 const PageManagement = () => {
   const { tenantDomain } = useTenantDomain();
   const [searchTerm, setSearchTerm] = useState("");
-
-  const [anchorEl, setAnchorEl] = useState(null);
   const [selectedPage, setSelectedPage] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [dialogType, setDialogType] = useState("view");
+  const [currentPage, setCurrentPage] = useState(1);
 
-  const { data: pageData, isLoading, refetch } = useGetAllPagesQuery({ tenantDomain });
+  const {
+    data: pageData,
+    isLoading,
+    refetch,
+  } = useGetAllPagesQuery({ tenantDomain });
   const [deletePage] = useDeletePageMutation();
 
-  const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value);
-  };
+  // Search + pagination logic
+  const filteredPages = useMemo(() => {
+    if (!pageData?.data) return [];
+    const filtered = pageData.data.filter((p) =>
+      p.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    const start = (currentPage - 1) * PAGE_SIZE;
+    return filtered.slice(start, start + PAGE_SIZE);
+  }, [pageData, searchTerm, currentPage]);
 
-  const handleMenuClick = (event, page) => {
-    setAnchorEl(event.currentTarget);
-    setSelectedPage(page);
-  };
+  const totalPages = useMemo(() => {
+    if (!pageData?.data) return 1;
+    return Math.ceil(
+      pageData.data.filter((p) =>
+        p.name.toLowerCase().includes(searchTerm.toLowerCase())
+      ).length / PAGE_SIZE
+    );
+  }, [pageData, searchTerm]);
 
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleAction = (action) => {
-    setDialogType(action);
-    setOpenDialog(true);
-    handleMenuClose();
+  const handleSearchChange = (value) => {
+    setSearchTerm(value);
+    setCurrentPage(1);
   };
 
   const handleDialogClose = () => {
     setOpenDialog(false);
     setSelectedPage(null);
-    handleMenuClose();
   };
 
-  const handleDeletePage = async (id) => {
+  const handleDeletePageAction = async (page) => {
     try {
       const result = await Swal.fire({
         title: "Are you sure?",
         text: "You won't be able to revert this!",
         icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Delete",
       });
 
       if (result.isConfirmed) {
-        await deletePage({ id, tenantDomain }).unwrap();
-        Swal.fire({
-          title: "Deleted!",
-          text: "Page has been deleted.",
-          icon: "success",
-          timer: 1500
-        });
+        await deletePage({ id: page._id, tenantDomain }).unwrap();
+        Swal.fire("Deleted!", "Page has been deleted.", "success");
         handleDialogClose();
         refetch();
       }
     } catch (error) {
-      Swal.fire({
-        title: "Error!",
-        text: error.message || "Failed to delete page",
-        icon: "error"
-      });
+      Swal.fire("Error!", error.message || "Failed to delete page", "error");
     }
   };
 
@@ -90,57 +95,141 @@ const PageManagement = () => {
     setOpenDialog(true);
   };
 
-  const handleEditPage = () => {
+  const handleEditPage = (page) => {
+    setSelectedPage(page);
     setDialogType("edit");
     setOpenDialog(true);
   };
 
+  // Columns
+  const columns = [
+    {
+      key: "name",
+      label: "Page Name",
+      render: (page) => (
+        <Box display="flex" alignItems="center">
+          <Avatar
+            sx={{
+              mr: 2,
+              bgcolor: alpha("#1976d2", 0.1),
+              color: "#1976d2",
+            }}
+          >
+            {{
+              Main: <DashboardIcon />,
+              Operations: <RouteIcon />,
+              Resources: <TagIcon />,
+              Staff: <PeopleIcon />,
+              Analytics: <DescriptionIcon />,
+              System: <SettingsIcon />,
+              Admin: <PeopleIcon />,
+            }[page.category] || <DescriptionIcon />}
+          </Avatar>
+          <Box>
+            <Typography variant="subtitle1" fontWeight="bold">
+              {page.name}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {page.description}
+            </Typography>
+          </Box>
+        </Box>
+      ),
+    },
+    {
+      key: "category",
+      label: "Category",
+      render: (page) => (
+        <Chip
+          icon={
+            {
+              Main: <DashboardIcon />,
+              Operations: <RouteIcon />,
+              Resources: <TagIcon />,
+              Staff: <PeopleIcon />,
+              Analytics: <DescriptionIcon />,
+              System: <SettingsIcon />,
+              Admin: <PeopleIcon />,
+            }[page.category] || <DescriptionIcon />
+          }
+          label={page.category}
+          size="small"
+          variant="outlined"
+          color="primary"
+        />
+      ),
+    },
+    {
+      key: "path",
+      label: "Path",
+      render: (page) => (
+        <Typography variant="body2" fontFamily="monospace">
+          {page.path}
+        </Typography>
+      ),
+    },
+    {
+      key: "status",
+      label: "Status",
+      render: (page) => (
+        <Chip
+          icon={page.status === "active" ? <ActiveIcon /> : <InactiveIcon />}
+          label={page.status === "active" ? "Active" : "Inactive"}
+          size="small"
+          sx={{
+            bgcolor: alpha(
+              page.status === "active" ? "#2e7d32" : "#d32f2f",
+              0.1
+            ),
+            color: page.status === "active" ? "#2e7d32" : "#d32f2f",
+            fontWeight: "bold",
+          }}
+        />
+      ),
+    },
+  ];
+
+  // Actions
+  const actions = [
+    {
+      key: "edit",
+      icon: EditIcon,
+      tooltip: "Edit Page",
+      onClick: handleEditPage,
+    },
+    {
+      key: "delete",
+      icon: DeleteIcon,
+      tooltip: "Delete Page",
+      onClick: handleDeletePageAction,
+    },
+  ];
+
   return (
-    <Container maxWidth="xl" sx={{ mt: 4, mb: 8 }}>
+    <Box sx={wrapBoxStyle}>
       <PageHeader pageData={pageData} />
 
-      <PageList
+      <Box display="flex" justifyContent="flex-end" mb={3}>
+        <Button sx={purchaseBtn} onClick={handleCreatePage}>
+          Create Page
+        </Button>
+      </Box>
 
-        pageData={pageData}
-        handleSearchChange={handleSearchChange}
-        handleMenuClick={handleMenuClick}
-        tenantDomain={tenantDomain}
-        isLoading={isLoading}
-        handleCreatePage={handleCreatePage}
+      <Table
+        title="Pages"
+        columns={columns}
+        data={filteredPages}
+        actions={actions}
+        loading={isLoading}
+        searchPlaceholder="Search pages..."
+        onSearch={handleSearchChange}
+        emptyMessage="No pages found"
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={(page) => setCurrentPage(page)}
       />
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleMenuClose}
-      >
-        <MenuItem onClick={() => handleAction("view")}>
-          <ListItemIcon>
-            <ViewIcon fontSize="small" />
-          </ListItemIcon>
-          View Details
-        </MenuItem>
-        <MenuItem onClick={handleEditPage}>
-          <ListItemIcon>
-            <EditIcon fontSize="small" />
-          </ListItemIcon>
-          Edit Page
-        </MenuItem>
-        <MenuItem onClick={() => handleDeletePage(selectedPage?._id)}>
-          <ListItemIcon>
-            <DeleteIcon fontSize="small" color="error" />
-          </ListItemIcon>
-          <Typography color="error">Delete Page</Typography>
-        </MenuItem>
-      </Menu>
 
-
-      {dialogType === "view" ? (
-        <PageDetails
-          open={openDialog}
-          onClose={handleDialogClose}
-          pageData={selectedPage}
-        />
-      ) : (
+      {openDialog && (
         <PageForm
           open={openDialog}
           onClose={handleDialogClose}
@@ -150,7 +239,7 @@ const PageManagement = () => {
           refetch={refetch}
         />
       )}
-    </Container>
+    </Box>
   );
 };
 

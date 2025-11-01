@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 /* eslint-disable react/no-unknown-property */
 /* eslint-disable no-unused-vars */
 import {
@@ -15,154 +14,181 @@ import Loading from "../../../components/Loading/Loading";
 import "./AllService.css";
 import { useGetAllMetaQuery } from "../../../redux/api/meta.api";
 import { AssuredWorkload } from "@mui/icons-material";
+import { useTenantDomain } from "../../../../src/hooks/useTenantDomain";
 import PropTypes from "prop-types";
 
-const AllServices = ({ showSensitiveData, tenantDomain }) => {
+const AllServices = ({ showSensitiveData }) => {
+  const { tenantDomain } = useTenantDomain();
   const {
     data: allMetaData,
     isLoading,
+    isError,
   } = useGetAllMetaQuery({ tenantDomain });
 
   if (isLoading) return <Loading />;
 
-  const card = "flex flex-col items-center justify-center p-6 rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-2xl";
-  const amount = "text-center text-3xl font-bold mb-2 text-white drop-shadow-sm";
-  const label = "text-center text-sm font-medium text-white/90";
+  const card =
+    "flex flex-col  items-center justify-center content-center gap-x-2 mt-3 md:mt-4 space-y-2 ";
+  const amount = "text-center text-[32px] font-bold ";
+
+  const WaveBg = () => (
+    <div className="wave-background">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="100 10 390 190"
+        className="wave-svg"
+        preserveAspectRatio="none"
+      >
+        <path
+          fill="#ffffff"
+          fillOpacity="0.25"
+          d="M0,96L48,112C96,128,192,160,288,154.7C384,149,480,107,576,90.7C672,75,768,85,864,85.3C960,85,1056,75,1152,90.7C1248,107,1344,149,1392,170.7L1440,192L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"
+        />
+      </svg>
+    </div>
+  );
 
   return (
-    <div className="dashBoardRight mt-5 lg:mt-0">
+    <div className="dashBoardRight mt-5 lg:mt-0 ">
       {/* Always visible cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 place-content-center gap-5 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 place-content-center gap-3 lg:gap-3 xl:gap-7 mb-5">
         {/* Completed Services */}
-        <div className="modern-card blue-card group">
-          <Link to="/dashboard/complete-project" className="block h-full">
+        <div className="invoice-card">
+          <WaveBg />
+
+          <Link to="/dashboard/complete-project">
             <div className={card}>
-              <div className="icon-wrapper">
-                <HiOutlineBriefcase className="text-white text-2xl" />
+              <div className="dashboardCardIconWrap">
+                <HiOutlineBriefcase className="dashboardCardIcon" />
               </div>
-              <div className="content-wrapper mt-4">
+              <div className="invoice-info ">
                 <h2 className={amount}>
                   {allMetaData?.data?.statusSummary?.completed}
                 </h2>
-                <p className={label}>Completed Services</p>
+                <p className="label">Completed Services</p>
               </div>
-              <div className="floating-circle"></div>
             </div>
           </Link>
         </div>
 
         {/* Running Services */}
-        <div className="modern-card green-card group">
-          <Link to="/dashboard/running-project" className="block h-full">
+        <div className="invoice-card">
+          <WaveBg />
+          <Link to="/dashboard/running-project">
             <div className={card}>
-              <div className="icon-wrapper">
-                <FaWrench className="text-white text-2xl" />
+              <div className="dashboardCardIconWrap2 ">
+                <FaWrench className="dashboardCardIcon" />
               </div>
-              <div className="content-wrapper mt-4">
+              <div className="invoice-info">
                 <h2 className={amount}>
                   {allMetaData?.data?.statusSummary?.running}
                 </h2>
-                <p className={label}>Running Services</p>
+                <p className="label">Running Services</p>
               </div>
-              <div className="floating-circle"></div>
             </div>
           </Link>
         </div>
 
-        {/* Total Product */}
-        <div className="modern-card purple-card group">
+        {/* Total Product (always visible) */}
+        <div className="invoice-card">
+          <WaveBg />
           <div className={card}>
-            <div className="icon-wrapper">
-              <FaCarSide className="text-white text-2xl" />
+            {/* <div className="relative z-0 w-20 h-20 rounded-2xl flex items-center justify-center bg-white/20 backdrop-blur-sm border border-white/30 transition-all duration-300 hover:scale-110">
+              <FaCarSide className="w-10 h-10" />
+            </div> */}
+            <div className="dashboardCardIconWrap4">
+              <FaCarSide className="dashboardCardIcon" />
             </div>
-            <div className="content-wrapper mt-4">
+            <div className="invoice-info">
               <h2 className={amount}>000</h2>
-              <p className={label}>Total Product</p>
+              <p className="label">Total Product</p>
             </div>
-            <div className="floating-circle"></div>
           </div>
         </div>
 
-        {/* All Customers */}
-        <div className="modern-card pink-card group">
-          <Link to="/dashboard/all-customer" className="block h-full">
-            <div className={card}>
-              <div className="icon-wrapper">
-                <FaUsers className="text-white text-2xl" />
+        {/* All Customers (always visible) */}
+        <div className="invoice-card">
+          <WaveBg />
+          <Link to="/dashboard/all-customer">
+            <div className={card} >
+              {/* <div className=" relative z-0 w-14 h-14 rounded-2xl flex items-center justify-center bg-black/20 backdrop-blur-sm border border-white/30 transition-all duration-300 hover:scale-110">
+                <FaUsers className="w-10 h-10" />
+              </div> */}
+              <div className="dashboardCardIconWrap7">
+                <FaUsers className="dashboardCardIcon" />
               </div>
-              <div className="content-wrapper mt-4">
+              <div className="invoice-info">
                 <h2 className={amount}>
                   {allMetaData?.data?.totalCustomers +
                     allMetaData?.data?.totalShowRooms +
                     allMetaData?.data?.totalCompanies}
                 </h2>
-                <p className={label}>All Customer</p>
+                <p className="label">All Customer</p>
               </div>
-              <div className="floating-circle"></div>
             </div>
           </Link>
         </div>
       </div>
 
-      {/* Sensitive Cards */}
+      {/* Sensitive Cards (toggle these) */}
       {showSensitiveData && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 place-content-center gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 place-content-center gap-3 lg:gap-3 xl:gap-7 mb-5">
           {/* Total Sale */}
-          <div className="modern-card amber-card group">
+          <div className="invoice-card invoice-card2">
+            <WaveBg />
             <div className={card}>
-              <div className="icon-wrapper">
-                <FaPercent className="text-white text-2xl" />
+              <div className="dashboardCardIconWrap3">
+                <FaPercent className="dashboardCardIcon" />
               </div>
-              <div className="content-wrapper mt-4">
+              <div className="invoice-info">
                 <h2 className={amount}>000</h2>
-                <p className={label}>Total Sale</p>
+                <p className="label">Total Sale</p>
               </div>
-              <div className="floating-circle"></div>
             </div>
           </div>
 
           {/* Total Amount */}
-          <div className="modern-card red-card group">
+          <div className="invoice-card invoice-card2">
+            <WaveBg />
             <div className={card}>
-              <div className="icon-wrapper">
-                <AssuredWorkload className="text-white text-2xl" />
+              <div className="dashboardCardIconWrap">
+                <AssuredWorkload className="dashboardCardIcon" />
               </div>
-              <div className="content-wrapper mt-4">
+              <div className="invoice-info">
                 <h2 className={amount}>{allMetaData?.data?.totalAmount} ৳</h2>
-                <p className={label}>Total Amount</p>
+                <p className="label">Total Amount</p>
               </div>
-              <div className="floating-circle"></div>
             </div>
           </div>
 
           {/* Paid Services Bill */}
-          <div className="modern-card teal-card group">
+          <div className="invoice-card invoice-card2">
+            <WaveBg />
             <div className={card}>
-              <div className="icon-wrapper">
-                <FaFileInvoice className="text-white text-2xl" />
+              <div className="dashboardCardIconWrap5">
+                <FaFileInvoice className="dashboardCardIcon" />
               </div>
-              <div className="content-wrapper mt-4">
+              <div className="invoice-info">
                 <h2 className={amount}>{allMetaData?.data?.totalAdvance} ৳</h2>
-                <p className={label}>Paid Services Bill</p>
+                <p className="label">Paid Services Bill</p>
               </div>
-              <div className="floating-circle"></div>
             </div>
           </div>
 
           {/* Due Service Bill */}
-          <div className="modern-card orange-card group">
-            <Link to="/dashboard/money-receipt-due" className="block h-full">
+          <div className="invoice-card invoice-card2">
+            <WaveBg />
+            <Link to="/dashboard/money-receipt-due">
               <div className={card}>
-                <div className="icon-wrapper">
-                  <FaFileInvoiceDollar className="text-white text-2xl" />
+                <div className="dashboardCardIconWrap6">
+                  <FaFileInvoiceDollar className="dashboardCardIcon" />
                 </div>
-                <div className="content-wrapper mt-4">
+                <div className="invoice-info">
                   <h2 className={amount}>
                     {allMetaData?.data?.totalRemaining} ৳
                   </h2>
-                  <p className={label}>Due Service Bill</p>
+                  <p className="label">Due Service Bill</p>
                 </div>
-                <div className="floating-circle"></div>
               </div>
             </Link>
           </div>

@@ -1,0 +1,189 @@
+/* eslint-disable react/prop-types */
+"use client";
+
+import { useEffect, useState } from "react";
+import { FaEye, FaDownload, FaFileInvoice } from "react-icons/fa";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Box, Button } from "@mui/material";
+import { ArrowBack } from "@mui/icons-material";
+import { DeleteIcon, EditIcon } from "lucide-react";
+import swal from "sweetalert";
+
+import Table from "../../components/Table";
+import Breadcrumb from "../../components/Breadcrumb";
+import { wrapBoxStyle } from "../../utils/customStyle";
+import { useTenantDomain } from "../../hooks/useTenantDomain";
+import { useGetCompanyProfileQuery } from "../../redux/api/companyProfile";
+import {
+  useGetAllQuotationsQuery,
+  useMoveRecycledQuotationMutation,
+} from "../../redux/api/quotation";
+
+const QuotationTable = ({
+  isRecycled,
+  title = "Quotations",
+  status,
+  handleMoveAction,
+}) => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const search = new URLSearchParams(location.search).get("search");
+
+  const [filterType, setFilterType] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const limit = 10;
+  const { tenantDomain } = useTenantDomain();
+
+  const { data: profileData } = useGetCompanyProfileQuery({ tenantDomain });
+
+  const [moveRecycledQuotation, { isLoading: deleteLoading }] =
+    useMoveRecycledQuotationMutation();
+
+  const { data: allQuotations, isLoading: quotationLoading } =
+    useGetAllQuotationsQuery({
+      tenantDomain,
+      limit,
+      page: currentPage,
+      searchTerm: filterType,
+      isRecycled,
+      status,
+    });
+
+  const quotationColumns = [
+    { key: "slNo", label: "SL No", type: "index" },
+    { key: "quotation_no", label: "Quotation ID" },
+    { key: "job_no", label: "Order No." },
+    {
+      key: "name",
+      label: "Name",
+      render: (data) =>
+        data?.customer?.customer_name ||
+        data?.company?.company_name ||
+        data?.showRoom?.showRoom_name ||
+        "N/A",
+    },
+    {
+      key: "vehicle_name",
+      label: "Vehicle Name",
+      render: (d) => d.vehicle?.vehicle_name || "N/A",
+    },
+    {
+      key: "vehicle_brand",
+      label: "Vehicle Brand",
+      render: (d) => d.vehicle?.vehicle_brand || "N/A",
+    },
+    {
+      key: "car_no",
+      label: "Car No.",
+      render: (d) =>
+        d.vehicle?.carReg_no || d.vehicle?.car_registration_no || "N/A",
+    },
+    {
+      key: "mobile_no",
+      label: "Mobile No.",
+      render: (d) =>
+        d?.customer?.fullCustomerNum ||
+        d?.company?.fullCompanyNum ||
+        d?.showRoom?.fullCompanyNum ||
+        "N/A",
+    },
+    { key: "date", label: "Date" },
+  ];
+
+  const quotationActions = [
+    {
+      key: "invoice",
+      icon: FaFileInvoice,
+      label: "View Invoice",
+      href: (d) => `/dashboard/create-invoice?order_no=${d.job_no}&id=${d._id}`,
+    },
+    {
+      key: "download",
+      icon: FaDownload,
+      label: "Download Quotation",
+      href: (d) =>
+        `${import.meta.env.VITE_API_URL}/quotations/quotation/${
+          d._id
+        }?tenantDomain=${tenantDomain}`,
+    },
+    {
+      key: "preview",
+      icon: FaEye,
+      label: "Preview",
+      onClick: (d) => navigate(`/dashboard/quotation-view?id=${d._id}`),
+    },
+    {
+      key: "edit",
+      icon: EditIcon,
+      label: "Edit Quotation",
+      link: (d) => `/dashboard/update-quotation?id=${d._id}`,
+    },
+    {
+      key: "delete",
+      icon: DeleteIcon,
+      label: isRecycled ? "Delete / Restore" : "Move to Recycled",
+      onClick: (d) => handleMoveAction?.(d._id),
+      disabled: () => deleteLoading,
+    },
+  ];
+
+  const getQuotationRowClass = (data) => {
+    if (data.status === "running") return "bg-red-500 text-white";
+    if (data.status === "completed") return "bg-green-500 text-white";
+    return "";
+  };
+
+  useEffect(() => {
+    if (search) setFilterType(search);
+  }, [search]);
+
+  const breadcrumbItems = [
+    { label: "Home", href: "/" },
+    { label: "Quotation", href: "/dashboard/quotation-list" },
+    { label: title },
+  ];
+
+  const handleBack = () => navigate(-1);
+
+  const externalHooks = {
+    tenantDomain,
+    profileData,
+    deleteLoading,
+    moveRecycledQuotation,
+    swal,
+  };
+
+  return (
+    <Box sx={wrapBoxStyle}>
+      <Box display="flex" justifyContent="space-between">
+        <Breadcrumb items={breadcrumbItems} />
+        <Button
+          variant="outlined"
+          startIcon={<ArrowBack />}
+          onClick={handleBack}
+          sx={{ borderRadius: 5 }}
+        >
+          Back
+        </Button>
+      </Box>
+
+      <Table
+        title={title}
+        columns={quotationColumns}
+        data={allQuotations?.data?.quotations || []}
+        actions={quotationActions}
+        loading={quotationLoading}
+        currentPage={currentPage}
+        totalPages={allQuotations?.data?.meta?.totalPages || 1}
+        onPageChange={setCurrentPage}
+        onSearch={setFilterType}
+        searchPlaceholder="Search quotations..."
+        externalHooks={externalHooks}
+        emptyMessage="No matching quotation found."
+        getRowClass={getQuotationRowClass}
+      />
+    </Box>
+  );
+};
+
+export default QuotationTable;

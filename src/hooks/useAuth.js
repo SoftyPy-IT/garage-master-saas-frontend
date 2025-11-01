@@ -41,10 +41,9 @@ export const useAuth = () => {
 
                 if (!data || !data.userId) throw new Error("Invalid user data");
 
-                // Make sure to include both tokens and user data
                 dispatch(setUser({
                     token: data.accessToken,
-                    refreshToken: data.refreshToken, // Make sure this is included
+                    refreshToken: data.refreshToken,
                     user: data
                 }));
             } catch (err) {

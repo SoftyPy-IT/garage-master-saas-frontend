@@ -71,7 +71,7 @@ const Home = () => {
           accountSummary={accountSummary}
         />
       )}
-      {/* {showSensitiveData && <ProfitOverView tenantDomain={tenantDomain} />} */}
+
       <ProjectOverView tenantDomain={tenantDomain} />
 
       <div className="recentCardWrap gap-5 grid grid-cols-1 xl:grid-cols-2 justify-between sectionMargin">

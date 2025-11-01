@@ -9,7 +9,6 @@ import { useSelector } from "react-redux";
 import { selectCurrentUser } from "../redux/feature/authSlice";
 import { useGetUserPermissionQuery } from "../redux/api/userApi";
 import swal from "sweetalert";
-import { UserCircle2 } from "lucide-react";
 
 const PermissionContext = createContext();
 
