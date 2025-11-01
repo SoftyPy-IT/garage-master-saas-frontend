@@ -15,7 +15,7 @@
 //     const theme = useTheme();
 //     const [selectedRows, setSelectedRows] = useState([]);
 //     const [permissionChanges, setPermissionChanges] = useState({});
-//     const [createOrUpdateMultiplePermissions, { isLoading: isCreating }] = useCreateMultiplePermissionsMutation();
+//     const [createMultiplePermissions, { isLoading: isCreating }] = useCreateMultiplePermissionsMutation();
 //     const { tenantDomain } = useTenantDomain();
 //     const { roleOptions, pageData, userOptions } = usePermissionFormData()
 
@@ -198,7 +198,6 @@
 //                     delete: changes.delete !== undefined ? changes.delete : permission.delete,
 //                 };
 
-
 //                 allPermissionsData.push({
 //                     ...basePermission,
 //                     userId: selectedUsers.length > 0 ? selectedUsers : [null],
@@ -216,11 +215,10 @@
 //                 });
 //                 return;
 //             }
-//             const result = await createOrUpdateMultiplePermissions({
+//             const result = await createMultiplePermissions({
 //                 tenantDomain,
 //                 permissionData: allPermissionsData,
 //             }).unwrap();
-
 
 //             Swal.fire({
 //                 icon: "success",
@@ -311,7 +309,6 @@
 //                                                 </Box>
 //                                             </TableCell>
 //                                         </TableRow>
-
 
 //                                         {categoryGroup.permissions.map((permission) => (
 //                                             <TableRow

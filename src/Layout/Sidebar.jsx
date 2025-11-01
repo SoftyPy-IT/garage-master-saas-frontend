@@ -506,6 +506,7 @@ const Sidebar = ({ toggle }) => {
           text: "Contact Customer List",
           link: "/dashboard/contact-customer",
         },
+
         {
           icon: <BrandingWatermark className="h-5 w-5" />,
           text: "Company Brand",
