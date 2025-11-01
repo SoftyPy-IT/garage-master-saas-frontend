@@ -1,13 +1,8 @@
 /* eslint-disable react/prop-types */
-/* eslint-disable no-empty-pattern */
-/* eslint-disable react/no-unescaped-entities */
-/* eslint-disable no-unused-vars */
-"use client"
-import { useState, useEffect } from "react"
+
+"use client";
+import { useState, useEffect } from "react";
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
   DialogActions,
   Box,
   Typography,
@@ -33,7 +28,7 @@ import {
   RadioGroup,
   FormLabel,
   Paper,
-} from "@mui/material"
+} from "@mui/material";
 import {
   Visibility,
   VisibilityOff,
@@ -41,26 +36,22 @@ import {
   Person,
   Business,
   Lock,
-  Close,
   Domain,
   Phone,
   LocationOn,
-  Build,
   CheckCircle,
   ArrowForward,
   ArrowBack,
   Payment,
-
-} from "@mui/icons-material"
-import { toast } from "react-toastify"
-import { useCreateTenantMutation } from "../../redux/api/tenantApi"
-
-// Subscription plans data
+} from "@mui/icons-material";
+import { toast } from "react-toastify";
+import { useCreateTenantMutation } from "../../redux/api/tenantApi";
+import GarageModal from "../../components/Share/Modal/GarageModal";
 const subscriptionPlans = [
   {
     id: "Monthly",
     name: "Monthly Plan",
-    price: "$29.99",
+    price: "৳29.99",
     period: "per month",
     recommended: false,
     features: [
@@ -75,7 +66,7 @@ const subscriptionPlans = [
   {
     id: "HalfYearly",
     name: "Half Yearly Plan",
-    price: "$149.99",
+    price: "৳149.99",
     period: "per 6 months",
     recommended: true,
     features: [
@@ -92,7 +83,7 @@ const subscriptionPlans = [
   {
     id: "Yearly",
     name: "Yearly Plan",
-    price: "$279.99",
+    price: "৳279.99",
     period: "per year",
     recommended: false,
     features: [
@@ -106,16 +97,21 @@ const subscriptionPlans = [
       "Training & onboarding",
     ],
   },
-]
+];
 
-const steps = ["Business Info", "User Account", "Choose Plan", "Payment Details", "Review & Confirm"]
+const steps = [
+  "Business Info",
+  "User Account",
+  "Choose Plan",
+  "Payment Details",
+  "Review & Confirm",
+];
 
-const CreateTenantModal = ({ open, onClose, onTenantCreated }) => {
-  const [createTenant, { isLoading }] = useCreateTenantMutation()
-  const [activeStep, setActiveStep] = useState(0)
-  const [error, setError] = useState("")
+const CreateTenantModal = ({ open, onClose, onTenantCreated, setOpen }) => {
+  const [createTenant, { isLoading }] = useCreateTenantMutation();
+  const [activeStep, setActiveStep] = useState(0);
+  const [error, setError] = useState("");
 
-  // Form state with all required fields
   const [tenantData, setTenantData] = useState({
     name: "",
     domain: "",
@@ -132,26 +128,25 @@ const CreateTenantModal = ({ open, onClose, onTenantCreated }) => {
     paymentMethod: "Manual",
     amount: 0,
     agreeToTerms: false,
-  })
+  });
 
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const calculateAmount = (planId) => {
-    const plan = subscriptionPlans.find((p) => p.id === planId)
-    if (!plan) return 0
-    const priceMatch = plan.price.match(/\$?(\d+(?:\.\d{2})?)/)
-    return priceMatch ? Number.parseFloat(priceMatch[1]) : 0
-  }
+    const plan = subscriptionPlans.find((p) => p.id === planId);
+    if (!plan) return 0;
+    const priceMatch = plan.price.match(/\$?(\d+(?:\.\d{2})?)/);
+    return priceMatch ? Number.parseFloat(priceMatch[1]) : 0;
+  };
 
   useEffect(() => {
     setTenantData((prev) => ({
       ...prev,
       amount: calculateAmount(prev.selectedPlan),
-    }))
-  }, [])
+    }));
+  }, []);
 
-  // Reset form when modal opens/closes
   useEffect(() => {
     if (!open) {
       setTenantData({
@@ -170,50 +165,48 @@ const CreateTenantModal = ({ open, onClose, onTenantCreated }) => {
         paymentMethod: "Manual",
         amount: calculateAmount("HalfYearly"),
         agreeToTerms: false,
-      })
-      setError("")
-      setActiveStep(0)
-      setShowPassword(false)
-      setShowConfirmPassword(false)
+      });
+      setError("");
+      setActiveStep(0);
+      setShowPassword(false);
+      setShowConfirmPassword(false);
     }
-  }, [open])
+  }, [open]);
 
   const handleChange = (e) => {
-    const { name, value, checked, type } = e.target
-    let newValue = type === "checkbox" ? checked : value
-
-    // Special handling for domain field - clean and validate
+    const { name, value, checked, type } = e.target;
+    let newValue = type === "checkbox" ? checked : value;
     if (name === "domain") {
       newValue = value
         .toLowerCase()
         .trim()
         .replace(/[^a-z0-9-]/g, "")
-        .replace(/^-+|-+$/g, "")
+        .replace(/^-+|-+$/g, "");
     }
 
     if (type === "text" || type === "email") {
-      newValue = value.trim()
+      newValue = value.trim();
     }
 
     setTenantData((prev) => {
       const updated = {
         ...prev,
         [name]: newValue,
-      }
-      // Auto-calculate amount when plan changes
+      };
       if (name === "selectedPlan") {
-        updated.amount = calculateAmount(value)
+        updated.amount = calculateAmount(value);
       }
-      return updated
-    })
+      return updated;
+    });
 
     if (error) {
-      setError("")
+      setError("");
     }
-  }
+  };
 
-  const handleTogglePassword = () => setShowPassword((prev) => !prev)
-  const handleToggleConfirmPassword = () => setShowConfirmPassword((prev) => !prev)
+  const handleTogglePassword = () => setShowPassword((prev) => !prev);
+  const handleToggleConfirmPassword = () =>
+    setShowConfirmPassword((prev) => !prev);
 
   const validateStep = () => {
     if (activeStep === 0) {
@@ -223,7 +216,7 @@ const CreateTenantModal = ({ open, onClose, onTenantCreated }) => {
         tenantData.domain.length >= 3 &&
         tenantData.contactEmail.trim() !== "" &&
         /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(tenantData.contactEmail)
-      )
+      );
     } else if (activeStep === 1) {
       return (
         tenantData.firstName.trim() !== "" &&
@@ -232,47 +225,47 @@ const CreateTenantModal = ({ open, onClose, onTenantCreated }) => {
         /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(tenantData.userEmail) &&
         tenantData.password.length >= 6 &&
         tenantData.password === tenantData.confirmPassword
-      )
+      );
     } else if (activeStep === 2) {
-      return tenantData.selectedPlan !== ""
+      return tenantData.selectedPlan !== "";
     } else if (activeStep === 3) {
-      return tenantData.paymentMethod !== ""
+      return tenantData.paymentMethod !== "";
     } else if (activeStep === 4) {
-      return tenantData.agreeToTerms
+      return tenantData.agreeToTerms;
     }
-    return true
-  }
+    return true;
+  };
 
   const handleNext = () => {
     if (validateStep()) {
-      setActiveStep((prevStep) => prevStep + 1)
+      setActiveStep((prevStep) => prevStep + 1);
     } else {
-      toast.error("Please fill in all required fields before proceeding")
+      toast.error("Please fill in all required fields before proceeding");
     }
-  }
+  };
 
   const handleBack = () => {
-    setActiveStep((prevStep) => prevStep - 1)
-  }
+    setActiveStep((prevStep) => prevStep - 1);
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setError("")
+    e.preventDefault();
+    setError("");
 
     if (!validateStep()) {
-      toast.error("Please complete all required fields")
-      return
+      toast.error("Please complete all required fields");
+      return;
     }
 
     try {
-      const startDate = new Date()
-      const endDate = new Date()
+      const startDate = new Date();
+      const endDate = new Date();
       if (tenantData.selectedPlan === "Monthly") {
-        endDate.setMonth(startDate.getMonth() + 1)
+        endDate.setMonth(startDate.getMonth() + 1);
       } else if (tenantData.selectedPlan === "HalfYearly") {
-        endDate.setMonth(startDate.getMonth() + 6)
+        endDate.setMonth(startDate.getMonth() + 6);
       } else if (tenantData.selectedPlan === "Yearly") {
-        endDate.setFullYear(startDate.getFullYear() + 1)
+        endDate.setFullYear(startDate.getFullYear() + 1);
       }
 
       const tenantPayload = {
@@ -297,46 +290,49 @@ const CreateTenantModal = ({ open, onClose, onTenantCreated }) => {
           paymentMethod: tenantData.paymentMethod,
           amount: tenantData.amount,
         },
-      }
-
+      };
 
       const result = await createTenant({
         payload: tenantPayload,
         plan: tenantData.selectedPlan,
-      })
-
+      });
 
       if ("error" in result) {
-        throw new Error(result.error?.data?.message || "Failed to create tenant.")
+        throw new Error(
+          result.error?.data?.message || "Failed to create tenant."
+        );
       }
 
       if (result?.data?.success) {
-        toast.success(result.data.message || "Tenant created successfully!")
-        onTenantCreated && onTenantCreated(result.data.data)
-        onClose()
+        toast.success(result.data.message || "Tenant created successfully!");
+        onTenantCreated && onTenantCreated(result.data.data);
+        onClose();
       } else {
-        throw new Error("Unexpected response format from server")
+        throw new Error("Unexpected response format from server");
       }
     } catch (err) {
-      const errorMessage = err.message || "Failed to create tenant."
-      setError(errorMessage)
-      toast.error(errorMessage)
+      const errorMessage = err.message || "Failed to create tenant.";
+      setError(errorMessage);
+      toast.error(errorMessage);
     }
-  }
+  };
 
   const getStepContent = (step) => {
     switch (step) {
       case 0:
         return (
           <Box sx={{ mt: 3 }}>
-            <Typography variant="h6" gutterBottom sx={{ color: "primary.main", fontWeight: "bold" }}>
+            <Typography
+              variant="h6"
+              gutterBottom
+              sx={{ color: "primary.main", fontWeight: "bold" }}
+            >
               Business Information
             </Typography>
             <TextField
               margin="normal"
               required
               fullWidth
-              id="name"
               label="Business Name"
               name="name"
               autoComplete="organization"
@@ -344,7 +340,11 @@ const CreateTenantModal = ({ open, onClose, onTenantCreated }) => {
               value={tenantData.name}
               onChange={handleChange}
               error={tenantData.name.trim() === "" && activeStep > 0}
-              helperText={tenantData.name.trim() === "" && activeStep > 0 ? "Business name is required" : ""}
+              helperText={
+                tenantData.name.trim() === "" && activeStep > 0
+                  ? "Business name is required"
+                  : ""
+              }
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -369,7 +369,11 @@ const CreateTenantModal = ({ open, onClose, onTenantCreated }) => {
               }
               value={tenantData.domain}
               onChange={handleChange}
-              error={(tenantData.domain.trim() === "" || tenantData.domain.length < 3) && activeStep > 0}
+              error={
+                (tenantData.domain.trim() === "" ||
+                  tenantData.domain.length < 3) &&
+                activeStep > 0
+              }
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -392,7 +396,9 @@ const CreateTenantModal = ({ open, onClose, onTenantCreated }) => {
               onChange={handleChange}
               error={
                 (tenantData.contactEmail.trim() === "" ||
-                  !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(tenantData.contactEmail)) &&
+                  !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+                    tenantData.contactEmail
+                  )) &&
                 activeStep > 0
               }
               helperText={
@@ -449,19 +455,39 @@ const CreateTenantModal = ({ open, onClose, onTenantCreated }) => {
             />
             <FormControl component="fieldset" sx={{ mt: 3 }}>
               <FormLabel component="legend">Business Type</FormLabel>
-              <RadioGroup name="businessType" value={tenantData.businessType} onChange={handleChange}>
-                <FormControlLabel value="independent" control={<Radio />} label="Independent Garage" />
-                <FormControlLabel value="chain" control={<Radio />} label="Chain/Multiple Locations" />
-                <FormControlLabel value="dealership" control={<Radio />} label="Dealership Service" />
+              <RadioGroup
+                name="businessType"
+                value={tenantData.businessType}
+                onChange={handleChange}
+              >
+                <FormControlLabel
+                  value="independent"
+                  control={<Radio />}
+                  label="Independent Garage"
+                />
+                <FormControlLabel
+                  value="chain"
+                  control={<Radio />}
+                  label="Chain/Multiple Locations"
+                />
+                <FormControlLabel
+                  value="dealership"
+                  control={<Radio />}
+                  label="Dealership Service"
+                />
               </RadioGroup>
             </FormControl>
           </Box>
-        )
+        );
 
       case 1:
         return (
           <Box sx={{ mt: 3 }}>
-            <Typography variant="h6" gutterBottom sx={{ color: "primary.main", fontWeight: "bold" }}>
+            <Typography
+              variant="h6"
+              gutterBottom
+              sx={{ color: "primary.main", fontWeight: "bold" }}
+            >
               Create Admin User Account
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
@@ -478,7 +504,11 @@ const CreateTenantModal = ({ open, onClose, onTenantCreated }) => {
               value={tenantData.firstName}
               onChange={handleChange}
               error={tenantData.firstName.trim() === "" && activeStep > 1}
-              helperText={tenantData.firstName.trim() === "" && activeStep > 1 ? "First name is required" : ""}
+              helperText={
+                tenantData.firstName.trim() === "" && activeStep > 1
+                  ? "First name is required"
+                  : ""
+              }
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -500,7 +530,8 @@ const CreateTenantModal = ({ open, onClose, onTenantCreated }) => {
               value={tenantData.userEmail}
               onChange={handleChange}
               error={
-                (tenantData.userEmail.trim() === "" || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(tenantData.userEmail)) &&
+                (tenantData.userEmail.trim() === "" ||
+                  !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(tenantData.userEmail)) &&
                 activeStep > 1
               }
               helperText={
@@ -561,9 +592,13 @@ const CreateTenantModal = ({ open, onClose, onTenantCreated }) => {
               autoComplete="new-password"
               value={tenantData.confirmPassword}
               onChange={handleChange}
-              error={tenantData.password !== tenantData.confirmPassword && tenantData.confirmPassword !== ""}
+              error={
+                tenantData.password !== tenantData.confirmPassword &&
+                tenantData.confirmPassword !== ""
+              }
               helperText={
-                tenantData.password !== tenantData.confirmPassword && tenantData.confirmPassword !== ""
+                tenantData.password !== tenantData.confirmPassword &&
+                tenantData.confirmPassword !== ""
                   ? "Passwords do not match"
                   : ""
               }
@@ -575,7 +610,10 @@ const CreateTenantModal = ({ open, onClose, onTenantCreated }) => {
                 ),
                 endAdornment: (
                   <InputAdornment position="end">
-                    <IconButton onClick={handleToggleConfirmPassword} edge="end">
+                    <IconButton
+                      onClick={handleToggleConfirmPassword}
+                      edge="end"
+                    >
                       {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
                   </InputAdornment>
@@ -584,12 +622,16 @@ const CreateTenantModal = ({ open, onClose, onTenantCreated }) => {
               disabled={isLoading}
             />
           </Box>
-        )
+        );
 
       case 2:
         return (
           <Box sx={{ mt: 3 }}>
-            <Typography variant="h6" gutterBottom sx={{ color: "primary.main", fontWeight: "bold" }}>
+            <Typography
+              variant="h6"
+              gutterBottom
+              sx={{ color: "primary.main", fontWeight: "bold" }}
+            >
               Select a Subscription Plan
             </Typography>
             <Box sx={{ mt: 2, maxHeight: "400px", overflowY: "auto" }}>
@@ -602,7 +644,7 @@ const CreateTenantModal = ({ open, onClose, onTenantCreated }) => {
                       ...prev,
                       selectedPlan: plan.id,
                       amount: calculateAmount(plan.id),
-                    }))
+                    }));
                   }}
                   sx={{
                     mb: 2,
@@ -611,14 +653,14 @@ const CreateTenantModal = ({ open, onClose, onTenantCreated }) => {
                       tenantData.selectedPlan === plan.id
                         ? "2px solid #1976d2"
                         : plan.recommended
-                          ? "2px solid #1976d2"
-                          : "1px solid rgba(0, 0, 0, 0.12)",
+                        ? "2px solid #1976d2"
+                        : "1px solid rgba(0, 0, 0, 0.12)",
                     boxShadow:
                       tenantData.selectedPlan === plan.id
                         ? "0 0 10px rgba(25, 118, 210, 0.5)"
                         : plan.recommended
-                          ? "0 0 10px rgba(25, 118, 210, 0.3)"
-                          : "none",
+                        ? "0 0 10px rgba(25, 118, 210, 0.3)"
+                        : "none",
                     transition: "all 0.2s ease-in-out",
                     cursor: "pointer",
                     "&:hover": {
@@ -649,8 +691,14 @@ const CreateTenantModal = ({ open, onClose, onTenantCreated }) => {
                     title={plan.name}
                     titleTypographyProps={{ align: "center", variant: "h6" }}
                     sx={{
-                      bgcolor: tenantData.selectedPlan === plan.id ? "primary.light" : "grey.50",
-                      color: tenantData.selectedPlan === plan.id ? "white" : "inherit",
+                      bgcolor:
+                        tenantData.selectedPlan === plan.id
+                          ? "primary.light"
+                          : "grey.50",
+                      color:
+                        tenantData.selectedPlan === plan.id
+                          ? "white"
+                          : "inherit",
                       transition: "all 0.2s ease-in-out",
                       py: 1,
                     }}
@@ -678,12 +726,21 @@ const CreateTenantModal = ({ open, onClose, onTenantCreated }) => {
                                 mb: 0.5,
                               }}
                             >
-                              <CheckCircle fontSize="small" color="primary" sx={{ mr: 1, flexShrink: 0 }} />
-                              <Typography variant="caption">{feature}</Typography>
+                              <CheckCircle
+                                fontSize="small"
+                                color="primary"
+                                sx={{ mr: 1, flexShrink: 0 }}
+                              />
+                              <Typography variant="caption">
+                                {feature}
+                              </Typography>
                             </Box>
                           ))}
                           {plan.features.length > 3 && (
-                            <Typography variant="caption" color="text.secondary">
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                            >
                               +{plan.features.length - 3} more features
                             </Typography>
                           )}
@@ -705,8 +762,17 @@ const CreateTenantModal = ({ open, onClose, onTenantCreated }) => {
                         value={plan.id}
                         sx={{ mr: 1 }}
                       />
-                      <Typography variant="body2" fontWeight={tenantData.selectedPlan === plan.id ? "bold" : "normal"}>
-                        {tenantData.selectedPlan === plan.id ? "Selected" : "Select This Plan"}
+                      <Typography
+                        variant="body2"
+                        fontWeight={
+                          tenantData.selectedPlan === plan.id
+                            ? "bold"
+                            : "normal"
+                        }
+                      >
+                        {tenantData.selectedPlan === plan.id
+                          ? "Selected"
+                          : "Select This Plan"}
                       </Typography>
                     </Box>
                   </CardContent>
@@ -714,21 +780,32 @@ const CreateTenantModal = ({ open, onClose, onTenantCreated }) => {
               ))}
             </Box>
           </Box>
-        )
+        );
 
       case 3:
         return (
           <Box sx={{ mt: 3 }}>
-            <Typography variant="h6" gutterBottom sx={{ color: "primary.main", fontWeight: "bold" }}>
+            <Typography
+              variant="h6"
+              gutterBottom
+              sx={{ color: "primary.main", fontWeight: "bold" }}
+            >
               Payment Details
             </Typography>
             <Paper variant="outlined" sx={{ p: 3, mt: 2, bgcolor: "grey.50" }}>
               <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
                 ৳
-                <Typography variant="h6">Total Amount: ${tenantData.amount.toFixed(2)}</Typography>
+                <Typography variant="h6">
+                  Total Amount: ৳{tenantData.amount.toFixed(2)}
+                </Typography>
               </Box>
               <Typography variant="body2" color="text.secondary">
-                Selected Plan: {subscriptionPlans.find((p) => p.id === tenantData.selectedPlan)?.name}
+                Selected Plan:{" "}
+                {
+                  subscriptionPlans.find(
+                    (p) => p.id === tenantData.selectedPlan
+                  )?.name
+                }
               </Typography>
             </Paper>
             <FormControl component="fieldset" sx={{ mt: 3, width: "100%" }}>
@@ -738,7 +815,11 @@ const CreateTenantModal = ({ open, onClose, onTenantCreated }) => {
                   Payment Method
                 </Box>
               </FormLabel>
-              <RadioGroup name="paymentMethod" value={tenantData.paymentMethod} onChange={handleChange}>
+              <RadioGroup
+                name="paymentMethod"
+                value={tenantData.paymentMethod}
+                onChange={handleChange}
+              >
                 <Card variant="outlined" sx={{ mb: 2 }}>
                   <CardContent sx={{ py: 2 }}>
                     <FormControlLabel
@@ -750,7 +831,8 @@ const CreateTenantModal = ({ open, onClose, onTenantCreated }) => {
                             Manual Payment
                           </Typography>
                           <Typography variant="body2" color="text.secondary">
-                            Pay via bank transfer or check. Account will be activated after payment verification.
+                            Pay via bank transfer or check. Account will be
+                            activated after payment verification.
                           </Typography>
                         </Box>
                       }
@@ -768,9 +850,15 @@ const CreateTenantModal = ({ open, onClose, onTenantCreated }) => {
                             Online Payment Gateway
                           </Typography>
                           <Typography variant="body2" color="text.secondary">
-                            Pay instantly with credit/debit card or digital wallet. Immediate activation.
+                            Pay instantly with credit/debit card or digital
+                            wallet. Immediate activation.
                           </Typography>
-                          <Chip label="Coming Soon" size="small" color="secondary" sx={{ mt: 1 }} />
+                          <Chip
+                            label="Coming Soon"
+                            size="small"
+                            color="secondary"
+                            sx={{ mt: 1 }}
+                          />
                         </Box>
                       }
                       disabled
@@ -784,18 +872,23 @@ const CreateTenantModal = ({ open, onClose, onTenantCreated }) => {
                 <Typography variant="body2">
                   <strong>Manual Payment Instructions:</strong>
                   <br />
-                  After registration, you will receive payment instructions via email. Your account will be activated
-                  within 24 hours of payment verification.
+                  After registration, you will receive payment instructions via
+                  email. Your account will be activated within 24 hours of
+                  payment verification.
                 </Typography>
               </Alert>
             )}
           </Box>
-        )
+        );
 
       case 4:
         return (
           <Box sx={{ mt: 3 }}>
-            <Typography variant="h6" gutterBottom sx={{ color: "primary.main", fontWeight: "bold" }}>
+            <Typography
+              variant="h6"
+              gutterBottom
+              sx={{ color: "primary.main", fontWeight: "bold" }}
+            >
               Review Your Information
             </Typography>
             <Paper variant="outlined" sx={{ p: 3, mt: 2 }}>
@@ -816,30 +909,46 @@ const CreateTenantModal = ({ open, onClose, onTenantCreated }) => {
                   <Typography variant="subtitle2" color="text.secondary">
                     Domain
                   </Typography>
-                  <Typography variant="body1">{tenantData.domain}.ourplatform.com</Typography>
+                  <Typography variant="body1">
+                    {tenantData.domain}.ourplatform.com
+                  </Typography>
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <Typography variant="subtitle2" color="text.secondary">
                     Contact Email
                   </Typography>
-                  <Typography variant="body1">{tenantData.contactEmail}</Typography>
+                  <Typography variant="body1">
+                    {tenantData.contactEmail}
+                  </Typography>
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <Typography variant="subtitle2" color="text.secondary">
                     Phone Number
                   </Typography>
-                  <Typography variant="body1">{tenantData.phoneNumber || "Not provided"}</Typography>
+                  <Typography variant="body1">
+                    {tenantData.phoneNumber || "Not provided"}
+                  </Typography>
                 </Grid>
                 <Grid item xs={12}>
                   <Typography variant="subtitle2" color="text.secondary">
                     Business Type
                   </Typography>
-                  <Typography variant="body1" sx={{ textTransform: "capitalize" }}>
-                    {tenantData?.businessType?.replace(/([A-Z])/g, " $1").trim()}
+                  <Typography
+                    variant="body1"
+                    sx={{ textTransform: "capitalize" }}
+                  >
+                    {tenantData?.businessType
+                      ?.replace(/([A-Z])/g, " ৳1")
+                      .trim()}
                   </Typography>
                 </Grid>
                 <Grid item xs={12}>
-                  <Typography variant="h6" color="primary" gutterBottom sx={{ mt: 2 }}>
+                  <Typography
+                    variant="h6"
+                    color="primary"
+                    gutterBottom
+                    sx={{ mt: 2 }}
+                  >
                     Admin User
                   </Typography>
                   <Divider sx={{ mb: 2 }} />
@@ -856,10 +965,17 @@ const CreateTenantModal = ({ open, onClose, onTenantCreated }) => {
                   <Typography variant="subtitle2" color="text.secondary">
                     Email
                   </Typography>
-                  <Typography variant="body1">{tenantData.userEmail}</Typography>
+                  <Typography variant="body1">
+                    {tenantData.userEmail}
+                  </Typography>
                 </Grid>
                 <Grid item xs={12}>
-                  <Typography variant="h6" color="primary" gutterBottom sx={{ mt: 2 }}>
+                  <Typography
+                    variant="h6"
+                    color="primary"
+                    gutterBottom
+                    sx={{ mt: 2 }}
+                  >
                     Subscription Details
                   </Typography>
                   <Divider sx={{ mb: 2 }} />
@@ -869,7 +985,11 @@ const CreateTenantModal = ({ open, onClose, onTenantCreated }) => {
                     Selected Plan
                   </Typography>
                   <Typography variant="body1">
-                    {subscriptionPlans.find((p) => p.id === tenantData.selectedPlan)?.name}
+                    {
+                      subscriptionPlans.find(
+                        (p) => p.id === tenantData.selectedPlan
+                      )?.name
+                    }
                   </Typography>
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -877,7 +997,7 @@ const CreateTenantModal = ({ open, onClose, onTenantCreated }) => {
                     Amount
                   </Typography>
                   <Typography variant="body1" fontWeight="bold">
-                    ${tenantData.amount.toFixed(2)}
+                    ৳{tenantData.amount.toFixed(2)}
                   </Typography>
                 </Grid>
                 <Grid item xs={12}>
@@ -885,7 +1005,9 @@ const CreateTenantModal = ({ open, onClose, onTenantCreated }) => {
                     Payment Method
                   </Typography>
                   <Typography variant="body1">
-                    {tenantData.paymentMethod === "Manual" ? "Manual Payment" : "Online Payment Gateway"}
+                    {tenantData.paymentMethod === "Manual"
+                      ? "Manual Payment"
+                      : "Online Payment Gateway"}
                   </Typography>
                 </Grid>
               </Grid>
@@ -903,82 +1025,46 @@ const CreateTenantModal = ({ open, onClose, onTenantCreated }) => {
                 }
                 label={
                   <Typography variant="body2">
-                    I agree to the Terms of Service and Privacy Policy, and confirm that all information provided is
-                    accurate.
+                    I agree to the Terms of Service and Privacy Policy, and
+                    confirm that all information provided is accurate.
                   </Typography>
                 }
               />
             </Box>
           </Box>
-        )
+        );
 
       default:
-        return "Unknown step"
+        return "Unknown step";
     }
-  }
+  };
 
   return (
-    <Dialog
+    <GarageModal
       open={open}
-      onClose={onClose}
-      maxWidth="lg"
-      fullWidth
-      PaperProps={{
-        sx: {
-          borderRadius: 3,
-          maxHeight: "95vh",
-        },
-      }}
+      setOpen={setOpen}
+      title=" Create your tenant account to get started"
+      maxWidth="sm"
     >
-      <DialogTitle>
-        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-            <Build sx={{ fontSize: 32, color: "primary.main" }} />
-            <Box>
-              <Typography variant="h5" fontWeight="bold">
-                Register Your Business
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Create your tenant account to get started
-              </Typography>
-            </Box>
-          </Box>
-          <IconButton onClick={onClose} sx={{ color: "grey.500" }}>
-            <Close />
-          </IconButton>
-        </Box>
-      </DialogTitle>
-
-      <Divider />
-
-      <DialogContent sx={{ pt: 3 }}>
-        {error && (
-          <Alert severity="error" sx={{ mb: 3 }}>
-            {error}
-          </Alert>
-        )}
-
-        {/* Stepper */}
-        <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 4 }}>
-          {steps.map((label) => (
-            <Step key={label}>
-              <StepLabel>{label}</StepLabel>
-            </Step>
-          ))}
-        </Stepper>
-
-        {/* Step Content */}
-        <Box sx={{ minHeight: 400 }}>{getStepContent(activeStep)}</Box>
-      </DialogContent>
-
-      <Divider />
+      <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 4 }}>
+        {steps.map((label) => (
+          <Step key={label}>
+            <StepLabel>{label}</StepLabel>
+          </Step>
+        ))}
+      </Stepper>
+      <Box sx={{ minHeight: 400 }}>{getStepContent(activeStep)}</Box>
 
       <DialogActions sx={{ p: 3, gap: 2 }}>
         <Button onClick={onClose} variant="outlined" disabled={isLoading}>
           Cancel
         </Button>
 
-        <Button disabled={activeStep === 0} onClick={handleBack} startIcon={<ArrowBack />}>
+        <Button
+          disabled={activeStep === 0}
+          onClick={handleBack}
+          startIcon={<ArrowBack />}
+        >
           Back
         </Button>
 
@@ -988,7 +1074,9 @@ const CreateTenantModal = ({ open, onClose, onTenantCreated }) => {
             variant="contained"
             color="primary"
             disabled={isLoading || !validateStep()}
-            endIcon={isLoading ? <CircularProgress size={20} /> : <CheckCircle />}
+            endIcon={
+              isLoading ? <CircularProgress size={20} /> : <CheckCircle />
+            }
             sx={{ minWidth: 180 }}
           >
             {isLoading ? "Creating..." : "Complete Registration"}
@@ -1005,8 +1093,8 @@ const CreateTenantModal = ({ open, onClose, onTenantCreated }) => {
           </Button>
         )}
       </DialogActions>
-    </Dialog>
-  )
-}
+    </GarageModal>
+  );
+};
 
-export default CreateTenantModal
+export default CreateTenantModal;
