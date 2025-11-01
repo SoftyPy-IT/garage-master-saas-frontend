@@ -7,7 +7,6 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { router } from "./Routes/Route.jsx";
 import { QueryClient, QueryClientProvider } from "react-query";
-import PrintProvider from "./pages/context/PrintProvider.jsx";
 import Providers from "./lib/Providers/Providers.jsx";
 import { ThemeProvider } from "@mui/material";
 import { theme } from "./Theme.jsx";
@@ -17,6 +16,7 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { PermissionProvider } from "./context/PermissionContext.jsx";
 import { PersistGate } from "redux-persist/integration/react";
 import AuthLoader from "./components/AuthLoader.jsx";
+import PrintProvider from "./context/PrintProvider.jsx";
 
 const queryClient = new QueryClient();
 

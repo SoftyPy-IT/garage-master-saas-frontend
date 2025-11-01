@@ -111,7 +111,6 @@ import MoneyReceiptList from "../pages/MoneyReceived/MoneyReceiptList";
 import CreateMoneyReceived from "../pages/MoneyReceived/CreateMoneyReceived";
 import MoneyReceiptView from "../pages/MoneyReceived/MoneyReceiptView";
 import UpdateMoneyReceipt from "../pages/MoneyReceived/UpdateMoneyReceipt";
-import DuemoneyReceiptList from "../pages/MoneyReceived/DuemoneyReceiptList";
 import AddCompany from "../pages/Company/AddCompany";
 import UpdateCompany from "../pages/Company/UpdateCompany";
 import CompanyList from "../pages/Company/CompanyList";
@@ -138,6 +137,7 @@ import InvoiceReport from "../pages/Report/InvoiceReport";
 import DonationReport from "../pages/Report/DonationReport";
 import StockTransfer from "../pages/Inventory/StockTransfer/StockTransper";
 import RecycledBinShowRoomList from "../pages/Recyclebin/RecycledBinShowRoomList";
+import DueMoneyReceiptList from "../pages/MoneyReceived/DueMoneyReceiptList";
 
 const createProtectedRoute = (path, element, pagePath, action = "view") => {
   return {
@@ -470,7 +470,7 @@ export const router = createBrowserRouter([
       ),
       createProtectedRoute(
         "money-receipt-due",
-        <DuemoneyReceiptList />,
+        <DueMoneyReceiptList />,
         "/dashboard/money-receipt-due"
       ),
       createProtectedRoute(

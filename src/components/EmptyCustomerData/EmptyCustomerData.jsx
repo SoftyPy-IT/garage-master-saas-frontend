@@ -2,16 +2,9 @@
 
 import { Link } from "react-router-dom";
 
-const EmptyCustomerData = ({ title, subtitle, buttonText, link, image }) => {
+const EmptyCustomerData = ({ title, subtitle, buttonText, link }) => {
   return (
-    <div className="flex flex-col items-center justify-center h-[500px] text-center bg-gradient-to-br from-blue-50 to-gray-100 rounded-lg shadow-lg overflow-hidden">
-      <div className="relative w-64 h-64 mb-8">
-        <img
-          src={image}
-          alt="Empty state"
-          className="absolute inset-0 object-cover w-full h-full"
-        />
-      </div>
+    <div className="flex flex-col items-center justify-center h-[500px] text-center">
       <h2 className="text-3xl font-bold text-blue-800 mb-4 animate-fadeIn">
         {title}
       </h2>

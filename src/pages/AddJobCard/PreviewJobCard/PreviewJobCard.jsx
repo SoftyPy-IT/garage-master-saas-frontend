@@ -7,11 +7,11 @@ import { useReactToPrint } from "react-to-print";
 import { Button, Link } from "@mui/material";
 import { WhatsApp } from "@mui/icons-material";
 import { WhatsappShareButton } from "react-share";
-import { PrintContext } from "../../context/PrintProvider";
 import { useGetSingleJobCardQuery } from "../../../redux/api/jobCard";
 import { useGetCompanyProfileQuery } from "../../../redux/api/companyProfile";
 import Loading from "../../../components/Loading/Loading";
 import { useTenantDomain } from "../../../hooks/useTenantDomain";
+import { PrintContext } from "../../../context/PrintProvider";
 const PreviewJobCard = () => {
   const { componentRef, targetRef } = useContext(PrintContext);
   const [vehicleInterior, setVehicleInterior] = useState("");
@@ -120,12 +120,9 @@ const PreviewJobCard = () => {
 
             <div>
               <div className="md:hidden flex justify-center items-center my-3">
-                <div className="vehicleCard previwCard2">
-                  Vehicle Job Card{" "}
-                </div>
+                <div className="vehicleCard previwCard2">Vehicle Job Card </div>
               </div>
               <div className=" flex text-[12px] justify-between items-center my-2">
-
                 <div>
                   <b>
                     Job No: <span>{previewData?.job_no}</span>
@@ -166,9 +163,11 @@ const PreviewJobCard = () => {
                         <label className="block">Car Registration No</label>
                         <input
                           type="text"
-                          defaultValue={`${previewData?.vehicle?.carReg_no || "N/A"
-                            } ${previewData?.vehicle?.car_registration_no || "N/A"
-                            }`}
+                          defaultValue={`${
+                            previewData?.vehicle?.carReg_no || "N/A"
+                          } ${
+                            previewData?.vehicle?.car_registration_no || "N/A"
+                          }`}
                           disabled
                         />
                       </div>
@@ -370,7 +369,7 @@ const PreviewJobCard = () => {
               </div>
               <div className="flex flex-col md:flex-row justify-between ">
                 <div className="leftSide">
-                  <div >
+                  <div>
                     <label>Reported Defect</label>
                     <textarea
                       defaultValue={previewData?.reported_defect || "N/A"}
@@ -422,7 +421,7 @@ const PreviewJobCard = () => {
                   defaultValue={previewData?.technician_name || "N/A"}
                   disabled
                   type="text"
-                // placeholder="Technician Name"
+                  // placeholder="Technician Name"
                 />
               </div>
               <div>
@@ -431,7 +430,7 @@ const PreviewJobCard = () => {
                   // defaultValue={previewData.technician_signature}
                   disabled
                   type="text"
-                // placeholder="Technician Signature"
+                  // placeholder="Technician Signature"
                 />
               </div>
               <div>
@@ -456,7 +455,7 @@ const PreviewJobCard = () => {
             </div>
           </div>
 
-          <div >
+          <div>
             <div className="px-[8px]">
               <hr className=" border border-[#4671A1]" />
             </div>
@@ -484,10 +483,11 @@ const PreviewJobCard = () => {
         </Button>
         <a
           className="bg-[#42A0D9] text-white px-3 py-2  rounded-full mx-2 "
-          href={`${import.meta.env.VITE_API_URL}/jobCards/jobcard/${previewData?._id
-            }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
-              JSON.stringify(companyProfileData)
-            )}`}
+          href={`${import.meta.env.VITE_API_URL}/jobCards/jobcard/${
+            previewData?._id
+          }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
+            JSON.stringify(companyProfileData)
+          )}`}
           target="_blank"
           rel="noreferrer"
         >

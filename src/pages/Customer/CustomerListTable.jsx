@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { FaTrashAlt, FaEdit, FaUserTie } from "react-icons/fa";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Box, Button, Pagination } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import { toast } from "react-toastify";
 import { ArrowBack, Diversity3 } from "@mui/icons-material";
 
@@ -167,7 +167,7 @@ const CustomerListTable = ({ handleDeleteAction, isRecycled, title }) => {
         />
       )}
 
-      {customerData?.data?.meta?.totalPages > 1 && (
+      {/* {customerData?.data?.meta?.totalPages > 1 && (
         <div className="flex justify-center mt-4">
           <Pagination
             count={customerData?.data?.meta?.totalPages}
@@ -176,7 +176,7 @@ const CustomerListTable = ({ handleDeleteAction, isRecycled, title }) => {
             onChange={(_, page) => setCurrentPage(page)}
           />
         </div>
-      )}
+      )} */}
     </Box>
   );
 };
