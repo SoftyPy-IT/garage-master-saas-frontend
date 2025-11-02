@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { FaTrashAlt, FaEdit, FaUserTie } from "react-icons/fa";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Box, Button, Pagination } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import { toast } from "react-toastify";
 import { ArrowBack, Diversity3 } from "@mui/icons-material";
 
@@ -41,6 +41,8 @@ const CustomerListTable = ({ handleDeleteAction, isRecycled, title }) => {
     isRecycled,
   });
 
+  console.log("customer data check", customerData);
+
   if (error) toast.error(error?.message);
 
   const handleIconPreview = (id) => {
@@ -59,16 +61,21 @@ const CustomerListTable = ({ handleDeleteAction, isRecycled, title }) => {
     {
       key: "vehicles",
       label: "Car No.",
-      render: (item) =>
-        item?.vehicles?.length
-          ? item.vehicles.map((v, i) => (
-              <span key={i}>
-                {v.carReg_no || v.car_registration_no}
-                {i !== item.vehicles.length - 1 ? ", " : ""}
-              </span>
-            ))
-          : "—",
+      render: (item) => {
+        const firstVehicle = item?.vehicles?.[0];
+        if (!firstVehicle) return "—";
+
+        const carRegNo = firstVehicle?.carReg_no || "";
+        const carRegistrationNo = firstVehicle?.car_registration_no || "";
+        const combined =
+          carRegNo && carRegistrationNo
+            ? `${carRegNo}-${carRegistrationNo}`
+            : carRegNo || carRegistrationNo || "—";
+
+        return combined;
+      },
     },
+
     { key: "fullCustomerNum", label: "Mobile No." },
     {
       key: "vehicle_name",
@@ -167,7 +174,7 @@ const CustomerListTable = ({ handleDeleteAction, isRecycled, title }) => {
         />
       )}
 
-      {customerData?.data?.meta?.totalPages > 1 && (
+      {/* {customerData?.data?.meta?.totalPages > 1 && (
         <div className="flex justify-center mt-4">
           <Pagination
             count={customerData?.data?.meta?.totalPages}
@@ -176,7 +183,7 @@ const CustomerListTable = ({ handleDeleteAction, isRecycled, title }) => {
             onChange={(_, page) => setCurrentPage(page)}
           />
         </div>
-      )}
+      )} */}
     </Box>
   );
 };

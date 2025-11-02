@@ -171,13 +171,10 @@ const TableRow = ({
   );
 };
 
-// --- ActionButton Component ---
-
-// --- ActionButton Component with consistent icon style ---
 const ActionButton = ({ action, Icon, item, navigate }) => {
   const iconStyle = {
-    color: action.color || "#2563EB", // Default blue, can be overridden in action
-    fontSize: action.size || "18px", // Default size 18px
+    color: action.color || "#2563EB",
+    fontSize: action.size || "18px",
     cursor: action.disabled?.(item) ? "not-allowed" : "pointer",
   };
 

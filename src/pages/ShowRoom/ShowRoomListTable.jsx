@@ -34,7 +34,6 @@ const ShowRoomListTable = ({ handleDeleteAction, title, isRecycled }) => {
     isRecycled,
   });
 
-  // Handle direct search query from URL (?search=)
   useEffect(() => {
     const search = new URLSearchParams(location.search).get("search");
     if (search) setFilterType(search);
@@ -60,7 +59,6 @@ const ShowRoomListTable = ({ handleDeleteAction, title, isRecycled }) => {
   const showrooms = showRoomData?.data?.showrooms || [];
   const totalPages = showRoomData?.data?.meta?.totalPages || 1;
 
-  // --- Define Table Columns ---
   const columns = [
     { key: "index", label: "SL No", type: "index" },
     { key: "showRoomId", label: "Show Room ID" },
@@ -70,12 +68,15 @@ const ShowRoomListTable = ({ handleDeleteAction, title, isRecycled }) => {
       key: "vehicles",
       label: "Car Reg No.",
       render: (item) => {
-        const lastVehicle = item?.vehicles
-          ? [...item.vehicles].sort(
-              (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-            )[0]
-          : null;
-        return lastVehicle?.fullRegNum || "N/A";
+        const firstVehicle = item?.vehicles?.[0];
+        if (!firstVehicle) return "—";
+
+        const carRegNo = firstVehicle?.carReg_no || "";
+        const carRegistrationNo = firstVehicle?.car_registration_no || "";
+
+        return carRegNo && carRegistrationNo
+          ? `${carRegNo}-${carRegistrationNo}`
+          : carRegNo || carRegistrationNo || "—";
       },
     },
     { key: "fullCompanyNum", label: "Mobile No." },
