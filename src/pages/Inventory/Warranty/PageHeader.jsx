@@ -5,6 +5,20 @@ import SearchIcon from "@mui/icons-material/Search";
 import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 
 export const PageHeader = ({ searchTerm, setSearchTerm, handleOpenModal }) => {
+  const WarrentyAdd = () => (
+    <Button
+      variant="contained"
+      startIcon={<AddIcon />}
+      onClick={handleOpenModal}
+      sx={{
+        background: "linear-gradient(45deg, #6a1b9a, #8e24aa)",
+        color: "white",
+      }}
+    >
+      New Warranty
+    </Button>
+  );
+
   return (
     <Box
       sx={{
@@ -31,18 +45,9 @@ export const PageHeader = ({ searchTerm, setSearchTerm, handleOpenModal }) => {
 
       <Box sx={{ display: { sm: "flex" }, gap: 2 }}>
         <div className="md:hidden flex justify-end mb-2">
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={handleOpenModal}
-            sx={{
-              background: "linear-gradient(45deg, #6a1b9a, #8e24aa)",
-              color: "white",
-            }}
-          >
-            New Warranty
-          </Button>
+          <WarrentyAdd />
         </div>
+      
 
         <TextField
           placeholder="Search..."
@@ -58,17 +63,7 @@ export const PageHeader = ({ searchTerm, setSearchTerm, handleOpenModal }) => {
         />
 
         <div className="hidden md:flex">
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={handleOpenModal}
-            sx={{
-              background: "linear-gradient(45deg, #6a1b9a, #8e24aa)",
-              color: "white",
-            }}
-          >
-            New Warranty
-          </Button>
+          <WarrentyAdd />
         </div>
       </Box>
     </Box>
