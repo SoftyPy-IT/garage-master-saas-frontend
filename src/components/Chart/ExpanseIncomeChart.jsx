@@ -3,20 +3,6 @@ import React, { useState } from "react";
 import ReactApexChart from "react-apexcharts";
 
 const ExpanseIncomeChart = () => {
-  // const { data: jobCardData } = useGetAllJobCardsQuery({
-  //   limit: 10,
-  //   page: 1,
-  // });
-
-  // const { data: qutationData } = useGetAllQuotationsQuery({
-  //   limit: 10,
-  //   page: 1,
-  // });
-
-  // const { data: invoiceData } = useGetAllInvoicesQuery({
-  //   limit: 10,
-  //   page: 1,
-  // });
   const [chartData] = useState({
     series: [
       {

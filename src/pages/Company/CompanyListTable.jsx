@@ -58,12 +58,15 @@ const CompanyListTable = ({ handleDeleteAction, isRecycled, title }) => {
       key: "vehicles",
       label: "Car Reg No.",
       render: (item) => {
-        const lastVehicle = item?.vehicles
-          ? [...item.vehicles].sort(
-              (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-            )[0]
-          : null;
-        return lastVehicle?.fullRegNum || "N/A";
+        const firstVehicle = item?.vehicles?.[0];
+        if (!firstVehicle) return "—";
+
+        const carRegNo = firstVehicle?.carReg_no || "";
+        const carRegistrationNo = firstVehicle?.car_registration_no || "";
+
+        return carRegNo && carRegistrationNo
+          ? `${carRegNo}-${carRegistrationNo}`
+          : carRegNo || carRegistrationNo || "—";
       },
     },
     { key: "fullCompanyNum", label: "Mobile No." },

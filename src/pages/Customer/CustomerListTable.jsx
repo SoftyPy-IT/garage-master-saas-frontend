@@ -41,6 +41,8 @@ const CustomerListTable = ({ handleDeleteAction, isRecycled, title }) => {
     isRecycled,
   });
 
+  console.log("customer data check", customerData);
+
   if (error) toast.error(error?.message);
 
   const handleIconPreview = (id) => {
@@ -59,16 +61,21 @@ const CustomerListTable = ({ handleDeleteAction, isRecycled, title }) => {
     {
       key: "vehicles",
       label: "Car No.",
-      render: (item) =>
-        item?.vehicles?.length
-          ? item.vehicles.map((v, i) => (
-              <span key={i}>
-                {v.carReg_no || v.car_registration_no}
-                {i !== item.vehicles.length - 1 ? ", " : ""}
-              </span>
-            ))
-          : "—",
+      render: (item) => {
+        const firstVehicle = item?.vehicles?.[0];
+        if (!firstVehicle) return "—";
+
+        const carRegNo = firstVehicle?.carReg_no || "";
+        const carRegistrationNo = firstVehicle?.car_registration_no || "";
+        const combined =
+          carRegNo && carRegistrationNo
+            ? `${carRegNo}-${carRegistrationNo}`
+            : carRegNo || carRegistrationNo || "—";
+
+        return combined;
+      },
     },
+
     { key: "fullCustomerNum", label: "Mobile No." },
     {
       key: "vehicle_name",
