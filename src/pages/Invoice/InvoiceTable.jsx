@@ -44,6 +44,7 @@ const InvoiceTable = ({
   const invoiceColumns = [
     { key: "slNo", label: "SL No", type: "index" },
     { key: "job_no", label: "Order No." },
+
     {
       key: "customer",
       label: "Customer Name",
@@ -53,12 +54,29 @@ const InvoiceTable = ({
         data.showRoom?.showRoom_name ||
         "N/A",
     },
+
     {
       key: "vehicle",
       label: "Car Reg No",
-      render: (data) =>
-        data.vehicle?.carReg_no || data.vehicle?.car_registration_no || "N/A",
+      render: (data) => {
+        if (!data?.vehicle) return "N/A";
+        const vehicles = Array.isArray(data.vehicle)
+          ? data.vehicle
+          : [data.vehicle];
+
+        return vehicles
+          .map((v) => {
+            const carRegNo = v?.carReg_no?.trim() || "";
+            const carRegistrationNo = v?.car_registration_no?.trim() || "";
+            if (carRegNo && carRegistrationNo) {
+              return `${carRegNo}-${carRegistrationNo}`;
+            }
+            return carRegNo || carRegistrationNo || "—";
+          })
+          .join(", ");
+      },
     },
+
     {
       key: "contact",
       label: "Mobile No.",
@@ -68,16 +86,31 @@ const InvoiceTable = ({
         data.showRoom?.fullCompanyNum ||
         "N/A",
     },
+
     {
       key: "vehicle_brand",
       label: "Vehicle Brand",
-      render: (data) => data.vehicle?.vehicle_brand || "N/A",
+      render: (data) => {
+        if (!data?.vehicle) return "N/A";
+        const vehicles = Array.isArray(data.vehicle)
+          ? data.vehicle
+          : [data.vehicle];
+        return vehicles.map((v) => v.vehicle_brand || "—").join(", ");
+      },
     },
+
     {
       key: "vehicle_name",
       label: "Vehicle Name",
-      render: (data) => data.vehicle?.vehicle_name || "N/A",
+      render: (data) => {
+        if (!data?.vehicle) return "N/A";
+        const vehicles = Array.isArray(data.vehicle)
+          ? data.vehicle
+          : [data.vehicle];
+        return vehicles.map((v) => v.vehicle_name || "—").join(", ");
+      },
     },
+
     { key: "date", label: "Date" },
   ];
 

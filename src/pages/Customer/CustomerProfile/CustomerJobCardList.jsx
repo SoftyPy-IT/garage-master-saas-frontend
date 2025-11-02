@@ -9,7 +9,7 @@ import swal from "sweetalert";
 import EmptyCustomerData from "../../../components/EmptyCustomerData/EmptyCustomerData";
 import {
   useGetAllJobCardsQuery,
-  useMovetoRecyclebinJobCardMutation,
+  useMovetoRecycleBinJobCardMutation,
 } from "../../../redux/api/jobCard";
 import Table from "../../../components/Table";
 import { Button } from "@mui/material";
@@ -34,8 +34,8 @@ const CustomerJobCardList = ({
     isRecycled: false,
   });
 
-  const [movetoRecyclebinJobCard, { isLoading: deleteLoading }] =
-    useMovetoRecyclebinJobCardMutation();
+  const [movetoRecycleBinJobCard, { isLoading: deleteLoading }] =
+    useMovetoRecycleBinJobCardMutation();
 
   const deletePackage = async (jobCardId) => {
     const willDelete = await swal({
@@ -47,7 +47,7 @@ const CustomerJobCardList = ({
 
     if (willDelete) {
       try {
-        await movetoRecyclebinJobCard({ tenantDomain, id: jobCardId }).unwrap();
+        await movetoRecycleBinJobCard({ tenantDomain, id: jobCardId }).unwrap();
         swal(
           "Moved to Recycle bin!",
           "Move to Recycle bin successful.",

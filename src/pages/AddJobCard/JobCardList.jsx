@@ -1,12 +1,12 @@
-import { useMovetoRecyclebinJobCardMutation } from "../../redux/api/jobCard";
+import { useMovetoRecycleBinJobCardMutation } from "../../redux/api/jobCard";
 import JobCardTable from "./JobCardTable";
 import swal from "sweetalert";
 import { useTenantDomain } from "../../hooks/useTenantDomain";
 
 const JobCardList = () => {
   const { tenantDomain } = useTenantDomain();
-  const [movetoRecyclebinJobCard, { isLoading: movedLoading }] =
-    useMovetoRecyclebinJobCardMutation();
+  const [movetoRecycleBinJobCard, { isLoading: movedLoading }] =
+    useMovetoRecycleBinJobCardMutation();
 
   const handleMoveToRecycled = async (id) => {
     const willDelete = await swal({
@@ -18,7 +18,7 @@ const JobCardList = () => {
 
     if (willDelete) {
       try {
-        await movetoRecyclebinJobCard({ tenantDomain, id }).unwrap();
+        await movetoRecycleBinJobCard({ tenantDomain, id }).unwrap();
         swal("Moved!", "Job card moved to Recycle bin.", "success");
       } catch (error) {
         swal("Error", "An error occurred while moving the job card.", "error");

@@ -53,6 +53,7 @@ const QuotationTable = ({
     { key: "slNo", label: "SL No", type: "index" },
     { key: "quotation_no", label: "Quotation ID" },
     { key: "job_no", label: "Order No." },
+
     {
       key: "name",
       label: "Name",
@@ -62,22 +63,46 @@ const QuotationTable = ({
         data?.showRoom?.showRoom_name ||
         "N/A",
     },
+
     {
       key: "vehicle_name",
       label: "Vehicle Name",
-      render: (d) => d.vehicle?.vehicle_name || "N/A",
+      render: (d) =>
+        Array.isArray(d?.vehicle)
+          ? d.vehicle.map((v) => v.vehicle_name || "—").join(", ")
+          : d.vehicle?.vehicle_name || "N/A",
     },
+
     {
       key: "vehicle_brand",
       label: "Vehicle Brand",
-      render: (d) => d.vehicle?.vehicle_brand || "N/A",
+      render: (d) =>
+        Array.isArray(d?.vehicle)
+          ? d.vehicle.map((v) => v.vehicle_brand || "—").join(", ")
+          : d.vehicle?.vehicle_brand || "N/A",
     },
+
     {
       key: "car_no",
       label: "Car No.",
-      render: (d) =>
-        d.vehicle?.carReg_no || d.vehicle?.car_registration_no || "N/A",
+      render: (d) => {
+        if (!d?.vehicle) return "N/A";
+
+        // Handle both single object or array cases
+        const vehicles = Array.isArray(d.vehicle) ? d.vehicle : [d.vehicle];
+
+        return vehicles
+          .map((v) => {
+            const carRegNo = v?.carReg_no?.trim() || "";
+            const carRegistrationNo = v?.car_registration_no?.trim() || "";
+            if (carRegNo && carRegistrationNo)
+              return `${carRegNo}-${carRegistrationNo}`;
+            return carRegNo || carRegistrationNo || "—";
+          })
+          .join(", ");
+      },
     },
+
     {
       key: "mobile_no",
       label: "Mobile No.",
@@ -87,6 +112,7 @@ const QuotationTable = ({
         d?.showRoom?.fullCompanyNum ||
         "N/A",
     },
+
     { key: "date", label: "Date" },
   ];
 
