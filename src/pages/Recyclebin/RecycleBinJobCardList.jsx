@@ -1,6 +1,6 @@
 import {
-  usePermanantlyDeleteJobCardMutation,
-  useRestorfromRecyclebinJobCardMutation,
+  usePermanentlyDeleteJobCardMutation,
+  useRestoreFromRecycleBinJobCardMutation,
 } from "../../redux/api/jobCard";
 
 import swal from "sweetalert";
@@ -11,9 +11,9 @@ const RecycleBinJobCardList = () => {
   const isRecycled = true;
   const { tenantDomain } = useAppOptions();
 
-  const [permanentlyDeleteJobCard] = usePermanantlyDeleteJobCardMutation();
-  const [restorefromRecyclebinJobCard] =
-    useRestorfromRecyclebinJobCardMutation();
+  const [permanentlyDeleteJobCard] = usePermanentlyDeleteJobCardMutation();
+  const [restoreFromRecycleBinJobCard] =
+    useRestoreFromRecycleBinJobCardMutation();
 
   const handleDeleteOrRestore = async (id) => {
     const result = await swal({
@@ -28,7 +28,7 @@ const RecycleBinJobCardList = () => {
 
     if (result === "restore") {
       try {
-        await restorefromRecyclebinJobCard({ tenantDomain, id }).unwrap();
+        await restoreFromRecycleBinJobCard({ tenantDomain, id }).unwrap();
         swal(
           "Restored!",
           "Job card has been restored successfully.",

@@ -173,17 +173,6 @@ const CustomerListTable = ({ handleDeleteAction, isRecycled, title }) => {
           getRowClass={getRowClass}
         />
       )}
-
-      {/* {customerData?.data?.meta?.totalPages > 1 && (
-        <div className="flex justify-center mt-4">
-          <Pagination
-            count={customerData?.data?.meta?.totalPages}
-            page={currentPage}
-            color="primary"
-            onChange={(_, page) => setCurrentPage(page)}
-          />
-        </div>
-      )} */}
     </Box>
   );
 };

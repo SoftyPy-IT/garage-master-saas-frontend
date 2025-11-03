@@ -27,7 +27,6 @@ const JobCardTable = ({
   const limit = 10;
   const { tenantDomain } = useTenantDomain();
 
-  // Company profile
   const { data: profileData } = useGetCompanyProfileQuery({ tenantDomain });
   const companyProfileData = {
     companyName: profileData?.data?.companyName,
@@ -39,7 +38,6 @@ const JobCardTable = ({
     companyNameBN: profileData?.data?.companyNameBN,
   };
 
-  // Job cards data
   const { data: allJobCards, isLoading: jobCardLoading } =
     useGetAllJobCardsQuery({
       tenantDomain,
@@ -71,11 +69,21 @@ const JobCardTable = ({
     {
       key: "vehicle.carReg_no",
       label: "Car Reg No.",
-      render: (item) =>
-        item.vehicle
-          ?.map((v) => v.carReg_no || v.car_registration_no)
-          .join(", "),
+      render: (item) => {
+        if (!item?.vehicle || !Array.isArray(item.vehicle)) return "—";
+
+        return item.vehicle
+          .map((v) => {
+            const carRegNo = v?.carReg_no?.trim() || "";
+            const carRegistrationNo = v?.car_registration_no?.trim() || "";
+            if (carRegNo && carRegistrationNo)
+              return `${carRegNo}-${carRegistrationNo}`;
+            return carRegNo || carRegistrationNo || "—";
+          })
+          .join(", ");
+      },
     },
+
     {
       key: "vehicle.vehicle_brand",
       label: "V. Brand",

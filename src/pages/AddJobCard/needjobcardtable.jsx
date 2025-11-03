@@ -8,7 +8,7 @@
 // import Loading from "../../components/Loading/Loading";
 // import {
 //   useGetAllJobCardsQuery,
-//   useMovetoRecyclebinJobCardMutation,
+//   useMovetoRecycleBinJobCardMutation,
 // } from "../../redux/api/jobCard";
 // import { Pagination } from "@mui/material";
 // import { HiOutlineSearch } from "react-icons/hi";
@@ -46,8 +46,8 @@
 //       isRecycled: false,
 //     });
 
-//   const [movetoRecyclebinJobCard, { isLoading: movedLoading }] =
-//     useMovetoRecyclebinJobCardMutation();
+//   const [movetoRecycleBinJobCard, { isLoading: movedLoading }] =
+//     useMovetoRecycleBinJobCardMutation();
 
 //   const handleIconPreview = async (e) => {
 //     navigate(`/dashboard/preview?id=${e}`);
@@ -63,7 +63,7 @@
 
 //     if (willDelete) {
 //       try {
-//         await movetoRecyclebinJobCard({ tenantDomain, id }).unwrap();
+//         await movetoRecycleBinJobCard({ tenantDomain, id }).unwrap();
 //         swal(
 //           "Move to Recycle bin!",
 //           "Move to Recycle bin successful.",

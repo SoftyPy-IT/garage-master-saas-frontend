@@ -62,7 +62,7 @@ const jobCardApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["jobCard"],
     }),
-    movetoRecyclebinJobCard: builder.mutation({
+    movetoRecycleBinJobCard: builder.mutation({
       query: ({ tenantDomain, id }) => ({
         url: `/jobcards/recycle-bin/${id}`,
         method: "DELETE",
@@ -70,7 +70,8 @@ const jobCardApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["jobCard"],
     }),
-    restorfromRecyclebinJobCard: builder.mutation({
+
+    restoreFromRecycleBinJobCard: builder.mutation({
       query: ({ tenantDomain, id }) => ({
         url: `/jobcards/recycle-bin/restore/${id}`,
         method: "DELETE",
@@ -78,7 +79,7 @@ const jobCardApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["jobCard"],
     }),
-    permanantlyDeleteJobCard: builder.mutation({
+    permanentlyDeleteJobCard: builder.mutation({
       query: ({ tenantDomain, id }) => ({
         url: `/jobCards/recycle-bin/delete-permanantly/${id}`,
         method: "DELETE",
@@ -97,7 +98,7 @@ export const {
   useGetSingleJobCardWithJobNoQuery,
   useUpdateJobCardMutation,
   useDeleteJobCardMutation,
-  useMovetoRecyclebinJobCardMutation,
-  useRestorfromRecyclebinJobCardMutation,
-  usePermanantlyDeleteJobCardMutation,
+  useMovetoRecycleBinJobCardMutation,
+  useRestoreFromRecycleBinJobCardMutation,
+  usePermanentlyDeleteJobCardMutation,
 } = jobCardApi;
