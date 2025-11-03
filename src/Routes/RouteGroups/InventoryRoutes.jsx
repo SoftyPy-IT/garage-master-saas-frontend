@@ -1,5 +1,4 @@
 import InventoryDashboard from "../../pages/Inventory/InventoryDashboard";
-import ExpiredProduct from "../../pages/Inventory/ExpiredProduct";
 import LowStock from "../../pages/Inventory/LowStock";
 import Variants from "../../pages/Inventory/Variants";
 import StockPage from "../../pages/Inventory/Stock";
@@ -11,6 +10,7 @@ import PurchaseReturnList from "../../pages/Inventory/PurchaseReturn/PurchaseRet
 import WarrantiesPage from "../../pages/Inventory/Warranty/WarrantiesPage";
 import StockTransaction from "../../pages/Inventory/StockTransaction/StockTransaction";
 import StockTransfer from "../../pages/Inventory/StockTransfer/StockTransper";
+import ExpiredProduct from "../../pages/Inventory/ExpireProduct/ExpiredProduct";
 
 export const inventoryRoutes = [
   {
