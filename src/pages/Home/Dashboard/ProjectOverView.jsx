@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { FaCarSide, FaFileInvoice } from "react-icons/fa";
 import {
   HiOutlineBriefcase,
@@ -8,14 +9,11 @@ import { Link } from "react-router-dom";
 import ExpanseIncomeChart from "../../../components/Chart/ExpanseIncomeChart";
 import Loading from "../../../components/Loading/Loading";
 import { useGetAllMetaQuery } from "../../../redux/api/meta.api";
-import { useTenantDomain } from "../../../hooks/useTenantDomain";
 
-const ProjectOverView = () => {
-  const tenantDomain = useTenantDomain();
-
+const ProjectOverView = ({ tenantDomain }) => {
   const { data: allMetaData, isLoading } = useGetAllMetaQuery({ tenantDomain });
   if (isLoading) return <Loading />;
-
+  console.log(allMetaData);
   const userData = [
     {
       id: 1,

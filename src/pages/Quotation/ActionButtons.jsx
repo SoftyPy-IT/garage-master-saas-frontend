@@ -1,57 +1,58 @@
 /* eslint-disable react/prop-types */
-import Can from "../Can";
+import Can from "../../components/Can";
 
 const ActionButtons = ({
-    onSubmit,
-    onPreview,
-    onPrint,
-    onInvoice,
-    isLoading = false,
-    quotationId,
-    tenantDomain,
-    mode = "create",
-    permissionPage = "/dashboard/create-quotation",
-    permissionAction = "create"
+  isEditMode,
+  createLoading,
+  updateLoading,
+
+  setGoOtherButton,
+  specificQuotation,
 }) => {
-    const getSubmitButtonText = () => {
-        return mode === "create" ? "Add Quotation" : "Update Quotation";
-    };
-
-    return (
-        <div className="flex flex-col md:flex-row mt-4 md:mt-8 buttonGroup">
-            <div className="flex md:hidden justify-end md:justify-start submitQutationBtn order-2 md:order-3">
-                <Can page={permissionPage} action={permissionAction}>
-                    <button type="button" onClick={onSubmit} disabled={isLoading}>
-                        {getSubmitButtonText()}
-                    </button>
-                </Can>
-            </div>
-
-            <div className="flex">
-                <button type="button" onClick={onPreview}>Preview</button>
-                <button type="button" onClick={onPrint}>Print</button>
-                <button type="button" onClick={onInvoice}>Invoice</button>
-                {quotationId && (
-                    <a
-                        className="bg-[#42A0D9] text-white px-3 py-2 rounded-full mx-2"
-                        href={`${import.meta.env.VITE_API_URL}/quotations/quotation/${quotationId}?tenantDomain=${tenantDomain}`}
-                        target="_blank"
-                        rel="noreferrer"
-                    >
-                        Download
-                    </a>
-                )}
-            </div>
-
-            <div className="hidden md:flex justify-end md:justify-start submitQutationBtn order-2 md:order-3">
-                <Can page={permissionPage} action={permissionAction}>
-                    <button type="button" onClick={onSubmit} disabled={isLoading}>
-                        {getSubmitButtonText()}
-                    </button>
-                </Can>
-            </div>
-        </div>
-    );
+  return (
+    <div className="flex flex-col md:flex-row mt-4 md:mt-8 buttonGroup">
+      <div className="flex md:hidden justify-end md:justify-start submitQutationBtn order-2 md:order-3">
+        <button type="submit" disabled={createLoading || updateLoading}>
+          {isEditMode ? "Update Quotation" : "Add Quotation"}
+        </button>
+      </div>
+      <div className="flex">
+        <button type="button" onClick={() => setGoOtherButton("preview")}>
+          Preview
+        </button>
+        <button type="button">Print</button>
+        <button type="button" onClick={() => setGoOtherButton("invoice")}>
+          Invoice
+        </button>
+        {isEditMode && (
+          <a
+            className="bg-[#42A0D9] text-white px-3 py-2 rounded-full"
+            href={`${import.meta.env.VITE_API_URL}/quotations/quotation/${
+              specificQuotation?._id
+            }`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            Download
+          </a>
+        )}
+      </div>
+      <div className="hidden md:flex justify-end md:justify-start submitQutationBtn order-2 md:order-3">
+        <Can
+          page={
+            isEditMode
+              ? "/dashboard/update-quotation"
+              : "/dashboard/create-quotation"
+          }
+          action={isEditMode ? "edit" : "create"}
+        >
+          <button type="submit" disabled={createLoading || updateLoading}>
+            {isEditMode ? "Update Quotation" : "Add Quotation"}
+          </button>
+        </Can>
+      </div>
+    </div>
+  );
 };
 
 export default ActionButtons;

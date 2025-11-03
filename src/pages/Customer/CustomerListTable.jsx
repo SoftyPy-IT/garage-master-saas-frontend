@@ -1,18 +1,17 @@
 /* eslint-disable react/prop-types */
-import { useEffect, useState } from "react";
-import { FaTrashAlt, FaEdit, FaUserTie } from "react-icons/fa";
-import { useNavigate, useLocation } from "react-router-dom";
+import { ArrowBack } from "@mui/icons-material";
 import { Box, Button } from "@mui/material";
+import { useEffect, useState } from "react";
+import { FaEdit, FaTrashAlt, FaUserTie } from "react-icons/fa";
+import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { ArrowBack, Diversity3 } from "@mui/icons-material";
 
-import Table from "../../components/Table";
-import Loading from "../../components/Loading/Loading";
-import EmptyData from "../../components/EmptyData/EmptyData";
-import { useTenantDomain } from "../../hooks/useTenantDomain";
-import { usePermissions } from "../../context/PermissionContext";
-import { useGetAllCustomersQuery } from "../../redux/api/customerApi";
 import Breadcrumb from "../../components/Breadcrumb";
+import Loading from "../../components/Loading/Loading";
+import Table from "../../components/Table";
+import { usePermissions } from "../../context/PermissionContext";
+import { useTenantDomain } from "../../hooks/useTenantDomain";
+import { useGetAllCustomersQuery } from "../../redux/api/customerApi";
 import { purchaseBtn, wrapBoxStyle } from "../../utils/customStyle";
 
 const CustomerListTable = ({ handleDeleteAction, isRecycled, title }) => {
@@ -150,13 +149,6 @@ const CustomerListTable = ({ handleDeleteAction, isRecycled, title }) => {
       </Box>
       {customerLoading ? (
         <Loading />
-      ) : customerData?.data?.customers?.length === 0 ? (
-        <EmptyData
-          icon={Diversity3}
-          title="No Customer Found"
-          message="We couldn't find any customer matching your search criteria."
-          subMessage="Try adjusting your filters or add a new customer."
-        />
       ) : (
         <Table
           title={title || "Customer List"}

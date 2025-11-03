@@ -547,7 +547,9 @@ const Invoice = () => {
   ];
 
   const onSubmit = async (data) => {
-    performActionWithPermission('/dashboard/create-quotation', 'create',
+    performActionWithPermission(
+      "/dashboard/create-quotation",
+      "create",
       async () => {
         const toastId = toast.loading("Creating Company...");
         // const tenantDomain = getTenantName();
@@ -577,7 +579,8 @@ const Invoice = () => {
         data.mileage = Number(data.mileage);
         const newMileageValue = Number(data.mileage);
 
-        const existingMileageHistory = getDataWithChassisNo?.mileageHistory || [];
+        const existingMileageHistory =
+          getDataWithChassisNo?.mileageHistory || [];
         const updatedMileageHistory = [...existingMileageHistory];
         // Only add current mileage to history if it has changed
         if (mileageChanged && currentMileage) {
@@ -669,9 +672,9 @@ const Invoice = () => {
         } finally {
           toast.dismiss(toastId);
         }
-
-      }, "You don't have permission to create invoice"
-    )
+      },
+      "You don't have permission to create invoice"
+    );
   };
   const handleIconPreview = async (e) => {
     navigate(`/dashboard/invoice-view?id=${e}`);
@@ -783,16 +786,16 @@ const Invoice = () => {
                   )}
                   {(jobCardData?.data?.user_type === "company" ||
                     jobCardData?.data?.user_type === "showRoom") && (
-                      <TextField
-                        fullWidth
-                        label="Customer"
-                        focused={
-                          jobCardData?.data?.company?.vehicle_username ||
-                          jobCardData?.data?.showRoom?.vehicle_username
-                        }
-                        {...register("vehicle_username")}
-                      />
-                    )}
+                    <TextField
+                      fullWidth
+                      label="Customer"
+                      focused={
+                        jobCardData?.data?.company?.vehicle_username ||
+                        jobCardData?.data?.showRoom?.vehicle_username
+                      }
+                      {...register("vehicle_username")}
+                    />
+                  )}
                 </Grid>
                 <Grid item lg={12} md={12} sm={12} xs={12}>
                   <Grid container spacing={1}>
@@ -857,24 +860,24 @@ const Invoice = () => {
                       )}
                       {(jobCardData?.data?.user_type === "company" ||
                         jobCardData?.data?.user_type === "showRoom") && (
-                          <TextField
-                            {...register("company_contact")}
-                            variant="outlined"
-                            fullWidth
-                            type="tel"
-                            value={
-                              phoneNumber
-                                ? phoneNumber
-                                : jobCardData?.data?.customer?.customer_contact
-                            }
-                            onChange={handlePhoneNumberChange}
-                            placeholder="Company Contact No (N)"
-                            focused={
-                              jobCardData?.data?.company?.company_contact ||
-                              jobCardData?.data?.showRoom?.company_contact
-                            }
-                          />
-                        )}
+                        <TextField
+                          {...register("company_contact")}
+                          variant="outlined"
+                          fullWidth
+                          type="tel"
+                          value={
+                            phoneNumber
+                              ? phoneNumber
+                              : jobCardData?.data?.customer?.customer_contact
+                          }
+                          onChange={handlePhoneNumberChange}
+                          placeholder="Company Contact No (N)"
+                          focused={
+                            jobCardData?.data?.company?.company_contact ||
+                            jobCardData?.data?.showRoom?.company_contact
+                          }
+                        />
+                      )}
                     </Grid>
                   </Grid>
                 </Grid>
@@ -955,7 +958,7 @@ const Invoice = () => {
                             {...params}
                             label="Vehicle Reg No (New field)"
                             {...register("carReg_no")}
-                          // focused={getDataWithChassisNo?.carReg_no}
+                            // focused={getDataWithChassisNo?.carReg_no}
                           />
                         )}
                       />
@@ -1099,8 +1102,9 @@ const Invoice = () => {
                               autoComplete="off"
                               type="text"
                               placeholder="SL No "
-                              defaultValue={`${i + 1 < 10 ? `0${i + 1}` : i + 1
-                                }`}
+                              defaultValue={`${
+                                i + 1 < 10 ? `0${i + 1}` : i + 1
+                              }`}
                               required
                             />
                           </div>
@@ -1607,7 +1611,7 @@ const Invoice = () => {
               </button>
             </div>
             <div className="flex justify-end submitQutationBtn order-2 md:order-3 ">
-              <Can page='/dashboard/create-invoice' action='create'>
+              <Can page="/dashboard/create-invoice" action="create">
                 <button type="submit" disabled={createLoading}>
                   Add To Invoice
                 </button>

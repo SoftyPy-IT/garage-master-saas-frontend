@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable react-hooks/exhaustive-deps */
-import { ArrowBack, Store } from "@mui/icons-material";
+import { ArrowBack } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import { FaEdit, FaUserTie } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
@@ -8,7 +8,6 @@ import { useNavigate } from "react-router-dom";
 import { Box, Button } from "@mui/material";
 import { DeleteIcon } from "lucide-react";
 import Breadcrumb from "../../components/Breadcrumb";
-import EmptyData from "../../components/EmptyData/EmptyData";
 import Loading from "../../components/Loading/Loading";
 import Table from "../../components/Table";
 import { usePermissions } from "../../context/PermissionContext";
@@ -94,7 +93,6 @@ const ShowRoomListTable = ({ handleDeleteAction, title, isRecycled }) => {
     },
   ];
 
-  // --- Define Actions ---
   const actions = [
     {
       key: "view",
@@ -146,33 +144,24 @@ const ShowRoomListTable = ({ handleDeleteAction, title, isRecycled }) => {
           Back
         </Button>
       </Box>
-      {showrooms.length === 0 ? (
-        <EmptyData
-          icon={Store}
-          title="No Showrooms Found"
-          message="We couldn't find any showrooms matching your search criteria."
-          subMessage="Try adjusting your filters or add a new showroom."
-        />
-      ) : (
-        <Table
-          title={title || "Show Room List"}
-          columns={columns}
-          data={showrooms}
-          actions={actions}
-          loading={loading}
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={(page) => setCurrentPage(page)}
-          onSearch={(value) => {
-            setFilterType(value);
-            setCurrentPage(1);
-          }}
-          searchPlaceholder="Search showroom..."
-          getRowClass={() =>
-            "transition-all duration-300 hover:bg-gradient-to-r hover:from-blue-300 hover:to-blue-100 hover:text-black"
-          }
-        />
-      )}
+      <Table
+        title={title || "Show Room List"}
+        columns={columns}
+        data={showrooms}
+        actions={actions}
+        loading={loading}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={(page) => setCurrentPage(page)}
+        onSearch={(value) => {
+          setFilterType(value);
+          setCurrentPage(1);
+        }}
+        searchPlaceholder="Search showroom..."
+        getRowClass={() =>
+          "transition-all duration-300 hover:bg-gradient-to-r hover:from-blue-300 hover:to-blue-100 hover:text-black"
+        }
+      />
     </div>
   );
 };

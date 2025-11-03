@@ -475,7 +475,6 @@
 //     return "Pcs";
 //   };
 
-
 //   const handleSelectSuggestion = (product) => {
 //     if (activeInputType === "service") {
 //       const newItems = [...serviceItems];
@@ -674,10 +673,8 @@
 //           toast.dismiss(toastId);
 //         }
 
-
 //       }, "You don't permission to create quotation !"
 //     )
-
 
 //   };
 
@@ -1486,8 +1483,6 @@
 //                 </button>
 
 //               </Can>
-
-
 
 //             </div>
 //           </div>
