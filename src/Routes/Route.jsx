@@ -27,9 +27,11 @@ import { userManagementRoutes } from "./RouteGroups/UserManagementRoutes";
 import { attendanceRoutes } from "./RouteGroups/AttendanceRoutes";
 import { authRoutes } from "./RouteGroups/AuthRoutes";
 import { createRoutes } from "./RouteGroups/RouteBuilder";
+import { vehicleRoutes } from "./RouteGroups/VehicleRoutes";
 
 const protectedRoutes = [
   ...createRoutes(otherRoutes),
+  ...createRoutes(vehicleRoutes),
   ...createRoutes(jobCardRoutes),
   ...createRoutes(employeeRoutes),
   ...createRoutes(customerRoutes),

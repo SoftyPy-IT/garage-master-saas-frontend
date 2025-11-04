@@ -66,6 +66,7 @@ const CustomerJobCardList = ({
     { key: "index", label: "SL No", type: "index" },
     { key: "job_no", label: "Order No." },
     { key: "Id", label: "User ID" },
+
     { key: "user_type", label: "User Type" },
     { key: "customer.fullCustomerNum", label: "Mobile No." },
     { key: "date", label: "Date" },

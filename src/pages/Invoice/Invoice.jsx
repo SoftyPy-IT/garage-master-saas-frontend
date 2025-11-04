@@ -44,7 +44,7 @@ const Invoice = () => {
   const [grandTotal, setGrandTotal] = useState(0);
   const [discount, setDiscount] = useState(0);
   const [vat, setVAT] = useState(0);
-  const [tax, setTax] = useState(0); // New state for Tax
+  const [tax, setTax] = useState(0);
   const [advance, setAdvance] = useState(0);
   const [currentMileage, setCurrentMileage] = useState("");
   const [mileageChanged, setMileageChanged] = useState(false);
@@ -103,7 +103,6 @@ const Invoice = () => {
       setVAT(Number(specificQuotation.vat));
     }
     if (specificQuotation?.tax !== undefined) {
-      // Initialize tax from specificQuotation
       setTax(Number(specificQuotation.tax));
     }
   }, [specificQuotation]);
@@ -552,7 +551,6 @@ const Invoice = () => {
       "create",
       async () => {
         const toastId = toast.loading("Creating Company...");
-        // const tenantDomain = getTenantName();
         const customer = {
           company_name: data.company_name,
           customer_name: data.customer_name,
@@ -676,13 +674,10 @@ const Invoice = () => {
       "You don't have permission to create invoice"
     );
   };
-  const handleIconPreview = async (e) => {
-    navigate(`/dashboard/invoice-view?id=${e}`);
-  };
+
   useEffect(() => {
     setGetDataWithChassisNo(jobCardData?.data?.vehicle);
   }, [jobCardData?.data?.vehicle]);
-  // for mileage defalutvalue show
   useEffect(() => {
     if (jobCardData?.data?.mileage) {
       reset({
@@ -942,11 +937,6 @@ const Invoice = () => {
                         freeSolo
                         fullWidth
                         id="free-solo-demo"
-                        // options={
-                        //   specificInvoice?.vehicle?.carReg_no
-                        //     ? [specificInvoice.vehicle.carReg_no]
-                        //     : []
-                        // }
                         options={cmDmOptions.map((option) => option.label)}
                         value={jobCardData?.data?.vehicle?.carReg_no || ""}
                         onChange={(event, newValue) => {

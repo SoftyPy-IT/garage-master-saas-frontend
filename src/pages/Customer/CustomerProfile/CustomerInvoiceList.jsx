@@ -72,11 +72,15 @@ const CustomerInvoiceList = ({
         "N/A",
     },
     {
-      key: "vehicle.carReg_no",
+      key: "vehicle",
       label: "Car No.",
-      render: (item) =>
-        item.vehicle?.carReg_no || item.vehicle?.car_registration_no || "N/A",
+      render: (item) => {
+        const carReg = item.vehicle?.carReg_no || "";
+        const carNo = item.vehicle?.car_registration_no || "";
+        return `${carReg} ${carNo}`.trim();
+      },
     },
+
     {
       key: "mobile",
       label: "Mobile No.",

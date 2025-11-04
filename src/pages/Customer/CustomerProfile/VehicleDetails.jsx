@@ -98,7 +98,16 @@ const VehicleDetails = ({
 
   const columns = [
     { key: "index", label: "SL No", type: "index" },
-    { key: "carReg_no", label: "Vehicle Reg No" },
+    {
+      key: "vehicle",
+      label: "Car Reg No.",
+      render: (item) => {
+        const carReg = item.carReg_no || "";
+        const carNo = item.car_registration_no || "";
+        return `${carReg} ${carNo}`.trim();
+      },
+    },
+
     { key: "chassis_no", label: "Chassis No" },
     { key: "engine_no", label: "Engine & CC" },
     { key: "vehicle_name", label: "Vehicle Name" },

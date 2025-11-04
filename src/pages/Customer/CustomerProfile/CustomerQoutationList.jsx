@@ -32,7 +32,6 @@ const CustomerQuotationList = ({
   const [filterType, setFilterType] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const limit = 10;
-  const navigate = useNavigate();
 
   // Fetch quotations
   const { data: allQuotations, isLoading: quotationLoading } =
@@ -50,7 +49,6 @@ const CustomerQuotationList = ({
     { idLoading: deleteLoading, error: deleteError },
   ] = useMoveRecycledQuotationMutation();
 
-  // Delete / move to recycle bin
   const deletePackage = async (quotationId) => {
     const willDelete = await swal({
       title: "Are you sure?",
@@ -80,25 +78,32 @@ const CustomerQuotationList = ({
   if (deleteError) {
     toast.error(deleteError?.message);
   }
+  console.log("all quotation", allQuotations);
 
-  // Define table columns
   const columns = [
     { key: "index", label: "SL No", type: "index" },
     { key: "job_no", label: "Order No." },
     { key: "customer.customer_name", label: "Customer Name" },
-    { key: "vehicle.carReg_no", label: "Car No." },
+    {
+      key: "vehicle",
+      label: "Car No.",
+      render: (item) => {
+        const carReg = item.vehicle?.carReg_no || "";
+        const carNo = item.vehicle?.car_registration_no || "";
+        return `${carReg} ${carNo}`.trim();
+      },
+    },
+
     { key: "customer.fullCustomerNum", label: "Mobile No." },
     { key: "date", label: "Date" },
   ];
 
-  // Define row class based on status
   const getRowClass = (item) => {
     if (item.status === "running") return "bg-[#f5365c] text-white";
     if (item.status === "completed") return "bg-[#2dce89] text-white";
     return "";
   };
 
-  // Define table actions
   const actions = [
     {
       key: "preview",
