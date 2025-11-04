@@ -48,6 +48,7 @@ const CustomerQuotationList = ({
     moveRecycledQuotation,
     { idLoading: deleteLoading, error: deleteError },
   ] = useMoveRecycledQuotationMutation();
+  console.log(allQuotations);
 
   const deletePackage = async (quotationId) => {
     const willDelete = await swal({
@@ -78,12 +79,19 @@ const CustomerQuotationList = ({
   if (deleteError) {
     toast.error(deleteError?.message);
   }
-  console.log("all quotation", allQuotations);
 
   const columns = [
     { key: "index", label: "SL No", type: "index" },
     { key: "job_no", label: "Order No." },
-    { key: "customer.customer_name", label: "Customer Name" },
+    {
+      key: "customer.customer_name",
+      label: "Customer Name",
+      render: (item) =>
+        item.customer?.customer_name ||
+        item.company?.company_name ||
+        item.showRoom?.showRoom_name ||
+        "N/A",
+    },
     {
       key: "vehicle",
       label: "Car No.",
@@ -93,8 +101,15 @@ const CustomerQuotationList = ({
         return `${carReg} ${carNo}`.trim();
       },
     },
-
-    { key: "customer.fullCustomerNum", label: "Mobile No." },
+    {
+      key: "mobile",
+      label: "Mobile No.",
+      render: (item) =>
+        item.customer?.fullCustomerNum ||
+        item.company?.fullCompanyNum ||
+        item.showRoom?.fullCompanyNum ||
+        "N/A",
+    },
     { key: "date", label: "Date" },
   ];
 

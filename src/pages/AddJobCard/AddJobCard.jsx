@@ -1490,25 +1490,11 @@ const AddJobCard = () => {
                     )}
                   />
                 </Grid>
-                {/* 
-                driver info here  */}
+
                 <Grid item lg={12} md={12} sm={12} xs={12}>
                   <TextField
                     fullWidth
-                    label={
-                      <>
-                        Driver Name (T)
-                        {/* <span
-                          style={{
-                            color: "red",
-                            fontSize: "25px",
-                          }}
-                        >
-                          {" "}
-                          *
-                        </span> */}
-                      </>
-                    }
+                    label={<>Driver Name (T)</>}
                     {...register("driver_name")}
                     focused={userDetails?.data?.driver_name || ""}
                   />
