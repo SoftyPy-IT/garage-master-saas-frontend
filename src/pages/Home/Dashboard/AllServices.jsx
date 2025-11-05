@@ -19,17 +19,13 @@ import PropTypes from "prop-types";
 
 const AllServices = ({ showSensitiveData }) => {
   const { tenantDomain } = useTenantDomain();
-  const {
-    data: allMetaData,
-    isLoading,
-    isError,
-  } = useGetAllMetaQuery({ tenantDomain });
+  const { data: allMetaData, isLoading } = useGetAllMetaQuery({ tenantDomain });
 
   if (isLoading) return <Loading />;
 
   const card =
     "flex flex-col  items-center justify-center content-center gap-x-2 mt-3 md:mt-4 space-y-2 ";
-  const amount = "text-center text-[32px] font-bold ";
+  const amount = "text-center text-[32px] font-bold text-center ";
 
   const WaveBg = () => (
     <div className="wave-background">
@@ -106,14 +102,6 @@ const AllServices = ({ showSensitiveData }) => {
             <div className={card}>
               <div className="dashboardCardIconWrap7">
                 <FaUsers className="dashboardCardIcon" />
-              </div>
-              <div className="invoice-info">
-                <h2 className={amount}>
-                  {allMetaData?.data?.totalCustomers +
-                    allMetaData?.data?.totalShowRooms +
-                    allMetaData?.data?.totalCompanies}
-                </h2>
-                <p className="label">All Customer</p>
               </div>
             </div>
           </Link>

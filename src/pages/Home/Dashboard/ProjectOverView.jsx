@@ -13,7 +13,7 @@ import { useGetAllMetaQuery } from "../../../redux/api/meta.api";
 const ProjectOverView = ({ tenantDomain }) => {
   const { data: allMetaData, isLoading } = useGetAllMetaQuery({ tenantDomain });
   if (isLoading) return <Loading />;
-  console.log(allMetaData);
+
   const userData = [
     {
       id: 1,
@@ -130,7 +130,7 @@ const ProjectOverView = ({ tenantDomain }) => {
                       {data.icon}
                     </div>
                     <div className="mt-4 relative z-0">
-                      <span className="text-2xl font-bold block">
+                      <span className="text-center text-2xl font-bold block">
                         {data.user}
                       </span>
                       <h2 className="mt-2 text-lg font-semibold">
