@@ -14,7 +14,7 @@ import { useCreateQuotationMutation } from "../../redux/api/quotation";
 import { unitOptions } from "../../utils/options";
 import { useGetAllStocksQuery } from "../../redux/api/stocksApi";
 import { suggestionStyles } from "../../utils/customStyle";
-import { formatNumber } from "../../utils/formateSemicolon";
+import { formateNumber } from "../../utils/formateSemicolon";
 import { useGetCompanyProfileQuery } from "../../redux/api/companyProfile";
 import { useTenantDomain } from "../../hooks/useTenantDomain";
 import Can from "../../components/Can";
@@ -1111,7 +1111,6 @@ const AddQuotation = () => {
                         type="text"
                         placeholder="SL No "
                         defaultValue={`${i + 1 < 10 ? `0${i + 1}` : i + 1}`}
-                        required
                       />
                     </div>
                     <div className="col-span-12 md:col-span-6">
@@ -1125,7 +1124,7 @@ const AddQuotation = () => {
                             handleServiceDescriptionChange(i, e.target.value)
                           }
                           value={item.description}
-                          required
+                          // required
                         />
                         {showSuggestions &&
                           activeInputType === "service" &&
@@ -1202,7 +1201,6 @@ const AddQuotation = () => {
                             handleServiceQuantityChange(i, e.target.value)
                           }
                           value={item.quantity}
-                          required
                         />
                         <select
                           className="inputField col-span-9"
@@ -1210,7 +1208,6 @@ const AddQuotation = () => {
                             handleServiceUnitChange(i, e.target.value)
                           }
                           value={item.unit || ""}
-                          required
                         >
                           <option value="" disabled>
                             Select Unit
@@ -1232,7 +1229,6 @@ const AddQuotation = () => {
                           handleServiceRateChange(i, e.target.value)
                         }
                         value={item.rateDisplay || ""}
-                        required
                       />
                     </div>
                     <div className="col-span-12 md:col-span-1">
@@ -1241,7 +1237,7 @@ const AddQuotation = () => {
                         autoComplete="off"
                         type="text"
                         placeholder="Amount"
-                        value={formatNumber(item.total)}
+                        value={formateNumber(item.total)}
                         readOnly
                       />
                     </div>
@@ -1301,7 +1297,6 @@ const AddQuotation = () => {
                       type="text"
                       placeholder="SL No "
                       defaultValue={`${i + 1 < 10 ? `0${i + 1}` : i + 1}`}
-                      required
                     />
                   </div>
                   <div className="col-span-12 md:col-span-6">
@@ -1315,7 +1310,6 @@ const AddQuotation = () => {
                           handleDescriptionChange(i, e.target.value)
                         }
                         value={item.description}
-                        required
                       />
                       {showSuggestions &&
                         activeInputType === "parts" &&
@@ -1378,13 +1372,11 @@ const AddQuotation = () => {
                           handleQuantityChange(i, e.target.value)
                         }
                         value={item.quantity}
-                        required
                       />
                       <select
                         className="inputField col-span-9"
                         onChange={(e) => handleUnitChange(i, e.target.value)}
                         value={item.unit || ""}
-                        required
                       >
                         <option value="" disabled>
                           Select Unit
@@ -1403,7 +1395,6 @@ const AddQuotation = () => {
                       autoComplete="off"
                       placeholder="Rate"
                       onChange={(e) => handleRateChange(i, e.target.value)}
-                      required
                       type="text"
                       value={item.rateDisplay || ""}
                     />
@@ -1414,7 +1405,7 @@ const AddQuotation = () => {
                       autoComplete="off"
                       type="text"
                       placeholder="Amount"
-                      value={formatNumber(item.total)}
+                      value={formateNumber(item.total)}
                       readOnly
                     />
                   </div>
@@ -1445,7 +1436,7 @@ const AddQuotation = () => {
           <div className="discountFieldWrap mt-5 ">
             <div className="flex items-center ">
               <b className="mr-2 "> Total Amount: </b>
-              <span>{formatNumber(grandTotal)}</span>
+              <span>{formateNumber(grandTotal)}</span>
             </div>
             <div>
               <b className="mr-2  "> Discount: </b>
@@ -1455,7 +1446,7 @@ const AddQuotation = () => {
                   const rawValue = e.target.value.replace(/,/g, "");
                   handleDiscountChange(rawValue);
                 }}
-                value={formatNumber(discount)}
+                value={formateNumber(discount)}
                 autoComplete="off"
                 type="text"
                 placeholder="Discount"
@@ -1469,7 +1460,7 @@ const AddQuotation = () => {
                   const rawValue = e.target.value.replace(/,/g, "");
                   handleVATChange(rawValue);
                 }}
-                value={formatNumber(vat)}
+                value={formateNumber(vat)}
                 autoComplete="off"
                 type="text"
                 placeholder="Vat"
@@ -1483,7 +1474,7 @@ const AddQuotation = () => {
                   const rawValue = e.target.value.replace(/,/g, "");
                   handleTaxChange(rawValue);
                 }}
-                value={formatNumber(tax)}
+                value={formateNumber(tax)}
                 autoComplete="off"
                 type="text"
                 placeholder="Tax"
@@ -1492,7 +1483,7 @@ const AddQuotation = () => {
             <div>
               <div className="flex items-center ml-3 ">
                 <b className="mr-2 ">Final Total: </b>
-                <span>{formatNumber(calculateFinalTotal())}</span>
+                <span>{formateNumber(calculateFinalTotal())}</span>
               </div>
             </div>
           </div>

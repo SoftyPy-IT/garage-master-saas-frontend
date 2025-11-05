@@ -27,7 +27,7 @@
 //   useUpdateInvoiceMutation,
 // } from "../../redux/api/invoice";
 // import { unitOptions } from "../../utils/options";
-// import { formatNumber } from "../../utils/formateSemicolon";
+// import { formateNumber } from "../../utils/formateSemicolon";
 // import { useGetCompanyProfileQuery } from "../../redux/api/companyProfile";
 // import { useTenantDomain } from "../../hooks/useTenantDomain";
 // import { usePermissions } from "../../context/PermissionContext";
@@ -1417,7 +1417,7 @@
 //                             autoComplete="off"
 //                             type="text"
 //                             placeholder="Amount"
-//                             value={formatNumber(item.total)}
+//                             value={formateNumber(item.total)}
 //                             readOnly
 //                           />
 //                         </div>
@@ -1541,7 +1541,7 @@
 //                             autoComplete="off"
 //                             type="text"
 //                             placeholder="Amount"
-//                             value={formatNumber(item.total)}
+//                             value={formateNumber(item.total)}
 //                             readOnly
 //                           />
 //                         </div>
@@ -1673,7 +1673,7 @@
 //                             autoComplete="off"
 //                             type="text"
 //                             placeholder="Amount"
-//                             value={formatNumber(item.total)}
+//                             value={formateNumber(item.total)}
 //                             readOnly
 //                           />
 //                         </div>
@@ -1797,7 +1797,7 @@
 //                             autoComplete="off"
 //                             type="text"
 //                             placeholder="Amount"
-//                             value={formatNumber(item.total)}
+//                             value={formateNumber(item.total)}
 //                             readOnly
 //                           />
 //                         </div>
@@ -1833,7 +1833,7 @@
 //           <div className="flex items-center gap-x-2">
 //             <b> Total Amount: </b>
 //             <span>
-//               {formatNumber(
+//               {formateNumber(
 //                 grandTotal ? grandTotal : specificInvoice?.total_amount
 //               )}
 //             </span>
@@ -1846,7 +1846,7 @@
 //               autoComplete="off"
 //               type="text"
 //               placeholder="Discount"
-//               defaultValue={formatNumber(specificInvoice?.discount)}
+//               defaultValue={formateNumber(specificInvoice?.discount)}
 //               ref={partsDiscountRef}
 //             />
 //           </div>
@@ -1858,14 +1858,14 @@
 //               autoComplete="off"
 //               type="text"
 //               placeholder="Vat"
-//               defaultValue={formatNumber(specificInvoice?.vat)}
+//               defaultValue={formateNumber(specificInvoice?.vat)}
 //             />
 //           </div>
 //           <div className="flex items-center gap-x-2">
 //             <div className="flex items-center ">
 //               <b className="mr-3">Final Total: </b>
 //               <span ref={netTotalAmountRef}>
-//                 {formatNumber(
+//                 {formateNumber(
 //                   calculateFinalTotal()
 //                     ? calculateFinalTotal()
 //                     : specificInvoice?.net_total
@@ -1881,12 +1881,12 @@
 //               autoComplete="off"
 //               type="text"
 //               placeholder="Advance"
-//               defaultValue={formatNumber(specificInvoice?.advance)}
+//               defaultValue={formateNumber(specificInvoice?.advance)}
 //             />
 //           </div>
 //           <div className="flex items-center gap-x-2  ">
 //             <b className="mr-2">Due: </b>
-//             <span>{formatNumber(calculateDue())}</span>
+//             <span>{formateNumber(calculateDue())}</span>
 //           </div>
 //         </div>
 //         <div>

@@ -139,11 +139,17 @@ const TableRow = ({
         } else value = item[col.key] ?? "N/A";
         return <td key={col.key}>{value}</td>;
       })}
-
       {actions.map((action) => {
         const Icon = action.icon;
         return (
-          <td key={action.key}>
+          <td
+            key={action.key}
+            style={{
+              textAlign: "center",
+              verticalAlign: "middle",
+              padding: "8px",
+            }}
+          >
             {action.requirePermission ? (
               <Can
                 page={action.permissionPage}

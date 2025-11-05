@@ -15,13 +15,13 @@ import TrustAutoAddress from "../../components/TrustAutoAddress/TrustAutoAddress
 import { useCreateInvoiceMutation } from "../../redux/api/invoice";
 import { useGetSingleJobCardWithJobNoQuery } from "../../redux/api/jobCard";
 import { unitOptions } from "../../utils/options";
-import { formatNumber } from "../../utils/formateSemicolon";
 import { useGetSingleQuotationQuery } from "../../redux/api/quotation";
 import { useGetCompanyProfileQuery } from "../../redux/api/companyProfile";
 import { useTenantDomain } from "../../hooks/useTenantDomain";
 import Can from "../../components/Can";
 import { usePermissions } from "../../context/PermissionContext";
 import InvoiceTable from "./InvoiceTable";
+import { formateNumber } from "../../utils/formateSemicolon";
 
 const Invoice = () => {
   const { tenantDomain } = useTenantDomain();
@@ -1162,7 +1162,7 @@ const Invoice = () => {
                                 handleServiceRateChange2(i, e.target.value)
                               }
                               required
-                              value={formatNumber(item.rate)}
+                              value={formateNumber(item.rate)}
                             />
                           </div>
                           <div className="col-span-12 md:col-span-1">
@@ -1171,7 +1171,7 @@ const Invoice = () => {
                               autoComplete="off"
                               type="text"
                               placeholder="Amount"
-                              value={formatNumber(item.total)}
+                              value={formateNumber(item.total)}
                               readOnly
                             />
                           </div>
@@ -1258,7 +1258,7 @@ const Invoice = () => {
                             onChange={(e) =>
                               handleServiceRateChange(i, e.target.value)
                             }
-                            value={formatNumber(item.rate)}
+                            value={formateNumber(item.rate)}
                             required
                           />
                         </div>
@@ -1268,7 +1268,7 @@ const Invoice = () => {
                             autoComplete="off"
                             type="text"
                             placeholder="Amount"
-                            value={formatNumber(item.total)}
+                            value={formateNumber(item.total)}
                             readOnly
                           />
                         </div>
@@ -1391,7 +1391,7 @@ const Invoice = () => {
                               handleRateChange2(i, e.target.value)
                             }
                             required
-                            value={formatNumber(item.rate)}
+                            value={formateNumber(item.rate)}
                           />
                         </div>
                         <div className="col-span-12 md:col-span-1">
@@ -1400,7 +1400,7 @@ const Invoice = () => {
                             autoComplete="off"
                             type="text"
                             placeholder="Amount"
-                            value={formatNumber(item.total)}
+                            value={formateNumber(item.total)}
                             readOnly
                           />
                         </div>
@@ -1487,7 +1487,7 @@ const Invoice = () => {
                             onChange={(e) =>
                               handleRateChange(i, e.target.value)
                             }
-                            value={formatNumber(item.rate)}
+                            value={formateNumber(item.rate)}
                             required
                           />
                         </div>
@@ -1497,7 +1497,7 @@ const Invoice = () => {
                             autoComplete="off"
                             type="text"
                             placeholder="Amount"
-                            value={formatNumber(item.total)}
+                            value={formateNumber(item.total)}
                             readOnly
                           />
                         </div>
@@ -1533,7 +1533,7 @@ const Invoice = () => {
           <div className="discountFieldWrap mt-5 ">
             <div className="flex items-center">
               <b className="mr-2"> Total Amount: </b>
-              <span>{formatNumber(grandTotal)}</span>
+              <span>{formateNumber(grandTotal)}</span>
             </div>
             <div>
               <b className="mr-2"> Discount: </b>
@@ -1543,7 +1543,7 @@ const Invoice = () => {
                   const rawValue = e.target.value.replace(/,/g, "");
                   handleDiscountChange(rawValue);
                 }}
-                value={formatNumber(discount)}
+                value={formateNumber(discount)}
                 autoComplete="off"
                 type="text"
                 placeholder="Discount"
@@ -1557,7 +1557,7 @@ const Invoice = () => {
                   const rawValue = e.target.value.replace(/,/g, "");
                   handleVATChange(rawValue);
                 }}
-                value={formatNumber(vat)}
+                value={formateNumber(vat)}
                 autoComplete="off"
                 type="text"
                 placeholder="Vat"
@@ -1571,7 +1571,7 @@ const Invoice = () => {
                   const rawValue = e.target.value.replace(/,/g, "");
                   handleTaxChange(rawValue);
                 }}
-                value={formatNumber(tax)}
+                value={formateNumber(tax)}
                 autoComplete="off"
                 type="text"
                 placeholder="Tax"
@@ -1580,14 +1580,14 @@ const Invoice = () => {
             <div>
               <div className="flex items-center ml-3 ">
                 <b className="mr-2">Final Total:</b>
-                <span>{formatNumber(calculateFinalTotal())}</span>
+                <span>{formateNumber(calculateFinalTotal())}</span>
               </div>
             </div>
 
             <div>
               <div className="flex items-center ml-3 ">
                 <b className="mr-2">Due:</b>
-                <span>{formatNumber(calculateDue())}</span>
+                <span>{formateNumber(calculateDue())}</span>
               </div>
             </div>
           </div>

@@ -82,18 +82,15 @@ const MoneyReceiptTable = ({ handleDeleteAction, title, isRecycled }) => {
     {
       key: "view",
       icon: FaEye,
-      color: "#2563EB",
+      color: "#fff",
       tooltip: "View",
       onClick: (item) =>
         navigate(`/dashboard/money-receipt-view?id=${item._id}`),
-      requirePermission: true,
-      permissionPage: "/dashboard/money-receipt-list",
-      permissionAction: "view",
     },
     {
       key: "download",
       icon: FaDownload,
-      color: "#ffb300",
+      color: "#fff",
       tooltip: "Download",
       href: (item) =>
         `${import.meta.env.VITE_API_URL}/money-receipts/money/${
@@ -106,22 +103,16 @@ const MoneyReceiptTable = ({ handleDeleteAction, title, isRecycled }) => {
     {
       key: "edit",
       icon: FaEdit,
-      color: "#2196F3",
+      color: "#fff",
       tooltip: "Edit",
       link: (item) => `/dashboard/money-receipt-update?id=${item._id}`,
-      requirePermission: true,
-      permissionPage: "/dashboard/money-receipt-update",
-      permissionAction: "edit",
     },
     {
       key: "delete",
       icon: FaTrashAlt,
-      color: "#f44336",
+      color: "#fff",
       tooltip: "Delete",
       onClick: (item) => handleDeleteAction(item._id),
-      requirePermission: true,
-      permissionPage: "/dashboard/money-receipt-list",
-      permissionAction: "delete",
     },
   ];
 

@@ -34,11 +34,7 @@ import { useGetCompanyProfileQuery } from "../../redux/api/companyProfile";
 import { useTenantDomain } from "../../hooks/useTenantDomain";
 import { usePermissions } from "../../context/PermissionContext";
 import Can from "../../components/Can";
-
-const formatNumber = (num) => {
-  if (num === undefined || num === null || num === "") return "";
-  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-};
+import { formateNumber } from "../../utils/formateSemicolon";
 
 const UpdateQuotation = () => {
   const [specificQuotation, setSpecificQuotation] = useState({});
@@ -1698,7 +1694,7 @@ const UpdateQuotation = () => {
                           autoComplete="off"
                           type="text"
                           placeholder="Amount"
-                          value={formatNumber(item.total)}
+                          value={formateNumber(item.total)}
                           readOnly
                         />
                       </div>
@@ -1865,7 +1861,7 @@ const UpdateQuotation = () => {
                           autoComplete="off"
                           type="text"
                           placeholder="Amount"
-                          value={formatNumber(item.total)}
+                          value={formateNumber(item.total)}
                           readOnly
                         />
                       </div>
@@ -2063,7 +2059,7 @@ const UpdateQuotation = () => {
                           autoComplete="off"
                           type="text"
                           placeholder="Amount"
-                          value={formatNumber(item.total)}
+                          value={formateNumber(item.total)}
                           readOnly
                         />
                       </div>
@@ -2233,7 +2229,7 @@ const UpdateQuotation = () => {
                           autoComplete="off"
                           type="text"
                           placeholder="Amount"
-                          value={formatNumber(item.total)}
+                          value={formateNumber(item.total)}
                           readOnly
                         />
                       </div>
@@ -2274,7 +2270,7 @@ const UpdateQuotation = () => {
           <div className="flex items-center">
             <b>Total Amount: </b>
             <span>
-              {formatNumber(
+              {formateNumber(
                 grandTotal ? grandTotal : specificQuotation?.total_amount
               )}
             </span>
@@ -2287,7 +2283,7 @@ const UpdateQuotation = () => {
               autoComplete="off"
               type="text"
               placeholder="Discount"
-              defaultValue={formatNumber(specificQuotation?.discount)}
+              defaultValue={formateNumber(specificQuotation?.discount)}
               ref={partsDiscountRef}
             />
           </div>
@@ -2299,7 +2295,7 @@ const UpdateQuotation = () => {
               autoComplete="off"
               type="text"
               placeholder="Vat"
-              defaultValue={formatNumber(specificQuotation?.vat)}
+              defaultValue={formateNumber(specificQuotation?.vat)}
             />
           </div>
           <div>
@@ -2307,7 +2303,7 @@ const UpdateQuotation = () => {
               <strong>
                 Final Total:{" "}
                 <span ref={netTotalAmountRef}>
-                  {formatNumber(
+                  {formateNumber(
                     calculateFinalTotal()
                       ? calculateFinalTotal()
                       : specificQuotation?.net_total
