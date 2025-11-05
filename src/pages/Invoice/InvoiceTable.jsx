@@ -134,6 +134,7 @@ const InvoiceTable = ({
       icon: FaDownload,
       label: "Download Invoice",
       href: (data, hooks) => {
+        console.log("hooke tenant check", hooks);
         const companyProfileData = {
           companyName: hooks?.profileData?.data?.companyName,
           address: hooks?.profileData?.data?.address,
@@ -145,9 +146,7 @@ const InvoiceTable = ({
         };
         return `${import.meta.env.VITE_API_URL}/invoices/invoice/${
           data._id
-        }?tenantDomain=${
-          hooks?.tenantDomain
-        }&companyProfileData=${encodeURIComponent(
+        }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
           JSON.stringify(companyProfileData)
         )}`;
       },
