@@ -21,6 +21,7 @@ import { tabsStyles, tabStyles } from "../../../utils/customStyle";
 import Message from "../../../shared/Message/Message";
 import CustomerNote from "./CustomerNote";
 import CustomerTab from "./CustomerTab";
+import { useCompanyProfileData } from "../../../hooks/useCompanyProfileData";
 
 const CustomerProfile = () => {
   const location = useLocation();
@@ -48,19 +49,8 @@ const CustomerProfile = () => {
     error: customerError,
   } = useGetSingleCustomerQuery({ id, tenantDomain });
 
-  const { data } = useGetCompanyProfileQuery({
-    tenantDomain,
-  });
+  const { companyProfileData } = useCompanyProfileData();
 
-  const companyProfileData = {
-    companyName: data?.data?.companyName,
-    address: data?.data?.address,
-    website: data?.data?.website,
-    phone: data?.data?.phone,
-    email: data?.data?.email,
-    logo: data?.data?.logo[0],
-    companyNameBN: data?.data?.companyNameBN,
-  };
   if (isLoading) {
     return <Loading />;
   }

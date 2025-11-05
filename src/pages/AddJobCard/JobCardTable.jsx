@@ -8,11 +8,11 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import { useGetAllJobCardsQuery } from "../../redux/api/jobCard";
 import { useTenantDomain } from "../../hooks/useTenantDomain";
-import { useGetCompanyProfileQuery } from "../../redux/api/companyProfile";
 import Table from "../../components/Table";
 import Breadcrumb from "../../components/Breadcrumb";
 import { Box } from "@mui/material";
 import { wrapBoxStyle } from "../../../src/utils/customStyle.js";
+import { useCompanyProfileData } from "../../hooks/useCompanyProfileData.js";
 const JobCardTable = ({
   isRecycled = false,
   title = "Job Cards",
@@ -27,16 +27,7 @@ const JobCardTable = ({
   const limit = 10;
   const { tenantDomain } = useTenantDomain();
 
-  const { data: profileData } = useGetCompanyProfileQuery({ tenantDomain });
-  const companyProfileData = {
-    companyName: profileData?.data?.companyName,
-    address: profileData?.data?.address,
-    website: profileData?.data?.website,
-    phone: profileData?.data?.phone,
-    email: profileData?.data?.email,
-    logo: profileData?.data?.logo?.[0],
-    companyNameBN: profileData?.data?.companyNameBN,
-  };
+  const { companyProfileData } = useCompanyProfileData();
 
   const { data: allJobCards, isLoading: jobCardLoading } =
     useGetAllJobCardsQuery({

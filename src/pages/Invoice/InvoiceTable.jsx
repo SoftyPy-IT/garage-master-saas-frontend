@@ -9,10 +9,10 @@ import Breadcrumb from "../../components/Breadcrumb";
 
 import { useGetAllInvoicesQuery } from "../../redux/api/invoice";
 import { useTenantDomain } from "../../hooks/useTenantDomain";
-import { useGetCompanyProfileQuery } from "../../redux/api/companyProfile";
 import { getRowClass } from "../../utils/getRowClass";
 import { wrapBoxStyle } from "../../utils/customStyle";
 import { DeleteIcon, EditIcon } from "lucide-react";
+import { useCompanyProfileData } from "../../hooks/useCompanyProfileData";
 
 const InvoiceTable = ({
   title = "Invoices",
@@ -38,9 +38,7 @@ const InvoiceTable = ({
       isRecycled,
       status,
     });
-
-  const { data: profileData } = useGetCompanyProfileQuery({ tenantDomain });
-
+  const { companyProfileData } = useCompanyProfileData();
   const invoiceColumns = [
     { key: "slNo", label: "SL No", type: "index" },
     { key: "job_no", label: "Order No." },
@@ -135,17 +133,7 @@ const InvoiceTable = ({
       icon: FaDownload,
       color: "#fff",
       label: "Download Invoice",
-      href: (data, hooks) => {
-        console.log("hooke tenant check", hooks);
-        const companyProfileData = {
-          companyName: hooks?.profileData?.data?.companyName,
-          address: hooks?.profileData?.data?.address,
-          website: hooks?.profileData?.data?.website,
-          phone: hooks?.profileData?.data?.phone,
-          email: hooks?.profileData?.data?.email,
-          logo: hooks?.profileData?.data?.logo?.[0],
-          companyNameBN: hooks?.profileData?.data?.companyNameBN,
-        };
+      href: (data) => {
         return `${import.meta.env.VITE_API_URL}/invoices/invoice/${
           data._id
         }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
@@ -196,7 +184,7 @@ const InvoiceTable = ({
     },
   ];
 
-  const externalHooks = { tenantDomain, profileData };
+  const externalHooks = { tenantDomain };
 
   useEffect(() => {
     if (search) setFilterType(search);

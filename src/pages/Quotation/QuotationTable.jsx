@@ -13,11 +13,11 @@ import Table from "../../components/Table";
 import Breadcrumb from "../../components/Breadcrumb";
 import { wrapBoxStyle } from "../../utils/customStyle";
 import { useTenantDomain } from "../../hooks/useTenantDomain";
-import { useGetCompanyProfileQuery } from "../../redux/api/companyProfile";
 import {
   useGetAllQuotationsQuery,
   useMoveRecycledQuotationMutation,
 } from "../../redux/api/quotation";
+import { useCompanyProfileData } from "../../hooks/useCompanyProfileData";
 
 const QuotationTable = ({
   isRecycled,
@@ -34,8 +34,7 @@ const QuotationTable = ({
   const limit = 10;
   const { tenantDomain } = useTenantDomain();
 
-  const { data: profileData } = useGetCompanyProfileQuery({ tenantDomain });
-
+  const { companyProfileData } = useCompanyProfileData();
   const [moveRecycledQuotation, { isLoading: deleteLoading }] =
     useMoveRecycledQuotationMutation();
 
@@ -132,7 +131,9 @@ const QuotationTable = ({
       href: (d) =>
         `${import.meta.env.VITE_API_URL}/quotations/quotation/${
           d._id
-        }?tenantDomain=${tenantDomain}`,
+        }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
+          JSON.stringify(companyProfileData)
+        )}`,
     },
     {
       key: "preview",
@@ -178,7 +179,6 @@ const QuotationTable = ({
 
   const externalHooks = {
     tenantDomain,
-    profileData,
     deleteLoading,
     moveRecycledQuotation,
     swal,
