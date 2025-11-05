@@ -45,13 +45,13 @@ const Table = ({
                 ref={textInputRef}
                 onChange={(e) => handleSearch(e.target.value)}
                 autoComplete="off"
-                style={{ width: "100%" }} // prevent collapse
+                style={{ width: "100%" }}
               />
             </div>
             <button
               className="SearchBtn"
               onClick={() => handleSearch(localSearch)}
-              style={{ minWidth: "80px" }} // keep button size
+              style={{ minWidth: "80px" }}
             >
               Search
             </button>

@@ -65,6 +65,13 @@ export const getMenuItems = (user, handleLogout) => [
     ],
   },
   {
+    id: "Vehicles ",
+    type: "single",
+    icon: getIcon("DirectionsCar", "mui"),
+    text: "Vehicles",
+    link: "/dashboard/vehicles",
+  },
+  {
     id: "panel2",
     type: "accordion",
     title: "Quotation",
