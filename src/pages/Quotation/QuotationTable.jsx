@@ -119,6 +119,7 @@ const QuotationTable = ({
   const quotationActions = [
     {
       key: "invoice",
+      color: "#fff",
       icon: FaFileInvoice,
       label: "View Invoice",
       href: (d) => `/dashboard/create-invoice?order_no=${d.job_no}&id=${d._id}`,
@@ -126,6 +127,7 @@ const QuotationTable = ({
     {
       key: "download",
       icon: FaDownload,
+      color: "#fff",
       label: "Download Quotation",
       href: (d) =>
         `${import.meta.env.VITE_API_URL}/quotations/quotation/${
@@ -135,18 +137,21 @@ const QuotationTable = ({
     {
       key: "preview",
       icon: FaEye,
+      color: "#fff",
       label: "Preview",
       onClick: (d) => navigate(`/dashboard/quotation-view?id=${d._id}`),
     },
     {
       key: "edit",
       icon: EditIcon,
+      color: "#fff",
       label: "Edit Quotation",
       link: (d) => `/dashboard/update-quotation?id=${d._id}`,
     },
     {
       key: "delete",
       icon: DeleteIcon,
+      color: "#fff",
       label: isRecycled ? "Delete / Restore" : "Move to Recycled",
       onClick: (d) => handleMoveAction?.(d._id),
       disabled: () => deleteLoading,

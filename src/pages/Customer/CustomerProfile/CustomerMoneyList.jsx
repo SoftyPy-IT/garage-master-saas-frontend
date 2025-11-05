@@ -101,6 +101,7 @@ const CustomerMoneyList = ({
     {
       key: "preview",
       icon: FaEye,
+      color: "#fff",
       tooltip: "Preview Money Receipt",
       onClick: (item) => handleIconPreview(item._id),
     },
@@ -108,6 +109,7 @@ const CustomerMoneyList = ({
       key: "download",
       icon: FaDownload,
       tooltip: "Download Money Receipt",
+      color: "#fff",
       href: (item) =>
         `${import.meta.env.VITE_API_URL}/money-receipts/money/${
           item._id
@@ -119,6 +121,7 @@ const CustomerMoneyList = ({
     {
       key: "edit",
       icon: FaEdit,
+      color: "#fff",
       tooltip: "Edit Money Receipt",
       link: (item) =>
         `/dashboard/money-receipt-update?id=${item._id}&user_type=${user_type}&user=${id}`,
@@ -126,13 +129,13 @@ const CustomerMoneyList = ({
     {
       key: "delete",
       icon: FaTrashAlt,
+      color: "#fff",
       tooltip: deleteLoading ? "Deleting..." : "Move to Recycle Bin",
       onClick: (item) => handleMoveRecycledbin(item._id),
       disabled: () => deleteLoading,
     },
   ];
 
-  // Row color logic
   const getRowClass = (item) => {
     if (item.remaining === 0) return "bg-[#2dce89] text-white";
     if (item.remaining === item.total_amount) return "bg-[#f5365c] text-white";

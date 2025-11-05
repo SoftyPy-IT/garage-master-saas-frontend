@@ -98,6 +98,7 @@ const JobCardTable = ({
       key: "create-quotation",
       label: "Create Quotation",
       icon: FaEdit,
+
       link: (item) => `/dashboard/create-quotation?order_no=${item.job_no}`,
       tooltip: "Create Quotation",
       color: "#2563EB",
@@ -107,6 +108,7 @@ const JobCardTable = ({
       key: "download",
       label: "Download",
       icon: Download,
+
       href: (item) =>
         `${import.meta.env.VITE_API_URL}/jobCards/jobcard/${
           item._id
@@ -121,6 +123,7 @@ const JobCardTable = ({
     {
       key: "preview",
       label: "Preview",
+
       icon: Eye,
       onClick: (item) => navigate(`/dashboard/preview?id=${item._id}`),
       tooltip: "Preview Job Card",
@@ -130,6 +133,7 @@ const JobCardTable = ({
     {
       key: "edit",
       label: "Edit",
+
       icon: EditIcon,
       link: (item) => `/dashboard/update-jobcard?id=${item._id}`,
       tooltip: "Edit Job Card",
@@ -140,6 +144,7 @@ const JobCardTable = ({
       key: "recycle",
       label: isRecycled ? "Restore/Delete" : "Recycle",
       icon: DeleteIcon,
+
       onClick: (item) => handleMoveToRecycled?.(item._id),
       tooltip: isRecycled
         ? "Restore or Permanently Delete"

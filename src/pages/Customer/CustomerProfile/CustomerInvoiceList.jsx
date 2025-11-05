@@ -96,6 +96,7 @@ const CustomerInvoiceList = ({
   const actions = [
     {
       key: "money",
+      color: "#fff",
       icon: Money,
       href: (item) =>
         `/dashboard/money-receive-create?order_no=${item.job_no}&id=${item._id}&net_total=${item.due}`,
@@ -104,6 +105,7 @@ const CustomerInvoiceList = ({
     {
       key: "preview",
       icon: View,
+      color: "#fff",
       onClick: (item) =>
         window.location.assign(`/dashboard/invoice-view?id=${item._id}`),
       tooltip: "Preview Invoice",
@@ -111,6 +113,7 @@ const CustomerInvoiceList = ({
     {
       key: "download",
       icon: Download,
+      color: "#fff",
       href: (item) =>
         `${import.meta.env.VITE_API_URL}/invoices/invoice/${
           item._id
@@ -123,6 +126,7 @@ const CustomerInvoiceList = ({
     {
       key: "edit",
       icon: EditIcon,
+      color: "#fff",
       link: (item) =>
         `/dashboard/update-invoice?id=${item._id}&user_type=${user_type}&user=${id}`,
       tooltip: "Edit Invoice",
@@ -130,6 +134,7 @@ const CustomerInvoiceList = ({
     {
       key: "delete",
       icon: DeleteIcon,
+      color: "#fff",
       onClick: (item) => handleMoveToRecycledbin(item._id),
       tooltip: "Move to Recycle Bin",
       disabled: () => deleteLoading,

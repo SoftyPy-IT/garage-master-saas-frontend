@@ -119,6 +119,7 @@ const InvoiceTable = ({
       key: "money_receipt",
       icon: Money,
       label: "Money Receipt",
+      color: "#fff",
       href: (data) =>
         `/dashboard/money-receive-create?order_no=${data.job_no}&id=${
           data._id
@@ -132,6 +133,7 @@ const InvoiceTable = ({
     {
       key: "download",
       icon: FaDownload,
+      color: "#fff",
       label: "Download Invoice",
       href: (data, hooks) => {
         console.log("hooke tenant check", hooks);
@@ -158,6 +160,7 @@ const InvoiceTable = ({
     {
       key: "preview",
       icon: FaEye,
+      color: "#fff",
       label: "Preview",
       onClick: (data, hooks) =>
         hooks.navigate(`/dashboard/invoice-view?id=${data._id}`),
@@ -169,6 +172,7 @@ const InvoiceTable = ({
     {
       key: "edit",
       icon: EditIcon,
+      color: "#fff",
       label: "Edit Invoice",
       LinkComponent: Link,
       link: (data) => `/dashboard/update-invoice?id=${data._id}`,
@@ -179,6 +183,7 @@ const InvoiceTable = ({
     {
       key: "delete",
       icon: DeleteIcon,
+      color: "#fff",
       label: isRecycled
         ? "Delete Permanently / Restore"
         : "Move to Recycled Bin",

@@ -124,12 +124,14 @@ const CustomerQuotationList = ({
       key: "preview",
       icon: FaEye,
       tooltip: "Preview",
+      color: "#fff",
       onClick: (item, { navigate }) =>
         navigate(`/dashboard/quotation-view?id=${item._id}`),
     },
     {
       key: "create-invoice",
       icon: FaFileInvoice,
+      color: "#fff",
       tooltip: "Create Invoice",
       href: (item) =>
         `/dashboard/create-invoice?order_no=${item.job_no}&id=${item._id}`,
@@ -137,6 +139,7 @@ const CustomerQuotationList = ({
     {
       key: "download",
       icon: FaDownload,
+      color: "#fff",
       tooltip: "Download Quotation",
       href: (item) =>
         `${import.meta.env.VITE_API_URL}/quotations/quotation/${
@@ -149,6 +152,7 @@ const CustomerQuotationList = ({
     {
       key: "edit",
       icon: FaEdit,
+      color: "#fff",
       tooltip: "Edit Quotation",
       link: (item) =>
         `/dashboard/update-quotation?id=${item._id}&user_type=${user_type}&user=${id}`,
@@ -156,10 +160,10 @@ const CustomerQuotationList = ({
     {
       key: "delete",
       icon: FaTrashAlt,
+      color: "#fff",
       tooltip: deleteLoading ? "Deleting..." : "Delete Quotation",
       onClick: (item) => deletePackage(item._id),
       disabled: () => deleteLoading,
-      color: "red",
     },
   ];
 
