@@ -41,7 +41,7 @@ const InvoiceTable = ({
   const { companyProfileData } = useCompanyProfileData();
   const invoiceColumns = [
     { key: "slNo", label: "SL No", type: "index" },
-    { key: "job_no", label: "Order No." },
+    { key: "job_no", label: "Invoice No." },
 
     {
       key: "customer",
@@ -52,10 +52,21 @@ const InvoiceTable = ({
         data.showRoom?.showRoom_name ||
         "N/A",
     },
+    {
+      key: "vehicle_name",
+      label: "Vehicle Name",
+      render: (data) => {
+        if (!data?.vehicle) return "N/A";
+        const vehicles = Array.isArray(data.vehicle)
+          ? data.vehicle
+          : [data.vehicle];
+        return vehicles.map((v) => v.vehicle_name || "—").join(", ");
+      },
+    },
 
     {
       key: "vehicle",
-      label: "Car Reg No",
+      label: "Vehicle Reg No",
       render: (data) => {
         if (!data?.vehicle) return "N/A";
         const vehicles = Array.isArray(data.vehicle)
@@ -83,30 +94,6 @@ const InvoiceTable = ({
         data.company?.fullCompanyNum ||
         data.showRoom?.fullCompanyNum ||
         "N/A",
-    },
-
-    {
-      key: "vehicle_brand",
-      label: "Vehicle Brand",
-      render: (data) => {
-        if (!data?.vehicle) return "N/A";
-        const vehicles = Array.isArray(data.vehicle)
-          ? data.vehicle
-          : [data.vehicle];
-        return vehicles.map((v) => v.vehicle_brand || "—").join(", ");
-      },
-    },
-
-    {
-      key: "vehicle_name",
-      label: "Vehicle Name",
-      render: (data) => {
-        if (!data?.vehicle) return "N/A";
-        const vehicles = Array.isArray(data.vehicle)
-          ? data.vehicle
-          : [data.vehicle];
-        return vehicles.map((v) => v.vehicle_name || "—").join(", ");
-      },
     },
 
     { key: "date", label: "Date" },

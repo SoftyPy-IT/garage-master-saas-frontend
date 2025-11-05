@@ -37,6 +37,7 @@ const JobCardTable = ({
       searchTerm: filterType,
       isRecycled,
     });
+  console.log(allJobCards);
 
   useEffect(() => {
     if (search) setFilterType(search);
@@ -44,14 +45,25 @@ const JobCardTable = ({
 
   const columns = [
     { key: "index", label: "SL. N.", type: "index" },
-    { key: "Id", label: "User Id" },
-    { key: "job_no", label: "Order No." },
+    { key: "job_no", label: "Job Card No." },
     {
-      key: "vehicle.chassis_no",
-      label: "Chassis No",
-      render: (item) => item.vehicle?.map((v) => v.chassis_no).join(", "),
+      key: "customer_name",
+      label: "Customer Name",
+      render: (item) => {
+        switch (item?.user_type) {
+          case "customer":
+            return item?.customer?.customer_name || "—";
+          case "company":
+            return item?.company?.company_name || "—";
+          case "showRoom":
+            return item?.showRoom?.showroom_name || "—";
+          default:
+            return "—";
+        }
+      },
     },
-    { key: "user_type", label: "User type" },
+
+    { key: "customer.fullCustomerNum", label: "Mobile No." },
     {
       key: "vehicle.vehicle_name",
       label: "Vehicle Name",
@@ -75,12 +87,6 @@ const JobCardTable = ({
       },
     },
 
-    {
-      key: "vehicle.vehicle_brand",
-      label: "V. Brand",
-      render: (item) => item.vehicle?.map((v) => v.vehicle_brand).join(", "),
-    },
-    { key: "customer.fullCustomerNum", label: "Mobile No." },
     { key: "date", label: "Date" },
   ];
 

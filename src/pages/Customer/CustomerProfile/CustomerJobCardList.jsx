@@ -63,30 +63,52 @@ const CustomerJobCardList = ({
     }
   };
   const columns = [
-    { key: "index", label: "SL No", type: "index" },
-    { key: "job_no", label: "Order No." },
-    { key: "Id", label: "User ID" },
+    { key: "index", label: "SL. N.", type: "index" },
+    { key: "job_no", label: "Job Card No." },
     {
-      key: "customer.customer_name",
+      key: "customer_name",
       label: "Customer Name",
-      render: (item) =>
-        item.customer?.customer_name ||
-        item.company?.company_name ||
-        item.showRoom?.showRoom_name ||
-        "N/A",
+      render: (item) => {
+        switch (item?.user_type) {
+          case "customer":
+            return item?.customer?.customer_name || "—";
+          case "company":
+            return item?.company?.company_name || "—";
+          case "showRoom":
+            return item?.showRoom?.showroom_name || "—";
+          default:
+            return "—";
+        }
+      },
     },
-    { key: "user_type", label: "User Type" },
+
+    { key: "customer.fullCustomerNum", label: "Mobile No." },
     {
-      key: "mobile",
-      label: "Mobile No.",
-      render: (item) =>
-        item.customer?.fullCustomerNum ||
-        item.company?.fullCompanyNum ||
-        item.showRoom?.fullCompanyNum ||
-        "N/A",
+      key: "vehicle.vehicle_name",
+      label: "Vehicle Name",
+      render: (item) => item.vehicle?.map((v) => v.vehicle_name).join(", "),
     },
+    {
+      key: "vehicle.carReg_no",
+      label: "Car Reg No.",
+      render: (item) => {
+        if (!item?.vehicle || !Array.isArray(item.vehicle)) return "—";
+
+        return item.vehicle
+          .map((v) => {
+            const carRegNo = v?.carReg_no?.trim() || "";
+            const carRegistrationNo = v?.car_registration_no?.trim() || "";
+            if (carRegNo && carRegistrationNo)
+              return `${carRegNo}-${carRegistrationNo}`;
+            return carRegNo || carRegistrationNo || "—";
+          })
+          .join(", ");
+      },
+    },
+
     { key: "date", label: "Date" },
   ];
+
   const getRowClass = () => "";
 
   const actions = [

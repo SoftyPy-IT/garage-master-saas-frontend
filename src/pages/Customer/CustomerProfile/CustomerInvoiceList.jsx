@@ -2,7 +2,7 @@
 /* eslint-disable react/prop-types */
 import { useState } from "react";
 import { HiOutlinePlus } from "react-icons/hi";
-import { AddCircleOutline, Money } from "@mui/icons-material";
+import {  Money } from "@mui/icons-material";
 import { Link } from "react-router-dom";
 import swal from "sweetalert";
 import Loading from "../../../components/Loading/Loading";
@@ -14,7 +14,7 @@ import { getRowClass } from "../../../utils/getRowClass";
 import Table from "../../../components/Table";
 import { Button } from "@mui/material";
 import { purchaseBtn } from "../../../utils/customStyle";
-import { DeleteIcon, Download, EditIcon, View } from "lucide-react";
+import { DeleteIcon, Download, EditIcon, Eye, View } from "lucide-react";
 
 const CustomerInvoiceList = ({
   id,
@@ -58,38 +58,63 @@ const CustomerInvoiceList = ({
   };
 
   if (invoiceLoading) return <Loading />;
-
   const columns = [
-    { key: "index", label: "SL No", type: "index" },
-    { key: "job_no", label: "Order No." },
+    { key: "slNo", label: "SL No", type: "index" },
+    { key: "job_no", label: "Invoice No." },
+
     {
-      key: "customer.customer_name",
+      key: "customer",
       label: "Customer Name",
-      render: (item) =>
-        item.customer?.customer_name ||
-        item.company?.company_name ||
-        item.showRoom?.showRoom_name ||
+      render: (data) =>
+        data.customer?.customer_name ||
+        data.company?.company_name ||
+        data.showRoom?.showRoom_name ||
         "N/A",
     },
     {
-      key: "vehicle",
-      label: "Car No.",
-      render: (item) => {
-        const carReg = item.vehicle?.carReg_no || "";
-        const carNo = item.vehicle?.car_registration_no || "";
-        return `${carReg} ${carNo}`.trim();
+      key: "vehicle_name",
+      label: "Vehicle Name",
+      render: (data) => {
+        if (!data?.vehicle) return "N/A";
+        const vehicles = Array.isArray(data.vehicle)
+          ? data.vehicle
+          : [data.vehicle];
+        return vehicles.map((v) => v.vehicle_name || "—").join(", ");
       },
     },
 
     {
-      key: "mobile",
+      key: "vehicle",
+      label: "Vehicle Reg No",
+      render: (data) => {
+        if (!data?.vehicle) return "N/A";
+        const vehicles = Array.isArray(data.vehicle)
+          ? data.vehicle
+          : [data.vehicle];
+
+        return vehicles
+          .map((v) => {
+            const carRegNo = v?.carReg_no?.trim() || "";
+            const carRegistrationNo = v?.car_registration_no?.trim() || "";
+            if (carRegNo && carRegistrationNo) {
+              return `${carRegNo}-${carRegistrationNo}`;
+            }
+            return carRegNo || carRegistrationNo || "—";
+          })
+          .join(", ");
+      },
+    },
+
+    {
+      key: "contact",
       label: "Mobile No.",
-      render: (item) =>
-        item.customer?.fullCustomerNum ||
-        item.company?.fullCompanyNum ||
-        item.showRoom?.fullCompanyNum ||
+      render: (data) =>
+        data.customer?.fullCustomerNum ||
+        data.company?.fullCompanyNum ||
+        data.showRoom?.fullCompanyNum ||
         "N/A",
     },
+
     { key: "date", label: "Date" },
   ];
 
@@ -104,7 +129,7 @@ const CustomerInvoiceList = ({
     },
     {
       key: "preview",
-      icon: View,
+      icon: Eye,
       color: "#fff",
       onClick: (item) =>
         window.location.assign(`/dashboard/invoice-view?id=${item._id}`),

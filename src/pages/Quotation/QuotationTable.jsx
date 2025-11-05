@@ -50,12 +50,11 @@ const QuotationTable = ({
 
   const quotationColumns = [
     { key: "slNo", label: "SL No", type: "index" },
-    { key: "quotation_no", label: "Quotation ID" },
-    { key: "job_no", label: "Order No." },
+    { key: "job_no", label: "Quotation No." },
 
     {
       key: "name",
-      label: "Name",
+      label: "Customer Name",
       render: (data) =>
         data?.customer?.customer_name ||
         data?.company?.company_name ||
@@ -73,21 +72,10 @@ const QuotationTable = ({
     },
 
     {
-      key: "vehicle_brand",
-      label: "Vehicle Brand",
-      render: (d) =>
-        Array.isArray(d?.vehicle)
-          ? d.vehicle.map((v) => v.vehicle_brand || "—").join(", ")
-          : d.vehicle?.vehicle_brand || "N/A",
-    },
-
-    {
       key: "car_no",
-      label: "Car No.",
+      label: "Vehicle Reg No ",
       render: (d) => {
         if (!d?.vehicle) return "N/A";
-
-        // Handle both single object or array cases
         const vehicles = Array.isArray(d.vehicle) ? d.vehicle : [d.vehicle];
 
         return vehicles

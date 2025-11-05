@@ -82,7 +82,7 @@ const CustomerQuotationList = ({
 
   const columns = [
     { key: "index", label: "SL No", type: "index" },
-    { key: "job_no", label: "Order No." },
+    { key: "job_no", label: "Quotation No." },
     {
       key: "customer.customer_name",
       label: "Customer Name",
@@ -93,12 +93,30 @@ const CustomerQuotationList = ({
         "N/A",
     },
     {
-      key: "vehicle",
-      label: "Car No.",
-      render: (item) => {
-        const carReg = item.vehicle?.carReg_no || "";
-        const carNo = item.vehicle?.car_registration_no || "";
-        return `${carReg} ${carNo}`.trim();
+      key: "vehicle_name",
+      label: "Vehicle Name",
+      render: (d) =>
+        Array.isArray(d?.vehicle)
+          ? d.vehicle.map((v) => v.vehicle_name || "—").join(", ")
+          : d.vehicle?.vehicle_name || "N/A",
+    },
+
+    {
+      key: "car_no",
+      label: "Vehicle Reg No ",
+      render: (d) => {
+        if (!d?.vehicle) return "N/A";
+        const vehicles = Array.isArray(d.vehicle) ? d.vehicle : [d.vehicle];
+
+        return vehicles
+          .map((v) => {
+            const carRegNo = v?.carReg_no?.trim() || "";
+            const carRegistrationNo = v?.car_registration_no?.trim() || "";
+            if (carRegNo && carRegistrationNo)
+              return `${carRegNo}-${carRegistrationNo}`;
+            return carRegNo || carRegistrationNo || "—";
+          })
+          .join(", ");
       },
     },
     {

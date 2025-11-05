@@ -13,6 +13,7 @@ import { usePermissions } from "../../context/PermissionContext";
 import { useTenantDomain } from "../../hooks/useTenantDomain";
 import { useGetAllCustomersQuery } from "../../redux/api/customerApi";
 import { purchaseBtn, wrapBoxStyle } from "../../utils/customStyle";
+import { formatDate } from "../../utils/formateDate";
 
 const CustomerListTable = ({ handleDeleteAction, isRecycled, title }) => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -56,10 +57,22 @@ const CustomerListTable = ({ handleDeleteAction, isRecycled, title }) => {
     { key: "index", label: "SL No", type: "index" },
     { key: "customerId", label: "Customer ID" },
     { key: "customer_name", label: "Customer Name" },
-    { key: "vehicle_username", label: "Vehicle User Name" },
+    { key: "fullCustomerNum", label: "Phone No." },
+    {
+      key: "vehicle_name",
+      label: "Vehicle Name",
+      render: (item) => {
+        const lastVehicle = item?.vehicles
+          ? [...item.vehicles].sort(
+              (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+            )[0]
+          : null;
+        return lastVehicle?.vehicle_name || "—";
+      },
+    },
     {
       key: "vehicles",
-      label: "Car No.",
+      label: "Vehicle Reg No",
       render: (item) => {
         const firstVehicle = item?.vehicles?.[0];
         if (!firstVehicle) return "—";
@@ -74,19 +87,10 @@ const CustomerListTable = ({ handleDeleteAction, isRecycled, title }) => {
         return combined;
       },
     },
-
-    { key: "fullCustomerNum", label: "Mobile No." },
     {
-      key: "vehicle_name",
-      label: "Vehicle Name",
-      render: (item) => {
-        const lastVehicle = item?.vehicles
-          ? [...item.vehicles].sort(
-              (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-            )[0]
-          : null;
-        return lastVehicle?.vehicle_name || "—";
-      },
+      key: "createdAt",
+      label: "Date",
+      render: (item) => (item?.createdAt ? formatDate(item.createdAt) : "—"),
     },
   ];
   const actions = [

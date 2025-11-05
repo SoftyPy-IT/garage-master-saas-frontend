@@ -14,6 +14,7 @@ import { usePermissions } from "../../context/PermissionContext";
 import { useTenantDomain } from "../../hooks/useTenantDomain";
 import { useGetAllShowRoomsQuery } from "../../redux/api/showRoomApi";
 import { purchaseBtn } from "../../utils/customStyle";
+import { formatDate } from "../../utils/formateDate";
 
 const ShowRoomListTable = ({ handleDeleteAction, title, isRecycled }) => {
   const [filterType, setFilterType] = useState("");
@@ -62,25 +63,9 @@ const ShowRoomListTable = ({ handleDeleteAction, title, isRecycled }) => {
     { key: "index", label: "SL No", type: "index" },
     { key: "showRoomId", label: "Show Room ID" },
     { key: "showRoom_name", label: "Show Room Name" },
-    { key: "vehicle_username", label: "Show Room Customer Name" },
+    { key: "fullCompanyNum", label: "Phone No." },
     {
-      key: "vehicles",
-      label: "Car Reg No.",
-      render: (item) => {
-        const firstVehicle = item?.vehicles?.[0];
-        if (!firstVehicle) return "—";
-
-        const carRegNo = firstVehicle?.carReg_no || "";
-        const carRegistrationNo = firstVehicle?.car_registration_no || "";
-
-        return carRegNo && carRegistrationNo
-          ? `${carRegNo}-${carRegistrationNo}`
-          : carRegNo || carRegistrationNo || "—";
-      },
-    },
-    { key: "fullCompanyNum", label: "Mobile No." },
-    {
-      key: "vehicles",
+      key: "vehicle_name",
       label: "Vehicle Name",
       render: (item) => {
         const lastVehicle = item?.vehicles
@@ -88,8 +73,30 @@ const ShowRoomListTable = ({ handleDeleteAction, title, isRecycled }) => {
               (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
             )[0]
           : null;
-        return lastVehicle?.vehicle_name || "N/A";
+        return lastVehicle?.vehicle_name || "—";
       },
+    },
+    {
+      key: "vehicles",
+      label: "Vehicle Reg No",
+      render: (item) => {
+        const firstVehicle = item?.vehicles?.[0];
+        if (!firstVehicle) return "—";
+
+        const carRegNo = firstVehicle?.carReg_no || "";
+        const carRegistrationNo = firstVehicle?.car_registration_no || "";
+        const combined =
+          carRegNo && carRegistrationNo
+            ? `${carRegNo}-${carRegistrationNo}`
+            : carRegNo || carRegistrationNo || "—";
+
+        return combined;
+      },
+    },
+    {
+      key: "createdAt",
+      label: "Date",
+      render: (item) => (item?.createdAt ? formatDate(item.createdAt) : "—"),
     },
   ];
 
