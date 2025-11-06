@@ -13,15 +13,13 @@ import UserProfile from "../components/UserProfile/UserProfile";
 import Loading from "../components/Loading/Loading";
 import { useGetAllMetaQuery } from "../redux/api/meta.api";
 import { useTenantDomain } from "../hooks/useTenantDomain";
-import { useGetCompanyProfileQuery } from "../redux/api/companyProfile";
+import { useCompanyProfileData } from "../hooks/useCompanyProfileData";
 
 const AppBar = ({ toggle, navRef, toggleSideBar }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const { tenantDomain } = useTenantDomain();
   const { data: allMetaData, isLoading } = useGetAllMetaQuery({ tenantDomain });
-  const { data: CompanyInfoData } = useGetCompanyProfileQuery({
-    tenantDomain,
-  });
+  const { companyProfileData } = useCompanyProfileData();
 
   if (isLoading) return <Loading />;
 
@@ -31,17 +29,17 @@ const AppBar = ({ toggle, navRef, toggleSideBar }) => {
     const navButtons = [
       {
         label: "Visit Website",
-  
+
         onClick: () => window.open("https://trustautosolution.com", "_blank"),
       },
       {
         label: "BD Shop",
-    
+
         onClick: () => console.log("Open BD Shop"),
       },
       {
         label: "Global Shop",
-     
+
         onClick: () => console.log("Open Global Shop"),
       },
     ];
@@ -53,7 +51,6 @@ const AppBar = ({ toggle, navRef, toggleSideBar }) => {
             className="px-3 lg:px-[3px] xl:px-3 py-2 lg:py-1 xl:py-2 bg-white/20 backdrop-blur-sm text-white rounded-xl lg:rounded-lg xl:rounded-xl hover:bg-white/30 hover:scale-105 active:scale-95 border border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-3 lg:text-[13px]  xl:text-base lg:font-medium xl:font-medium"
             onClick={btn.onClick}
           >
-            
             {btn.label}
           </button>
         ))}
@@ -116,7 +113,8 @@ const AppBar = ({ toggle, navRef, toggleSideBar }) => {
         <div className="flex items-center gap-2 md:gap-4 lg:gap-2 xl:gap-10">
           <Link to="/dashboard">
             <h3 className=" text-white font-semibold text-lg md:text-xl lg:text-[17px] xl:text-2xl truncate max-w-[205px] md:max-w-[230px] lg:max-w-[220px] xl:max-w-[240px] pl-8 md:pl-7 lg:pl-14 xl:pl-0 ">
-              {CompanyInfoData?.data?.companyName}
+              {companyProfileData?.companyNameBN ||
+                companyProfileData?.companyName}
             </h3>
           </Link>
 

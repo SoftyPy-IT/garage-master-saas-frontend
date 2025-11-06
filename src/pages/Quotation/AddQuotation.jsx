@@ -476,6 +476,7 @@ const AddQuotation = () => {
   };
 
   const handleSelectSuggestion = (product) => {
+    console.log("select product ", product);
     if (activeInputType === "service") {
       const newItems = [...serviceItems];
       const matchingUnit = findMatchingUnit(product.product.unit);

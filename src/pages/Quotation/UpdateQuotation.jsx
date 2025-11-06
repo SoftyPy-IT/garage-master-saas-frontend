@@ -35,6 +35,7 @@ import { useTenantDomain } from "../../hooks/useTenantDomain";
 import { usePermissions } from "../../context/PermissionContext";
 import Can from "../../components/Can";
 import { formateNumber } from "../../utils/formateSemicolon";
+import { useCompanyProfileData } from "../../hooks/useCompanyProfileData";
 
 const UpdateQuotation = () => {
   const [specificQuotation, setSpecificQuotation] = useState({});
@@ -58,9 +59,7 @@ const UpdateQuotation = () => {
   const id = new URLSearchParams(location.search).get("id");
   const { tenantDomain } = useTenantDomain();
 
-  const { data: CompanyInfoData } = useGetCompanyProfileQuery({
-    tenantDomain,
-  });
+  const { companyProfileData } = useCompanyProfileData();
 
   const userTypeFromProfile = new URLSearchParams(location.search).get(
     "user_type"
@@ -275,10 +274,6 @@ const UpdateQuotation = () => {
     specificQuotation?.input_data,
     specificQuotation?.service_input_data,
   ]);
-
-  const handleDateChange = (newDate) => {
-    setSelectedDate(formatDate(newDate));
-  };
 
   // Fixed: Service description change handlers
   const handleServiceDescriptionChange = (index, value) => {
@@ -662,18 +657,44 @@ const UpdateQuotation = () => {
     setActiveSuggestionIndex(0);
   };
 
+  // Find matching unit function (same as AddQuotation)
+  const findMatchingUnit = (productUnit) => {
+    if (!productUnit) return "Pcs";
+    const unitValue =
+      typeof productUnit === "object" ? productUnit.unit : productUnit;
+    const shortName =
+      typeof productUnit === "object" ? productUnit.short_name : null;
+    const exactMatch = unitOptions.find(
+      (option) =>
+        option.value === unitValue ||
+        option.label === unitValue ||
+        (shortName &&
+          (option.value === shortName || option.label === shortName))
+    );
+    if (exactMatch) {
+      return exactMatch.value;
+    }
+    const caseInsensitiveMatch = unitOptions.find(
+      (option) =>
+        option.value.toLowerCase() === unitValue?.toLowerCase() ||
+        option.label.toLowerCase() === unitValue?.toLowerCase() ||
+        (shortName &&
+          (option.value.toLowerCase() === shortName.toLowerCase() ||
+            option.label.toLowerCase() === shortName.toLowerCase()))
+    );
+    if (caseInsensitiveMatch) {
+      return caseInsensitiveMatch.value;
+    }
+    return "Pcs";
+  };
+
   const handleSelectSuggestion = (product) => {
     if (!product) return;
 
     const productName = product.product?.product_name || "";
     const productPrice = Number(product.product?.sellingPrice) || 0;
-    const productQuantity = product.product.product_quantity || 1;
-    let productUnit = "Set";
-
-    if (product.product?.unit && typeof product.product.unit === "object") {
-      productUnit = product.product.unit.unit || "Set";
-    }
-
+    const productQuantity = product.stock || 1; // Use available stock instead of product quantity
+    const productUnit = findMatchingUnit(product.product?.unit);
     const total = productQuantity * productPrice;
 
     if (activeInputType === "service") {
@@ -687,8 +708,13 @@ const UpdateQuotation = () => {
           unit: productUnit,
           rate: productPrice,
           rateDisplay: productPrice.toString(),
-          quantity: productQuantity,
+          quantity: productQuantity.toString(),
           total: total,
+          product: product.product._id,
+          warehouse: product.warehouse,
+          product_name: product.product.product_name,
+          sellingPrice: product.product.sellingPrice || 0,
+          batchNumber: product.batchNumber || "",
         };
 
         setSpecificQuotation((prevState) => ({
@@ -706,8 +732,13 @@ const UpdateQuotation = () => {
           unit: productUnit,
           rate: productPrice,
           rateDisplay: productPrice.toString(),
-          quantity: productQuantity,
+          quantity: productQuantity.toString(),
           total: total,
+          product: product.product._id,
+          warehouse: product.warehouse,
+          product_name: product.product.product_name,
+          sellingPrice: product.product.sellingPrice || 0,
+          batchNumber: product.batchNumber || "",
         };
         setServiceItems(newItems);
       }
@@ -720,8 +751,13 @@ const UpdateQuotation = () => {
           unit: productUnit,
           rate: productPrice,
           rateDisplay: productPrice.toString(),
-          quantity: productQuantity,
+          quantity: productQuantity.toString(),
           total: total,
+          product: product.product._id,
+          warehouse: product.warehouse,
+          product_name: product.product.product_name,
+          sellingPrice: product.product.sellingPrice || 0,
+          batchNumber: product.batchNumber || "",
         };
 
         setSpecificQuotation((prevState) => ({
@@ -738,8 +774,13 @@ const UpdateQuotation = () => {
           unit: productUnit,
           rate: productPrice,
           rateDisplay: productPrice.toString(),
-          quantity: productQuantity,
+          quantity: productQuantity.toString(),
           total: total,
+          product: product.product._id,
+          warehouse: product.warehouse,
+          product_name: product.product.product_name,
+          sellingPrice: product.product.sellingPrice || 0,
+          batchNumber: product.batchNumber || "",
         };
         setItems(newItems);
       }
@@ -888,6 +929,7 @@ const UpdateQuotation = () => {
       setVAT(parsedValue);
     }
   };
+
   const calculateFinalTotal = () => {
     let currentPartsTotal = partsTotal;
     let currentServiceTotal = serviceTotal;
@@ -945,6 +987,11 @@ const UpdateQuotation = () => {
         rate: item.rate,
         unit: item.unit,
         total: item.total,
+        product: item.product,
+        warehouse: item.warehouse,
+        product_name: item.product_name,
+        sellingPrice: item.sellingPrice,
+        batchNumber: item.batchNumber,
       })),
   ];
 
@@ -958,6 +1005,11 @@ const UpdateQuotation = () => {
         rate: item.rate,
         unit: item.unit,
         total: item.total,
+        product: item.product,
+        warehouse: item.warehouse,
+        product_name: item.product_name,
+        sellingPrice: item.sellingPrice,
+        batchNumber: item.batchNumber,
       })),
   ];
 
@@ -1181,22 +1233,22 @@ const UpdateQuotation = () => {
       <div className="mb-5 pb-5 mx-auto text-center border-b-2 border-[#42A1DA]">
         <div className="addJobCardHeads">
           <img
-            src={CompanyInfoData?.data?.logo || "/placeholder.svg"}
+            src={companyProfileData?.logo || "/placeholder.svg"}
             alt="logo"
             className="addJobLogoImg"
           />
           <div>
             <div className="flex-1 text-center">
               <h2 className="trustAutoTitle">
-                {CompanyInfoData?.data?.companyNameBN}
+                {companyProfileData?.companyNameBN}
               </h2>
 
               <h3 className="text-lg md:text-xl english-font mt-1 text-[#4671A1] font-bold ">
-                ({CompanyInfoData?.data?.companyName})
+                ({companyProfileData?.companyName})
               </h3>
             </div>
             <span className="text-[12px] lg:text-xl mt-5 block">
-              Office: {CompanyInfoData?.data?.address}
+              Office: {companyProfileData?.address}
             </span>
           </div>
           <TrustAutoAddress />
@@ -1804,7 +1856,28 @@ const UpdateQuotation = () => {
                                           suggestionStyles.suggestionItemPrice
                                         }
                                       >
-                                        ${product.product.sellingPrice}
+                                        Stock: {product.stock}
+                                      </span>
+                                      <span
+                                        style={
+                                          suggestionStyles.suggestionItemPrice
+                                        }
+                                      >
+                                        {product.product.unit?.short_name}
+                                      </span>
+                                      <span
+                                        style={
+                                          suggestionStyles.suggestionItemPrice
+                                        }
+                                      >
+                                        {product.product?.sellingPrice}
+                                      </span>
+                                      <span
+                                        style={
+                                          suggestionStyles.suggestionItemPrice
+                                        }
+                                      >
+                                        WH: {product.warehouse?.name}
                                       </span>
                                     </div>
                                   </div>
@@ -1945,14 +2018,10 @@ const UpdateQuotation = () => {
                           {showSuggestions &&
                             activeInputType === "parts" &&
                             activeInputIndex === i && (
-                              <div
-                                style={suggestionStyles.suggestionsList}
-                                className="suggestionsList"
-                              >
+                              <div style={suggestionStyles.suggestionsList}>
                                 {productSuggestions.map((product, index) => (
                                   <div
                                     key={product._id}
-                                    className="suggestion-item"
                                     style={{
                                       ...suggestionStyles.suggestionItem,
                                       ...(index === activeSuggestionIndex
@@ -1960,7 +2029,7 @@ const UpdateQuotation = () => {
                                         : {}),
                                     }}
                                     onClick={() =>
-                                      handleSuggestionClick(product)
+                                      handleSelectSuggestion(product)
                                     }
                                   >
                                     <div
@@ -2171,7 +2240,28 @@ const UpdateQuotation = () => {
                                           suggestionStyles.suggestionItemPrice
                                         }
                                       >
-                                        ${product.product.sellingPrice}
+                                        Stock: {product.stock}
+                                      </span>
+                                      <span
+                                        style={
+                                          suggestionStyles.suggestionItemPrice
+                                        }
+                                      >
+                                        {product.product.unit?.short_name}
+                                      </span>
+                                      <span
+                                        style={
+                                          suggestionStyles.suggestionItemPrice
+                                        }
+                                      >
+                                        {product.product?.sellingPrice}
+                                      </span>
+                                      <span
+                                        style={
+                                          suggestionStyles.suggestionItemPrice
+                                        }
+                                      >
+                                        WH: {product.warehouse?.name}
                                       </span>
                                     </div>
                                   </div>
