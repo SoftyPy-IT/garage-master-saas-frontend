@@ -14,6 +14,7 @@ import {
   useMoveRecycledEmployeeMutation,
 } from "../../redux/api/employee";
 import { purchaseBtn, wrapBoxStyle } from "../../utils/customStyle";
+import Loading from "../../components/Loading/Loading";
 
 export default function EmployeeList() {
   const [filterType, setFilterType] = useState("");
@@ -120,6 +121,10 @@ export default function EmployeeList() {
     { label: "Employee", href: "/dashboard/employee-list" },
     { label: "Employee List " },
   ];
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
     <Box sx={wrapBoxStyle}>

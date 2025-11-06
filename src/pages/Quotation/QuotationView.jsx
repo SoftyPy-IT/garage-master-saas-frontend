@@ -12,6 +12,7 @@ import { useGetSingleQuotationQuery } from "../../redux/api/quotation";
 import { useGetCompanyProfileQuery } from "../../redux/api/companyProfile";
 import { useTenantDomain } from "../../hooks/useTenantDomain";
 import { formateNumber } from "../../utils/formateSemicolon";
+import { useCompanyProfileData } from "../../hooks/useCompanyProfileData";
 
 const Detail = () => {
   const componentRef = useRef();
@@ -22,15 +23,7 @@ const Detail = () => {
     tenantDomain,
   });
 
-  const companyProfileData = {
-    companyName: profileData?.data?.companyName,
-    address: profileData?.data?.address,
-    website: profileData?.data?.website,
-    phone: profileData?.data?.phone,
-    email: profileData?.data?.email,
-    logo: profileData?.data?.logo[0],
-    companyNameBN: profileData?.data?.companyNameBN,
-  };
+  const { companyProfileData } = useCompanyProfileData();
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
   });
@@ -70,13 +63,17 @@ const Detail = () => {
                   />
                   <div>
                     <div className="flex-1 text-center">
-                      <h2 className="trustAutoTitle">
-                        {profileData?.data?.companyNameBN}
-                      </h2>
+                      {profileData?.data?.companyNameBN && (
+                        <h2 className="trustAutoTitle">
+                          {profileData.data.companyNameBN}
+                        </h2>
+                      )}
 
-                      <h3 className="text-lg md:text-xl english-font mt-1 text-[#4671A1] font-bold ">
-                        ({profileData?.data?.companyName})
-                      </h3>
+                      {profileData?.data?.companyName && (
+                        <h3 className="text-lg md:text-xl english-font mt-1 text-[#4671A1] font-bold">
+                          {profileData.data.companyName}
+                        </h3>
+                      )}
                     </div>
                     <small className="block mt-2">
                       Office: {profileData?.data?.address}
@@ -160,7 +157,7 @@ const Detail = () => {
                     <div className="invoiceCustomerInfo">
                       <small>
                         <span className="mr-1">:</span>{" "}
-                        {quotationPreview?.quotation_no}
+                        {quotationPreview?.job_no}
                       </small>
                       {(quotationPreview?.customer?.customer_name ||
                         quotationPreview?.company?.company_name ||

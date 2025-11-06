@@ -7,27 +7,20 @@ import { Link, useLocation } from "react-router-dom";
 import "./MoneyReceived.css";
 import "./PrintStyle.css";
 import { Button } from "@mui/material";
-import { useGetCompanyProfileQuery } from "../../redux/api/companyProfile";
 import { useTenantDomain } from "../../hooks/useTenantDomain";
 import { useGetSingleMoneyReceiptQuery } from "../../redux/api/money-receipt";
 import Loading from "../../components/Loading/Loading";
+import { useCompanyProfileData } from "../../hooks/useCompanyProfileData";
+import { formatDate } from "../../utils/formateDate";
 const PdfGenerator = () => {
   const location = useLocation();
   const id = new URLSearchParams(location.search).get("id");
 
   const { tenantDomain } = useTenantDomain();
-  const { data: CompanyInfoData } = useGetCompanyProfileQuery({
-    tenantDomain,
-  });
-  const companyProfileData = {
-    companyName: CompanyInfoData?.data?.companyName,
-    address: CompanyInfoData?.data?.address,
-    website: CompanyInfoData?.data?.website,
-    phone: CompanyInfoData?.data?.phone,
-    email: CompanyInfoData?.data?.email,
-    logo: CompanyInfoData?.data?.logo[0],
-    companyNameBN: CompanyInfoData?.data?.companyNameBN,
-  };
+
+  const { companyProfileData } = useCompanyProfileData();
+  console.log(companyProfileData);
+
   const componentRef = useRef();
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
@@ -40,18 +33,9 @@ const PdfGenerator = () => {
     }
   );
 
-
   if (isLoading) {
     return <Loading />;
   }
-
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    const day = date.getDate().toString().padStart(2, "0");
-    const month = (date.getMonth() + 1).toString().padStart(2, "0");
-    const year = date.getFullYear();
-    return `${day}-${month}-${year}`;
-  };
 
   return (
     <section className="viewMoneyReceiptWrap">
@@ -60,45 +44,45 @@ const PdfGenerator = () => {
           <div ref={componentRef} className="moneyFormWrap">
             <div className="flex items-center justify-between  lg:flex-row gap-3">
               <div className="logoWrap logoWrap2">
-                <img
-                  className=""
-                  src={CompanyInfoData?.data?.logo}
-                  alt="logo"
-                />
+                <img className="" src={companyProfileData?.logo} alt="logo" />
               </div>
 
               <div className="moneyHead moneyHead2">
                 <div className="flex-1 text-center">
-                  <h2 className="text-3xl">
-                    {CompanyInfoData?.data?.companyNameBN}
-                  </h2>
-                  <h3 className="text-lg md:text-xl english-font mt-1 text-[#4671A1] font-bold">
-                    ({CompanyInfoData?.data?.companyName})
-                  </h3>
+                  {companyProfileData?.companyNameBN && (
+                    <h2 className="trustAutoTitle">
+                      {companyProfileData.companyNameBN}
+                    </h2>
+                  )}
+                  {companyProfileData?.companyName && (
+                    <h3 className="text-lg md:text-xl english-font mt-1 text-[#4671A1] font-bold">
+                      {companyProfileData.companyName}
+                    </h3>
+                  )}
                 </div>
-                <span className="mt-5 block">
-                  It's trusted computerized Organization for all kinds of
-                  vehicle Cheque up & maintenance such as computerized Engine
-                  Analysis, Engine tune up, Denting, Painting, Engine, AC,
-                  Electrical Works & Car Wash.{" "}
-                </span>
+
+                {companyProfileData?.description && (
+                  <span className="mt-5 block">
+                    {companyProfileData.description}
+                  </span>
+                )}
               </div>
               <div className="hotlineWrap">
                 <div className="flex items-center">
                   <LocalPhone className="hotlineIcon" />
-                  <small>{CompanyInfoData?.data?.phone}</small>
+                  <small>{companyProfileData?.phone}</small>
                 </div>
                 <div className="flex items-center">
                   <Email className="hotlineIcon" />
-                  <small>{CompanyInfoData?.data?.email}</small>
+                  <small>{companyProfileData?.email}</small>
                 </div>
                 <div className="flex items-center">
                   <Home className="hotlineIcon"> </Home>
-                  <small>{CompanyInfoData?.data?.address}</small>
+                  <small>{companyProfileData?.address}</small>
                 </div>
                 <div className="flex items-center">
                   <WhatsApp className="hotlineIcon" />
-                  <small>{CompanyInfoData?.data?.whatsapp}</small>
+                  <small>{companyProfileData?.whatsapp}</small>
                 </div>
               </div>
             </div>
@@ -130,7 +114,7 @@ const PdfGenerator = () => {
               <div className=" payAdvance mt-2">
                 <div className="flex items-center justify-center  receivedField">
                   {singleMoneyReceipt?.data?.against_bill_no_method ===
-                    "Advance against bill no" ? (
+                  "Advance against bill no" ? (
                     <label className="advance2 capitalize">
                       {singleMoneyReceipt?.data?.against_bill_no_method} :
                     </label>
@@ -157,19 +141,19 @@ const PdfGenerator = () => {
                     {singleMoneyReceipt?.data?.payment_method === "Bkash"
                       ? "Bkash"
                       : singleMoneyReceipt?.data?.payment_method === "Nagad"
-                        ? "Nagad"
-                        : singleMoneyReceipt?.data?.payment_method === "Rocket"
-                          ? "Rocket"
-                          : singleMoneyReceipt?.data?.payment_method ===
-                            "Bank Transfer"
-                            ? "Bank Transfer"
-                            : singleMoneyReceipt?.data?.payment_method === "Check"
-                              ? "Cheque"
-                              : singleMoneyReceipt?.data?.payment_method === "Other"
-                                ? "Other"
-                                : singleMoneyReceipt?.data?.payment_method === "Cash"
-                                  ? "Cash"
-                                  : ""}
+                      ? "Nagad"
+                      : singleMoneyReceipt?.data?.payment_method === "Rocket"
+                      ? "Rocket"
+                      : singleMoneyReceipt?.data?.payment_method ===
+                        "Bank Transfer"
+                      ? "Bank Transfer"
+                      : singleMoneyReceipt?.data?.payment_method === "Check"
+                      ? "Cheque"
+                      : singleMoneyReceipt?.data?.payment_method === "Other"
+                      ? "Other"
+                      : singleMoneyReceipt?.data?.payment_method === "Cash"
+                      ? "Cash"
+                      : ""}
                   </span>
                 </div>
               </div>
@@ -206,11 +190,11 @@ const PdfGenerator = () => {
                     singleMoneyReceipt?.data?.payment_method === "Nagad" ||
                     singleMoneyReceipt?.data?.payment_method === "Rocket" ||
                     singleMoneyReceipt?.data?.payment_method ===
-                    "Bank Transfer") && (
-                      <span className="text-sm">
-                        {singleMoneyReceipt?.data?.account_number}
-                      </span>
-                    )}
+                      "Bank Transfer") && (
+                    <span className="text-sm">
+                      {singleMoneyReceipt?.data?.account_number}
+                    </span>
+                  )}
                   {singleMoneyReceipt?.data?.payment_method === "Cash" && (
                     <span className="text-sm ">
                       {singleMoneyReceipt?.data?.cash_by}
@@ -246,11 +230,11 @@ const PdfGenerator = () => {
                         singleMoneyReceipt?.data?.payment_method === "Nagad" ||
                         singleMoneyReceipt?.data?.payment_method === "Rocket" ||
                         singleMoneyReceipt?.data?.payment_method ===
-                        "Bank Transfer") && (
-                          <label className="transactionId capitalize">
-                            Transaction ID :
-                          </label>
-                        )}
+                          "Bank Transfer") && (
+                        <label className="transactionId capitalize">
+                          Transaction ID :
+                        </label>
+                      )}
                       {singleMoneyReceipt?.data?.payment_method === "Check" && (
                         <label className="bankName">Bank Name : </label>
                       )}
@@ -261,11 +245,11 @@ const PdfGenerator = () => {
                       singleMoneyReceipt?.data?.payment_method === "Nagad" ||
                       singleMoneyReceipt?.data?.payment_method === "Rocket" ||
                       singleMoneyReceipt?.data?.payment_method ===
-                      "Bank Transfer") && (
-                        <span className="text-sm ">
-                          {singleMoneyReceipt?.data?.transaction_id}
-                        </span>
-                      )}
+                        "Bank Transfer") && (
+                      <span className="text-sm ">
+                        {singleMoneyReceipt?.data?.transaction_id}
+                      </span>
+                    )}
                     {singleMoneyReceipt?.data?.payment_method === "Check" && (
                       <span className="text-sm">
                         {singleMoneyReceipt?.data?.bank_name}
@@ -294,7 +278,7 @@ const PdfGenerator = () => {
                 </div>
                 <>
                   {singleMoneyReceipt?.data?.against_bill_no_method ===
-                    "Advance against bill no" ? (
+                  "Advance against bill no" ? (
                     <>
                       {singleMoneyReceipt?.data?.advance && (
                         <div className="flex items-center justify-center receivedField">
@@ -309,7 +293,7 @@ const PdfGenerator = () => {
                       <div className="flex items-center justify-center receivedField">
                         <div className="flex">
                           {singleMoneyReceipt?.data?.against_bill_no_method ===
-                            "Advance against bill no" ? (
+                          "Advance against bill no" ? (
                             <label className="">Remaining :</label>
                           ) : (
                             <label className="">Paid :</label>
@@ -327,7 +311,7 @@ const PdfGenerator = () => {
                     <div className="flex items-center justify-center receivedField">
                       <label className="flex">
                         {singleMoneyReceipt?.data?.against_bill_no_method ===
-                          "Advance against bill no"
+                        "Advance against bill no"
                           ? "Remaining"
                           : "Paid"}{" "}
                         :
@@ -361,7 +345,6 @@ const PdfGenerator = () => {
                 </div>
               </div>
             </div>
-
           </div>
         </div>
       </div>
@@ -370,10 +353,11 @@ const PdfGenerator = () => {
         {singleMoneyReceipt?.data?._id && (
           <a
             className="bg-[#82017F] text-white px-3 py-2 text-[12px] rounded-full mr-2"
-            href={`${import.meta.env.VITE_API_URL}/money-receipts/money/${singleMoneyReceipt.data._id
-              }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
-                JSON.stringify(companyProfileData)
-              )}`}
+            href={`${import.meta.env.VITE_API_URL}/money-receipts/money/${
+              singleMoneyReceipt.data._id
+            }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
+              JSON.stringify(companyProfileData)
+            )}`}
             target="_blank"
             rel="noreferrer"
           >

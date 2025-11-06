@@ -20,7 +20,6 @@ import PropTypes from "prop-types";
 const AllServices = ({ showSensitiveData }) => {
   const { tenantDomain } = useTenantDomain();
   const { data: allMetaData, isLoading } = useGetAllMetaQuery({ tenantDomain });
-
   if (isLoading) return <Loading />;
 
   const card =
@@ -102,6 +101,10 @@ const AllServices = ({ showSensitiveData }) => {
             <div className={card}>
               <div className="dashboardCardIconWrap7">
                 <FaUsers className="dashboardCardIcon" />
+              </div>
+              <div className="invoice-info">
+                <h2 className={amount}>{allMetaData?.data?.totalEntities}</h2>
+                <p className="label">All Customer</p>
               </div>
             </div>
           </Link>

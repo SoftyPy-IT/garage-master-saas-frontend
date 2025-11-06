@@ -168,7 +168,6 @@ export default function CompanyProfileModal({ profileData, open, onClose }) {
                     name="companyNameBN"
                     label="Company Name Bangla"
                     icon={BusinessIcon}
-                    required
                   />
                 </Grid>
                 <Grid item xs={12}>

@@ -20,6 +20,7 @@ export const useCompanyProfileData = () => {
         email: profileData.data.email,
         logo: profileData.data.logo?.[0] || null,
         companyNameBN: profileData.data.companyNameBN,
+        description: profileData.data.description,
       }
     : null;
 

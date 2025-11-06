@@ -100,15 +100,20 @@ const InvoiceView = () => {
                   />
                   <div>
                     <div className="flex-1 text-center">
-                      <h2 className="trustAutoTitle">
-                        {CompanyInfoData?.data?.companyNameBN}
-                      </h2>
-                      <h3 className="text-lg md:text-xl english-font mt-1 text-[#4671A1] font-bold">
-                        ({CompanyInfoData?.data?.companyName})
-                      </h3>
+                      {CompanyInfoData?.data?.companyNameBN && (
+                        <h2 className="trustAutoTitle">
+                          {CompanyInfoData.data.companyNameBN}
+                        </h2>
+                      )}
+
+                      {CompanyInfoData?.data?.companyName && (
+                        <h3 className="text-lg md:text-xl english-font mt-1 text-[#4671A1] font-bold">
+                          {CompanyInfoData.data.companyName}
+                        </h3>
+                      )}
                     </div>
 
-                    <small className="block">
+                    <small className="block mt-3">
                       Office: {CompanyInfoData?.data?.address}
                     </small>
                   </div>
@@ -193,7 +198,7 @@ const InvoiceView = () => {
                       <div className="invoiceCustomerInfo">
                         <small>
                           <span className="mr-1">:</span>{" "}
-                          {invoicePreview?.invoice_no}
+                          {invoicePreview?.job_no}
                         </small>
                         <small>
                           {(invoicePreview?.customer?.customer_name ||
