@@ -144,7 +144,7 @@ const ProjectOverView = ({ tenantDomain }) => {
           </div>
 
           {/* Chart Section - 45% width */}
-          <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
+          <div className="bg-white rounded-xl shadow-lg lg:p-6 border border-gray-200">
             <ExpanseIncomeChart />
             {/* <Calendar/> */}
           </div>

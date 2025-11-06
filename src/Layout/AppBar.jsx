@@ -31,26 +31,26 @@ const AppBar = ({ toggle, navRef, toggleSideBar }) => {
     const navButtons = [
       {
         label: "Visit Website",
-        emoji: "🌐",
+  
         onClick: () => window.open("https://trustautosolution.com", "_blank"),
       },
       {
         label: "BD Shop",
-        emoji: "🛒",
+    
         onClick: () => console.log("Open BD Shop"),
       },
       {
         label: "Global Shop",
-        emoji: "🌍",
+     
         onClick: () => console.log("Open Global Shop"),
       },
     ];
     return (
-      <div className="lg:flex gap-2 space-y-3 md:space-y-0">
+      <div className="md:flex gap-2 space-y-3 md:space-y-0">
         {navButtons.map((btn) => (
           <button
             key={btn.label}
-            className="lg:px-[3px] xl:px-3 lg:py-1 xl:py-2 bg-white/20 backdrop-blur-sm text-white rounded-xl lg:rounded-lg xl:rounded-xl hover:bg-white/30 hover:scale-105 active:scale-95 border border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-3 lg:text-[13px]  xl:text-base lg:font-medium xl:font-medium"
+            className="px-3 lg:px-[3px] xl:px-3 py-2 lg:py-1 xl:py-2 bg-white/20 backdrop-blur-sm text-white rounded-xl lg:rounded-lg xl:rounded-xl hover:bg-white/30 hover:scale-105 active:scale-95 border border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-3 lg:text-[13px]  xl:text-base lg:font-medium xl:font-medium"
             onClick={btn.onClick}
           >
             
@@ -100,7 +100,7 @@ const AppBar = ({ toggle, navRef, toggleSideBar }) => {
 
   return (
     <div className="w-full h-16 bg-[#42A0D9] fixed z-10 flex items-center">
-      <div className="flex items-center xl:justify-between w-full px-4 sm:px-6 md:px-8 lg:px-2 xl:px-16 gap-2">
+      <div className="flex items-center justify-between w-full px-4 sm:px-6 md:px-8 lg:px-2 xl:px-16 gap-2">
         {/* Left Sidebar Toggle */}
         <div
           className={`${toggle ? "activeToggle" : "navActive"}`}
@@ -113,15 +113,15 @@ const AppBar = ({ toggle, navRef, toggleSideBar }) => {
         </div>
 
         {/* Company Name + Buttons */}
-        <div className="flex items-center gap-2 md:gap-4 lg:gap-2">
+        <div className="flex items-center gap-2 md:gap-4 lg:gap-2 xl:gap-10">
           <Link to="/dashboard">
-            <h3 className="hidden sm:block text-white font-semibold text-lg md:text-xl lg:text-[17px] truncate max-w-[150px] lg:max-w-[220px] lg:pl-14">
+            <h3 className=" text-white font-semibold text-lg md:text-xl lg:text-[17px] xl:text-2xl truncate max-w-[205px] md:max-w-[230px] lg:max-w-[220px] xl:max-w-[240px] pl-8 md:pl-7 lg:pl-14 xl:pl-0 ">
               {CompanyInfoData?.data?.companyName}
             </h3>
           </Link>
 
           {/* Show nav buttons on md+ instead of lg+ */}
-          <div className="hidden md:flex items-center gap-2 lg:gap-3">
+          <div className="hidden lg:flex items-center gap-2 lg:gap-3">
             <Buttons />
           </div>
         </div>
@@ -141,7 +141,7 @@ const AppBar = ({ toggle, navRef, toggleSideBar }) => {
           </IconButton>
 
           {/* Desktop Section */}
-          <div className="hidden md:flex items-center gap-4 lg:gap-2 xl:gap-4">
+          <div className="hidden lg:flex items-center gap-4 lg:gap-2 xl:gap-4">
             <SubscriptionChip />
             <TopSearchbar />
             <Calender />
@@ -152,7 +152,7 @@ const AppBar = ({ toggle, navRef, toggleSideBar }) => {
 
       {/* 🟢 Mobile Dropdown Menu */}
       <div
-        className={`md:hidden absolute top-16 left-0 w-full backdrop-blur-md bg-[#42A1DA] transition-all duration-500 overflow-hidden rounded-b-2xl shadow-2xl ${
+        className={`absolute top-16 left-0 w-full backdrop-blur-md bg-[#42A1DA] transition-all duration-500 overflow-hidden rounded-b-2xl shadow-2xl ${
           menuOpen ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"
         }`}
       >

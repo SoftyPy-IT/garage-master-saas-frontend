@@ -2,8 +2,8 @@ export const SIDEBAR_STYLES = {
   container: "flex",
   sidebar: (toggle) =>
     toggle
-      ? "fixed overflow-y-scroll overflow-x-hidden drawwerLeftSide h-screen text-lg font-semibold bg-[#2C3136] text-white"
-      : "fixed overflow-y-scroll overflow-x-hidden sideBarActive h-screen text-lg font-semibold bg-[#2C3136] text-white",
+      ? "fixed overflow-y-scroll overflow-x-hidden drawwerLeftSide h-screen text-lg font-semibold bg-[#2C3136] text-white pt-16"
+      : "fixed overflow-y-scroll overflow-x-hidden sideBarActive h-screen text-lg font-semibold bg-[#2C3136] text-white ",
   rightSidebar: (toggle) =>
     toggle ? "rightSideBarWrap" : "activeRightSideBarWrap",
   dashboardItem: "flex items-center dashboardItems cursor-pointer",
