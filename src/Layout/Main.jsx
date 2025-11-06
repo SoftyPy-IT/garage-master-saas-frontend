@@ -4,7 +4,7 @@ import { theme } from "../lib/Providers/Theme/Theme";
 
 const Main = () => {
   return (
-    <main className="pt-10">
+    <main>
       <ThemeProvider theme={theme}>
         <Outlet />
       </ThemeProvider>
