@@ -19,16 +19,11 @@ const Sidebar = ({ toggle }) => {
   const dispatch = useDispatch();
   const [tenantLogout] = useTenantLogoutMutation();
   const navigate = useNavigate();
-
-  // Get user from localStorage
   const user = JSON.parse(localStorage.getItem("user") || "{}");
 
-  // Handle accordion expansion
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
   };
-
-  // Handle logout
   const handleLogout = async () => {
     try {
       const res = await tenantLogout().unwrap();
@@ -42,7 +37,6 @@ const Sidebar = ({ toggle }) => {
     }
   };
 
-  // Get menu items with user and logout handler
   const menuItems = getMenuItems(user, handleLogout);
 
   return (

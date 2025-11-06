@@ -19,17 +19,13 @@ import PropTypes from "prop-types";
 
 const AllServices = ({ showSensitiveData }) => {
   const { tenantDomain } = useTenantDomain();
-  const {
-    data: allMetaData,
-    isLoading,
-    isError,
-  } = useGetAllMetaQuery({ tenantDomain });
+  const { data: allMetaData, isLoading } = useGetAllMetaQuery({ tenantDomain });
 
   if (isLoading) return <Loading />;
 
   const card =
     "flex flex-col  items-center justify-center content-center gap-x-2 mt-3 md:mt-4 space-y-2 ";
-  const amount = "text-center text-[32px] font-bold ";
+  const amount = "text-center text-[32px] font-bold text-center ";
 
   const WaveBg = () => (
     <div className="wave-background">
@@ -50,12 +46,9 @@ const AllServices = ({ showSensitiveData }) => {
 
   return (
     <div className="dashBoardRight mt-5 lg:mt-0 ">
-      {/* Always visible cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 place-content-center gap-3 lg:gap-3 xl:gap-7 mb-5">
-        {/* Completed Services */}
         <div className="invoice-card">
           <WaveBg />
-
           <Link to="/dashboard/complete-project">
             <div className={card}>
               <div className="dashboardCardIconWrap">
@@ -71,7 +64,6 @@ const AllServices = ({ showSensitiveData }) => {
           </Link>
         </div>
 
-        {/* Running Services */}
         <div className="invoice-card">
           <WaveBg />
           <Link to="/dashboard/running-project">
@@ -93,9 +85,6 @@ const AllServices = ({ showSensitiveData }) => {
         <div className="invoice-card">
           <WaveBg />
           <div className={card}>
-            {/* <div className="relative z-0 w-20 h-20 rounded-2xl flex items-center justify-center bg-white/20 backdrop-blur-sm border border-white/30 transition-all duration-300 hover:scale-110">
-              <FaCarSide className="w-10 h-10" />
-            </div> */}
             <div className="dashboardCardIconWrap4">
               <FaCarSide className="dashboardCardIcon" />
             </div>
@@ -110,27 +99,15 @@ const AllServices = ({ showSensitiveData }) => {
         <div className="invoice-card">
           <WaveBg />
           <Link to="/dashboard/all-customer">
-            <div className={card} >
-              {/* <div className=" relative z-0 w-14 h-14 rounded-2xl flex items-center justify-center bg-black/20 backdrop-blur-sm border border-white/30 transition-all duration-300 hover:scale-110">
-                <FaUsers className="w-10 h-10" />
-              </div> */}
+            <div className={card}>
               <div className="dashboardCardIconWrap7">
                 <FaUsers className="dashboardCardIcon" />
-              </div>
-              <div className="invoice-info">
-                <h2 className={amount}>
-                  {allMetaData?.data?.totalCustomers +
-                    allMetaData?.data?.totalShowRooms +
-                    allMetaData?.data?.totalCompanies}
-                </h2>
-                <p className="label">All Customer</p>
               </div>
             </div>
           </Link>
         </div>
       </div>
 
-      {/* Sensitive Cards (toggle these) */}
       {showSensitiveData && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 place-content-center gap-3 lg:gap-3 xl:gap-7 mb-5">
           {/* Total Sale */}
@@ -147,7 +124,6 @@ const AllServices = ({ showSensitiveData }) => {
             </div>
           </div>
 
-          {/* Total Amount */}
           <div className="invoice-card invoice-card2">
             <WaveBg />
             <div className={card}>

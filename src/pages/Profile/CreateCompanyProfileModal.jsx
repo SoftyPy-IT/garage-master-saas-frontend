@@ -96,7 +96,7 @@ export default function CompanyProfileModal({ profileData, open, onClose }) {
     phone: profileData?.phone || "",
     website: profileData?.website || "",
     whatsapp: profileData?.whatsapp || "",
-    officeTime: profileData?.officeTime || 10.00,
+    officeTime: profileData?.officeTime || 10.0,
   };
 
   return (
@@ -176,7 +176,6 @@ export default function CompanyProfileModal({ profileData, open, onClose }) {
                     name="companyName"
                     label="Company Name"
                     icon={BusinessIcon}
-                    required
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>

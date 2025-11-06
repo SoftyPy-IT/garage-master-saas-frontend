@@ -15,13 +15,13 @@ import TrustAutoAddress from "../../components/TrustAutoAddress/TrustAutoAddress
 import { useCreateInvoiceMutation } from "../../redux/api/invoice";
 import { useGetSingleJobCardWithJobNoQuery } from "../../redux/api/jobCard";
 import { unitOptions } from "../../utils/options";
-import { formatNumber } from "../../utils/formateSemicolon";
 import { useGetSingleQuotationQuery } from "../../redux/api/quotation";
 import { useGetCompanyProfileQuery } from "../../redux/api/companyProfile";
 import { useTenantDomain } from "../../hooks/useTenantDomain";
 import Can from "../../components/Can";
 import { usePermissions } from "../../context/PermissionContext";
 import InvoiceTable from "./InvoiceTable";
+import { formateNumber } from "../../utils/formateSemicolon";
 
 const Invoice = () => {
   const { tenantDomain } = useTenantDomain();
@@ -44,7 +44,7 @@ const Invoice = () => {
   const [grandTotal, setGrandTotal] = useState(0);
   const [discount, setDiscount] = useState(0);
   const [vat, setVAT] = useState(0);
-  const [tax, setTax] = useState(0); // New state for Tax
+  const [tax, setTax] = useState(0);
   const [advance, setAdvance] = useState(0);
   const [currentMileage, setCurrentMileage] = useState("");
   const [mileageChanged, setMileageChanged] = useState(false);
@@ -103,7 +103,6 @@ const Invoice = () => {
       setVAT(Number(specificQuotation.vat));
     }
     if (specificQuotation?.tax !== undefined) {
-      // Initialize tax from specificQuotation
       setTax(Number(specificQuotation.tax));
     }
   }, [specificQuotation]);
@@ -547,10 +546,11 @@ const Invoice = () => {
   ];
 
   const onSubmit = async (data) => {
-    performActionWithPermission('/dashboard/create-quotation', 'create',
+    performActionWithPermission(
+      "/dashboard/create-quotation",
+      "create",
       async () => {
         const toastId = toast.loading("Creating Company...");
-        // const tenantDomain = getTenantName();
         const customer = {
           company_name: data.company_name,
           customer_name: data.customer_name,
@@ -577,7 +577,8 @@ const Invoice = () => {
         data.mileage = Number(data.mileage);
         const newMileageValue = Number(data.mileage);
 
-        const existingMileageHistory = getDataWithChassisNo?.mileageHistory || [];
+        const existingMileageHistory =
+          getDataWithChassisNo?.mileageHistory || [];
         const updatedMileageHistory = [...existingMileageHistory];
         // Only add current mileage to history if it has changed
         if (mileageChanged && currentMileage) {
@@ -669,17 +670,14 @@ const Invoice = () => {
         } finally {
           toast.dismiss(toastId);
         }
+      },
+      "You don't have permission to create invoice"
+    );
+  };
 
-      }, "You don't have permission to create invoice"
-    )
-  };
-  const handleIconPreview = async (e) => {
-    navigate(`/dashboard/invoice-view?id=${e}`);
-  };
   useEffect(() => {
     setGetDataWithChassisNo(jobCardData?.data?.vehicle);
   }, [jobCardData?.data?.vehicle]);
-  // for mileage defalutvalue show
   useEffect(() => {
     if (jobCardData?.data?.mileage) {
       reset({
@@ -783,16 +781,16 @@ const Invoice = () => {
                   )}
                   {(jobCardData?.data?.user_type === "company" ||
                     jobCardData?.data?.user_type === "showRoom") && (
-                      <TextField
-                        fullWidth
-                        label="Customer"
-                        focused={
-                          jobCardData?.data?.company?.vehicle_username ||
-                          jobCardData?.data?.showRoom?.vehicle_username
-                        }
-                        {...register("vehicle_username")}
-                      />
-                    )}
+                    <TextField
+                      fullWidth
+                      label="Customer"
+                      focused={
+                        jobCardData?.data?.company?.vehicle_username ||
+                        jobCardData?.data?.showRoom?.vehicle_username
+                      }
+                      {...register("vehicle_username")}
+                    />
+                  )}
                 </Grid>
                 <Grid item lg={12} md={12} sm={12} xs={12}>
                   <Grid container spacing={1}>
@@ -857,24 +855,24 @@ const Invoice = () => {
                       )}
                       {(jobCardData?.data?.user_type === "company" ||
                         jobCardData?.data?.user_type === "showRoom") && (
-                          <TextField
-                            {...register("company_contact")}
-                            variant="outlined"
-                            fullWidth
-                            type="tel"
-                            value={
-                              phoneNumber
-                                ? phoneNumber
-                                : jobCardData?.data?.customer?.customer_contact
-                            }
-                            onChange={handlePhoneNumberChange}
-                            placeholder="Company Contact No (N)"
-                            focused={
-                              jobCardData?.data?.company?.company_contact ||
-                              jobCardData?.data?.showRoom?.company_contact
-                            }
-                          />
-                        )}
+                        <TextField
+                          {...register("company_contact")}
+                          variant="outlined"
+                          fullWidth
+                          type="tel"
+                          value={
+                            phoneNumber
+                              ? phoneNumber
+                              : jobCardData?.data?.customer?.customer_contact
+                          }
+                          onChange={handlePhoneNumberChange}
+                          placeholder="Company Contact No (N)"
+                          focused={
+                            jobCardData?.data?.company?.company_contact ||
+                            jobCardData?.data?.showRoom?.company_contact
+                          }
+                        />
+                      )}
                     </Grid>
                   </Grid>
                 </Grid>
@@ -939,11 +937,6 @@ const Invoice = () => {
                         freeSolo
                         fullWidth
                         id="free-solo-demo"
-                        // options={
-                        //   specificInvoice?.vehicle?.carReg_no
-                        //     ? [specificInvoice.vehicle.carReg_no]
-                        //     : []
-                        // }
                         options={cmDmOptions.map((option) => option.label)}
                         value={jobCardData?.data?.vehicle?.carReg_no || ""}
                         onChange={(event, newValue) => {
@@ -955,7 +948,7 @@ const Invoice = () => {
                             {...params}
                             label="Vehicle Reg No (New field)"
                             {...register("carReg_no")}
-                          // focused={getDataWithChassisNo?.carReg_no}
+                            // focused={getDataWithChassisNo?.carReg_no}
                           />
                         )}
                       />
@@ -1099,8 +1092,9 @@ const Invoice = () => {
                               autoComplete="off"
                               type="text"
                               placeholder="SL No "
-                              defaultValue={`${i + 1 < 10 ? `0${i + 1}` : i + 1
-                                }`}
+                              defaultValue={`${
+                                i + 1 < 10 ? `0${i + 1}` : i + 1
+                              }`}
                               required
                             />
                           </div>
@@ -1168,7 +1162,7 @@ const Invoice = () => {
                                 handleServiceRateChange2(i, e.target.value)
                               }
                               required
-                              value={formatNumber(item.rate)}
+                              value={formateNumber(item.rate)}
                             />
                           </div>
                           <div className="col-span-12 md:col-span-1">
@@ -1177,7 +1171,7 @@ const Invoice = () => {
                               autoComplete="off"
                               type="text"
                               placeholder="Amount"
-                              value={formatNumber(item.total)}
+                              value={formateNumber(item.total)}
                               readOnly
                             />
                           </div>
@@ -1264,7 +1258,7 @@ const Invoice = () => {
                             onChange={(e) =>
                               handleServiceRateChange(i, e.target.value)
                             }
-                            value={formatNumber(item.rate)}
+                            value={formateNumber(item.rate)}
                             required
                           />
                         </div>
@@ -1274,7 +1268,7 @@ const Invoice = () => {
                             autoComplete="off"
                             type="text"
                             placeholder="Amount"
-                            value={formatNumber(item.total)}
+                            value={formateNumber(item.total)}
                             readOnly
                           />
                         </div>
@@ -1397,7 +1391,7 @@ const Invoice = () => {
                               handleRateChange2(i, e.target.value)
                             }
                             required
-                            value={formatNumber(item.rate)}
+                            value={formateNumber(item.rate)}
                           />
                         </div>
                         <div className="col-span-12 md:col-span-1">
@@ -1406,7 +1400,7 @@ const Invoice = () => {
                             autoComplete="off"
                             type="text"
                             placeholder="Amount"
-                            value={formatNumber(item.total)}
+                            value={formateNumber(item.total)}
                             readOnly
                           />
                         </div>
@@ -1493,7 +1487,7 @@ const Invoice = () => {
                             onChange={(e) =>
                               handleRateChange(i, e.target.value)
                             }
-                            value={formatNumber(item.rate)}
+                            value={formateNumber(item.rate)}
                             required
                           />
                         </div>
@@ -1503,7 +1497,7 @@ const Invoice = () => {
                             autoComplete="off"
                             type="text"
                             placeholder="Amount"
-                            value={formatNumber(item.total)}
+                            value={formateNumber(item.total)}
                             readOnly
                           />
                         </div>
@@ -1539,7 +1533,7 @@ const Invoice = () => {
           <div className="discountFieldWrap mt-5 ">
             <div className="flex items-center">
               <b className="mr-2"> Total Amount: </b>
-              <span>{formatNumber(grandTotal)}</span>
+              <span>{formateNumber(grandTotal)}</span>
             </div>
             <div>
               <b className="mr-2"> Discount: </b>
@@ -1549,7 +1543,7 @@ const Invoice = () => {
                   const rawValue = e.target.value.replace(/,/g, "");
                   handleDiscountChange(rawValue);
                 }}
-                value={formatNumber(discount)}
+                value={formateNumber(discount)}
                 autoComplete="off"
                 type="text"
                 placeholder="Discount"
@@ -1563,7 +1557,7 @@ const Invoice = () => {
                   const rawValue = e.target.value.replace(/,/g, "");
                   handleVATChange(rawValue);
                 }}
-                value={formatNumber(vat)}
+                value={formateNumber(vat)}
                 autoComplete="off"
                 type="text"
                 placeholder="Vat"
@@ -1577,7 +1571,7 @@ const Invoice = () => {
                   const rawValue = e.target.value.replace(/,/g, "");
                   handleTaxChange(rawValue);
                 }}
-                value={formatNumber(tax)}
+                value={formateNumber(tax)}
                 autoComplete="off"
                 type="text"
                 placeholder="Tax"
@@ -1586,14 +1580,14 @@ const Invoice = () => {
             <div>
               <div className="flex items-center ml-3 ">
                 <b className="mr-2">Final Total:</b>
-                <span>{formatNumber(calculateFinalTotal())}</span>
+                <span>{formateNumber(calculateFinalTotal())}</span>
               </div>
             </div>
 
             <div>
               <div className="flex items-center ml-3 ">
                 <b className="mr-2">Due:</b>
-                <span>{formatNumber(calculateDue())}</span>
+                <span>{formateNumber(calculateDue())}</span>
               </div>
             </div>
           </div>
@@ -1607,7 +1601,7 @@ const Invoice = () => {
               </button>
             </div>
             <div className="flex justify-end submitQutationBtn order-2 md:order-3 ">
-              <Can page='/dashboard/create-invoice' action='create'>
+              <Can page="/dashboard/create-invoice" action="create">
                 <button type="submit" disabled={createLoading}>
                   Add To Invoice
                 </button>

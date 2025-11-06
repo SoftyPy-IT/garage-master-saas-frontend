@@ -32,7 +32,6 @@ const CustomerQuotationList = ({
   const [filterType, setFilterType] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const limit = 10;
-  const navigate = useNavigate();
 
   // Fetch quotations
   const { data: allQuotations, isLoading: quotationLoading } =
@@ -49,8 +48,8 @@ const CustomerQuotationList = ({
     moveRecycledQuotation,
     { idLoading: deleteLoading, error: deleteError },
   ] = useMoveRecycledQuotationMutation();
+  console.log(allQuotations);
 
-  // Delete / move to recycle bin
   const deletePackage = async (quotationId) => {
     const willDelete = await swal({
       title: "Are you sure?",
@@ -81,35 +80,76 @@ const CustomerQuotationList = ({
     toast.error(deleteError?.message);
   }
 
-  // Define table columns
   const columns = [
     { key: "index", label: "SL No", type: "index" },
-    { key: "job_no", label: "Order No." },
-    { key: "customer.customer_name", label: "Customer Name" },
-    { key: "vehicle.carReg_no", label: "Car No." },
-    { key: "customer.fullCustomerNum", label: "Mobile No." },
+    { key: "job_no", label: "Quotation No." },
+    {
+      key: "customer.customer_name",
+      label: "Customer Name",
+      render: (item) =>
+        item.customer?.customer_name ||
+        item.company?.company_name ||
+        item.showRoom?.showRoom_name ||
+        "N/A",
+    },
+    {
+      key: "vehicle_name",
+      label: "Vehicle Name",
+      render: (d) =>
+        Array.isArray(d?.vehicle)
+          ? d.vehicle.map((v) => v.vehicle_name || "—").join(", ")
+          : d.vehicle?.vehicle_name || "N/A",
+    },
+
+    {
+      key: "car_no",
+      label: "Vehicle Reg No ",
+      render: (d) => {
+        if (!d?.vehicle) return "N/A";
+        const vehicles = Array.isArray(d.vehicle) ? d.vehicle : [d.vehicle];
+
+        return vehicles
+          .map((v) => {
+            const carRegNo = v?.carReg_no?.trim() || "";
+            const carRegistrationNo = v?.car_registration_no?.trim() || "";
+            if (carRegNo && carRegistrationNo)
+              return `${carRegNo}-${carRegistrationNo}`;
+            return carRegNo || carRegistrationNo || "—";
+          })
+          .join(", ");
+      },
+    },
+    {
+      key: "mobile",
+      label: "Mobile No.",
+      render: (item) =>
+        item.customer?.fullCustomerNum ||
+        item.company?.fullCompanyNum ||
+        item.showRoom?.fullCompanyNum ||
+        "N/A",
+    },
     { key: "date", label: "Date" },
   ];
 
-  // Define row class based on status
   const getRowClass = (item) => {
     if (item.status === "running") return "bg-[#f5365c] text-white";
     if (item.status === "completed") return "bg-[#2dce89] text-white";
     return "";
   };
 
-  // Define table actions
   const actions = [
     {
       key: "preview",
       icon: FaEye,
       tooltip: "Preview",
+      color: "#fff",
       onClick: (item, { navigate }) =>
         navigate(`/dashboard/quotation-view?id=${item._id}`),
     },
     {
       key: "create-invoice",
       icon: FaFileInvoice,
+      color: "#fff",
       tooltip: "Create Invoice",
       href: (item) =>
         `/dashboard/create-invoice?order_no=${item.job_no}&id=${item._id}`,
@@ -117,6 +157,7 @@ const CustomerQuotationList = ({
     {
       key: "download",
       icon: FaDownload,
+      color: "#fff",
       tooltip: "Download Quotation",
       href: (item) =>
         `${import.meta.env.VITE_API_URL}/quotations/quotation/${
@@ -129,6 +170,7 @@ const CustomerQuotationList = ({
     {
       key: "edit",
       icon: FaEdit,
+      color: "#fff",
       tooltip: "Edit Quotation",
       link: (item) =>
         `/dashboard/update-quotation?id=${item._id}&user_type=${user_type}&user=${id}`,
@@ -136,10 +178,10 @@ const CustomerQuotationList = ({
     {
       key: "delete",
       icon: FaTrashAlt,
+      color: "#fff",
       tooltip: deleteLoading ? "Deleting..." : "Delete Quotation",
       onClick: (item) => deletePackage(item._id),
       disabled: () => deleteLoading,
-      color: "red",
     },
   ];
 

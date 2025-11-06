@@ -5,12 +5,12 @@ import { ArrowBack } from "@mui/icons-material";
 import { FaTrashAlt, FaEdit, FaEye, FaDownload } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTenantDomain } from "../../hooks/useTenantDomain";
-import { useGetCompanyProfileQuery } from "../../redux/api/companyProfile";
 import { useGetAllMoneyReceiptsQuery } from "../../redux/api/money-receipt";
 import Loading from "../../components/Loading/Loading";
 import Breadcrumb from "../../components/Breadcrumb";
 import Table from "../../components/Table";
 import { purchaseBtn } from "../../utils/customStyle";
+import { useCompanyProfileData } from "../../hooks/useCompanyProfileData";
 
 const MoneyReceiptTable = ({ handleDeleteAction, title, isRecycled }) => {
   const location = useLocation();
@@ -24,18 +24,7 @@ const MoneyReceiptTable = ({ handleDeleteAction, title, isRecycled }) => {
   useEffect(() => {
     if (search) setFilterType(search);
   }, [search]);
-
-  const { data: CompanyInfoData } = useGetCompanyProfileQuery({ tenantDomain });
-
-  const companyProfileData = {
-    companyName: CompanyInfoData?.data?.companyName,
-    address: CompanyInfoData?.data?.address,
-    website: CompanyInfoData?.data?.website,
-    phone: CompanyInfoData?.data?.phone,
-    email: CompanyInfoData?.data?.email,
-    logo: CompanyInfoData?.data?.logo?.[0],
-    companyNameBN: CompanyInfoData?.data?.companyNameBN,
-  };
+  const { companyProfileData } = useCompanyProfileData();
 
   const { data: allMoneyReceipts, isLoading: moneyReceiptLoading } =
     useGetAllMoneyReceiptsQuery({
@@ -61,15 +50,33 @@ const MoneyReceiptTable = ({ handleDeleteAction, title, isRecycled }) => {
 
   const columns = [
     { key: "index", label: "SL No", type: "index" },
-    { key: "thanks_from", label: "Received with thanks from" },
-    { key: "job_no", label: "Final Payment against bill no" },
-    { key: "total_amount", label: "Total Amount" },
+    { key: "job_no", label: "Final B.A Bill" },
+    { key: "thanks_from", label: "R With Thanks " },
+    {
+      key: "vehicle.carReg_no",
+      label: "Car Reg No",
+      render: (row) => {
+        const vehicle = row?.vehicle;
+        if (!vehicle) return "—";
+
+        const carRegNo = vehicle?.carReg_no?.trim() || "";
+        const carRegistrationNo = vehicle?.car_registration_no?.trim() || "";
+
+        if (carRegNo && carRegistrationNo) {
+          return `${carRegNo} ${carRegistrationNo}`;
+        }
+
+        return carRegNo || carRegistrationNo || "—";
+      },
+    },
+
+    { key: "total_amount", label: "Total" },
     {
       key: "advance",
-      label: "Advance Service Bill",
+      label: "Advance",
       render: (row) => row.advance || 0,
     },
-    { key: "remaining", label: "Due Service Bill" },
+    { key: "remaining", label: "Due" },
     {
       key: "date",
       label: "Date",
@@ -82,18 +89,15 @@ const MoneyReceiptTable = ({ handleDeleteAction, title, isRecycled }) => {
     {
       key: "view",
       icon: FaEye,
-      color: "#2563EB",
+      color: "#fff",
       tooltip: "View",
       onClick: (item) =>
         navigate(`/dashboard/money-receipt-view?id=${item._id}`),
-      requirePermission: true,
-      permissionPage: "/dashboard/money-receipt-list",
-      permissionAction: "view",
     },
     {
       key: "download",
       icon: FaDownload,
-      color: "#ffb300",
+      color: "#fff",
       tooltip: "Download",
       href: (item) =>
         `${import.meta.env.VITE_API_URL}/money-receipts/money/${
@@ -106,22 +110,16 @@ const MoneyReceiptTable = ({ handleDeleteAction, title, isRecycled }) => {
     {
       key: "edit",
       icon: FaEdit,
-      color: "#2196F3",
+      color: "#fff",
       tooltip: "Edit",
       link: (item) => `/dashboard/money-receipt-update?id=${item._id}`,
-      requirePermission: true,
-      permissionPage: "/dashboard/money-receipt-update",
-      permissionAction: "edit",
     },
     {
       key: "delete",
       icon: FaTrashAlt,
-      color: "#f44336",
+      color: "#fff",
       tooltip: "Delete",
       onClick: (item) => handleDeleteAction(item._id),
-      requirePermission: true,
-      permissionPage: "/dashboard/money-receipt-list",
-      permissionAction: "delete",
     },
   ];
 

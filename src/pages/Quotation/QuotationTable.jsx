@@ -13,11 +13,11 @@ import Table from "../../components/Table";
 import Breadcrumb from "../../components/Breadcrumb";
 import { wrapBoxStyle } from "../../utils/customStyle";
 import { useTenantDomain } from "../../hooks/useTenantDomain";
-import { useGetCompanyProfileQuery } from "../../redux/api/companyProfile";
 import {
   useGetAllQuotationsQuery,
   useMoveRecycledQuotationMutation,
 } from "../../redux/api/quotation";
+import { useCompanyProfileData } from "../../hooks/useCompanyProfileData";
 
 const QuotationTable = ({
   isRecycled,
@@ -34,8 +34,7 @@ const QuotationTable = ({
   const limit = 10;
   const { tenantDomain } = useTenantDomain();
 
-  const { data: profileData } = useGetCompanyProfileQuery({ tenantDomain });
-
+  const { companyProfileData } = useCompanyProfileData();
   const [moveRecycledQuotation, { isLoading: deleteLoading }] =
     useMoveRecycledQuotationMutation();
 
@@ -51,12 +50,11 @@ const QuotationTable = ({
 
   const quotationColumns = [
     { key: "slNo", label: "SL No", type: "index" },
-    { key: "quotation_no", label: "Quotation ID" },
-    { key: "job_no", label: "Order No." },
+    { key: "job_no", label: "Quotation No." },
 
     {
       key: "name",
-      label: "Name",
+      label: "Customer Name",
       render: (data) =>
         data?.customer?.customer_name ||
         data?.company?.company_name ||
@@ -74,21 +72,10 @@ const QuotationTable = ({
     },
 
     {
-      key: "vehicle_brand",
-      label: "Vehicle Brand",
-      render: (d) =>
-        Array.isArray(d?.vehicle)
-          ? d.vehicle.map((v) => v.vehicle_brand || "—").join(", ")
-          : d.vehicle?.vehicle_brand || "N/A",
-    },
-
-    {
       key: "car_no",
-      label: "Car No.",
+      label: "Vehicle Reg No ",
       render: (d) => {
         if (!d?.vehicle) return "N/A";
-
-        // Handle both single object or array cases
         const vehicles = Array.isArray(d.vehicle) ? d.vehicle : [d.vehicle];
 
         return vehicles
@@ -119,6 +106,7 @@ const QuotationTable = ({
   const quotationActions = [
     {
       key: "invoice",
+      color: "#fff",
       icon: FaFileInvoice,
       label: "View Invoice",
       href: (d) => `/dashboard/create-invoice?order_no=${d.job_no}&id=${d._id}`,
@@ -126,27 +114,33 @@ const QuotationTable = ({
     {
       key: "download",
       icon: FaDownload,
+      color: "#fff",
       label: "Download Quotation",
       href: (d) =>
         `${import.meta.env.VITE_API_URL}/quotations/quotation/${
           d._id
-        }?tenantDomain=${tenantDomain}`,
+        }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
+          JSON.stringify(companyProfileData)
+        )}`,
     },
     {
       key: "preview",
       icon: FaEye,
+      color: "#fff",
       label: "Preview",
       onClick: (d) => navigate(`/dashboard/quotation-view?id=${d._id}`),
     },
     {
       key: "edit",
       icon: EditIcon,
+      color: "#fff",
       label: "Edit Quotation",
       link: (d) => `/dashboard/update-quotation?id=${d._id}`,
     },
     {
       key: "delete",
       icon: DeleteIcon,
+      color: "#fff",
       label: isRecycled ? "Delete / Restore" : "Move to Recycled",
       onClick: (d) => handleMoveAction?.(d._id),
       disabled: () => deleteLoading,
@@ -173,7 +167,6 @@ const QuotationTable = ({
 
   const externalHooks = {
     tenantDomain,
-    profileData,
     deleteLoading,
     moveRecycledQuotation,
     swal,

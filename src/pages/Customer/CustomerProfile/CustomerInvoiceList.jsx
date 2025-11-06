@@ -2,7 +2,7 @@
 /* eslint-disable react/prop-types */
 import { useState } from "react";
 import { HiOutlinePlus } from "react-icons/hi";
-import { AddCircleOutline, Money } from "@mui/icons-material";
+import {  Money } from "@mui/icons-material";
 import { Link } from "react-router-dom";
 import swal from "sweetalert";
 import Loading from "../../../components/Loading/Loading";
@@ -14,6 +14,7 @@ import { getRowClass } from "../../../utils/getRowClass";
 import Table from "../../../components/Table";
 import { Button } from "@mui/material";
 import { purchaseBtn } from "../../../utils/customStyle";
+import { DeleteIcon, Download, EditIcon, Eye, View } from "lucide-react";
 
 const CustomerInvoiceList = ({
   id,
@@ -57,40 +58,70 @@ const CustomerInvoiceList = ({
   };
 
   if (invoiceLoading) return <Loading />;
-
   const columns = [
-    { key: "index", label: "SL No", type: "index" },
-    { key: "job_no", label: "Order No." },
+    { key: "slNo", label: "SL No", type: "index" },
+    { key: "job_no", label: "Invoice No." },
+
     {
-      key: "customer.customer_name",
+      key: "customer",
       label: "Customer Name",
-      render: (item) =>
-        item.customer?.customer_name ||
-        item.company?.company_name ||
-        item.showRoom?.showRoom_name ||
+      render: (data) =>
+        data.customer?.customer_name ||
+        data.company?.company_name ||
+        data.showRoom?.showRoom_name ||
         "N/A",
     },
     {
-      key: "vehicle.carReg_no",
-      label: "Car No.",
-      render: (item) =>
-        item.vehicle?.carReg_no || item.vehicle?.car_registration_no || "N/A",
+      key: "vehicle_name",
+      label: "Vehicle Name",
+      render: (data) => {
+        if (!data?.vehicle) return "N/A";
+        const vehicles = Array.isArray(data.vehicle)
+          ? data.vehicle
+          : [data.vehicle];
+        return vehicles.map((v) => v.vehicle_name || "—").join(", ");
+      },
     },
+
     {
-      key: "mobile",
+      key: "vehicle",
+      label: "Vehicle Reg No",
+      render: (data) => {
+        if (!data?.vehicle) return "N/A";
+        const vehicles = Array.isArray(data.vehicle)
+          ? data.vehicle
+          : [data.vehicle];
+
+        return vehicles
+          .map((v) => {
+            const carRegNo = v?.carReg_no?.trim() || "";
+            const carRegistrationNo = v?.car_registration_no?.trim() || "";
+            if (carRegNo && carRegistrationNo) {
+              return `${carRegNo}-${carRegistrationNo}`;
+            }
+            return carRegNo || carRegistrationNo || "—";
+          })
+          .join(", ");
+      },
+    },
+
+    {
+      key: "contact",
       label: "Mobile No.",
-      render: (item) =>
-        item.customer?.fullCustomerNum ||
-        item.company?.fullCompanyNum ||
-        item.showRoom?.fullCompanyNum ||
+      render: (data) =>
+        data.customer?.fullCustomerNum ||
+        data.company?.fullCompanyNum ||
+        data.showRoom?.fullCompanyNum ||
         "N/A",
     },
+
     { key: "date", label: "Date" },
   ];
 
   const actions = [
     {
       key: "money",
+      color: "#fff",
       icon: Money,
       href: (item) =>
         `/dashboard/money-receive-create?order_no=${item.job_no}&id=${item._id}&net_total=${item.due}`,
@@ -98,14 +129,16 @@ const CustomerInvoiceList = ({
     },
     {
       key: "preview",
-      icon: () => <HiOutlinePlus />,
+      icon: Eye,
+      color: "#fff",
       onClick: (item) =>
         window.location.assign(`/dashboard/invoice-view?id=${item._id}`),
       tooltip: "Preview Invoice",
     },
     {
       key: "download",
-      icon: () => <HiOutlinePlus />,
+      icon: Download,
+      color: "#fff",
       href: (item) =>
         `${import.meta.env.VITE_API_URL}/invoices/invoice/${
           item._id
@@ -117,14 +150,16 @@ const CustomerInvoiceList = ({
     },
     {
       key: "edit",
-      icon: () => <HiOutlinePlus />,
+      icon: EditIcon,
+      color: "#fff",
       link: (item) =>
         `/dashboard/update-invoice?id=${item._id}&user_type=${user_type}&user=${id}`,
       tooltip: "Edit Invoice",
     },
     {
       key: "delete",
-      icon: () => <HiOutlinePlus />,
+      icon: DeleteIcon,
+      color: "#fff",
       onClick: (item) => handleMoveToRecycledbin(item._id),
       tooltip: "Move to Recycle Bin",
       disabled: () => deleteLoading,
@@ -151,22 +186,7 @@ const CustomerInvoiceList = ({
         onSearch={setFilterType}
         getRowClass={getRowClass}
         searchPlaceholder="Search invoices..."
-        emptyMessage={
-          <div className="flex flex-col items-center justify-center h-64 text-center p-4">
-            <h3 className="text-2xl font-semibold text-gray-800 mb-2">
-              No Invoices Found
-            </h3>
-            <p className="text-gray-600 mb-4">
-              Start by creating your first invoice to track transactions.
-            </p>
-            <Link
-              to={`/dashboard/create-invoice?id=${id}`}
-              className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-full transition duration-300"
-            >
-              <AddCircleOutline /> Create Your First Invoice
-            </Link>
-          </div>
-        }
+        actions={actions}
       />
     </div>
   );
