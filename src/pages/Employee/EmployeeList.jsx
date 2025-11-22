@@ -21,7 +21,7 @@ export default function EmployeeList() {
   const [currentPage, setCurrentPage] = useState(1);
   const { tenantDomain, performActionWithPermission } = useAppOptions();
   const navigate = useNavigate();
-  const limit = 20;
+  const limit = 10; // Changed from 20 to 10 as requested
 
   const {
     data: employeeData,

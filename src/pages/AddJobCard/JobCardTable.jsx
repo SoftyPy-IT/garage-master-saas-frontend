@@ -37,7 +37,6 @@ const JobCardTable = ({
       searchTerm: filterType,
       isRecycled,
     });
-  console.log(allJobCards);
 
   useEffect(() => {
     if (search) setFilterType(search);

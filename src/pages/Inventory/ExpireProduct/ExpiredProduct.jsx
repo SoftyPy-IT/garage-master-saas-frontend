@@ -30,22 +30,19 @@ import ProductDetailsDialog from "./ProductDetailsDialog";
 export default function ExpiredProduct() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const [searchTerm, setSearchTerm] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [alertOpen, setAlertOpen] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const [search] = useState("");
-  const [selectedBrands] = useState([]);
-  const [selectedCategories] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const { tenantDomain } = useTenantDomain();
 
   const queryParams = {
     tenantDomain,
     page: currentPage,
-    searchTerm: search,
-    limit: 100,
+    searchTerm: searchTerm, // Use the actual search term
+    limit: 10,
   };
 
   const {
@@ -152,25 +149,15 @@ export default function ExpiredProduct() {
     }
   };
 
-  const handleSearch = (value) => setSearchTerm(value);
+  const handleSearch = (value) => {
+    setSearchTerm(value);
+    setCurrentPage(1); // Reset to first page when searching
+  };
+
   const handlePageChange = (page) => setCurrentPage(page);
 
-  const filteredProducts = processedProducts.filter((product) => {
-    const matchesSearch =
-      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (product.brand &&
-        product.brand.toLowerCase().includes(searchTerm.toLowerCase()));
-
-    const matchesBrand =
-      selectedBrands.length === 0 || selectedBrands.includes(product.brand);
-
-    const matchesCategory =
-      selectedCategories.length === 0 ||
-      selectedCategories.includes(product.category);
-
-    return matchesSearch && matchesBrand && matchesCategory;
-  });
+  // Remove client-side filtering since API handles it
+  const displayProducts = processedProducts;
 
   const totalExpired = processedProducts.filter(
     (p) => p.status === "expired"
@@ -182,6 +169,11 @@ export default function ExpiredProduct() {
     (sum, p) => sum + p.quantity,
     0
   );
+
+  // Get total pages from API response or calculate based on total count
+  const totalPages =
+    productData?.data?.meta?.totalPage ||
+    Math.ceil((productData?.data?.meta?.totalCount || 0) / 10);
 
   const getStatusChip = (status, daysExpired) => {
     switch (status) {
@@ -285,7 +277,7 @@ export default function ExpiredProduct() {
   ];
 
   return (
-    <Box sx={wrapBoxStyle}>
+    <Box sx={{ ...wrapBoxStyle, paddingBottom: "50px" }}>
       <ExpiredBreadcrumb />
       <ExpiredAlert
         alertOpen={alertOpen}
@@ -302,11 +294,11 @@ export default function ExpiredProduct() {
       <Table
         title="Expired Products"
         columns={tableColumns}
-        data={filteredProducts}
+        data={displayProducts}
         actions={tableActions}
         loading={isLoading}
         currentPage={currentPage}
-        totalPages={Math.ceil(filteredProducts.length / 10)}
+        totalPages={totalPages}
         onPageChange={handlePageChange}
         onSearch={handleSearch}
         searchPlaceholder="Search expired products..."
