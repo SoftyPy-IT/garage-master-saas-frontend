@@ -1,13 +1,12 @@
 import Profile from "../../pages/Profile/Profile";
 import UpdateProfile from "../../pages/Profile/UpdateProfile";
-import AdminUserListPage from "../../pages/Profile/AllUserList";
 import AllTenantList from "../../pages/Tenant/AllTenantList";
-import AllUserList from "../../pages/Tenant/AllUserList";
 import ContactUserList from "../../pages/Tenant/ContactUserList";
 import RoleManagement from "../../pages/RoleManagement";
 import Permission from "../../pages/Permission/Permission";
 import PageManagement from "../../pages/PageManagement/PageManagement";
-
+import { AllUserList } from "../../pages/Tenant/AllUserList";
+import RecycleBinAllUser from "../../pages/Recyclebin/RecycleBinAllUser";
 export const userManagementRoutes = [
   {
     path: "profile",
@@ -17,10 +16,6 @@ export const userManagementRoutes = [
     path: "profile-update",
     element: <UpdateProfile />,
     action: "edit",
-  },
-  {
-    path: "all-user",
-    element: <AdminUserListPage />,
   },
   {
     path: "all-tenant-list",
@@ -37,6 +32,10 @@ export const userManagementRoutes = [
   {
     path: "role-management",
     element: <RoleManagement />,
+  },
+  {
+    path: "recycle-bin-user-list",
+    element: <RecycleBinAllUser />,
   },
   {
     path: "user-permission",

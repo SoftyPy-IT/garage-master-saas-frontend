@@ -509,6 +509,11 @@ export const getMenuItems = (user, handleLogout) => [
         text: "Supplier List",
         link: "/dashboard/recycle-bin-supplier-list",
       },
+      {
+        icon: getIcon("FaHospitalUser", "fa"),
+        text: "User List",
+        link: "/dashboard/recycle-bin-user-list",
+      },
     ],
   },
   {
