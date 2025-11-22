@@ -1,37 +1,21 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable react/prop-types */
 "use client";
 
-import {
-  Box,
-  Container,
-  Typography,
-  Paper,
-  Button,
-  TextField,
-  Grid,
-  InputAdornment,
-  alpha,
-  Stack,
-  Pagination,
-} from "@mui/material";
-import { Add as AddIcon, Search as SearchIcon } from "@mui/icons-material";
+import { Add as AddIcon, Visibility } from "@mui/icons-material";
+import { Box, Button, Grid, Paper, Stack, Typography } from "@mui/material";
+import { DeleteIcon, EditIcon } from "lucide-react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import Table from "../../components/Table";
+import { useAppOptions } from "../../hooks/useAppOptions";
+import { useFormController } from "../../hooks/useFormController";
 import {
   useDeleteProductMutation,
   useGetAllIProductQuery,
 } from "../../redux/api/productApi";
-import Loading from "../../components/Loading/Loading";
-import { useAppOptions } from "../../hooks/useAppOptions";
-import { useFormController } from "../../hooks/useFormController";
-import { Visibility } from "@mui/icons-material";
-import { useState } from "react";
-import Table from "../../components/Table";
-import ProductDetailsModal from "./ProductDetailsModal";
-import { DeleteIcon, EditIcon } from "lucide-react";
-import { ProductHeader } from "./ProductHeader";
 import { purchaseBtn, wrapBoxStyle } from "../../utils/customStyle";
+import ProductDetailsModal from "./ProductDetailsModal";
+import { ProductHeader } from "./ProductHeader";
 
 export default function ProductList() {
   const { currentPage, setCurrentPage, search, setSearch, theme } =
@@ -45,7 +29,7 @@ export default function ProductList() {
     tenantDomain,
     limit: 10,
     page: currentPage,
-    searchTerm: search, // This should now work with the search state
+    searchTerm: search,
   };
 
   const { data, isLoading, refetch } = useGetAllIProductQuery(queryParams);
@@ -106,8 +90,8 @@ export default function ProductList() {
   };
 
   const handleSearch = (searchValue) => {
-    setSearch(searchValue); // Update the search state
-    setCurrentPage(1); // Reset to first page when searching
+    setSearch(searchValue);
+    setCurrentPage(1);
   };
 
   const products = data?.data?.products || [];

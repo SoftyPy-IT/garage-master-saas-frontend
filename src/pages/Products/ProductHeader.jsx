@@ -19,7 +19,7 @@ export const ProductHeader = ({ id, navigate }) => {
                 <Box>
 
                     <Typography variant="h4" sx={{ fontWeight: 700 }}>
-                        {id ? "Edit Product" : "Create New Product"}
+                        {id ? "Edit Product" : "Create New Product new"}
                     </Typography>
                 </Box>
                 <Button
