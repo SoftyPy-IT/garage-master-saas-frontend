@@ -9,8 +9,8 @@ import {
     MenuItem,
     FormControl,
     InputLabel,
-    Avatar,
     Chip,
+    Button,
 } from "@mui/material";
 import { Visibility } from "@mui/icons-material";
 import Table from "@/components/Table";
@@ -31,110 +31,104 @@ const WarehouseStockOverview = () => {
 
     const { data, isLoading, refetch } = useGetWareHouseStocksQuery({
         tenantDomain,
+        page: currentPage,
+        limit: pageSize,
     });
-    const allFlattenedStocks = useMemo(() => {
-        const warehouseStocks = data?.data?.warehouseStocks || [];
-        return warehouseStocks.flatMap(
-            (warehouseItem) =>
-                warehouseItem.products?.map((productItem) => ({
-                    id: `${warehouseItem._id}-${productItem._id}`,
-                    product: {
-                        _id: productItem._id,
-                        product_name: productItem.product_name,
-                        product_code: productItem.product_code,
-                    },
-                    quantity: productItem.quantity,
-                    warehouse: warehouseItem.warehouse,
-                    warehouseId: warehouseItem._id,
-                    totalProducts: warehouseItem.totalProducts,
-                    totalQuantity: warehouseItem.totalQuantity,
-                })) || []
-        );
-    }, [data]);
 
-    // Filter data
-    const filteredData = useMemo(() => {
-        return allFlattenedStocks.filter((item) => {
+    console.log('API Data:', data);
+
+    // Use the warehouse data directly from API
+    const warehouseData = data?.data?.warehouseStocks || [];
+    const metaData = data?.data?.meta || {};
+
+    // Filter warehouses client-side
+    const filteredWarehouses = useMemo(() => {
+        return warehouseData.filter((warehouse) => {
             const warehouseMatch =
                 selectedWarehouse === "all" ||
-                item?.warehouse?.name === selectedWarehouse;
+                warehouse?.warehouse?.name === selectedWarehouse;
             const cityMatch =
-                selectedCity === "all" || item?.warehouse?.city === selectedCity;
+                selectedCity === "all" ||
+                warehouse?.warehouse?.city === selectedCity;
             const statusMatch =
-                statusFilter === "all" || item?.warehouse?.status === statusFilter;
+                statusFilter === "all" ||
+                warehouse?.warehouse?.status === statusFilter;
             const searchMatch =
-                item.product?.product_name
+                warehouse?.warehouse?.name
                     ?.toLowerCase()
                     .includes(searchTerm.toLowerCase()) ||
-                item.warehouse?.name
-                    ?.toLowerCase()
-                    .includes(searchTerm.toLowerCase()) ||
-                item.product?.product_code
+                warehouse?.warehouse?.city
                     ?.toLowerCase()
                     .includes(searchTerm.toLowerCase());
+
             return warehouseMatch && cityMatch && statusMatch && searchMatch;
         });
-    }, [
-        allFlattenedStocks,
-        selectedWarehouse,
-        selectedCity,
-        statusFilter,
-        searchTerm,
-    ]);
+    }, [warehouseData, selectedWarehouse, selectedCity, statusFilter, searchTerm]);
 
-    // pagination
-    const totalItems = filteredData.length;
-    const totalPages = Math.ceil(totalItems / pageSize);
-
-    //  paginated data
-    const paginatedData = useMemo(() => {
-        const startIndex = (currentPage - 1) * pageSize;
-        const endIndex = startIndex + pageSize;
-        return filteredData.slice(startIndex, endIndex);
-    }, [filteredData, currentPage, pageSize]);
-
-    const [selectedStock, setSelectedStock] = useState(null);
+    const [selectedWarehouseForModal, setSelectedWarehouseForModal] = useState(null);
     const [openModal, setOpenModal] = useState(false);
 
-    const handleView = (item) => {
-        setSelectedStock(item);
+    const handleView = (warehouse) => {
+        setSelectedWarehouseForModal(warehouse);
         setOpenModal(true);
     };
 
     const columns = [
         { key: "index", label: "#", type: "index" },
         {
-            key: "product.product_name",
-            label: "Product",
+            key: "warehouse.name",
+            label: "Warehouse Name",
             render: (item) => (
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                    <Avatar
-                        src={item.product?.image}
-                        alt={item.product?.product_name}
-                        variant="rounded"
-                        sx={{ width: 36, height: 36 }}
-                    />
-                    <Typography variant="body2">{item?.product?.product_name}</Typography>
-                </Box>
+                <Typography variant="body2" fontWeight="medium">
+                    {item?.warehouse?.name || "—"}
+                </Typography>
             ),
         },
         {
-            key: "product.product_code",
-            label: "Product Code",
-            render: (item) => item?.product?.product_code || "—",
+            key: "warehouse.warehouseId",
+            label: "Warehouse ID",
+            render: (item) => item?.warehouse?.warehouseId || "—",
         },
-        { key: "warehouse.name", label: "Warehouse" },
         {
             key: "warehouse.city",
             label: "City",
             render: (item) => item?.warehouse?.city || "—",
         },
         {
-            key: "product.batch_number",
-            label: "Batch No",
-            render: (item) => item?.product?.batch_number || "—",
+            key: "warehouse.address",
+            label: "Address",
+            render: (item) => item?.warehouse?.address || "—",
         },
-        { key: "quantity", label: "Quantity" },
+        {
+            key: "warehouse.manager",
+            label: "Manager",
+            render: (item) => item?.warehouse?.manager || "—",
+        },
+        {
+            key: "warehouse.phone",
+            label: "Phone",
+            render: (item) => item?.warehouse?.phone || "—",
+        },
+        {
+            key: "totalProducts",
+            label: "Total Products",
+            render: (item) => (
+                <Chip
+                    label={item?.totalProducts || 0}
+                    color="primary"
+                    size="small"
+                />
+            ),
+        },
+        {
+            key: "totalQuantity",
+            label: "Total Stock Quantity",
+            render: (item) => (
+                <Typography variant="body2" color="primary" fontWeight="bold">
+                    {item?.totalQuantity || 0}
+                </Typography>
+            ),
+        },
         {
             key: "warehouse.status",
             label: "Status",
@@ -150,25 +144,30 @@ const WarehouseStockOverview = () => {
 
     const actions = [
         {
-            label: "View",
+            label: "View Products",
             icon: Visibility,
-            tooltip: "View Details",
+            tooltip: "View Products in Warehouse",
             onClick: handleView,
         },
     ];
 
+    // Get unique values for filters
     const uniqueWarehouses = [
-        ...new Set(allFlattenedStocks.map((item) => item?.warehouse?.name)),
-    ].filter(Boolean);
-    const uniqueCities = [
-        ...new Set(allFlattenedStocks.map((item) => item?.warehouse?.city)),
+        ...new Set(warehouseData.map((item) => item?.warehouse?.name)),
     ].filter(Boolean);
 
-    const totalWarehouses = new Set(
-        allFlattenedStocks.map((item) => item.warehouseId)
-    ).size;
-    const totalQuantity = allFlattenedStocks.reduce(
-        (acc, cur) => acc + (cur?.quantity || 0),
+    const uniqueCities = [
+        ...new Set(warehouseData.map((item) => item?.warehouse?.city)),
+    ].filter(Boolean);
+
+    // Calculate total stats
+    const totalWarehouses = metaData.total || warehouseData.length;
+    const totalQuantity = warehouseData.reduce(
+        (acc, cur) => acc + (cur?.totalQuantity || 0),
+        0
+    );
+    const totalProducts = warehouseData.reduce(
+        (acc, cur) => acc + (cur?.totalProducts || 0),
         0
     );
 
@@ -209,6 +208,7 @@ const WarehouseStockOverview = () => {
             <WarehouseStatsCards
                 totalWarehouses={totalWarehouses}
                 totalQuantity={totalQuantity}
+                totalProducts={totalProducts}
             />
 
             <Box className="flex flex-wrap items-center gap-4 bg-gray-50 p-4 rounded-xl border">
@@ -260,42 +260,48 @@ const WarehouseStockOverview = () => {
                 <TextField
                     size="small"
                     variant="outlined"
-                    placeholder="Search by product name, code or warehouse..."
+                    placeholder="Search by warehouse name or city..."
                     value={searchTerm}
                     onChange={(e) => handleSearch(e.target.value)}
                     sx={{ flexGrow: 1, minWidth: 240 }}
                 />
 
-                <button
+                <Button
+                    variant="contained"
                     onClick={() => {
                         refetch();
                         setCurrentPage(1);
                     }}
-                    className="ml-auto bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                    sx={{ ml: 'auto' }}
                 >
                     Refresh
-                </button>
+                </Button>
             </Box>
 
             <Table
-                title={`Warehouse Stock Data (${filteredData.length} items)`}
+                title={`Warehouses (${totalWarehouses} total)`}
                 columns={columns}
-                data={paginatedData}
+                data={filteredWarehouses}
                 actions={actions}
                 loading={isLoading}
                 currentPage={currentPage}
-                totalPages={totalPages}
+                totalPages={metaData.totalPage || 1}
                 onPageChange={setCurrentPage}
                 onSearch={handleSearch}
-                searchPlaceholder="Search by product name, code or warehouse..."
-                emptyMessage="No warehouse stock data found."
+                searchPlaceholder="Search by warehouse name or city..."
+                emptyMessage="No warehouses found."
             />
 
-            <WarehouseStockDetailModal
-                open={openModal}
-                onClose={() => setOpenModal(false)}
-                stock={selectedStock}
-            />
+            {selectedWarehouseForModal && (
+                <WarehouseStockDetailModal
+                    open={openModal}
+                    onClose={() => {
+                        setOpenModal(false);
+                        setSelectedWarehouseForModal(null);
+                    }}
+                    warehouse={selectedWarehouseForModal}
+                />
+            )}
         </Box>
     );
 };

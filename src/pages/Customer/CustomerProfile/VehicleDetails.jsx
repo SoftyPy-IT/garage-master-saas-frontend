@@ -43,6 +43,7 @@ const VehicleDetails = ({
     searchTerm: filterType,
     isRecycled: false,
   });
+  console.log("vehicle mileage this ", allVehicle);
 
   const [deleteVehicle, { isLoading: deleteLoading, error: deleteError }] =
     useDeleteVehicleMutation();
@@ -113,41 +114,53 @@ const VehicleDetails = ({
     { key: "vehicle_name", label: "Vehicle Name" },
     {
       key: "mileageHistory",
-      label: "Mileage History",
-      render: (vehicle) =>
-        vehicle.mileageHistory?.length > 0 ? (
-          <Box
-            sx={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: 0.5,
-              justifyContent: "center",
-            }}
-          >
-            {vehicle.mileageHistory.map((history, idx) => (
+      label: "Latest Mileage",
+      render: (vehicle) => {
+        const mileageHistory = vehicle.mileageHistory || [];
+
+        if (mileageHistory.length > 0) {
+          // Get the most recent
+          const sortedHistory = [...mileageHistory].sort(
+            (a, b) => new Date(b.date) - new Date(a.date)
+          );
+          const latestMileage = sortedHistory[0];
+          const formattedDate = new Date(
+            latestMileage.date
+          ).toLocaleDateString();
+
+          return (
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+            >
               <Chip
-                key={history._id}
                 icon={<History size={16} />}
-                label={`${history.mileage} km`}
+                label={`${latestMileage.mileage} km`}
                 size="small"
-                color={idx === 0 ? "primary" : "default"}
-                variant={
-                  idx === vehicle.mileageHistory.length - 1
-                    ? "filled"
-                    : "outlined"
-                }
+                color="primary"
+                variant="filled"
                 sx={{
                   fontSize: "0.75rem",
+                  mb: 0.5,
                   "& .MuiChip-icon": { marginLeft: "4px", marginRight: "-4px" },
                 }}
               />
-            ))}
-          </Box>
-        ) : (
+              <Typography variant="caption" color="text.secondary">
+                {formattedDate}
+              </Typography>
+            </Box>
+          );
+        }
+
+        return (
           <Typography variant="body2" color="text.secondary" align="center">
             No history
           </Typography>
-        ),
+        );
+      },
     },
   ];
 

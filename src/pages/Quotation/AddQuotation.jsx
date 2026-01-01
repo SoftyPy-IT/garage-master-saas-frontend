@@ -73,7 +73,6 @@ const AddQuotation = () => {
   const [activeInputIndex, setActiveInputIndex] = useState(null);
   const { tenantDomain } = useTenantDomain();
   const { performActionWithPermission } = usePermissions();
-  console.log("product suggestion ", productSuggestions);
   const {
     register,
     handleSubmit,
@@ -708,13 +707,16 @@ const AddQuotation = () => {
           />
           <div>
             <div className="flex-1 text-center">
-              <h2 className="trustAutoTitle">
-                {CompanyInfoData?.data?.companyNameBN}
-              </h2>
-
-              <h3 className="text-lg md:text-xl english-font mt-1 text-[#4671A1] font-bold ">
-                ({CompanyInfoData?.data?.companyName})
-              </h3>
+              {CompanyInfoData?.data?.companyNameBN && (
+                <h2 className="trustAutoTitle">
+                  {CompanyInfoData?.data?.companyNameBN}
+                </h2>
+              )}
+              {CompanyInfoData?.data?.companyName && (
+                <h3 className="text-lg md:text-xl english-font mt-1 text-[#4671A1] font-bold ">
+                  ({CompanyInfoData?.data?.companyName})
+                </h3>
+              )}
             </div>
             <span className="text-[12px] lg:text-xl mt-5 block">
               Office: {CompanyInfoData?.data?.address}
@@ -1229,7 +1231,7 @@ const AddQuotation = () => {
                         onChange={(e) =>
                           handleServiceRateChange(i, e.target.value)
                         }
-                        value={item.rateDisplay || ""}
+                        value={formateNumber(item.rateDisplay) || ""}
                       />
                     </div>
                     <div className="col-span-12 md:col-span-1">
@@ -1397,7 +1399,7 @@ const AddQuotation = () => {
                       placeholder="Rate"
                       onChange={(e) => handleRateChange(i, e.target.value)}
                       type="text"
-                      value={item.rateDisplay || ""}
+                      value={formateNumber(item.rateDisplay) || ""}
                     />
                   </div>
                   <div className="col-span-12 md:col-span-1">
