@@ -1,5 +1,5 @@
 import WarehouseManagement from "../../pages/Inventory/Warehouse/WarehouseManagement";
-import WarehouseStocks from "../../pages/Inventory/Warehouse/WareHouseList";
+import WarehouseStockOverview from "../../pages/Inventory/Warehouse/WarehouseStockOverview";
 
 export const warehouseRoutes = [
   {
@@ -8,6 +8,6 @@ export const warehouseRoutes = [
   },
   {
     path: "warehouse-stock",
-    element: <WarehouseStocks />,
+    element: <WarehouseStockOverview />,
   },
 ];

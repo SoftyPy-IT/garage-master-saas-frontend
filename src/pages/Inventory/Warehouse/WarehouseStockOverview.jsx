@@ -1,5 +1,4 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-
 /* eslint-disable react/prop-types */
 import { useState, useMemo } from "react";
 import {
@@ -13,7 +12,7 @@ import {
     Avatar,
     Chip,
 } from "@mui/material";
-import { Visibility, Edit, Delete } from "@mui/icons-material";
+import { Visibility } from "@mui/icons-material";
 import Table from "@/components/Table";
 import { useGetWareHouseStocksQuery } from "@/redux/api/warehouseApi";
 import { useAppOptions } from "@/hooks/useAppOptions";
@@ -23,9 +22,77 @@ import WarehouseStockDetailModal from "./WarehouseStockDetailModal";
 
 const WarehouseStockOverview = () => {
     const { tenantDomain } = useAppOptions();
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pageSize] = useState(10);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [selectedWarehouse, setSelectedWarehouse] = useState("all");
+    const [selectedCity, setSelectedCity] = useState("all");
+    const [statusFilter, setStatusFilter] = useState("all");
 
-    const { data, isLoading, refetch } = useGetWareHouseStocksQuery({ tenantDomain });
-    const warehouseStocks = data?.data?.warehouseStocks || [];
+    const { data, isLoading, refetch } = useGetWareHouseStocksQuery({
+        tenantDomain,
+    });
+    const allFlattenedStocks = useMemo(() => {
+        const warehouseStocks = data?.data?.warehouseStocks || [];
+        return warehouseStocks.flatMap(
+            (warehouseItem) =>
+                warehouseItem.products?.map((productItem) => ({
+                    id: `${warehouseItem._id}-${productItem._id}`,
+                    product: {
+                        _id: productItem._id,
+                        product_name: productItem.product_name,
+                        product_code: productItem.product_code,
+                    },
+                    quantity: productItem.quantity,
+                    warehouse: warehouseItem.warehouse,
+                    warehouseId: warehouseItem._id,
+                    totalProducts: warehouseItem.totalProducts,
+                    totalQuantity: warehouseItem.totalQuantity,
+                })) || []
+        );
+    }, [data]);
+
+    // Filter data
+    const filteredData = useMemo(() => {
+        return allFlattenedStocks.filter((item) => {
+            const warehouseMatch =
+                selectedWarehouse === "all" ||
+                item?.warehouse?.name === selectedWarehouse;
+            const cityMatch =
+                selectedCity === "all" || item?.warehouse?.city === selectedCity;
+            const statusMatch =
+                statusFilter === "all" || item?.warehouse?.status === statusFilter;
+            const searchMatch =
+                item.product?.product_name
+                    ?.toLowerCase()
+                    .includes(searchTerm.toLowerCase()) ||
+                item.warehouse?.name
+                    ?.toLowerCase()
+                    .includes(searchTerm.toLowerCase()) ||
+                item.product?.product_code
+                    ?.toLowerCase()
+                    .includes(searchTerm.toLowerCase());
+            return warehouseMatch && cityMatch && statusMatch && searchMatch;
+        });
+    }, [
+        allFlattenedStocks,
+        selectedWarehouse,
+        selectedCity,
+        statusFilter,
+        searchTerm,
+    ]);
+
+    // pagination
+    const totalItems = filteredData.length;
+    const totalPages = Math.ceil(totalItems / pageSize);
+
+    //  paginated data
+    const paginatedData = useMemo(() => {
+        const startIndex = (currentPage - 1) * pageSize;
+        const endIndex = startIndex + pageSize;
+        return filteredData.slice(startIndex, endIndex);
+    }, [filteredData, currentPage, pageSize]);
+
     const [selectedStock, setSelectedStock] = useState(null);
     const [openModal, setOpenModal] = useState(false);
 
@@ -33,21 +100,7 @@ const WarehouseStockOverview = () => {
         setSelectedStock(item);
         setOpenModal(true);
     };
-    const [searchTerm, setSearchTerm] = useState("");
-    const [selectedWarehouse, setSelectedWarehouse] = useState("all");
-    const [selectedCity, setSelectedCity] = useState("all");
-    const [statusFilter, setStatusFilter] = useState("all");
-    const filteredData = useMemo(() => {
-        return warehouseStocks.filter((item) => {
-            const warehouseMatch = selectedWarehouse === "all" || item?.warehouse?.name === selectedWarehouse;
-            const cityMatch = selectedCity === "all" || item?.warehouse?.city === selectedCity;
-            const statusMatch = statusFilter === "all" || item?.warehouse?.status === statusFilter;
-            const searchMatch =
-                item.product?.product_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                item.warehouse?.name.toLowerCase().includes(searchTerm.toLowerCase());
-            return warehouseMatch && cityMatch && statusMatch && searchMatch;
-        });
-    }, [warehouseStocks, selectedWarehouse, selectedCity, statusFilter, searchTerm]);
+
     const columns = [
         { key: "index", label: "#", type: "index" },
         {
@@ -65,16 +118,29 @@ const WarehouseStockOverview = () => {
                 </Box>
             ),
         },
+        {
+            key: "product.product_code",
+            label: "Product Code",
+            render: (item) => item?.product?.product_code || "—",
+        },
         { key: "warehouse.name", label: "Warehouse" },
-        { key: "warehouse.city", label: "City" },
-        { key: "product.batch_number", label: "Batch No", render: (item) => item?.product?.batch_number || "—" },
+        {
+            key: "warehouse.city",
+            label: "City",
+            render: (item) => item?.warehouse?.city || "—",
+        },
+        {
+            key: "product.batch_number",
+            label: "Batch No",
+            render: (item) => item?.product?.batch_number || "—",
+        },
         { key: "quantity", label: "Quantity" },
         {
             key: "warehouse.status",
             label: "Status",
             render: (item) => (
                 <Chip
-                    label={item?.warehouse?.status}
+                    label={item?.warehouse?.status || "—"}
                     color={item?.warehouse?.status === "active" ? "success" : "default"}
                     size="small"
                 />
@@ -82,17 +148,49 @@ const WarehouseStockOverview = () => {
         },
     ];
 
-
     const actions = [
-        { label: "View", icon: Visibility, tooltip: "View Details", onClick: handleView },
-        { label: "Edit", icon: Edit, tooltip: "Edit", onClick: (item) => console.log("Edit", item) },
-        { label: "Delete", icon: Delete, tooltip: "Delete", onClick: (item) => console.log("Delete", item) },
+        {
+            label: "View",
+            icon: Visibility,
+            tooltip: "View Details",
+            onClick: handleView,
+        },
     ];
 
+    const uniqueWarehouses = [
+        ...new Set(allFlattenedStocks.map((item) => item?.warehouse?.name)),
+    ].filter(Boolean);
+    const uniqueCities = [
+        ...new Set(allFlattenedStocks.map((item) => item?.warehouse?.city)),
+    ].filter(Boolean);
 
-    const totalWarehouses = new Set(warehouseStocks?.map((w) => w?.warehouse?._id)).size;
-    const totalQuantity = warehouseStocks?.reduce((acc, cur) => acc + cur?.quantity, 0);
-    const totalCities = new Set(warehouseStocks?.map((w) => w?.warehouse?.city)).size;
+    const totalWarehouses = new Set(
+        allFlattenedStocks.map((item) => item.warehouseId)
+    ).size;
+    const totalQuantity = allFlattenedStocks.reduce(
+        (acc, cur) => acc + (cur?.quantity || 0),
+        0
+    );
+
+    const handleSearch = (value) => {
+        setSearchTerm(value);
+        setCurrentPage(1);
+    };
+
+    const handleWarehouseChange = (value) => {
+        setSelectedWarehouse(value);
+        setCurrentPage(1);
+    };
+
+    const handleCityChange = (value) => {
+        setSelectedCity(value);
+        setCurrentPage(1);
+    };
+
+    const handleStatusChange = (value) => {
+        setStatusFilter(value);
+        setCurrentPage(1);
+    };
 
     return (
         <Box className="p-6 space-y-6">
@@ -104,25 +202,25 @@ const WarehouseStockOverview = () => {
                 ]}
             />
 
-
             <Typography variant="h4" sx={{ fontWeight: "bold", mb: 2 }}>
                 Warehouse Stock Overview
             </Typography>
+
             <WarehouseStatsCards
                 totalWarehouses={totalWarehouses}
                 totalQuantity={totalQuantity}
-                totalCities={totalCities}
             />
+
             <Box className="flex flex-wrap items-center gap-4 bg-gray-50 p-4 rounded-xl border">
                 <FormControl size="small" sx={{ minWidth: 180 }}>
                     <InputLabel>Warehouse</InputLabel>
                     <Select
                         value={selectedWarehouse}
-                        onChange={(e) => setSelectedWarehouse(e.target.value)}
+                        onChange={(e) => handleWarehouseChange(e.target.value)}
                         label="Warehouse"
                     >
                         <MenuItem value="all">All</MenuItem>
-                        {[...new Set(warehouseStocks?.map((i) => i?.warehouse?.name))]?.map((name) => (
+                        {uniqueWarehouses.map((name) => (
                             <MenuItem key={name} value={name}>
                                 {name}
                             </MenuItem>
@@ -134,11 +232,11 @@ const WarehouseStockOverview = () => {
                     <InputLabel>City</InputLabel>
                     <Select
                         value={selectedCity}
-                        onChange={(e) => setSelectedCity(e.target.value)}
+                        onChange={(e) => handleCityChange(e.target.value)}
                         label="City"
                     >
                         <MenuItem value="all">All</MenuItem>
-                        {[...new Set(warehouseStocks?.map((i) => i?.warehouse?.city))]?.map((city) => (
+                        {uniqueCities.map((city) => (
                             <MenuItem key={city} value={city}>
                                 {city}
                             </MenuItem>
@@ -150,7 +248,7 @@ const WarehouseStockOverview = () => {
                     <InputLabel>Status</InputLabel>
                     <Select
                         value={statusFilter}
-                        onChange={(e) => setStatusFilter(e.target.value)}
+                        onChange={(e) => handleStatusChange(e.target.value)}
                         label="Status"
                     >
                         <MenuItem value="all">All</MenuItem>
@@ -162,35 +260,42 @@ const WarehouseStockOverview = () => {
                 <TextField
                     size="small"
                     variant="outlined"
-                    placeholder="Search by product or warehouse..."
+                    placeholder="Search by product name, code or warehouse..."
                     value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onChange={(e) => handleSearch(e.target.value)}
                     sx={{ flexGrow: 1, minWidth: 240 }}
                 />
 
                 <button
-                    onClick={refetch}
+                    onClick={() => {
+                        refetch();
+                        setCurrentPage(1);
+                    }}
                     className="ml-auto bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
                 >
                     Refresh
                 </button>
             </Box>
 
-
             <Table
-                title="Warehouse Stock Data"
+                title={`Warehouse Stock Data (${filteredData.length} items)`}
                 columns={columns}
-                data={filteredData}
+                data={paginatedData}
                 actions={actions}
                 loading={isLoading}
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+                onSearch={handleSearch}
+                searchPlaceholder="Search by product name, code or warehouse..."
                 emptyMessage="No warehouse stock data found."
             />
+
             <WarehouseStockDetailModal
                 open={openModal}
                 onClose={() => setOpenModal(false)}
                 stock={selectedStock}
             />
-
         </Box>
     );
 };

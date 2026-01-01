@@ -53,9 +53,9 @@ export const PermissionProvider = ({ children }) => {
 
       const pathMatch = possiblePaths.includes(page.path) || possiblePaths.includes(page.route);
 
-      if (pathMatch) {
-        console.log(`Path match found for ${pagePath}:`, page.path, page.route);
-      }
+      // if (pathMatch) {
+      //   console.log(`Path match found for ${pagePath}:`, page.path, page.route);
+      // }
 
       return pathMatch;
     });
