@@ -1,23 +1,22 @@
 /* eslint-disable no-unused-vars */
+import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { Tooltip } from "@mui/material";
 import { useState } from "react";
-import "./Home.css";
-import AllServices from "./Dashboard/AllServices";
-import ProfitOverView from "./Dashboard/ProfitOverView";
-import ProjectOverView from "./Dashboard/ProjectOverView";
-import RecentClient from "./Dashboard/RecentClient";
-import RecentProject from "./Dashboard/RecentProject";
-import RecentQuotation from "./Dashboard/RecentQuotation";
-import RecentInvoice from "./Dashboard/RecentInvoice";
-import EmployeeStatistics from "./Dashboard/EmployeeStatistics";
+import Loading from "../../components/Loading/Loading";
 import { useTenantDomain } from "../../hooks/useTenantDomain";
 import {
   useAccountSummaryQuery,
   useGetAllMetaQuery,
 } from "../../redux/api/meta.api";
+import AllServices from "./Dashboard/AllServices";
+import EmployeeStatistics from "./Dashboard/EmployeeStatistics";
 import DashboardSummary from "./Dashboard/IncomeCard";
-import Loading from "../../components/Loading/Loading";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { Tooltip } from "@mui/material";
+import ProjectOverView from "./Dashboard/ProjectOverView";
+import RecentClient from "./Dashboard/RecentClient";
+import RecentInvoice from "./Dashboard/RecentInvoice";
+import RecentProject from "./Dashboard/RecentProject";
+import RecentQuotation from "./Dashboard/RecentQuotation";
+import "./Home.css";
 
 const Home = () => {
   const [showSensitiveData, setShowSensitiveData] = useState(false);
@@ -31,7 +30,7 @@ const Home = () => {
 
   return (
     <div className="mt-5 xl:mt-10 ">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between ">
         <div>
           <h3 className="md:text-3xl font-bold">Welcome Admin !</h3>
           <span className="text-sm">Home / Dashboard</span>

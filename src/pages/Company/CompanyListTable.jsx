@@ -1,17 +1,17 @@
 /* eslint-disable react/prop-types */
-import { ArrowBack, Diversity3 } from "@mui/icons-material";
+import { ArrowBack } from "@mui/icons-material";
+import { Box, Button } from "@mui/material";
 import { useState } from "react";
 import { FaEdit, FaTrashAlt, FaUserTie } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import EmptyData from "../../components/EmptyData/EmptyData";
+import Breadcrumb from "../../components/Breadcrumb";
 import Loading from "../../components/Loading/Loading";
 import Table from "../../components/Table";
 import { usePermissions } from "../../context/PermissionContext";
 import { useTenantDomain } from "../../hooks/useTenantDomain";
 import { useGetAllCompaniesQuery } from "../../redux/api/companyApi";
-import { Box, Button } from "@mui/material";
 import { purchaseBtn, wrapBoxStyle } from "../../utils/customStyle";
-import Breadcrumb from "../../components/Breadcrumb";
+import { formatDate } from "../../utils/formateDate";
 const CompanyListTable = ({ handleDeleteAction, isRecycled, title }) => {
   const [filterType, setFilterType] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -53,22 +53,9 @@ const CompanyListTable = ({ handleDeleteAction, isRecycled, title }) => {
     { key: "index", label: "SL No", type: "index" },
     { key: "companyId", label: "Company ID" },
     { key: "company_name", label: "Company Name" },
-    { key: "vehicle_username", label: "Vehicle User Name" },
+    { key: "fullCompanyNum", label: "Phone No." },
     {
-      key: "vehicles",
-      label: "Car Reg No.",
-      render: (item) => {
-        const lastVehicle = item?.vehicles
-          ? [...item.vehicles].sort(
-              (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-            )[0]
-          : null;
-        return lastVehicle?.fullRegNum || "N/A";
-      },
-    },
-    { key: "fullCompanyNum", label: "Mobile No." },
-    {
-      key: "vehicles",
+      key: "vehicle_name",
       label: "Vehicle Name",
       render: (item) => {
         const lastVehicle = item?.vehicles
@@ -76,8 +63,30 @@ const CompanyListTable = ({ handleDeleteAction, isRecycled, title }) => {
               (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
             )[0]
           : null;
-        return lastVehicle?.vehicle_name || "N/A";
+        return lastVehicle?.vehicle_name || "—";
       },
+    },
+    {
+      key: "vehicles",
+      label: "Vehicle Reg No",
+      render: (item) => {
+        const firstVehicle = item?.vehicles?.[0];
+        if (!firstVehicle) return "—";
+
+        const carRegNo = firstVehicle?.carReg_no || "";
+        const carRegistrationNo = firstVehicle?.car_registration_no || "";
+        const combined =
+          carRegNo && carRegistrationNo
+            ? `${carRegNo}-${carRegistrationNo}`
+            : carRegNo || carRegistrationNo || "—";
+
+        return combined;
+      },
+    },
+    {
+      key: "createdAt",
+      label: "Date",
+      render: (item) => (item?.createdAt ? formatDate(item.createdAt) : "—"),
     },
   ];
 
@@ -132,33 +141,24 @@ const CompanyListTable = ({ handleDeleteAction, isRecycled, title }) => {
           Back
         </Button>
       </Box>
-      {companies.length === 0 ? (
-        <EmptyData
-          icon={Diversity3}
-          title="No Company Found"
-          message="We couldn't find any company matching your search criteria."
-          subMessage="Try adjusting your filters or add a new company."
-        />
-      ) : (
-        <Table
-          title={title || "Company List"}
-          columns={columns}
-          data={companies}
-          actions={actions}
-          loading={companyLoading}
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={(page) => setCurrentPage(page)}
-          onSearch={(value) => {
-            setFilterType(value);
-            setCurrentPage(1);
-          }}
-          searchPlaceholder="Search Company..."
-          getRowClass={() =>
-            "transition-all duration-300 hover:bg-gradient-to-r hover:from-blue-300 hover:to-blue-100 hover:text-black"
-          }
-        />
-      )}
+      <Table
+        title={title || "Company List"}
+        columns={columns}
+        data={companies}
+        actions={actions}
+        loading={companyLoading}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={(page) => setCurrentPage(page)}
+        onSearch={(value) => {
+          setFilterType(value);
+          setCurrentPage(1);
+        }}
+        searchPlaceholder="Search Company..."
+        getRowClass={() =>
+          "transition-all duration-300 hover:bg-gradient-to-r hover:from-blue-300 hover:to-blue-100 hover:text-black"
+        }
+      />
     </Box>
   );
 };

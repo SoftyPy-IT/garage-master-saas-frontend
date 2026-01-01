@@ -57,12 +57,12 @@ const TopSearchbar = () => {
       <div className="relative flex-grow">
         <input
           type="text" 
-          placeholder="Search here"
+          placeholder="Search"
           value={searchData}
           onChange={(e) => setSearchData(e.target.value)}
           onKeyPress={handleKeyPress}
           disabled={!searchField}
-          className="w-full px-2 py-1 border rounded text-black disabled:bg-gray-200 searchInput "
+          className="lg:w-[92px] xl:w-full px-2 py-1 border rounded text-black disabled:bg-gray-200 searchInput "
         />
         <button
           onClick={handleGoSearch}

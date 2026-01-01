@@ -27,7 +27,7 @@ import {
   useUpdateInvoiceMutation,
 } from "../../redux/api/invoice";
 import { unitOptions } from "../../utils/options";
-import { formatNumber } from "../../utils/formateSemicolon";
+import { formateNumber } from "../../utils/formateSemicolon";
 import { useGetCompanyProfileQuery } from "../../redux/api/companyProfile";
 import { useTenantDomain } from "../../hooks/useTenantDomain";
 import { usePermissions } from "../../context/PermissionContext";
@@ -753,7 +753,9 @@ const UpdateInvoice = () => {
   ];
 
   const onSubmit = async (data) => {
-    performActionWithPermission('/dashboard/update-invoice', 'edit',
+    performActionWithPermission(
+      "/dashboard/update-invoice",
+      "edit",
       async () => {
         setRemoveButton("");
         try {
@@ -795,7 +797,8 @@ const UpdateInvoice = () => {
           if (!isNaN(newMileageValue) && newMileageValue > 0) {
             const lastMileage =
               updatedMileageHistory.length > 0
-                ? updatedMileageHistory[updatedMileageHistory.length - 1].mileage
+                ? updatedMileageHistory[updatedMileageHistory.length - 1]
+                    .mileage
                 : null;
 
             // Only add if it's different from the last mileage entry
@@ -828,7 +831,9 @@ const UpdateInvoice = () => {
             service_total: serviceTotal || specificInvoice.serviceTotal,
             total_amount: grandTotal || specificInvoice?.total_amount,
             discount:
-              discount === 0 || discount > 0 ? discount : specificInvoice?.discount,
+              discount === 0 || discount > 0
+                ? discount
+                : specificInvoice?.discount,
             vat: vat === 0 || vat > 0 ? vat : specificInvoice?.vat,
             tax: tax === 0 || tax > 0 ? tax : specificInvoice?.tax, // Include tax
             net_total: calculateFinalTotal() || specificInvoice.net_total,
@@ -867,8 +872,9 @@ const UpdateInvoice = () => {
             setError(error.response.data.message);
           }
         }
-      }, "You don't have permission to edit this invoice !"
-    )
+      },
+      "You don't have permission to edit this invoice !"
+    );
   };
 
   const handleOnSubmit = () => {
@@ -1037,16 +1043,16 @@ const UpdateInvoice = () => {
                   )}
                   {(specificInvoice?.user_type === "company" ||
                     specificInvoice?.user_type === "showRoom") && (
-                      <TextField
-                        fullWidth
-                        label="Customer"
-                        focused={
-                          specificInvoice?.company?.vehicle_username ||
-                          specificInvoice?.showRoom?.vehicle_username
-                        }
-                        {...register("vehicle_username")}
-                      />
-                    )}
+                    <TextField
+                      fullWidth
+                      label="Customer"
+                      focused={
+                        specificInvoice?.company?.vehicle_username ||
+                        specificInvoice?.showRoom?.vehicle_username
+                      }
+                      {...register("vehicle_username")}
+                    />
+                  )}
                 </Grid>
                 <Grid item lg={12} md={12} sm={12} xs={12}>
                   <Grid container spacing={1}>
@@ -1111,24 +1117,24 @@ const UpdateInvoice = () => {
                       )}
                       {(specificInvoice?.user_type === "company" ||
                         specificInvoice?.user_type === "showRoom") && (
-                          <TextField
-                            {...register("company_contact")}
-                            variant="outlined"
-                            fullWidth
-                            type="tel"
-                            value={
-                              phoneNumber
-                                ? phoneNumber
-                                : specificInvoice?.customer?.customer_contact
-                            }
-                            onChange={handlePhoneNumberChange}
-                            placeholder="Company Contact No (N)"
-                            focused={
-                              specificInvoice?.company?.company_contact ||
-                              specificInvoice?.showRoom?.company_contact
-                            }
-                          />
-                        )}
+                        <TextField
+                          {...register("company_contact")}
+                          variant="outlined"
+                          fullWidth
+                          type="tel"
+                          value={
+                            phoneNumber
+                              ? phoneNumber
+                              : specificInvoice?.customer?.customer_contact
+                          }
+                          onChange={handlePhoneNumberChange}
+                          placeholder="Company Contact No (N)"
+                          focused={
+                            specificInvoice?.company?.company_contact ||
+                            specificInvoice?.showRoom?.company_contact
+                          }
+                        />
+                      )}
                     </Grid>
                   </Grid>
                 </Grid>
@@ -1417,7 +1423,7 @@ const UpdateInvoice = () => {
                             autoComplete="off"
                             type="text"
                             placeholder="Amount"
-                            value={formatNumber(item.total)}
+                            value={formateNumber(item.total)}
                             readOnly
                           />
                         </div>
@@ -1541,7 +1547,7 @@ const UpdateInvoice = () => {
                             autoComplete="off"
                             type="text"
                             placeholder="Amount"
-                            value={formatNumber(item.total)}
+                            value={formateNumber(item.total)}
                             readOnly
                           />
                         </div>
@@ -1673,7 +1679,7 @@ const UpdateInvoice = () => {
                             autoComplete="off"
                             type="text"
                             placeholder="Amount"
-                            value={formatNumber(item.total)}
+                            value={formateNumber(item.total)}
                             readOnly
                           />
                         </div>
@@ -1797,7 +1803,7 @@ const UpdateInvoice = () => {
                             autoComplete="off"
                             type="text"
                             placeholder="Amount"
-                            value={formatNumber(item.total)}
+                            value={formateNumber(item.total)}
                             readOnly
                           />
                         </div>
@@ -1833,7 +1839,7 @@ const UpdateInvoice = () => {
           <div className="flex items-center gap-x-2">
             <b> Total Amount: </b>
             <span>
-              {formatNumber(
+              {formateNumber(
                 grandTotal ? grandTotal : specificInvoice?.total_amount
               )}
             </span>
@@ -1846,7 +1852,7 @@ const UpdateInvoice = () => {
               autoComplete="off"
               type="text"
               placeholder="Discount"
-              defaultValue={formatNumber(specificInvoice?.discount)}
+              defaultValue={formateNumber(specificInvoice?.discount)}
               ref={partsDiscountRef}
             />
           </div>
@@ -1858,14 +1864,14 @@ const UpdateInvoice = () => {
               autoComplete="off"
               type="text"
               placeholder="Vat"
-              defaultValue={formatNumber(specificInvoice?.vat)}
+              defaultValue={formateNumber(specificInvoice?.vat)}
             />
           </div>
           <div className="flex items-center gap-x-2">
             <div className="flex items-center ">
               <b className="mr-3">Final Total: </b>
               <span ref={netTotalAmountRef}>
-                {formatNumber(
+                {formateNumber(
                   calculateFinalTotal()
                     ? calculateFinalTotal()
                     : specificInvoice?.net_total
@@ -1881,12 +1887,12 @@ const UpdateInvoice = () => {
               autoComplete="off"
               type="text"
               placeholder="Advance"
-              defaultValue={formatNumber(specificInvoice?.advance)}
+              defaultValue={formateNumber(specificInvoice?.advance)}
             />
           </div>
           <div className="flex items-center gap-x-2  ">
             <b className="mr-2">Due: </b>
-            <span>{formatNumber(calculateDue())}</span>
+            <span>{formateNumber(calculateDue())}</span>
           </div>
         </div>
         <div>
@@ -1899,8 +1905,9 @@ const UpdateInvoice = () => {
                 <button>
                   <a
                     className="bg-[#42A0D9] text-white px-3 py-5  rounded-full "
-                    href={`${import.meta.env.VITE_API_URL}/invoices/invoice/${specificInvoice?._id
-                      }`}
+                    href={`${import.meta.env.VITE_API_URL}/invoices/invoice/${
+                      specificInvoice?._id
+                    }`}
                     target="_blank"
                     rel="noreferrer"
                   >
@@ -1912,7 +1919,7 @@ const UpdateInvoice = () => {
             </div>
           </div>
           <div className="flex  justify-center align-items-center mt-5 ">
-            <Can page='/dashboard/update-invoice' action='edit'>
+            <Can page="/dashboard/update-invoice" action="edit">
               <Button
                 sx={{ background: "#42A1DA", color: "#fff" }}
                 onClick={handleOnSubmit}

@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
 /* eslint-disable no-unused-vars */
-import { useState } from "react"
-import TASForm from "../../../components/form/Form"
+import { useState } from "react";
+import TASForm from "../../../components/form/Form";
 import {
   Autocomplete,
   Box,
@@ -20,15 +20,15 @@ import {
   useTheme,
   Tooltip,
   CircularProgress,
-} from "@mui/material"
-import TASInput from "../../../components/form/Input"
-import TASDatepicker from "../../../components/form/Datepicker"
-import AddjustmentFileUpload from "../../../components/form/AddjustmentFileUpload"
-import TASSelect from "../../../components/form/Select"
-import TASTextarea from "../../../components/form/Textarea"
-import { toast } from "react-toastify"
-import { useCreateAdjustmentMutation } from "../../../redux/api/adjustmentApi"
-import { useNavigate } from "react-router-dom"
+} from "@mui/material";
+import TASInput from "../../../components/form/Input";
+import TASDatepicker from "../../../components/form/Datepicker";
+import AddjustmentFileUpload from "../../../components/form/AddjustmentFileUpload";
+import TASSelect from "../../../components/form/Select";
+import TASTextarea from "../../../components/form/Textarea";
+import { toast } from "react-toastify";
+import { useCreateAdjustmentMutation } from "../../../redux/api/adjustmentApi";
+import { useNavigate } from "react-router-dom";
 import {
   Add as AddIcon,
   Remove as RemoveIcon,
@@ -44,42 +44,50 @@ import {
   ArrowBack as ArrowBackIcon,
   Tune as TuneIcon,
   Delete as DeleteIcon,
-} from "@mui/icons-material"
-import TASAutocomplete from "../../../components/form/Autocomplete"
-import { outlinedInputWrapperSx, purchaseBtn } from "../../../utils/customStyle"
-import { StoreIcon } from "lucide-react"
-import { useGetAllStocksQuery } from "../../../redux/api/stocksApi"
-import { useAppOptions } from "../../../hooks/useAppOptions"
-import Can from "../../../components/Can"
-
+  Store as StoreIcon,
+} from "@mui/icons-material";
+import TASAutocomplete from "../../../components/form/Autocomplete";
+import {
+  outlinedInputWrapperSx,
+  purchaseBtn,
+} from "../../../utils/customStyle";
+import { useGetAllStocksQuery } from "../../../redux/api/stocksApi";
+import { useAppOptions } from "../../../hooks/useAppOptions";
+import Can from "../../../components/Can";
 
 const AddAdjustmentForm = () => {
-  const theme = useTheme()
-  const [currentPage, setCurrentPage] = useState(1)
-  const [searchTerm, setSearchTerm] = useState("")
-  const navigate = useNavigate()
-  const { tenantDomain, performActionWithPermission, warehouseOptions } = useAppOptions()
+  const theme = useTheme();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
+  const navigate = useNavigate();
+  const { tenantDomain, performActionWithPermission, warehouseOptions } =
+    useAppOptions();
 
+  const queryParams = {
+    tenantDomain,
+    page: currentPage,
+    limit: 100,
+    searchTerm: searchTerm,
+  };
 
-  const queryParams = { tenantDomain, page: currentPage, limit: 100, searchTerm: searchTerm }
+  const { data: stockData, isLoading } = useGetAllStocksQuery(queryParams);
 
-  const { data: stockData, isLoading } = useGetAllStocksQuery(queryParams)
-
-  const [createAdjustment, { isLoading: isSubmitting }] = useCreateAdjustmentMutation()
-  const [productFields, setProductFields] = useState([])
-  const [fileList, setFileList] = useState([])
-
+  const [createAdjustment, { isLoading: isSubmitting }] =
+    useCreateAdjustmentMutation();
+  const [productFields, setProductFields] = useState([]);
+  const [fileList, setFileList] = useState([]);
 
   const onAddProductField = (product) => {
-
-    const existingProductIndex = productFields.findIndex((field) => field.productId === product.stock.product._id)
+    const existingProductIndex = productFields.findIndex(
+      (field) => field.productId === product.stock.product._id
+    );
 
     if (existingProductIndex !== -1) {
       toast.info("Product already added. You can adjust its quantity below.", {
         position: "top-right",
         autoClose: 3000,
-      })
-      return
+      });
+      return;
     }
 
     setProductFields([
@@ -94,44 +102,60 @@ const AddAdjustmentForm = () => {
         currentStock: product.stock.inQuantity - product.stock.outQuantity,
         avgPurchasePrice: product.stock.avgPurchasePrice,
         warehouse: product.stock.warehouse._id,
+        warehouseName: product.stock.warehouse.name,
       },
-    ])
+    ]);
 
     toast.success("Product added successfully", {
       position: "top-right",
       autoClose: 2000,
-    })
-  }
+    });
+  };
 
   const onRemoveProductField = (index) => {
-    const newFields = [...productFields]
-    newFields.splice(index, 1)
-    setProductFields(newFields)
+    const newFields = [...productFields];
+    newFields.splice(index, 1);
+    setProductFields(newFields);
 
     toast.info("Product removed", {
       position: "top-right",
       autoClose: 2000,
-    })
-  }
+    });
+  };
+
+  const handleAdjustmentTypeChange = (index, newType) => {
+    const newFields = [...productFields];
+    newFields[index].type = newType;
+    setProductFields(newFields);
+  };
 
   const handleSubmit = async (data) => {
-    performActionWithPermission('/dashboard/add-adjustment', 'create',
+    performActionWithPermission(
+      "/dashboard/add-adjustment",
+      "create",
       async () => {
         if (productFields.length === 0) {
           toast.error("Please add at least one product", {
             position: "top-right",
             autoClose: 3000,
-          })
-          return
+          });
+          return;
         }
 
-        const imageUrl = Array.isArray(data.image) ? data.image[0] : data.image
+        const imageUrl = Array.isArray(data.image) ? data.image[0] : data.image;
         const modifyData = {
           image: imageUrl,
           ...data,
           warehouse:
-            data.warehouse && data.warehouse[0] && warehouseOptions.find((cat) => cat.label === data.warehouse[0])?.value
-              ? [warehouseOptions.find((cat) => cat.label === data.warehouse[0]).value]
+            data.warehouse &&
+            data.warehouse[0] &&
+            warehouseOptions.find((cat) => cat.label === data.warehouse[0])
+              ?.value
+              ? [
+                  warehouseOptions.find(
+                    (cat) => cat.label === data.warehouse[0]
+                  ).value,
+                ]
               : [],
           products: productFields.map((product) => ({
             productId: product.productId,
@@ -143,39 +167,45 @@ const AddAdjustmentForm = () => {
             currentStock: product.currentStock,
             avgPurchasePrice: product.avgPurchasePrice,
           })),
-        }
+        };
 
-        const formData = new FormData()
+        const formData = new FormData();
 
         for (const key in modifyData) {
           if (key === "products") {
             modifyData.products.forEach((product, index) => {
               for (const productKey in product) {
-                formData.append(`products[${index}][${productKey}]`, product[productKey].toString())
+                formData.append(
+                  `products[${index}][${productKey}]`,
+                  product[productKey].toString()
+                );
               }
-            })
+            });
           } else {
-            formData.append(key, modifyData[key]?.toString())
+            formData.append(key, modifyData[key]?.toString());
           }
         }
 
         if (fileList.length > 0) {
-          formData.append("attachDocument", fileList[0].originFileObj)
+          formData.append("attachDocument", fileList[0].originFileObj);
         }
 
         try {
-          const res = await createAdjustment({ data: formData, tenantDomain }).unwrap()
+          const res = await createAdjustment({
+            data: formData,
+            tenantDomain,
+          }).unwrap();
 
           if (res.success) {
-            toast.success(res.message | "Adjustment created successfully",)
+            toast.success(res.message || "Adjustment created successfully");
           }
-          navigate("/dashboard/quantity-adjustment")
+          navigate("/dashboard/quantity-adjustment");
         } catch (error) {
           const errorMessage =
             error.data?.errorSources?.[0]?.message ||
             error.data?.err?.issues?.[0]?.message ||
             error.data?.message ||
-            'Failed to create adjustment'
+            "Failed to create adjustment";
 
           toast.error(errorMessage, {
             position: "top-right",
@@ -184,19 +214,17 @@ const AddAdjustmentForm = () => {
             closeOnClick: true,
             pauseOnHover: true,
             draggable: true,
-
           });
         }
-
-      }, "You don't have permission to create adjustment !"
-    )
-  }
+      },
+      "You don't have permission to create adjustment !"
+    );
+  };
 
   const handleChange = (_value, option) => {
-    if (!option) return
-    onAddProductField(option)
-  }
-
+    if (!option) return;
+    onAddProductField(option);
+  };
 
   return (
     <TASForm onSubmit={handleSubmit}>
@@ -239,11 +267,9 @@ const AddAdjustmentForm = () => {
         </Button>
       </Box>
 
-
       <Grid container spacing={4}>
         <Grid item xs={12} md={3}>
           <Card
-
             sx={{
               borderRadius: "20px",
               border: "1px solid rgba(226, 232, 240, 0.8)",
@@ -251,12 +277,15 @@ const AddAdjustmentForm = () => {
               display: "flex",
               flexDirection: "column",
               overflow: "hidden",
-              background: "linear-gradient(145deg, rgba(255,255,255,1) 0%, rgba(248,250,252,1) 100%)",
-              boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)",
+              background:
+                "linear-gradient(145deg, rgba(255,255,255,1) 0%, rgba(248,250,252,1) 100%)",
+              boxShadow:
+                "0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)",
               transition: "transform 0.3s ease, box-shadow 0.3s ease",
               "&:hover": {
                 transform: "translateY(-5px)",
-                boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+                boxShadow:
+                  "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
               },
             }}
           >
@@ -274,7 +303,9 @@ const AddAdjustmentForm = () => {
                 Document
               </Typography>
             </Box>
-            <CardContent sx={{ p: 3, flex: 1, display: "flex", flexDirection: "column" }}>
+            <CardContent
+              sx={{ p: 3, flex: 1, display: "flex", flexDirection: "column" }}
+            >
               <Typography variant="body2" color="#64748b" sx={{ mb: 3 }}>
                 Attach invoice or related documents for this adjustment
               </Typography>
@@ -287,7 +318,12 @@ const AddAdjustmentForm = () => {
                   justifyContent: "center",
                 }}
               >
-                <AddjustmentFileUpload name="attachDocument" label="Attach Document" fullWidth sx={{ width: "100%" }} />
+                <AddjustmentFileUpload
+                  name="attachDocument"
+                  label="Attach Document"
+                  fullWidth
+                  sx={{ width: "100%" }}
+                />
               </Box>
             </CardContent>
           </Card>
@@ -295,13 +331,14 @@ const AddAdjustmentForm = () => {
 
         <Grid item xs={12} md={9}>
           <Card
-
             sx={{
               borderRadius: "20px",
               border: "1px solid rgba(226, 232, 240, 0.8)",
               overflow: "hidden",
-              background: "linear-gradient(145deg, rgba(255,255,255,1) 0%, rgba(248,250,252,1) 100%)",
-              boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)",
+              background:
+                "linear-gradient(145deg, rgba(255,255,255,1) 0%, rgba(248,250,252,1) 100%)",
+              boxShadow:
+                "0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)",
             }}
           >
             <Box
@@ -406,14 +443,15 @@ const AddAdjustmentForm = () => {
 
       {/* Product Search */}
       <Card
-
         sx={{
           borderRadius: "20px",
           border: "1px solid rgba(226, 232, 240, 0.8)",
           mt: 4,
           overflow: "hidden",
-          background: "linear-gradient(145deg, rgba(255,255,255,1) 0%, rgba(248,250,252,1) 100%)",
-          boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)",
+          background:
+            "linear-gradient(145deg, rgba(255,255,255,1) 0%, rgba(248,250,252,1) 100%)",
+          boxShadow:
+            "0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)",
         }}
       >
         <Box
@@ -464,7 +502,9 @@ const AddAdjustmentForm = () => {
                   ),
                   endAdornment: (
                     <>
-                      {isLoading ? <CircularProgress color="inherit" size={20} /> : null}
+                      {isLoading ? (
+                        <CircularProgress color="inherit" size={20} />
+                      ) : null}
                       {params.InputProps.endAdornment}
                     </>
                   ),
@@ -486,7 +526,9 @@ const AddAdjustmentForm = () => {
             )}
             renderOption={(props, option) => (
               <li {...props}>
-                <Box sx={{ display: "flex", alignItems: "center", width: "100%" }}>
+                <Box
+                  sx={{ display: "flex", alignItems: "center", width: "100%" }}
+                >
                   <Avatar
                     variant="rounded"
                     sx={{
@@ -506,8 +548,11 @@ const AddAdjustmentForm = () => {
                       {option.label}
                     </Typography>
                     <Typography variant="body2" color="#64748b">
-                      Code: {option.stock.product.product_code || "N/A"} | Stock:{" "}
-                      {option.stock.inQuantity - option.stock.outQuantity || "N/A"}
+                      Code: {option.stock.product.product_code || "N/A"} |
+                      Stock:{" "}
+                      {option.stock.inQuantity - option.stock.outQuantity ||
+                        "N/A"}{" "}
+                      | Warehouse: {option.stock.warehouse.name}
                     </Typography>
                   </Box>
                   <Chip
@@ -517,7 +562,8 @@ const AddAdjustmentForm = () => {
                     sx={{
                       borderRadius: "8px",
                       fontWeight: 600,
-                      background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)",
+                      background:
+                        "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)",
                       boxShadow: "0 2px 5px rgba(99, 102, 241, 0.3)",
                     }}
                   />
@@ -532,35 +578,38 @@ const AddAdjustmentForm = () => {
       <Box sx={{ mt: 4 }}>
         <>
           {productFields.length === 0 ? (
-            <Box
-
-
-            >
-
-              <Typography variant="h6" fontWeight="600" color="#1e293b" textAlign="center">
+            <Box>
+              <Typography
+                variant="h6"
+                fontWeight="600"
+                color="#1e293b"
+                textAlign="center"
+              >
                 No Products Added Yet
               </Typography>
-
             </Box>
           ) : (
             productFields.map((field, index) => (
               <Card
                 key={index}
-
                 sx={{
                   borderRadius: "16px",
                   border: "1px solid rgba(226, 232, 240, 0.8)",
                   mb: 3,
                   overflow: "hidden",
-
-                  color: '#fff'
+                  color: "#fff",
                 }}
               >
                 <Box sx={{ p: 3, position: "relative" }}>
                   <Grid container spacing={3} alignItems="center">
+                    {/* Product Name */}
                     <Grid item xs={12} md={3}>
                       <Box sx={{ mb: { xs: 1, md: 0 } }}>
-                        <Typography variant="body2" color="#64748b" gutterBottom>
+                        <Typography
+                          variant="body2"
+                          color="#64748b"
+                          gutterBottom
+                        >
                           Product
                         </Typography>
                         <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -576,16 +625,54 @@ const AddAdjustmentForm = () => {
                           >
                             <InventoryIcon fontSize="small" />
                           </Avatar>
-                          <Typography variant="body1" fontWeight="600" color="#1e293b">
+                          <Typography
+                            variant="body1"
+                            fontWeight="600"
+                            color="#1e293b"
+                          >
                             {field.productName}
                           </Typography>
                         </Box>
                       </Box>
                     </Grid>
 
+                    {/* Warehouse Name */}
                     <Grid item xs={12} md={2}>
                       <Box sx={{ mb: { xs: 1, md: 0 } }}>
-                        <Typography variant="body2" color="#64748b" gutterBottom>
+                        <Typography
+                          variant="body2"
+                          color="#64748b"
+                          gutterBottom
+                        >
+                          Warehouse
+                        </Typography>
+                        <Box sx={{ display: "flex", alignItems: "center" }}>
+                          <Chip
+                            icon={<StoreIcon fontSize="small" />}
+                            label={field.warehouseName || "N/A"}
+                            size="small"
+                            sx={{
+                              bgcolor: alpha("#6366f1", 0.1),
+                              color: "#6366f1",
+                              fontWeight: "medium",
+                              borderRadius: "8px",
+                              "& .MuiChip-icon": {
+                                color: "#6366f1",
+                              },
+                            }}
+                          />
+                        </Box>
+                      </Box>
+                    </Grid>
+
+                    {/* Current Stock */}
+                    <Grid item xs={12} md={1}>
+                      <Box sx={{ mb: { xs: 1, md: 0 } }}>
+                        <Typography
+                          variant="body2"
+                          color="#64748b"
+                          gutterBottom
+                        >
                           Current Stock
                         </Typography>
                         <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -607,10 +694,15 @@ const AddAdjustmentForm = () => {
                       </Box>
                     </Grid>
 
-                    <Grid item xs={12} md={2}>
+                    {/* Avg. Purchase Price */}
+                    <Grid item xs={12} md={1}>
                       <Box sx={{ mb: { xs: 1, md: 0 } }}>
-                        <Typography variant="body2" color="#64748b" gutterBottom>
-                          Avg. Purchase Price
+                        <Typography
+                          variant="body2"
+                          color="#64748b"
+                          gutterBottom
+                        >
+                          Avg. Price
                         </Typography>
                         <Box sx={{ display: "flex", alignItems: "center" }}>
                           <Chip
@@ -627,79 +719,171 @@ const AddAdjustmentForm = () => {
                       </Box>
                     </Grid>
 
+                    {/* Adjustment Type - Plus/Minus Buttons in Bangla */}
                     <Grid item xs={12} md={2}>
                       <Box sx={{ mb: { xs: 1, md: 0 } }}>
-                        <Typography variant="body2" color="#64748b" gutterBottom>
+                        <Typography
+                          variant="body2"
+                          color="#64748b"
+                          gutterBottom
+                          textAlign="center"
+                        >
                           Adjustment Type
                         </Typography>
-                        <TASSelect
-                          items={["Addition", "Subtraction"]}
-                          name={`products[${index}].type`}
-                          fullWidth
-                          size="medium"
-                          value={field.type}
-                          defaultValue={field.type}
-                          onChange={(value) => {
-                            const newFields = [...productFields]
-                            newFields[index].type = value
-                            setProductFields(newFields)
-                          }}
+                        <Box
                           sx={{
-                            "& .MuiOutlinedInput-root": {
-                              borderRadius: "12px",
-                              "& .MuiOutlinedInput-notchedOutline": {
-                                borderColor: "#e2e8f0",
-                              },
-                              "&:hover .MuiOutlinedInput-notchedOutline": {
-                                borderColor: "#cbd5e1",
-                              },
-                              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                                borderColor: "#6366f1",
-                                borderWidth: "2px",
-                              },
-                            },
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            gap: 0.5,
                           }}
-                          InputProps={{
-                            startAdornment: (
-                              <InputAdornment position="start">
-                                {field.type === "Addition" ? (
-                                  <AddCircleIcon sx={{ color: "#10b981" }} />
-                                ) : (
-                                  <RemoveCircleIcon sx={{ color: "#ef4444" }} />
-                                )}
-                              </InputAdornment>
-                            ),
+                        >
+                          {/* Subtraction Button - Bangla */}
+                          <Tooltip title="স্টক থেকে বাদ দিন" arrow>
+                            <Button
+                              variant={
+                                field.type === "Subtraction"
+                                  ? "contained"
+                                  : "outlined"
+                              }
+                              onClick={() =>
+                                handleAdjustmentTypeChange(index, "Subtraction")
+                              }
+                              startIcon={<RemoveIcon />}
+                              size="small"
+                              sx={{
+                                borderRadius: "6px",
+                                textTransform: "none",
+                                fontWeight: "600",
+                                fontSize: "0.75rem",
+                                minWidth: "auto",
+                                px: 1,
+                                py: 0.5,
+                                ...(field.type === "Subtraction"
+                                  ? {
+                                      backgroundColor: "#ef4444",
+                                      color: "white",
+                                      "&:hover": {
+                                        backgroundColor: "#dc2626",
+                                      },
+                                    }
+                                  : {
+                                      borderColor: "#ef4444",
+                                      color: "#ef4444",
+                                      "&:hover": {
+                                        borderColor: "#dc2626",
+                                        backgroundColor: alpha("#ef4444", 0.04),
+                                      },
+                                    }),
+                              }}
+                            >
+                              বাদ
+                            </Button>
+                          </Tooltip>
+
+                          {/* Addition Button - Bangla */}
+                          <Tooltip title="স্টক যোগ করুন" arrow>
+                            <Button
+                              variant={
+                                field.type === "Addition"
+                                  ? "contained"
+                                  : "outlined"
+                              }
+                              onClick={() =>
+                                handleAdjustmentTypeChange(index, "Addition")
+                              }
+                              startIcon={<AddIcon />}
+                              size="small"
+                              sx={{
+                                borderRadius: "6px",
+                                textTransform: "none",
+                                fontWeight: "600",
+                                fontSize: "0.75rem",
+                                minWidth: "auto",
+                                px: 1,
+                                py: 0.5,
+                                ...(field.type === "Addition"
+                                  ? {
+                                      backgroundColor: "#10b981",
+                                      color: "white",
+                                      "&:hover": {
+                                        backgroundColor: "#059669",
+                                      },
+                                    }
+                                  : {
+                                      borderColor: "#10b981",
+                                      color: "#10b981",
+                                      "&:hover": {
+                                        borderColor: "#059669",
+                                        backgroundColor: alpha("#10b981", 0.04),
+                                      },
+                                    }),
+                              }}
+                            >
+                              যোগ
+                            </Button>
+                          </Tooltip>
+                        </Box>
+
+                        {/* Visual indicator in Bangla */}
+                        <Typography
+                          variant="caption"
+                          color={
+                            field.type === "Addition" ? "#10b981" : "#ef4444"
+                          }
+                          sx={{
+                            display: "block",
+                            textAlign: "center",
+                            mt: 0.5,
+                            fontWeight: "600",
+                            fontSize: "0.7rem",
                           }}
-                        />
+                        >
+                          {field.type === "Addition"
+                            ? "স্টকে যোগ করা হচ্ছে"
+                            : "স্টক থেকে বাদ দেওয়া হচ্ছে"}
+                        </Typography>
                       </Box>
                     </Grid>
 
+                    {/* Quantity */}
                     <Grid item xs={12} md={2}>
                       <Box sx={{ mb: { xs: 1, md: 0 } }}>
-                        <Typography variant="body2" color="#64748b" gutterBottom>
-                          Quantity
+                        <Typography
+                          variant="body2"
+                          color="#64748b"
+                          gutterBottom
+                          textAlign="center"
+                        >
+                          {field.type === "Addition" ? "যতটা যোগ" : "যতটা বাদ"}
                         </Typography>
-                        <Box sx={{ display: "flex", alignItems: "center" }}>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
                           <Box
                             sx={{
                               display: "flex",
                               alignItems: "center",
-                              gap: 1,
+                              gap: 0.5,
                             }}
                           >
                             <IconButton
                               size="small"
                               onClick={() => {
-                                const newFields = [...productFields]
+                                const newFields = [...productFields];
                                 if (newFields[index].quantity > 1) {
-                                  newFields[index].quantity -= 1
-                                  setProductFields(newFields)
+                                  newFields[index].quantity -= 1;
+                                  setProductFields(newFields);
                                 }
                               }}
                               sx={{
                                 border: "1px solid #e2e8f0",
-                                borderRadius: "8px",
-                                p: "4px",
+                                borderRadius: "6px",
+                                p: "2px",
                                 color: "#64748b",
                                 transition: "all 0.2s",
                                 "&:hover": {
@@ -716,42 +900,66 @@ const AddAdjustmentForm = () => {
                               size="small"
                               value={field.quantity}
                               onChange={(e) => {
-                                const newFields = [...productFields]
-                                newFields[index].quantity = Math.max(1, Number(e.target.value))
-                                setProductFields(newFields)
+                                const newFields = [...productFields];
+                                newFields[index].quantity = Math.max(
+                                  1,
+                                  Number(e.target.value)
+                                );
+                                setProductFields(newFields);
                               }}
                               InputProps={{
                                 sx: {
-                                  borderRadius: "8px",
-                                  width: "80px",
+                                  borderRadius: "6px",
+                                  width: "70px",
+                                  textAlign: "center",
+                                  fontSize: "0.875rem",
                                   "& .MuiOutlinedInput-notchedOutline": {
-                                    borderColor: "#e2e8f0",
+                                    borderColor:
+                                      field.type === "Addition"
+                                        ? alpha("#10b981", 0.3)
+                                        : alpha("#ef4444", 0.3),
                                   },
                                   "&:hover .MuiOutlinedInput-notchedOutline": {
-                                    borderColor: "#cbd5e1",
+                                    borderColor:
+                                      field.type === "Addition"
+                                        ? "#10b981"
+                                        : "#ef4444",
                                   },
-                                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                                    borderColor: "#6366f1",
-                                    borderWidth: "2px",
-                                  },
+                                  "&.Mui-focused .MuiOutlinedInput-notchedOutline":
+                                    {
+                                      borderColor:
+                                        field.type === "Addition"
+                                          ? "#10b981"
+                                          : "#ef4444",
+                                      borderWidth: "2px",
+                                    },
                                 },
                               }}
                             />
                             <IconButton
                               size="small"
                               onClick={() => {
-                                const newFields = [...productFields]
-                                newFields[index].quantity += 1
-                                setProductFields(newFields)
+                                const newFields = [...productFields];
+                                newFields[index].quantity += 1;
+                                setProductFields(newFields);
                               }}
                               sx={{
-                                borderRadius: "8px",
-                                p: "4px",
-                                background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)",
+                                borderRadius: "6px",
+                                p: "2px",
+                                background:
+                                  field.type === "Addition"
+                                    ? "linear-gradient(135deg, #10b981 0%, #059669 100%)"
+                                    : "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)",
                                 color: "white",
-                                boxShadow: "0 2px 5px rgba(99, 102, 241, 0.3)",
+                                boxShadow:
+                                  field.type === "Addition"
+                                    ? "0 2px 5px rgba(16, 185, 129, 0.3)"
+                                    : "0 2px 5px rgba(239, 68, 68, 0.3)",
                                 "&:hover": {
-                                  boxShadow: "0 4px 8px rgba(99, 102, 241, 0.4)",
+                                  boxShadow:
+                                    field.type === "Addition"
+                                      ? "0 4px 8px rgba(16, 185, 129, 0.4)"
+                                      : "0 4px 8px rgba(239, 68, 68, 0.4)",
                                 },
                               }}
                             >
@@ -762,7 +970,13 @@ const AddAdjustmentForm = () => {
                       </Box>
                     </Grid>
 
-                    <Grid item xs={12} md={1} sx={{ display: "flex", justifyContent: "flex-end" }}>
+                    {/* Remove Button */}
+                    <Grid
+                      item
+                      xs={12}
+                      md={1}
+                      sx={{ display: "flex", justifyContent: "flex-end" }}
+                    >
                       <Tooltip title="Remove Product" arrow>
                         <IconButton
                           onClick={() => onRemoveProductField(index)}
@@ -788,14 +1002,15 @@ const AddAdjustmentForm = () => {
       </Box>
 
       <Card
-
         sx={{
           borderRadius: "20px",
           border: "1px solid rgba(226, 232, 240, 0.8)",
           mt: 4,
           overflow: "hidden",
-          background: "linear-gradient(145deg, rgba(255,255,255,1) 0%, rgba(248,250,252,1) 100%)",
-          boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)",
+          background:
+            "linear-gradient(145deg, rgba(255,255,255,1) 0%, rgba(248,250,252,1) 100%)",
+          boxShadow:
+            "0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)",
         }}
       >
         <Box
@@ -840,7 +1055,10 @@ const AddAdjustmentForm = () => {
             }}
             InputProps={{
               startAdornment: (
-                <InputAdornment position="start" sx={{ alignSelf: "flex-start", mt: 1.5 }}>
+                <InputAdornment
+                  position="start"
+                  sx={{ alignSelf: "flex-start", mt: 1.5 }}
+                >
                   <NotesIcon color="action" />
                 </InputAdornment>
               ),
@@ -850,21 +1068,26 @@ const AddAdjustmentForm = () => {
       </Card>
 
       <Box sx={{ mt: 4, display: "flex", justifyContent: "flex-end" }}>
-        <Can page='/dashboard/add-adjustment' action='create'>
+        <Can page="/dashboard/add-adjustment" action="create">
           <Button
             type="submit"
             variant="contained"
             disabled={isSubmitting}
-            startIcon={isSubmitting ? <CircularProgress size={20} color="inherit" /> : <SaveIcon />}
+            startIcon={
+              isSubmitting ? (
+                <CircularProgress size={20} color="inherit" />
+              ) : (
+                <SaveIcon />
+              )
+            }
             sx={purchaseBtn}
           >
             {isSubmitting ? "Creating Adjustment..." : "Create Adjustment"}
           </Button>
         </Can>
-
       </Box>
     </TASForm>
-  )
-}
+  );
+};
 
-export default AddAdjustmentForm
+export default AddAdjustmentForm;

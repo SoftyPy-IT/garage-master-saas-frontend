@@ -86,21 +86,48 @@ const CustomerMoneyList = ({
 
   if (moneyReceiptLoading) return <Loading />;
   if (error) toast.error(error.message);
-
   const columns = [
     { key: "index", label: "SL No", type: "index" },
-    { key: "thanks_from", label: "Received with thanks from" },
-    { key: "job_no", label: "Final Payment against bill no" },
-    { key: "total_amount", label: "Total Amount" },
-    { key: "advance", label: "Advance Amount" },
-    { key: "remaining", label: "Due Amount" },
-    { key: "date", label: "Date" },
+    { key: "job_no", label: "Final B.A Bill" },
+    { key: "thanks_from", label: "R With Thanks " },
+    {
+      key: "vehicle.carReg_no",
+      label: "Car Reg No",
+      render: (row) => {
+        const vehicle = row?.vehicle;
+        if (!vehicle) return "—";
+
+        const carRegNo = vehicle?.carReg_no?.trim() || "";
+        const carRegistrationNo = vehicle?.car_registration_no?.trim() || "";
+
+        if (carRegNo && carRegistrationNo) {
+          return `${carRegNo} ${carRegistrationNo}`;
+        }
+
+        return carRegNo || carRegistrationNo || "—";
+      },
+    },
+
+    { key: "total_amount", label: "Total" },
+    {
+      key: "advance",
+      label: "Advance",
+      render: (row) => row.advance || 0,
+    },
+    { key: "remaining", label: "Due" },
+    {
+      key: "date",
+      label: "Date",
+      render: (row) =>
+        row.default_date !== "NaN-NaN-NaN" ? row.default_date : row.check_date,
+    },
   ];
 
   const actions = [
     {
       key: "preview",
       icon: FaEye,
+      color: "#fff",
       tooltip: "Preview Money Receipt",
       onClick: (item) => handleIconPreview(item._id),
     },
@@ -108,6 +135,7 @@ const CustomerMoneyList = ({
       key: "download",
       icon: FaDownload,
       tooltip: "Download Money Receipt",
+      color: "#fff",
       href: (item) =>
         `${import.meta.env.VITE_API_URL}/money-receipts/money/${
           item._id
@@ -119,6 +147,7 @@ const CustomerMoneyList = ({
     {
       key: "edit",
       icon: FaEdit,
+      color: "#fff",
       tooltip: "Edit Money Receipt",
       link: (item) =>
         `/dashboard/money-receipt-update?id=${item._id}&user_type=${user_type}&user=${id}`,
@@ -126,13 +155,13 @@ const CustomerMoneyList = ({
     {
       key: "delete",
       icon: FaTrashAlt,
+      color: "#fff",
       tooltip: deleteLoading ? "Deleting..." : "Move to Recycle Bin",
       onClick: (item) => handleMoveRecycledbin(item._id),
       disabled: () => deleteLoading,
     },
   ];
 
-  // Row color logic
   const getRowClass = (item) => {
     if (item.remaining === 0) return "bg-[#2dce89] text-white";
     if (item.remaining === item.total_amount) return "bg-[#f5365c] text-white";

@@ -2,6 +2,7 @@ import MoneyReceiptTable from "./MoneyReceiptTable";
 import { useMoveRecycledMoneyReceiptMutation } from "../../redux/api/money-receipt";
 import swal from "sweetalert";
 import { useAppOptions } from "../../hooks/useAppOptions";
+
 const MoneyReceiptList = () => {
   const [moveRecycledMoneyReceipt] = useMoveRecycledMoneyReceiptMutation();
   const isRecycled = false;

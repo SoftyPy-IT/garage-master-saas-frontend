@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useContext, useEffect, useState } from "react";
 import "./PreviewJobCard.css";
 import car from "../../../../public/assets/car3.jpeg";
@@ -12,11 +11,13 @@ import { useGetCompanyProfileQuery } from "../../../redux/api/companyProfile";
 import Loading from "../../../components/Loading/Loading";
 import { useTenantDomain } from "../../../hooks/useTenantDomain";
 import { PrintContext } from "../../../context/PrintProvider";
+import { useCompanyProfileData } from "../../../hooks/useCompanyProfileData";
+import { formatDate } from "../../../utils/formateDate";
 const PreviewJobCard = () => {
-  const { componentRef, targetRef } = useContext(PrintContext);
-  const [vehicleInterior, setVehicleInterior] = useState("");
-  const [reportedDefect, setReportedDefect] = useState("");
-  const [reportedAction, setReportedAction] = useState("");
+  const { componentRef } = useContext(PrintContext);
+  const [, setVehicleInterior] = useState("");
+  const [, setReportedDefect] = useState("");
+  const [, setReportedAction] = useState("");
   const { tenantDomain } = useTenantDomain();
 
   const location = useLocation();
@@ -28,16 +29,7 @@ const PreviewJobCard = () => {
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
   });
-
-  const companyProfileData = {
-    companyName: CompanyInfoData?.data?.companyName,
-    address: CompanyInfoData?.data?.address,
-    website: CompanyInfoData?.data?.website,
-    phone: CompanyInfoData?.data?.phone,
-    email: CompanyInfoData?.data?.email,
-    logo: CompanyInfoData?.data?.logo[0],
-    companyNameBN: CompanyInfoData?.data?.companyNameBN,
-  };
+  const { companyProfileData } = useCompanyProfileData();
 
   const previewData = data?.data;
 
@@ -78,16 +70,7 @@ const PreviewJobCard = () => {
     previewData?.showRoom?.driver_country_code +
     previewData?.showRoom?.driver_contact;
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    const day = date.getDate().toString().padStart(2, "0");
-    const month = (date.getMonth() + 1).toString().padStart(2, "0");
-    const year = date.getFullYear();
-    return `${day}-${month}-${year}`;
-  };
-
   const urlToShare = window.location.href;
-  const title = "Check this out!";
 
   return (
     <main className="jobCardViewWrap">
@@ -104,12 +87,17 @@ const PreviewJobCard = () => {
                   />
 
                   <div className="flex-1 text-center">
-                    <h2 className="trustAutoTitle">
-                      {CompanyInfoData?.data?.companyNameBN}
-                    </h2>
-                    <h3 className="text-lg md:text-xl english-font mt-1 text-[#4671A1]">
-                      ({CompanyInfoData?.data?.companyName})
-                    </h3>
+                    {CompanyInfoData?.data?.companyNameBN && (
+                      <h2 className="trustAutoTitle">
+                        {CompanyInfoData.data.companyNameBN}
+                      </h2>
+                    )}
+
+                    {CompanyInfoData?.data?.companyName && (
+                      <h3 className="text-lg md:text-xl english-font mt-1 text-[#4671A1] font-bold">
+                        {CompanyInfoData.data.companyName}
+                      </h3>
+                    )}
                   </div>
 
                   {/* Spacer for flex alignment */}
@@ -456,9 +444,6 @@ const PreviewJobCard = () => {
           </div>
 
           <div>
-            <div className="px-[8px]">
-              <hr className=" border border-[#4671A1]" />
-            </div>
             <div className="text-center  mt-3">
               <p className="text-xs">
                 <b>Office: </b>

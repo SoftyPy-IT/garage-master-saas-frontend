@@ -14,11 +14,11 @@ import { useCreateQuotationMutation } from "../../redux/api/quotation";
 import { unitOptions } from "../../utils/options";
 import { useGetAllStocksQuery } from "../../redux/api/stocksApi";
 import { suggestionStyles } from "../../utils/customStyle";
-import { formatNumber } from "../../utils/formateSemicolon";
+import { formateNumber } from "../../utils/formateSemicolon";
 import { useGetCompanyProfileQuery } from "../../redux/api/companyProfile";
 import { useTenantDomain } from "../../hooks/useTenantDomain";
 import Can from "../../components/Can";
-import { usePermissions } from '../../context/PermissionContext'
+import { usePermissions } from "../../context/PermissionContext";
 import QuotationTable from "./QuotationTable";
 const AddQuotation = () => {
   const [getDataWithChassisNo, setGetDataWithChassisNo] = useState({});
@@ -73,7 +73,7 @@ const AddQuotation = () => {
   const [activeInputIndex, setActiveInputIndex] = useState(null);
   const { tenantDomain } = useTenantDomain();
   const { performActionWithPermission } = usePermissions();
-  console.log('product suggestion ', productSuggestions)
+  console.log("product suggestion ", productSuggestions);
   const {
     register,
     handleSubmit,
@@ -475,8 +475,8 @@ const AddQuotation = () => {
     return "Pcs";
   };
 
-
   const handleSelectSuggestion = (product) => {
+    console.log("select product ", product);
     if (activeInputType === "service") {
       const newItems = [...serviceItems];
       const matchingUnit = findMatchingUnit(product.product.unit);
@@ -546,7 +546,9 @@ const AddQuotation = () => {
   };
 
   const onSubmit = async (data) => {
-    performActionWithPermission('/dashboard/create-quotation', 'create',
+    performActionWithPermission(
+      "/dashboard/create-quotation",
+      "create",
       async () => {
         const toastId = toast.loading("Creating Quotation...");
         const customer = {
@@ -574,7 +576,8 @@ const AddQuotation = () => {
         data.mileage = Number(data.mileage);
         const newMileageValue = Number(data.mileage);
 
-        const existingMileageHistory = getDataWithChassisNo?.mileageHistory || [];
+        const existingMileageHistory =
+          getDataWithChassisNo?.mileageHistory || [];
         const updatedMileageHistory = [...existingMileageHistory];
 
         // Only add current mileage to history if it has changed
@@ -673,12 +676,9 @@ const AddQuotation = () => {
         } finally {
           toast.dismiss(toastId);
         }
-
-
-      }, "You don't permission to create quotation !"
-    )
-
-
+      },
+      "You don't permission to create quotation !"
+    );
   };
 
   useEffect(() => {
@@ -795,16 +795,16 @@ const AddQuotation = () => {
                   )}
                   {(jobCardData?.data?.user_type === "company" ||
                     jobCardData?.data?.user_type === "showRoom") && (
-                      <TextField
-                        fullWidth
-                        label="Customer"
-                        focused={
-                          jobCardData?.data?.company?.vehicle_username ||
-                          jobCardData?.data?.showRoom?.vehicle_username
-                        }
-                        {...register("vehicle_username")}
-                      />
-                    )}
+                    <TextField
+                      fullWidth
+                      label="Customer"
+                      focused={
+                        jobCardData?.data?.company?.vehicle_username ||
+                        jobCardData?.data?.showRoom?.vehicle_username
+                      }
+                      {...register("vehicle_username")}
+                    />
+                  )}
                 </Grid>
                 <Grid item lg={12} md={12} sm={12} xs={12}>
                   <Grid container spacing={1}>
@@ -868,24 +868,24 @@ const AddQuotation = () => {
                       )}
                       {(jobCardData?.data?.user_type === "company" ||
                         jobCardData?.data?.user_type === "showRoom") && (
-                          <TextField
-                            {...register("company_contact")}
-                            variant="outlined"
-                            fullWidth
-                            type="tel"
-                            value={
-                              phoneNumber
-                                ? phoneNumber
-                                : jobCardData?.data?.customer?.customer_contact
-                            }
-                            onChange={handlePhoneNumberChange}
-                            placeholder="Company Contact No (N)"
-                            focused={
-                              jobCardData?.data?.company?.company_contact ||
-                              jobCardData?.data?.showRoom?.company_contact
-                            }
-                          />
-                        )}
+                        <TextField
+                          {...register("company_contact")}
+                          variant="outlined"
+                          fullWidth
+                          type="tel"
+                          value={
+                            phoneNumber
+                              ? phoneNumber
+                              : jobCardData?.data?.customer?.customer_contact
+                          }
+                          onChange={handlePhoneNumberChange}
+                          placeholder="Company Contact No (N)"
+                          focused={
+                            jobCardData?.data?.company?.company_contact ||
+                            jobCardData?.data?.showRoom?.company_contact
+                          }
+                        />
+                      )}
                     </Grid>
                   </Grid>
                 </Grid>
@@ -1015,8 +1015,8 @@ const AddQuotation = () => {
                       currentMileage ||
                       (getDataWithChassisNo?.mileageHistory?.length > 0
                         ? getDataWithChassisNo.mileageHistory[
-                          getDataWithChassisNo.mileageHistory.length - 1
-                        ].mileage
+                            getDataWithChassisNo.mileageHistory.length - 1
+                          ].mileage
                         : getDataWithChassisNo?.mileage || "")
                     }
                     onChange={(e) => {
@@ -1112,7 +1112,6 @@ const AddQuotation = () => {
                         type="text"
                         placeholder="SL No "
                         defaultValue={`${i + 1 < 10 ? `0${i + 1}` : i + 1}`}
-                        required
                       />
                     </div>
                     <div className="col-span-12 md:col-span-6">
@@ -1126,7 +1125,7 @@ const AddQuotation = () => {
                             handleServiceDescriptionChange(i, e.target.value)
                           }
                           value={item.description}
-                          required
+                          // required
                         />
                         {showSuggestions &&
                           activeInputType === "service" &&
@@ -1145,20 +1144,44 @@ const AddQuotation = () => {
                                     handleSelectSuggestion(product)
                                   }
                                 >
-                                  <div style={suggestionStyles.suggestionItemContent}>
-                                    <span style={suggestionStyles.suggestionItemName}>
+                                  <div
+                                    style={
+                                      suggestionStyles.suggestionItemContent
+                                    }
+                                  >
+                                    <span
+                                      style={
+                                        suggestionStyles.suggestionItemName
+                                      }
+                                    >
                                       {product.product.product_name}
                                     </span>
-                                    <span style={suggestionStyles.suggestionItemPrice}>
+                                    <span
+                                      style={
+                                        suggestionStyles.suggestionItemPrice
+                                      }
+                                    >
                                       Stock: {product.stock}
                                     </span>
-                                    <span style={suggestionStyles.suggestionItemPrice}>
+                                    <span
+                                      style={
+                                        suggestionStyles.suggestionItemPrice
+                                      }
+                                    >
                                       {product.product.unit?.short_name}
                                     </span>
-                                    <span style={suggestionStyles.suggestionItemPrice}>
+                                    <span
+                                      style={
+                                        suggestionStyles.suggestionItemPrice
+                                      }
+                                    >
                                       {product.product?.sellingPrice}
                                     </span>
-                                    <span style={suggestionStyles.suggestionItemPrice}>
+                                    <span
+                                      style={
+                                        suggestionStyles.suggestionItemPrice
+                                      }
+                                    >
                                       WH: {product.warehouse?.name}
                                     </span>
                                   </div>
@@ -1179,7 +1202,6 @@ const AddQuotation = () => {
                             handleServiceQuantityChange(i, e.target.value)
                           }
                           value={item.quantity}
-                          required
                         />
                         <select
                           className="inputField col-span-9"
@@ -1187,7 +1209,6 @@ const AddQuotation = () => {
                             handleServiceUnitChange(i, e.target.value)
                           }
                           value={item.unit || ""}
-                          required
                         >
                           <option value="" disabled>
                             Select Unit
@@ -1209,7 +1230,6 @@ const AddQuotation = () => {
                           handleServiceRateChange(i, e.target.value)
                         }
                         value={item.rateDisplay || ""}
-                        required
                       />
                     </div>
                     <div className="col-span-12 md:col-span-1">
@@ -1218,7 +1238,7 @@ const AddQuotation = () => {
                         autoComplete="off"
                         type="text"
                         placeholder="Amount"
-                        value={formatNumber(item.total)}
+                        value={formateNumber(item.total)}
                         readOnly
                       />
                     </div>
@@ -1278,7 +1298,6 @@ const AddQuotation = () => {
                       type="text"
                       placeholder="SL No "
                       defaultValue={`${i + 1 < 10 ? `0${i + 1}` : i + 1}`}
-                      required
                     />
                   </div>
                   <div className="col-span-12 md:col-span-6">
@@ -1292,7 +1311,6 @@ const AddQuotation = () => {
                           handleDescriptionChange(i, e.target.value)
                         }
                         value={item.description}
-                        required
                       />
                       {showSuggestions &&
                         activeInputType === "parts" &&
@@ -1309,20 +1327,32 @@ const AddQuotation = () => {
                                 }}
                                 onClick={() => handleSelectSuggestion(product)}
                               >
-                                <div style={suggestionStyles.suggestionItemContent}>
-                                  <span style={suggestionStyles.suggestionItemName}>
+                                <div
+                                  style={suggestionStyles.suggestionItemContent}
+                                >
+                                  <span
+                                    style={suggestionStyles.suggestionItemName}
+                                  >
                                     {product.product.product_name}
                                   </span>
-                                  <span style={suggestionStyles.suggestionItemPrice}>
+                                  <span
+                                    style={suggestionStyles.suggestionItemPrice}
+                                  >
                                     Stock: {product.stock}
                                   </span>
-                                  <span style={suggestionStyles.suggestionItemPrice}>
+                                  <span
+                                    style={suggestionStyles.suggestionItemPrice}
+                                  >
                                     {product.product.unit?.short_name}
                                   </span>
-                                  <span style={suggestionStyles.suggestionItemPrice}>
+                                  <span
+                                    style={suggestionStyles.suggestionItemPrice}
+                                  >
                                     {product.product?.sellingPrice}
                                   </span>
-                                  <span style={suggestionStyles.suggestionItemPrice}>
+                                  <span
+                                    style={suggestionStyles.suggestionItemPrice}
+                                  >
                                     WH: {product.warehouse?.name}
                                   </span>
                                 </div>
@@ -1343,13 +1373,11 @@ const AddQuotation = () => {
                           handleQuantityChange(i, e.target.value)
                         }
                         value={item.quantity}
-                        required
                       />
                       <select
                         className="inputField col-span-9"
                         onChange={(e) => handleUnitChange(i, e.target.value)}
                         value={item.unit || ""}
-                        required
                       >
                         <option value="" disabled>
                           Select Unit
@@ -1368,7 +1396,6 @@ const AddQuotation = () => {
                       autoComplete="off"
                       placeholder="Rate"
                       onChange={(e) => handleRateChange(i, e.target.value)}
-                      required
                       type="text"
                       value={item.rateDisplay || ""}
                     />
@@ -1379,7 +1406,7 @@ const AddQuotation = () => {
                       autoComplete="off"
                       type="text"
                       placeholder="Amount"
-                      value={formatNumber(item.total)}
+                      value={formateNumber(item.total)}
                       readOnly
                     />
                   </div>
@@ -1410,7 +1437,7 @@ const AddQuotation = () => {
           <div className="discountFieldWrap mt-5 ">
             <div className="flex items-center ">
               <b className="mr-2 "> Total Amount: </b>
-              <span>{formatNumber(grandTotal)}</span>
+              <span>{formateNumber(grandTotal)}</span>
             </div>
             <div>
               <b className="mr-2  "> Discount: </b>
@@ -1420,7 +1447,7 @@ const AddQuotation = () => {
                   const rawValue = e.target.value.replace(/,/g, "");
                   handleDiscountChange(rawValue);
                 }}
-                value={formatNumber(discount)}
+                value={formateNumber(discount)}
                 autoComplete="off"
                 type="text"
                 placeholder="Discount"
@@ -1434,7 +1461,7 @@ const AddQuotation = () => {
                   const rawValue = e.target.value.replace(/,/g, "");
                   handleVATChange(rawValue);
                 }}
-                value={formatNumber(vat)}
+                value={formateNumber(vat)}
                 autoComplete="off"
                 type="text"
                 placeholder="Vat"
@@ -1448,7 +1475,7 @@ const AddQuotation = () => {
                   const rawValue = e.target.value.replace(/,/g, "");
                   handleTaxChange(rawValue);
                 }}
-                value={formatNumber(tax)}
+                value={formateNumber(tax)}
                 autoComplete="off"
                 type="text"
                 placeholder="Tax"
@@ -1457,12 +1484,11 @@ const AddQuotation = () => {
             <div>
               <div className="flex items-center ml-3 ">
                 <b className="mr-2 ">Final Total: </b>
-                <span>{formatNumber(calculateFinalTotal())}</span>
+                <span>{formateNumber(calculateFinalTotal())}</span>
               </div>
             </div>
           </div>
           <div className="flex flex-col md:flex-row mt-4 md:mt-8  buttonGroup">
-
             <div className=" flex md:hidden  justify-end md:justify-start submitQutationBtn order-2 md:order-3 ">
               <button type="submit" disabled={createLoading}>
                 Add Quotation{" "}
@@ -1484,11 +1510,7 @@ const AddQuotation = () => {
                 <button type="submit" disabled={createLoading}>
                   Add Quotation{" "}
                 </button>
-
               </Can>
-
-
-
             </div>
           </div>
         </form>

@@ -518,7 +518,7 @@
 
   }
 
-  /* Hide unnecessary buttons */
+
   .buttonGroup,
   .printInvoiceBtnGroup,
   .SearchBtn,
@@ -526,7 +526,7 @@
     display: none !important;
   }
 
-  /* Table styles */
+
   .invoiceTable2,
   .invoicTable {
     width: 100% !important;

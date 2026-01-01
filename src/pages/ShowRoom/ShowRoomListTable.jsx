@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable react-hooks/exhaustive-deps */
-import { ArrowBack, Store } from "@mui/icons-material";
+import { ArrowBack } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import { FaEdit, FaUserTie } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
@@ -8,13 +8,13 @@ import { useNavigate } from "react-router-dom";
 import { Box, Button } from "@mui/material";
 import { DeleteIcon } from "lucide-react";
 import Breadcrumb from "../../components/Breadcrumb";
-import EmptyData from "../../components/EmptyData/EmptyData";
 import Loading from "../../components/Loading/Loading";
 import Table from "../../components/Table";
 import { usePermissions } from "../../context/PermissionContext";
 import { useTenantDomain } from "../../hooks/useTenantDomain";
 import { useGetAllShowRoomsQuery } from "../../redux/api/showRoomApi";
 import { purchaseBtn } from "../../utils/customStyle";
+import { formatDate } from "../../utils/formateDate";
 
 const ShowRoomListTable = ({ handleDeleteAction, title, isRecycled }) => {
   const [filterType, setFilterType] = useState("");
@@ -34,7 +34,6 @@ const ShowRoomListTable = ({ handleDeleteAction, title, isRecycled }) => {
     isRecycled,
   });
 
-  // Handle direct search query from URL (?search=)
   useEffect(() => {
     const search = new URLSearchParams(location.search).get("search");
     if (search) setFilterType(search);
@@ -60,27 +59,13 @@ const ShowRoomListTable = ({ handleDeleteAction, title, isRecycled }) => {
   const showrooms = showRoomData?.data?.showrooms || [];
   const totalPages = showRoomData?.data?.meta?.totalPages || 1;
 
-  // --- Define Table Columns ---
   const columns = [
     { key: "index", label: "SL No", type: "index" },
     { key: "showRoomId", label: "Show Room ID" },
     { key: "showRoom_name", label: "Show Room Name" },
-    { key: "vehicle_username", label: "Show Room Customer Name" },
+    { key: "fullCompanyNum", label: "Phone No." },
     {
-      key: "vehicles",
-      label: "Car Reg No.",
-      render: (item) => {
-        const lastVehicle = item?.vehicles
-          ? [...item.vehicles].sort(
-              (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-            )[0]
-          : null;
-        return lastVehicle?.fullRegNum || "N/A";
-      },
-    },
-    { key: "fullCompanyNum", label: "Mobile No." },
-    {
-      key: "vehicles",
+      key: "vehicle_name",
       label: "Vehicle Name",
       render: (item) => {
         const lastVehicle = item?.vehicles
@@ -88,12 +73,33 @@ const ShowRoomListTable = ({ handleDeleteAction, title, isRecycled }) => {
               (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
             )[0]
           : null;
-        return lastVehicle?.vehicle_name || "N/A";
+        return lastVehicle?.vehicle_name || "—";
       },
+    },
+    {
+      key: "vehicles",
+      label: "Vehicle Reg No",
+      render: (item) => {
+        const firstVehicle = item?.vehicles?.[0];
+        if (!firstVehicle) return "—";
+
+        const carRegNo = firstVehicle?.carReg_no || "";
+        const carRegistrationNo = firstVehicle?.car_registration_no || "";
+        const combined =
+          carRegNo && carRegistrationNo
+            ? `${carRegNo}-${carRegistrationNo}`
+            : carRegNo || carRegistrationNo || "—";
+
+        return combined;
+      },
+    },
+    {
+      key: "createdAt",
+      label: "Date",
+      render: (item) => (item?.createdAt ? formatDate(item.createdAt) : "—"),
     },
   ];
 
-  // --- Define Actions ---
   const actions = [
     {
       key: "view",
@@ -145,33 +151,24 @@ const ShowRoomListTable = ({ handleDeleteAction, title, isRecycled }) => {
           Back
         </Button>
       </Box>
-      {showrooms.length === 0 ? (
-        <EmptyData
-          icon={Store}
-          title="No Showrooms Found"
-          message="We couldn't find any showrooms matching your search criteria."
-          subMessage="Try adjusting your filters or add a new showroom."
-        />
-      ) : (
-        <Table
-          title={title || "Show Room List"}
-          columns={columns}
-          data={showrooms}
-          actions={actions}
-          loading={loading}
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={(page) => setCurrentPage(page)}
-          onSearch={(value) => {
-            setFilterType(value);
-            setCurrentPage(1);
-          }}
-          searchPlaceholder="Search showroom..."
-          getRowClass={() =>
-            "transition-all duration-300 hover:bg-gradient-to-r hover:from-blue-300 hover:to-blue-100 hover:text-black"
-          }
-        />
-      )}
+      <Table
+        title={title || "Show Room List"}
+        columns={columns}
+        data={showrooms}
+        actions={actions}
+        loading={loading}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={(page) => setCurrentPage(page)}
+        onSearch={(value) => {
+          setFilterType(value);
+          setCurrentPage(1);
+        }}
+        searchPlaceholder="Search showroom..."
+        getRowClass={() =>
+          "transition-all duration-300 hover:bg-gradient-to-r hover:from-blue-300 hover:to-blue-100 hover:text-black"
+        }
+      />
     </div>
   );
 };

@@ -7,7 +7,7 @@ import { Link, useLocation } from "react-router-dom";
 
 import { Button, Divider } from "@mui/material";
 import { usePDF } from "react-to-pdf";
-import { formatNumber } from "../../utils/formateSemicolon";
+import { formateNumber } from "../../utils/formateSemicolon";
 import { useGetSingleInvoiceQuery } from "../../redux/api/invoice";
 import { useGetCompanyProfileQuery } from "../../redux/api/companyProfile";
 import { useTenantDomain } from "../../hooks/useTenantDomain";
@@ -52,9 +52,8 @@ const InvoiceView = () => {
       margin: 0 !important;
       padding: 0 !important;
     }
-  `
+  `,
   });
-
 
   const [invoicePreview, setInvoicePreview] = useState({});
 
@@ -84,6 +83,7 @@ const InvoiceView = () => {
   const totalAmountNumber = cleanNumber(invoicePreview?.net_total);
   const advanceAmountNumber = cleanNumber(invoicePreview?.advance);
   const isFullyPaid = totalAmountNumber === advanceAmountNumber;
+  console.log("invoice view ", invoicePreview);
 
   return (
     <div ref={componentRef} className="h-screen">
@@ -100,15 +100,20 @@ const InvoiceView = () => {
                   />
                   <div>
                     <div className="flex-1 text-center">
-                      <h2 className="trustAutoTitle">
-                        {CompanyInfoData?.data?.companyNameBN}
-                      </h2>
-                      <h3 className="text-lg md:text-xl english-font mt-1 text-[#4671A1] font-bold">
-                        ({CompanyInfoData?.data?.companyName})
-                      </h3>
+                      {CompanyInfoData?.data?.companyNameBN && (
+                        <h2 className="trustAutoTitle">
+                          {CompanyInfoData.data.companyNameBN}
+                        </h2>
+                      )}
+
+                      {CompanyInfoData?.data?.companyName && (
+                        <h3 className="text-lg md:text-xl english-font mt-1 text-[#4671A1] font-bold">
+                          {CompanyInfoData.data.companyName}
+                        </h3>
+                      )}
                     </div>
 
-                    <small className="block">
+                    <small className="block mt-3">
                       Office: {CompanyInfoData?.data?.address}
                     </small>
                   </div>
@@ -193,52 +198,52 @@ const InvoiceView = () => {
                       <div className="invoiceCustomerInfo">
                         <small>
                           <span className="mr-1">:</span>{" "}
-                          {invoicePreview?.invoice_no}
+                          {invoicePreview?.job_no}
                         </small>
                         <small>
                           {(invoicePreview?.customer?.customer_name ||
                             invoicePreview?.company?.company_name ||
                             invoicePreview?.showRoom?.showRoom_name) && (
-                              <>
-                                <span className="mr-1">:</span>
-                                {invoicePreview?.customer?.customer_name ||
-                                  invoicePreview?.company?.company_name ||
-                                  invoicePreview?.showRoom?.showRoom_name}
-                              </>
-                            )}
+                            <>
+                              <span className="mr-1">:</span>
+                              {invoicePreview?.customer?.customer_name ||
+                                invoicePreview?.company?.company_name ||
+                                invoicePreview?.showRoom?.showRoom_name}
+                            </>
+                          )}
                         </small>
                         {(invoicePreview?.customer?.company_name ||
                           invoicePreview?.company?.vehicle_username ||
                           invoicePreview?.showRoom?.vehicle_username) && (
-                            <small>
-                              <span className="mr-1">:</span>
-                              {invoicePreview?.customer?.company_name ||
-                                invoicePreview?.company?.vehicle_username ||
-                                invoicePreview?.showRoom?.vehicle_username}
-                            </small>
-                          )}
+                          <small>
+                            <span className="mr-1">:</span>
+                            {invoicePreview?.customer?.company_name ||
+                              invoicePreview?.company?.vehicle_username ||
+                              invoicePreview?.showRoom?.vehicle_username}
+                          </small>
+                        )}
 
                         {(invoicePreview?.customer?.fullCustomerNum ||
                           invoicePreview?.company?.fullCompanyNum ||
                           invoicePreview?.showRoom?.fullCompanyNum) && (
-                            <small>
-                              <span className="mr-1">:</span>
-                              {invoicePreview?.customer?.fullCustomerNum ||
-                                invoicePreview?.company?.fullCompanyNum ||
-                                invoicePreview?.showRoom?.fullCompanyNum}
-                            </small>
-                          )}
+                          <small>
+                            <span className="mr-1">:</span>
+                            {invoicePreview?.customer?.fullCustomerNum ||
+                              invoicePreview?.company?.fullCompanyNum ||
+                              invoicePreview?.showRoom?.fullCompanyNum}
+                          </small>
+                        )}
 
                         {(invoicePreview?.customer?.customer_address ||
                           invoicePreview?.company?.company_address ||
                           invoicePreview?.showRoom?.showRoom_address) && (
-                            <small>
-                              <span className="mr-1">:</span>
-                              {invoicePreview?.customer?.customer_address ||
-                                invoicePreview?.company?.company_address ||
-                                invoicePreview?.showRoom?.showRoom_address}
-                            </small>
-                          )}
+                          <small>
+                            <span className="mr-1">:</span>
+                            {invoicePreview?.customer?.customer_address ||
+                              invoicePreview?.company?.company_address ||
+                              invoicePreview?.showRoom?.showRoom_address}
+                          </small>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -307,8 +312,8 @@ const InvoiceView = () => {
                             <td>
                               {data.quantity} {data.unit}
                             </td>
-                            <td>{data.rate}</td>
-                            <td>{data.total}</td>
+                            <td>{formateNumber(data.rate)}</td>
+                            <td>{formateNumber(data.total)}</td>
                           </tr>
                         )
                       )}
@@ -329,50 +334,50 @@ const InvoiceView = () => {
                 </div>
               </div>
 
-              <div>
-                <table className="mt-5 invoiceTable2 qutationTables">
-                  <thead className="tableWrap">
-                    <tr>
-                      <th className="serialNo">SL No</th>
-                      <th>Parts Description</th>
-                      <th>Qty </th>
-                      <th>Rate</th>
-                      <th>Amount </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <>
-                      {invoicePreview?.input_data?.map((data, index) => (
-                        <tr key={data._id}>
-                          <td>{index + 1}</td>
-                          <td>{data.description}</td>
-                          <td>
-                            {data.quantity} {data.unit}
-                          </td>
-                          <td>{data.rate}</td>
-                          <td>{data.total}</td>
-                        </tr>
-                      ))}
-                    </>
-                  </tbody>
-                </table>
+              {invoicePreview?.input_data?.length > 0 && (
+                <div>
+                  <table className="mt-5 invoiceTable2 qutationTables">
+                    <thead className="tableWrap">
+                      <tr>
+                        <th className="serialNo">SL No</th>
+                        <th>Parts Description</th>
+                        <th>Qty </th>
+                        <th>Rate</th>
+                        <th>Amount </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <>
+                        {invoicePreview?.input_data?.map((data, index) => (
+                          <tr key={data._id}>
+                            <td>{index + 1}</td>
+                            <td>{data.description}</td>
+                            <td>
+                              {data.quantity} {data.unit}
+                            </td>
+                            <td>{formateNumber(data.rate)}</td>
+                            <td>{formateNumber(data.total)}</td>
+                          </tr>
+                        ))}
+                      </>
+                    </tbody>
+                  </table>
 
-                <div className="flex items-center justify-end text-[12px] mt-2">
-                  <span>Total Parts Amount :</span>
-                  <b className="ml-3 ">
-                    {" "}
-                    {invoicePreview?.parts_total} &#2547;{" "}
-                  </b>
+                  <div className="flex items-center justify-end text-[12px] mt-2">
+                    <span>Total Parts Amount :</span>
+                    <b className="ml-3 ">
+                      {" "}
+                      {invoicePreview?.parts_total} &#2547;{" "}
+                    </b>
+                  </div>
+                  <div className="flex  justify-end ">
+                    <Divider sx={{ width: "200px", marginTop: "5px" }} />
+                  </div>
                 </div>
-                <div className="flex  justify-end ">
-                  <Divider sx={{ width: "200px", marginTop: "5px" }} />
-                </div>
-              </div>
+              )}
 
               <div className="flex justify-between items-end mt-3 border-b-[1px] pb-3 border-[#ddd]">
-                <div className="mt-5 text-[12px] invisible">
-
-                </div>
+                <div className="mt-5 text-[12px] invisible"></div>
                 <div className="flex netTotalAmounts">
                   <div>
                     <b>Sub Total </b>
@@ -393,32 +398,32 @@ const InvoiceView = () => {
                   <div>
                     <small>
                       {" "}
-                      : {formatNumber(
+                      : {formateNumber(
                         invoicePreview?.total_amount
                       )} &#2547;{" "}
                     </small>
                     {invoicePreview.discount > 0 && (
                       <small>
-                        : {formatNumber(invoicePreview.discount)} &#2547;
+                        : {formateNumber(invoicePreview.discount)} &#2547;
                       </small>
                     )}
                     {invoicePreview.vat !== 0 && (
-                      <small> : {formatNumber(invoicePreview.vat)}%</small>
+                      <small> : {formateNumber(invoicePreview.vat)}%</small>
                     )}
                     {invoicePreview.tax > 0 && (
-                      <small> : {formatNumber(invoicePreview.tax)}% </small>
+                      <small> : {formateNumber(invoicePreview.tax)}% </small>
                     )}
                     <small>
-                      : {formatNumber(invoicePreview.net_total)} &#2547;
+                      : {formateNumber(invoicePreview.net_total)} &#2547;
                     </small>
                     {advanceAmountNumber !== 0 && (
                       <>
                         <small>
-                          : {formatNumber(advanceAmountNumber)} &#2547;
+                          : {formateNumber(advanceAmountNumber)} &#2547;
                         </small>
                         {!isFullyPaid && invoicePreview.due !== 0 && (
                           <small>
-                            : {formatNumber(invoicePreview.due)} &#2547;
+                            : {formateNumber(invoicePreview.due)} &#2547;
                           </small>
                         )}
                       </>
@@ -457,10 +462,11 @@ const InvoiceView = () => {
           <Button sx={{ fontSize: "12px" }}>
             <a
               className="text-[10px]"
-              href={`${import.meta.env.VITE_API_URL}/invoices/invoice/${invoicePreview._id
-                }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
-                  JSON.stringify(companyProfileData)
-                )}`}
+              href={`${import.meta.env.VITE_API_URL}/invoices/invoice/${
+                invoicePreview._id
+              }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
+                JSON.stringify(companyProfileData)
+              )}`}
               target="_blank"
               rel="noreferrer"
             >

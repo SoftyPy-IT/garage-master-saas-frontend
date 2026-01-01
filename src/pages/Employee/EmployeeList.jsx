@@ -14,13 +14,14 @@ import {
   useMoveRecycledEmployeeMutation,
 } from "../../redux/api/employee";
 import { purchaseBtn, wrapBoxStyle } from "../../utils/customStyle";
+import Loading from "../../components/Loading/Loading";
 
 export default function EmployeeList() {
   const [filterType, setFilterType] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const { tenantDomain, performActionWithPermission } = useAppOptions();
   const navigate = useNavigate();
-  const limit = 20;
+  const limit = 10; // Changed from 20 to 10 as requested
 
   const {
     data: employeeData,
@@ -120,6 +121,10 @@ export default function EmployeeList() {
     { label: "Employee", href: "/dashboard/employee-list" },
     { label: "Employee List " },
   ];
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
     <Box sx={wrapBoxStyle}>

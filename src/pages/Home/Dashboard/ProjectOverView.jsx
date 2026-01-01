@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { FaCarSide, FaFileInvoice } from "react-icons/fa";
 import {
   HiOutlineBriefcase,
@@ -8,11 +9,8 @@ import { Link } from "react-router-dom";
 import ExpanseIncomeChart from "../../../components/Chart/ExpanseIncomeChart";
 import Loading from "../../../components/Loading/Loading";
 import { useGetAllMetaQuery } from "../../../redux/api/meta.api";
-import { useTenantDomain } from "../../../hooks/useTenantDomain";
 
-const ProjectOverView = () => {
-  const tenantDomain = useTenantDomain();
-
+const ProjectOverView = ({ tenantDomain }) => {
   const { data: allMetaData, isLoading } = useGetAllMetaQuery({ tenantDomain });
   if (isLoading) return <Loading />;
 
@@ -132,7 +130,7 @@ const ProjectOverView = () => {
                       {data.icon}
                     </div>
                     <div className="mt-4 relative z-0">
-                      <span className="text-2xl font-bold block">
+                      <span className="text-center text-2xl font-bold block">
                         {data.user}
                       </span>
                       <h2 className="mt-2 text-lg font-semibold">
@@ -146,8 +144,9 @@ const ProjectOverView = () => {
           </div>
 
           {/* Chart Section - 45% width */}
-          <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
+          <div className="bg-white rounded-xl shadow-lg lg:p-6 border border-gray-200">
             <ExpanseIncomeChart />
+            {/* <Calendar/> */}
           </div>
         </div>
       </div>

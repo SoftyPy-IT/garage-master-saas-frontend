@@ -75,6 +75,7 @@
 	display: flex;
 	justify-content: center;
 	transition: all .5s cubic-bezier(0.55, 0.54, 0.68, 0.63);
+	padding-top: 25px;
 }
 
 .rightSideBarWrap {
@@ -296,6 +297,9 @@
 	visibility: visible;
 	opacity: 1;
 }
+	.activeDrawer {
+		padding-top:80px;
+	}
 
 @media only screen and (min-width: 1441px) {
 	.activeDrawer {
@@ -316,6 +320,7 @@
     }
 	.drawwerLeftSide, .activeSideBar {
 		width: 18% !important;
+		
 	}
   }
   
@@ -330,7 +335,7 @@
 
 	.activeDrawer {
 		width: 98%;
-		padding: 0 0px;
+		padding: 20px 0px;
 	}
 
 	.completedServiceCards {

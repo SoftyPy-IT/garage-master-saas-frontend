@@ -1,9 +1,9 @@
 /* eslint-disable react/prop-types */
-import { useRef, useState } from "react";
 import { Pagination, Tooltip } from "@mui/material";
+import { useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Loading from "./Loading/Loading";
 import Can from "./Can";
+import Loading from "./Loading/Loading";
 
 const Table = ({
   title = "Table",
@@ -17,7 +17,6 @@ const Table = ({
   onSearch,
   searchPlaceholder = "Search...",
   renderExtraContent,
-  emptyMessage = "No data found",
   getRowClass = () => "",
 }) => {
   const textInputRef = useRef(null);
@@ -37,30 +36,31 @@ const Table = ({
           <h3 className="mb-3 text-xl md:text-3xl font-bold">
             {title}: {data.length}
           </h3>
-          {onSearch && (
-            <div className="flex items-center searcList">
-              <div className="searchGroup">
-                <input
-                  onChange={(e) => handleSearch(e.target.value)}
-                  autoComplete="off"
-                  type="text"
-                  placeholder={searchPlaceholder}
-                  ref={textInputRef}
-                  value={localSearch}
-                />
-              </div>
-              <button className="SearchBtn">Search</button>
+          <div className="flex items-center searcList">
+            <div className="searchGroup" style={{ minWidth: "200px" }}>
+              <input
+                type="text"
+                placeholder={searchPlaceholder}
+                value={localSearch}
+                ref={textInputRef}
+                onChange={(e) => handleSearch(e.target.value)}
+                autoComplete="off"
+                style={{ width: "100%" }}
+              />
             </div>
-          )}
+            <button
+              className="SearchBtn"
+              onClick={() => handleSearch(localSearch)}
+              style={{ minWidth: "80px" }}
+            >
+              Search
+            </button>
+          </div>
         </div>
 
         {loading ? (
           <div className="flex items-center justify-center text-xl">
             <Loading />
-          </div>
-        ) : data.length === 0 ? (
-          <div className="flex items-center justify-center h-full text-xl text-center">
-            {emptyMessage}
           </div>
         ) : (
           <section className="tableContainer overflow-x-auto">
@@ -139,11 +139,17 @@ const TableRow = ({
         } else value = item[col.key] ?? "N/A";
         return <td key={col.key}>{value}</td>;
       })}
-
       {actions.map((action) => {
         const Icon = action.icon;
         return (
-          <td key={action.key}>
+          <td
+            key={action.key}
+            style={{
+              textAlign: "center",
+              verticalAlign: "middle",
+              padding: "8px",
+            }}
+          >
             {action.requirePermission ? (
               <Can
                 page={action.permissionPage}

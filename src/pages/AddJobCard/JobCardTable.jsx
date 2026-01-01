@@ -8,11 +8,11 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import { useGetAllJobCardsQuery } from "../../redux/api/jobCard";
 import { useTenantDomain } from "../../hooks/useTenantDomain";
-import { useGetCompanyProfileQuery } from "../../redux/api/companyProfile";
 import Table from "../../components/Table";
 import Breadcrumb from "../../components/Breadcrumb";
 import { Box } from "@mui/material";
 import { wrapBoxStyle } from "../../../src/utils/customStyle.js";
+import { useCompanyProfileData } from "../../hooks/useCompanyProfileData.js";
 const JobCardTable = ({
   isRecycled = false,
   title = "Job Cards",
@@ -27,19 +27,8 @@ const JobCardTable = ({
   const limit = 10;
   const { tenantDomain } = useTenantDomain();
 
-  // Company profile
-  const { data: profileData } = useGetCompanyProfileQuery({ tenantDomain });
-  const companyProfileData = {
-    companyName: profileData?.data?.companyName,
-    address: profileData?.data?.address,
-    website: profileData?.data?.website,
-    phone: profileData?.data?.phone,
-    email: profileData?.data?.email,
-    logo: profileData?.data?.logo?.[0],
-    companyNameBN: profileData?.data?.companyNameBN,
-  };
+  const { companyProfileData } = useCompanyProfileData();
 
-  // Job cards data
   const { data: allJobCards, isLoading: jobCardLoading } =
     useGetAllJobCardsQuery({
       tenantDomain,
@@ -55,14 +44,25 @@ const JobCardTable = ({
 
   const columns = [
     { key: "index", label: "SL. N.", type: "index" },
-    { key: "Id", label: "User Id" },
-    { key: "job_no", label: "Order No." },
+    { key: "job_no", label: "Job Card No." },
     {
-      key: "vehicle.chassis_no",
-      label: "Chassis No",
-      render: (item) => item.vehicle?.map((v) => v.chassis_no).join(", "),
+      key: "customer_name",
+      label: "Customer Name",
+      render: (item) => {
+        switch (item?.user_type) {
+          case "customer":
+            return item?.customer?.customer_name || "—";
+          case "company":
+            return item?.company?.company_name || "—";
+          case "showRoom":
+            return item?.showRoom?.showroom_name || "—";
+          default:
+            return "—";
+        }
+      },
     },
-    { key: "user_type", label: "User type" },
+
+    { key: "customer.fullCustomerNum", label: "Mobile No." },
     {
       key: "vehicle.vehicle_name",
       label: "Vehicle Name",
@@ -71,17 +71,21 @@ const JobCardTable = ({
     {
       key: "vehicle.carReg_no",
       label: "Car Reg No.",
-      render: (item) =>
-        item.vehicle
-          ?.map((v) => v.carReg_no || v.car_registration_no)
-          .join(", "),
+      render: (item) => {
+        if (!item?.vehicle || !Array.isArray(item.vehicle)) return "—";
+
+        return item.vehicle
+          .map((v) => {
+            const carRegNo = v?.carReg_no?.trim() || "";
+            const carRegistrationNo = v?.car_registration_no?.trim() || "";
+            if (carRegNo && carRegistrationNo)
+              return `${carRegNo}-${carRegistrationNo}`;
+            return carRegNo || carRegistrationNo || "—";
+          })
+          .join(", ");
+      },
     },
-    {
-      key: "vehicle.vehicle_brand",
-      label: "V. Brand",
-      render: (item) => item.vehicle?.map((v) => v.vehicle_brand).join(", "),
-    },
-    { key: "customer.fullCustomerNum", label: "Mobile No." },
+
     { key: "date", label: "Date" },
   ];
 
@@ -90,6 +94,7 @@ const JobCardTable = ({
       key: "create-quotation",
       label: "Create Quotation",
       icon: FaEdit,
+
       link: (item) => `/dashboard/create-quotation?order_no=${item.job_no}`,
       tooltip: "Create Quotation",
       color: "#2563EB",
@@ -99,6 +104,7 @@ const JobCardTable = ({
       key: "download",
       label: "Download",
       icon: Download,
+
       href: (item) =>
         `${import.meta.env.VITE_API_URL}/jobCards/jobcard/${
           item._id
@@ -113,6 +119,7 @@ const JobCardTable = ({
     {
       key: "preview",
       label: "Preview",
+
       icon: Eye,
       onClick: (item) => navigate(`/dashboard/preview?id=${item._id}`),
       tooltip: "Preview Job Card",
@@ -122,6 +129,7 @@ const JobCardTable = ({
     {
       key: "edit",
       label: "Edit",
+
       icon: EditIcon,
       link: (item) => `/dashboard/update-jobcard?id=${item._id}`,
       tooltip: "Edit Job Card",
@@ -132,6 +140,7 @@ const JobCardTable = ({
       key: "recycle",
       label: isRecycled ? "Restore/Delete" : "Recycle",
       icon: DeleteIcon,
+
       onClick: (item) => handleMoveToRecycled?.(item._id),
       tooltip: isRecycled
         ? "Restore or Permanently Delete"

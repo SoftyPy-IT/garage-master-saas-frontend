@@ -9,10 +9,10 @@ import Breadcrumb from "../../components/Breadcrumb";
 
 import { useGetAllInvoicesQuery } from "../../redux/api/invoice";
 import { useTenantDomain } from "../../hooks/useTenantDomain";
-import { useGetCompanyProfileQuery } from "../../redux/api/companyProfile";
 import { getRowClass } from "../../utils/getRowClass";
 import { wrapBoxStyle } from "../../utils/customStyle";
 import { DeleteIcon, EditIcon } from "lucide-react";
+import { useCompanyProfileData } from "../../hooks/useCompanyProfileData";
 
 const InvoiceTable = ({
   title = "Invoices",
@@ -38,12 +38,11 @@ const InvoiceTable = ({
       isRecycled,
       status,
     });
-
-  const { data: profileData } = useGetCompanyProfileQuery({ tenantDomain });
-
+  const { companyProfileData } = useCompanyProfileData();
   const invoiceColumns = [
     { key: "slNo", label: "SL No", type: "index" },
-    { key: "job_no", label: "Order No." },
+    { key: "job_no", label: "Invoice No." },
+
     {
       key: "customer",
       label: "Customer Name",
@@ -54,11 +53,39 @@ const InvoiceTable = ({
         "N/A",
     },
     {
-      key: "vehicle",
-      label: "Car Reg No",
-      render: (data) =>
-        data.vehicle?.carReg_no || data.vehicle?.car_registration_no || "N/A",
+      key: "vehicle_name",
+      label: "Vehicle Name",
+      render: (data) => {
+        if (!data?.vehicle) return "N/A";
+        const vehicles = Array.isArray(data.vehicle)
+          ? data.vehicle
+          : [data.vehicle];
+        return vehicles.map((v) => v.vehicle_name || "—").join(", ");
+      },
     },
+
+    {
+      key: "vehicle",
+      label: "Vehicle Reg No",
+      render: (data) => {
+        if (!data?.vehicle) return "N/A";
+        const vehicles = Array.isArray(data.vehicle)
+          ? data.vehicle
+          : [data.vehicle];
+
+        return vehicles
+          .map((v) => {
+            const carRegNo = v?.carReg_no?.trim() || "";
+            const carRegistrationNo = v?.car_registration_no?.trim() || "";
+            if (carRegNo && carRegistrationNo) {
+              return `${carRegNo}-${carRegistrationNo}`;
+            }
+            return carRegNo || carRegistrationNo || "—";
+          })
+          .join(", ");
+      },
+    },
+
     {
       key: "contact",
       label: "Mobile No.",
@@ -68,16 +95,7 @@ const InvoiceTable = ({
         data.showRoom?.fullCompanyNum ||
         "N/A",
     },
-    {
-      key: "vehicle_brand",
-      label: "Vehicle Brand",
-      render: (data) => data.vehicle?.vehicle_brand || "N/A",
-    },
-    {
-      key: "vehicle_name",
-      label: "Vehicle Name",
-      render: (data) => data.vehicle?.vehicle_name || "N/A",
-    },
+
     { key: "date", label: "Date" },
   ];
 
@@ -86,6 +104,7 @@ const InvoiceTable = ({
       key: "money_receipt",
       icon: Money,
       label: "Money Receipt",
+      color: "#fff",
       href: (data) =>
         `/dashboard/money-receive-create?order_no=${data.job_no}&id=${
           data._id
@@ -99,22 +118,12 @@ const InvoiceTable = ({
     {
       key: "download",
       icon: FaDownload,
+      color: "#fff",
       label: "Download Invoice",
-      href: (data, hooks) => {
-        const companyProfileData = {
-          companyName: hooks?.profileData?.data?.companyName,
-          address: hooks?.profileData?.data?.address,
-          website: hooks?.profileData?.data?.website,
-          phone: hooks?.profileData?.data?.phone,
-          email: hooks?.profileData?.data?.email,
-          logo: hooks?.profileData?.data?.logo?.[0],
-          companyNameBN: hooks?.profileData?.data?.companyNameBN,
-        };
+      href: (data) => {
         return `${import.meta.env.VITE_API_URL}/invoices/invoice/${
           data._id
-        }?tenantDomain=${
-          hooks?.tenantDomain
-        }&companyProfileData=${encodeURIComponent(
+        }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
           JSON.stringify(companyProfileData)
         )}`;
       },
@@ -126,6 +135,7 @@ const InvoiceTable = ({
     {
       key: "preview",
       icon: FaEye,
+      color: "#fff",
       label: "Preview",
       onClick: (data, hooks) =>
         hooks.navigate(`/dashboard/invoice-view?id=${data._id}`),
@@ -137,6 +147,7 @@ const InvoiceTable = ({
     {
       key: "edit",
       icon: EditIcon,
+      color: "#fff",
       label: "Edit Invoice",
       LinkComponent: Link,
       link: (data) => `/dashboard/update-invoice?id=${data._id}`,
@@ -147,6 +158,7 @@ const InvoiceTable = ({
     {
       key: "delete",
       icon: DeleteIcon,
+      color: "#fff",
       label: isRecycled
         ? "Delete Permanently / Restore"
         : "Move to Recycled Bin",
@@ -159,7 +171,7 @@ const InvoiceTable = ({
     },
   ];
 
-  const externalHooks = { tenantDomain, profileData };
+  const externalHooks = { tenantDomain };
 
   useEffect(() => {
     if (search) setFilterType(search);
