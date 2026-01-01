@@ -8,7 +8,7 @@ import {
 import CompanyListTable from "../Company/CompanyListTable";
 
 const RecycledBinCompanyList = () => {
-  const isRecycled = false;
+  const isRecycled = true;
   const { tenantDomain } = useAppOptions();
   const [permanentlyDeleteCompany] = usePermanentlyDeleteCompanyMutation();
   const [restoreFromRecycledCompany] = useRestoreFromRecycledCompanyMutation();

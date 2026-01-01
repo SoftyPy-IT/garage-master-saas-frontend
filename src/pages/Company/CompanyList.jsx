@@ -48,6 +48,8 @@ const CompanyList = () => {
       handleDeleteAction={handleMoveToRecycled}
     />
   );
+
 };
+
 
 export default CompanyList;

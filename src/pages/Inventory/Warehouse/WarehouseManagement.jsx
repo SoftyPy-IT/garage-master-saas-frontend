@@ -32,6 +32,7 @@ export default function WarehouseManagement() {
   const { data: warehouseData, isLoading: isDataLoading, refetch } = useGetAllWarehousesQuery({ tenantDomain });
   const [deleteWarehouse] = useDeleteWarehouseMutation();
 
+
   useEffect(() => setLoading(isDataLoading), [isDataLoading]);
   useEffect(() => {
     if (warehouseData?.data?.warehouses) setWarehouses(warehouseData.data.warehouses);
@@ -181,6 +182,7 @@ export default function WarehouseManagement() {
         onEdit={handleEditOpen}
         tenantDomain={tenantDomain}
       />
+
     </Box>
   );
 }

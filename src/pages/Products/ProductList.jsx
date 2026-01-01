@@ -33,6 +33,7 @@ export default function ProductList() {
   };
 
   const { data, isLoading, refetch } = useGetAllIProductQuery(queryParams);
+  console.log('total product show this ', data)
   const [deleteProduct] = useDeleteProductMutation();
 
   const handleDelete = async (productId) => {
@@ -187,7 +188,7 @@ export default function ProductList() {
             component="h2"
             sx={{ fontWeight: 600, color: theme.palette.primary.main }}
           >
-            All Products ({products.length})
+            Total Products ({data?.data?.meta?.total})
           </Typography>
         </Grid>
 
@@ -221,7 +222,7 @@ export default function ProductList() {
       ></Paper>
 
       <Table
-        title="Products"
+        title="Products List"
         columns={columns}
         data={products}
         actions={actions}

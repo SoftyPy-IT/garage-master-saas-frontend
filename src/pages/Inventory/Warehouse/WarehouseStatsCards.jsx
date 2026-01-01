@@ -1,8 +1,8 @@
 /* eslint-disable react/prop-types */
-import { Warehouse, Inventory, LocationCity } from "@mui/icons-material";
+import { Warehouse, Inventory } from "@mui/icons-material";
 import SummaryCards from "../../../components/SummaryCard";
 
-export default function WarehouseStatsCards({ totalWarehouses, totalQuantity, totalCities }) {
+export default function WarehouseStatsCards({ totalWarehouses, totalQuantity }) {
     const cards = [
         {
             title: "Total Warehouses",
@@ -18,13 +18,7 @@ export default function WarehouseStatsCards({ totalWarehouses, totalQuantity, to
             bgColor: "#059669",
             icon: <Inventory fontSize="large" />,
         },
-        {
-            title: "Cities Covered",
-            value: totalCities,
-            color: "#F59E0B",
-            bgColor: "#F97316",
-            icon: <LocationCity fontSize="large" />,
-        },
+
     ];
 
     return <SummaryCards cards={cards} columns={3} />;
