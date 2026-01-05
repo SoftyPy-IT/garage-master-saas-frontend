@@ -10,7 +10,7 @@ const QuotationList = () => {
   const handleBack = () => {
     navigate(-1);
   };
-  const status = 'running'
+  const status = "running";
 
   return (
     <div>
@@ -31,7 +31,7 @@ const QuotationList = () => {
             <span>Running Projects </span>
           </div>
         </div>
-        <QuotationTable status={status} title='Running Project' />
+        <QuotationTable status={status} title="Running Project" />
       </div>
     </div>
   );

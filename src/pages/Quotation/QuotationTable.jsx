@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FaEye, FaDownload, FaFileInvoice } from "react-icons/fa";
+import { FaEye, FaDownload, FaFileInvoice, FaTimes } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Box, Button } from "@mui/material";
 import { ArrowBack } from "@mui/icons-material";
@@ -16,6 +16,8 @@ import { useTenantDomain } from "../../hooks/useTenantDomain";
 import {
   useGetAllQuotationsQuery,
   useMoveRecycledQuotationMutation,
+  // Make sure to add this mutation to your API slice if it doesn't exist
+  useCancelQuotationMutation,
 } from "../../redux/api/quotation";
 import { useCompanyProfileData } from "../../hooks/useCompanyProfileData";
 
@@ -35,8 +37,14 @@ const QuotationTable = ({
   const { tenantDomain } = useTenantDomain();
 
   const { companyProfileData } = useCompanyProfileData();
+
+  // Mutations
   const [moveRecycledQuotation, { isLoading: deleteLoading }] =
     useMoveRecycledQuotationMutation();
+
+  // Initialize the cancel mutation hook
+  const [cancelQuotation, { isLoading: cancelLoading }] =
+    useCancelQuotationMutation();
 
   const { data: allQuotations, isLoading: quotationLoading } =
     useGetAllQuotationsQuery({
@@ -47,6 +55,31 @@ const QuotationTable = ({
       isRecycled,
       status,
     });
+
+  const handleCancel = (id) => {
+    swal({
+      title: "Are you sure?",
+      text: "Do you want to cancel this quotation? This action cannot be undone.",
+      icon: "warning",
+      buttons: true,
+      dangerMode: true,
+    }).then((willCancel) => {
+      if (willCancel) {
+        cancelQuotation({ id, tenantDomain })
+          .unwrap()
+          .then(() => {
+            swal("Cancelled!", "The quotation has been cancelled.", "success");
+          })
+          .catch((err) => {
+            swal(
+              "Error",
+              err?.data?.message || "Failed to cancel quotation",
+              "error"
+            );
+          });
+      }
+    });
+  };
 
   const quotationColumns = [
     { key: "slNo", label: "SL No", type: "index" },
@@ -137,6 +170,24 @@ const QuotationTable = ({
       label: "Edit Quotation",
       link: (d) => `/dashboard/update-quotation?id=${d._id}`,
     },
+
+    ...(status === "running"
+      ? [
+          {
+            key: "cancel",
+            icon: FaTimes,
+            color: "#fff",
+            label: "Cancel Quotation",
+            onClick: (d) => handleCancel(d._id),
+            disabled: (d) => cancelLoading || d.invoiced || d.is_invoiced,
+            tooltip: (d) =>
+              d.invoiced || d.is_invoiced
+                ? "Already Invoiced"
+                : "Cancel Quotation",
+          },
+        ]
+      : []),
+
     {
       key: "delete",
       icon: DeleteIcon,
@@ -168,7 +219,9 @@ const QuotationTable = ({
   const externalHooks = {
     tenantDomain,
     deleteLoading,
+    cancelLoading,
     moveRecycledQuotation,
+    cancelQuotation,
     swal,
   };
 

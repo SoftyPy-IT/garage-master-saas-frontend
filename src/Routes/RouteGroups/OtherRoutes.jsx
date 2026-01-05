@@ -1,3 +1,4 @@
+import GoogleCalendar from "../../components/GoogleCalendar";
 import Backup from "../../pages/Backup/Backup";
 import RestoreDatabase from "../../pages/Backup/RestoreDatabase";
 import CompanyBrand from "../../pages/CompanyBrand/CompanyBrand";
@@ -24,5 +25,9 @@ export const otherRoutes = [
   {
     path: "restore",
     element: <RestoreDatabase />,
+  },
+  {
+    path: "calender",
+    element: <GoogleCalendar />,
   },
 ];
