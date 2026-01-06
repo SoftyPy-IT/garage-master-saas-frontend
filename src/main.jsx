@@ -27,7 +27,7 @@ const clientId =
   import.meta.env.VITE_GOOGLE_CLIENT_ID ||
   process.env.REACT_APP_GOOGLE_CLIENT_ID ||
   process.env.VITE_GOOGLE_CLIENT_ID ||
-  "1032508975210-mckmo05u85nuic8gt8rg8h70tqab4vh0.apps.googleusercontent.com";
+  "731493911262-b4vutijvnt9bgdvgu6m1ai7g0nsno7vl.apps.googleusercontent.com";
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <ErrorBoundary>
