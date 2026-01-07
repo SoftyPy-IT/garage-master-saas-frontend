@@ -5,7 +5,6 @@
 /* eslint-disable no-unused-vars */
 import {
   Add as AddIcon,
-  Badge,
   Build,
   CalendarToday,
   Call,
@@ -14,18 +13,14 @@ import {
   ChevronLeft,
   ChevronRight,
   Close,
-  Code,
-  DarkMode,
-  DateRange,
   Delete as DeleteIcon,
   DirectionsCar,
   Download,
-  DragIndicator,
   Edit as EditIcon,
   Email,
   Event as EventIcon,
-  LightMode,
   LocalGasStation,
+  LocationOn,
   MoreVert as MoreVertIcon,
   Notifications,
   Person,
@@ -33,17 +28,228 @@ import {
   Print,
   Refresh as RefreshIcon,
   Save,
-  Search,
   Settings,
   Share,
-  TaskAlt,
-  Timelapse,
   Today as TodayIcon,
-  VideoCall,
-  ViewAgenda,
-  ViewDay,
+  ViewList,
   ViewWeek,
   Warning as WarningIcon,
+  DragIndicator,
+  AccessTime,
+  TaskAlt,
+  VideoCall,
+  Groups,
+  Repeat,
+  AttachFile,
+  ColorLens,
+  Search,
+  FilterList,
+  Sort,
+  DateRange,
+  ViewAgenda,
+  ViewDay,
+  Timelapse,
+  Alarm,
+  Snooze,
+  Label,
+  Category,
+  Star,
+  StarBorder,
+  Bookmark,
+  BookmarkBorder,
+  Visibility,
+  VisibilityOff,
+  Sync,
+  Cloud,
+  CloudOff,
+  Computer,
+  Smartphone,
+  TabletMac,
+  DarkMode,
+  LightMode,
+  Palette,
+  Tune,
+  AutoAwesome,
+  AutoFixHigh,
+  Gesture,
+  Mouse,
+  TouchApp,
+  Swipe,
+  Expand,
+  Compress,
+  Fullscreen,
+  FullscreenExit,
+  OpenInNew,
+  Link,
+  QrCode,
+  IntegrationInstructions,
+  Api,
+  Code,
+  BugReport,
+  Terminal,
+  Database,
+  Storage,
+  Security,
+  VpnKey,
+  VerifiedUser,
+  AdminPanelSettings,
+  ManageAccounts,
+  Badge,
+  WorkspacePremium,
+  Diamond,
+  EmojiEvents,
+  Workspaces,
+  Hub,
+  AccountTree,
+  Polyline,
+  Schema,
+  Timeline,
+  TrendingUp,
+  Analytics,
+  QueryStats,
+  MonitorHeart,
+  Speed,
+  Bolt,
+  ElectricBolt,
+  RocketLaunch,
+  Rocket,
+  TravelExplore,
+  Explore,
+  Public,
+  Language,
+  Translate,
+  GTranslate,
+  Keyboard,
+  KeyboardHide,
+  KeyboardVoice,
+  Mic,
+  MicOff,
+  Headset,
+  HeadsetMic,
+  Hearing,
+  HearingDisabled,
+  VolumeUp,
+  VolumeOff,
+  MusicNote,
+  MusicOff,
+  TheaterComedy,
+  LiveTv,
+  OndemandVideo,
+  Videocam,
+  VideocamOff,
+  Web,
+  WebAsset,
+  Http,
+  Https,
+  SsidChart,
+  NetworkCheck,
+  Wifi,
+  WifiOff,
+  Bluetooth,
+  BluetoothDisabled,
+  Nfc,
+  RssFeed,
+  RssFeedDisabled,
+  Satellite,
+  SatelliteAlt,
+  Radar,
+  Sensors,
+  SensorsOff,
+  Memory,
+  SdStorage,
+  SimCard,
+  SdCard,
+  SdCardAlert,
+  Usb,
+  UsbOff,
+  Cable,
+  Power,
+  PowerOff,
+  PowerSettingsNew,
+  BatteryFull,
+  BatteryChargingFull,
+  BatteryAlert,
+  BatteryUnknown,
+  BatteryStd,
+  Battery20,
+  Battery30,
+  Battery50,
+  Battery60,
+  Battery80,
+  Battery90,
+  BatterySaver,
+  Devices,
+  DevicesOther,
+  DeviceUnknown,
+  DeviceHub,
+  Scanner,
+  Fax,
+  PrintDisabled,
+  Adb,
+  Airplay,
+  Cast,
+  CastConnected,
+  CastForEducation,
+  DesktopMac,
+  DesktopWindows,
+  DeveloperBoard,
+  DeveloperMode,
+  DeviceThermostat,
+  Dock,
+  Gamepad,
+  Headphones,
+  HeadphonesBattery,
+  KeyboardAlt,
+  KeyboardArrowDown,
+  KeyboardArrowLeft,
+  KeyboardArrowRight,
+  KeyboardArrowUp,
+  KeyboardBackspace,
+  KeyboardCapslock,
+  KeyboardCommandKey,
+  KeyboardControlKey,
+  KeyboardDoubleArrowDown,
+  KeyboardDoubleArrowLeft,
+  KeyboardDoubleArrowRight,
+  KeyboardDoubleArrowUp,
+  KeyboardTab,
+  Laptop,
+  LaptopChromebook,
+  LaptopMac,
+  LaptopWindows,
+  Monitor,
+  PhoneAndroid,
+  PhoneIphone,
+  PhoneLink,
+  PhoneLinkSetup,
+  PointOfSale,
+  PowerInput,
+  Router,
+  SaveAlt,
+  SecurityUpdate,
+  SecurityUpdateGood,
+  SecurityUpdateWarning,
+  Sell,
+  SendToMobile,
+  SettingsInputAntenna,
+  SettingsInputComponent,
+  SettingsInputComposite,
+  SettingsInputHdmi,
+  SettingsInputSvideo,
+  Shop,
+  ShopTwo,
+  SmartScreen,
+  SmartToy,
+  Speaker,
+  SpeakerGroup,
+  Tablet,
+  TabletAndroid,
+  Toys,
+  Tv,
+  Watch,
+  WatchOff,
+  Wearable,
+  WebAssetOff,
 } from "@mui/icons-material";
 import {
   Alert,
@@ -78,44 +284,86 @@ import {
   Paper,
   Popover,
   Select,
+  Slider,
   Snackbar,
   Step,
   StepLabel,
   Stepper,
   Switch,
   Tab,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
   Tabs,
   TextField,
   ToggleButton,
   ToggleButtonGroup,
+  Tooltip,
   Typography,
   alpha,
+  useTheme,
 } from "@mui/material";
 import { googleLogout, useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
 import {
   addDays,
   addHours,
+  addMinutes,
   addMonths,
   addWeeks,
-  differenceInHours,
-  differenceInMinutes,
   eachDayOfInterval,
   endOfMonth,
   endOfWeek,
   format,
   formatDistanceToNow,
-  getHours,
-  getMinutes,
   isSameDay,
   isSameMonth,
+  isSameWeek,
+  parseISO,
   startOfMonth,
   startOfWeek,
   subDays,
   subMonths,
   subWeeks,
+  differenceInMinutes,
+  differenceInHours,
+  differenceInDays,
+  isWithinInterval,
+  isPast,
+  isFuture,
+  isToday,
+  isTomorrow,
+  isYesterday,
+  isWeekend,
+  setHours,
+  setMinutes,
+  setSeconds,
+  getDay,
+  getHours,
+  getMinutes,
+  getSeconds,
+  getMonth,
+  getYear,
+  getTime,
+  getUnixTime,
+  fromUnixTime,
+  toDate,
+  isValid,
+  min,
+  max,
+  compareAsc,
+  compareDesc,
+  areIntervalsOverlapping,
+  eachHourOfInterval,
+  eachMinuteOfInterval,
 } from "date-fns";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { enUS } from "date-fns/locale";
+import { motion, AnimatePresence } from "framer-motion";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React from "react";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 
@@ -125,7 +373,7 @@ const SERVICE_TYPES = [
     id: 1,
     name: "Oil Change",
     icon: <LocalGasStation />,
-    duration: 1,
+    duration: 60,
     color: "#4CAF50",
     category: "maintenance",
     price: "$50-$80",
@@ -134,7 +382,7 @@ const SERVICE_TYPES = [
     id: 2,
     name: "Brake Service",
     icon: <DirectionsCar />,
-    duration: 2,
+    duration: 120,
     color: "#FF9800",
     category: "safety",
     price: "$100-$300",
@@ -143,7 +391,7 @@ const SERVICE_TYPES = [
     id: 3,
     name: "Engine Repair",
     icon: <Build />,
-    duration: 4,
+    duration: 240,
     color: "#F44336",
     category: "repair",
     price: "$500-$2000",
@@ -152,7 +400,7 @@ const SERVICE_TYPES = [
     id: 4,
     name: "Tire Replacement",
     icon: <DirectionsCar />,
-    duration: 2,
+    duration: 120,
     color: "#2196F3",
     category: "maintenance",
     price: "$80-$200",
@@ -161,7 +409,7 @@ const SERVICE_TYPES = [
     id: 5,
     name: "AC Service",
     icon: <Build />,
-    duration: 3,
+    duration: 180,
     color: "#9C27B0",
     category: "comfort",
     price: "$150-$400",
@@ -170,7 +418,7 @@ const SERVICE_TYPES = [
     id: 6,
     name: "Battery Check",
     icon: <Build />,
-    duration: 1,
+    duration: 60,
     color: "#FFEB3B",
     category: "electrical",
     price: "$20-$50",
@@ -179,7 +427,7 @@ const SERVICE_TYPES = [
     id: 7,
     name: "Wheel Alignment",
     icon: <DirectionsCar />,
-    duration: 2,
+    duration: 120,
     color: "#795548",
     category: "maintenance",
     price: "$80-$120",
@@ -188,7 +436,7 @@ const SERVICE_TYPES = [
     id: 8,
     name: "Full Service",
     icon: <CarRepair />,
-    duration: 6,
+    duration: 360,
     color: "#607D8B",
     category: "comprehensive",
     price: "$300-$600",
@@ -240,7 +488,6 @@ const CALENDAR_VIEWS = [
   { id: "week", name: "Week", icon: <ViewWeek /> },
   { id: "month", name: "Month", icon: <CalendarToday /> },
   { id: "agenda", name: "Agenda", icon: <ViewAgenda /> },
-  { id: "year", name: "Year", icon: <DateRange /> },
   { id: "schedule", name: "Schedule", icon: <Timelapse /> },
 ];
 
@@ -249,30 +496,109 @@ const NOTIFICATION_TYPES = [
   { id: "email", name: "Email", icon: <Email /> },
   { id: "popup", name: "Popup", icon: <Notifications /> },
   { id: "sms", name: "SMS", icon: <Phone /> },
-  { id: "push", name: "Push", icon: <Notifications /> },
 ];
 
-// Calendar Colors
+// Calendar Colors for Google Calendar
 const CALENDAR_COLORS = [
-  "#4285F4", // Blue
-  "#EA4335", // Red
-  "#FBBC05", // Yellow
-  "#34A853", // Green
-  "#F4B400", // Amber
-  "#AB47BC", // Purple
-  "#00ACC1", // Cyan
-  "#FF7043", // Orange
-  "#9E9E9E", // Grey
-  "#5C6BC0", // Indigo
-  "#26A69A", // Teal
-  "#D4E157", // Lime
-  "#FF9800", // Orange
-  "#795548", // Brown
-  "#607D8B", // Blue Grey
+  { id: "1", name: "Lavender", hex: "#7986CB" },
+  { id: "2", name: "Sage", hex: "#33B679" },
+  { id: "3", name: "Grape", hex: "#8E24AA" },
+  { id: "4", name: "Flamingo", hex: "#E67C73" },
+  { id: "5", name: "Banana", hex: "#F6BF26" },
+  { id: "6", name: "Tangerine", hex: "#F4511E" },
+  { id: "7", name: "Peacock", hex: "#039BE5" },
+  { id: "8", name: "Graphite", hex: "#616161" },
+  { id: "9", name: "Blueberry", hex: "#3F51B5" },
+  { id: "10", name: "Basil", hex: "#0B8043" },
+  { id: "11", name: "Tomato", hex: "#D50000" },
 ];
 
-// Utility function to fix date format
-const fixDateTimeFormat = (dateTimeString) => {
+// Time Slots for Day View
+const TIME_SLOTS = Array.from({ length: 48 }, (_, i) => {
+  const hour = Math.floor(i / 2);
+  const minute = i % 2 === 0 ? "00" : "30";
+  return `${hour.toString().padStart(2, "0")}:${minute}`;
+});
+
+// Drag and Drop Item Types
+const ItemTypes = {
+  EVENT: "event",
+  TASK: "task",
+  APPOINTMENT: "appointment",
+};
+
+// Draggable Event Component
+const DraggableEvent = ({ event, onDragStart, onDragEnd }) => {
+  const [{ isDragging }, drag] = useDrag(() => ({
+    type: ItemTypes.EVENT,
+    item: { type: "event", id: event.id, event },
+    collect: (monitor) => ({
+      isDragging: !!monitor.isDragging(),
+    }),
+    end: (item, monitor) => {
+      if (onDragEnd && monitor.didDrop()) {
+        onDragEnd(item, monitor);
+      }
+    },
+  }));
+
+  return (
+    <div
+      ref={drag}
+      style={{
+        opacity: isDragging ? 0.5 : 1,
+        cursor: "move",
+        padding: "4px 8px",
+        margin: "2px 0",
+        borderRadius: "4px",
+        backgroundColor: event.color || "#4285F4",
+        color: "white",
+        fontSize: "12px",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap",
+        border: "1px solid rgba(255,255,255,0.2)",
+      }}
+    >
+      <DragIndicator sx={{ fontSize: 14, verticalAlign: "middle", mr: 0.5 }} />
+      {event.summary}
+    </div>
+  );
+};
+
+// Droppable Calendar Slot
+const DroppableCalendarSlot = ({ date, time, onDrop, children }) => {
+  const [{ isOver }, drop] = useDrop(() => ({
+    accept: [ItemTypes.EVENT, ItemTypes.TASK, ItemTypes.APPOINTMENT],
+    drop: (item, monitor) => {
+      if (onDrop && monitor.didDrop()) {
+        onDrop(item, { date, time });
+      }
+      return { date, time };
+    },
+    collect: (monitor) => ({
+      isOver: !!monitor.isOver(),
+    }),
+  }));
+
+  return (
+    <div
+      ref={drop}
+      style={{
+        backgroundColor: isOver ? "#e3f2fd" : "transparent",
+        height: "100%",
+        width: "100%",
+        border: isOver ? "2px dashed #1976d2" : "1px solid #e0e0e0",
+        position: "relative",
+      }}
+    >
+      {children}
+    </div>
+  );
+};
+
+// Utility function to fix date format - IMPROVED VERSION
+const fixDateTimeFormat = (dateTimeString, isEndTime = false) => {
   try {
     // If it's already in ISO format with Z
     if (dateTimeString.includes("Z")) {
@@ -295,89 +621,30 @@ const fixDateTimeFormat = (dateTimeString) => {
       throw new Error("Invalid date");
     }
 
+    // For end time, ensure it's after start time
+    if (isEndTime) {
+      // Add at least 30 minutes if not specified
+      return new Date(date.getTime() + 30 * 60000).toISOString();
+    }
+
     return date.toISOString();
   } catch (error) {
     console.error("Date format error:", error);
     // Return current time as fallback
-    return new Date().toISOString();
+    const now = new Date();
+    if (isEndTime) {
+      return new Date(now.getTime() + 60 * 60000).toISOString(); // 1 hour later
+    }
+    return now.toISOString();
   }
 };
 
-// Generate Time Slots
-const generateTimeSlots = () => {
-  const slots = [];
-  for (let hour = 0; hour < 24; hour++) {
-    slots.push(`${hour.toString().padStart(2, "0")}:00`);
-    slots.push(`${hour.toString().padStart(2, "0")}:30`);
-  }
-  return slots;
-};
-
-// Drag and Drop Item Types
-const ItemTypes = {
-  EVENT: "event",
-  TASK: "task",
-  APPOINTMENT: "appointment",
-};
-
-// Draggable Event Component
-const DraggableEvent = ({ event, onDragStart, onDragEnd }) => {
-  const [{ isDragging }, drag] = useDrag(() => ({
-    type: ItemTypes.EVENT,
-    item: { type: "event", id: event.id, event },
-    collect: (monitor) => ({
-      isDragging: !!monitor.isDragging(),
-    }),
-    end: (item, monitor) => {
-      if (onDragEnd) onDragEnd(item, monitor);
-    },
-  }));
-
-  return (
-    <div
-      ref={drag}
-      style={{
-        opacity: isDragging ? 0.5 : 1,
-        cursor: "move",
-        padding: "4px 8px",
-        margin: "2px 0",
-        borderRadius: "4px",
-        backgroundColor: event.color || "#4285F4",
-        color: "white",
-        fontSize: "12px",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-        whiteSpace: "nowrap",
-      }}
-    >
-      {event.summary}
-    </div>
-  );
-};
-
-// Droppable Calendar Slot
-const DroppableCalendarSlot = ({ date, time, onDrop }) => {
-  const [{ isOver }, drop] = useDrop(() => ({
-    accept: [ItemTypes.EVENT, ItemTypes.TASK, ItemTypes.APPOINTMENT],
-    drop: (item) => {
-      if (onDrop) onDrop(item, { date, time });
-    },
-    collect: (monitor) => ({
-      isOver: !!monitor.isOver(),
-    }),
-  }));
-
-  return (
-    <div
-      ref={drop}
-      style={{
-        backgroundColor: isOver ? "#e3f2fd" : "transparent",
-        height: "100%",
-        width: "100%",
-        border: isOver ? "2px dashed #1976d2" : "1px solid #e0e0e0",
-      }}
-    />
-  );
+// Format date for datetime-local input
+const formatForDateTimeLocal = (date) => {
+  const pad = (num) => num.toString().padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
+    date.getDate()
+  )}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 };
 
 const EnhancedGoogleCalendar = () => {
@@ -433,7 +700,6 @@ const EnhancedGoogleCalendar = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [miniMode, setMiniMode] = useState(false);
   const [notifications, setNotifications] = useState([]);
-  const [selectedNotifications, setSelectedNotifications] = useState([]);
   const [notificationSettings, setNotificationSettings] = useState({
     email: true,
     popup: true,
@@ -478,7 +744,7 @@ const EnhancedGoogleCalendar = () => {
     status: "scheduled",
     assignedTo: "",
     estimatedCost: "",
-    color: CALENDAR_COLORS[0],
+    color: CALENDAR_COLORS[0].id,
     calendarId: "primary",
     attendees: [],
     attachments: [],
@@ -490,7 +756,7 @@ const EnhancedGoogleCalendar = () => {
     guestsCanModify: false,
     guestsCanInviteOthers: false,
     guestsCanSeeOtherGuests: true,
-    notificationTypes: ["email", "popup"],
+    notificationTypes: ["popup"],
     tags: [],
     categories: [],
     project: "",
@@ -532,21 +798,17 @@ const EnhancedGoogleCalendar = () => {
     return eachDayOfInterval({ start, end });
   }, [currentDate]);
 
-  // Configuration details - FIXED based on URL errors
+  // Configuration details
   const CONFIG = {
     projectId: "731493911262",
     clientId:
       "731493911262-b4vutijvnt9bgdvgu6m1ai7g0nsno7vl.apps.googleusercontent.com",
     adminEmail: "softypyit@gmail.com",
     userEmail: "ibrahimsikder5033@gmail.com",
-    apiKey: "", // Add your API key here
     scopes: [
       "https://www.googleapis.com/auth/calendar",
       "https://www.googleapis.com/auth/calendar.events",
       "https://www.googleapis.com/auth/calendar.readonly",
-      "https://www.googleapis.com/auth/calendar.settings.readonly",
-      "https://www.googleapis.com/auth/tasks",
-      "https://www.googleapis.com/auth/tasks.readonly",
       "openid",
       "https://www.googleapis.com/auth/userinfo.email",
       "https://www.googleapis.com/auth/userinfo.profile",
@@ -559,7 +821,7 @@ const EnhancedGoogleCalendar = () => {
       {
         id: "primary",
         name: "Primary Calendar",
-        color: CALENDAR_COLORS[0],
+        color: CALENDAR_COLORS[0].id,
         selected: true,
         visible: true,
         type: "personal",
@@ -567,7 +829,7 @@ const EnhancedGoogleCalendar = () => {
       {
         id: "work",
         name: "Work Calendar",
-        color: CALENDAR_COLORS[1],
+        color: CALENDAR_COLORS[1].id,
         selected: false,
         visible: true,
         type: "work",
@@ -575,26 +837,10 @@ const EnhancedGoogleCalendar = () => {
       {
         id: "personal",
         name: "Personal Calendar",
-        color: CALENDAR_COLORS[2],
+        color: CALENDAR_COLORS[2].id,
         selected: false,
         visible: true,
         type: "personal",
-      },
-      {
-        id: "tasks",
-        name: "Tasks",
-        color: CALENDAR_COLORS[3],
-        selected: false,
-        visible: true,
-        type: "tasks",
-      },
-      {
-        id: "reminders",
-        name: "Reminders",
-        color: CALENDAR_COLORS[4],
-        selected: false,
-        visible: true,
-        type: "reminders",
       },
     ];
     setCalendars(defaultCalendars);
@@ -674,8 +920,6 @@ const EnhancedGoogleCalendar = () => {
         await fetchUserProfile(token);
         console.log("Fetching calendar events...");
         await fetchCalendarEvents(token);
-        await fetchTasks(token);
-        await fetchReminders(token);
         showNotification(
           "✅ Successfully connected to Google Calendar!",
           "success"
@@ -704,14 +948,16 @@ const EnhancedGoogleCalendar = () => {
 
       switch (status) {
         case 400:
+          console.error("Bad Request Details:", data);
           setErrorDetails({
             type: "bad_request",
             message: "Invalid request data format",
             details: [
               "Check date/time format",
-              "Ensure all required fields are filled",
+              "Ensure end time is after start time",
               data.error?.message || "Bad Request",
             ],
+            rawError: data,
           });
           break;
 
@@ -726,37 +972,17 @@ const EnhancedGoogleCalendar = () => {
 
         case 403:
           const errorMsg = data.error?.message || "";
-          if (
-            errorMsg.includes("has not been used in project") ||
-            errorMsg.includes("not authorized")
-          ) {
+          if (errorMsg.includes("has not been used in project")) {
             setErrorDetails({
               type: "config_required",
               message: "Configuration Required",
               details: [
                 "Please enable Calendar API in Google Cloud Console",
                 "Add your email as a test user",
-                "Ensure OAuth consent screen is configured",
               ],
             });
             setConfigHelpOpen(true);
           }
-          break;
-
-        case 404:
-          setErrorDetails({
-            type: "not_found",
-            message: "Resource not found",
-            details: "The requested calendar or event does not exist",
-          });
-          break;
-
-        case 429:
-          setErrorDetails({
-            type: "rate_limit",
-            message: "Rate limit exceeded",
-            details: "Too many requests. Please try again later.",
-          });
           break;
 
         default:
@@ -817,13 +1043,17 @@ const EnhancedGoogleCalendar = () => {
     }
   };
 
-  // Fetch Calendar Events with Enhanced Features
+  // Fetch Calendar Events with Enhanced Features - FIXED VERSION
   const fetchCalendarEvents = async (token, calendarId = "primary") => {
     try {
       setLoading(true);
       const now = new Date();
-      const timeMin = subMonths(now, 3).toISOString();
-      const timeMax = addMonths(now, 6).toISOString();
+
+      // FIX: Ensure timeMax is AFTER timeMin
+      const timeMin = subDays(now, 30).toISOString();
+      const timeMax = addDays(now, 90).toISOString();
+
+      console.log("Fetching events with time range:", { timeMin, timeMax });
 
       const { data } = await axios.get(
         `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events`,
@@ -834,16 +1064,15 @@ const EnhancedGoogleCalendar = () => {
             timeMax,
             singleEvents: true,
             orderBy: "startTime",
-            maxResults: 250,
+            maxResults: 100,
             showDeleted: false,
-            timeZone: "Asia/Dhaka",
           },
         }
       );
 
       console.log(`Found ${data.items?.length || 0} events`);
 
-      const formattedEvents = data.items?.map((event) => ({
+      const formattedEvents = (data.items || []).map((event) => ({
         ...event,
         id: event.id,
         summary: event.summary || "No Title",
@@ -866,17 +1095,7 @@ const EnhancedGoogleCalendar = () => {
         calendarId: calendarId,
         created: event.created,
         updated: event.updated,
-        visibility: event.visibility || "default",
-        guestsCanModify: event.guestsCanModify || false,
-        guestsCanInviteOthers: event.guestsCanInviteOthers || false,
-        guestsCanSeeOtherGuests: event.guestsCanSeeOtherGuests || true,
-        anyoneCanAddSelf: event.anyoneCanAddSelf || false,
-        privateCopy: event.privateCopy || false,
-        locked: event.locked || false,
-        source: event.source,
-        attachments: event.attachments || [],
-        conferenceData: event.conferenceData,
-        hangoutLink: event.hangoutLink,
+        type: determineEventType(event),
       }));
 
       setEvents(formattedEvents);
@@ -891,91 +1110,27 @@ const EnhancedGoogleCalendar = () => {
     }
   };
 
-  // Fetch Google Tasks
-  const fetchTasks = async (token) => {
-    try {
-      const { data } = await axios.get(
-        "https://www.googleapis.com/tasks/v1/users/@me/lists",
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+  // Determine event type based on content
+  const determineEventType = (event) => {
+    const summary = (event.summary || "").toLowerCase();
+    const description = (event.description || "").toLowerCase();
 
-      const taskLists = data.items || [];
-      const allTasks = [];
-
-      for (const list of taskLists) {
-        const tasksResponse = await axios.get(
-          `https://www.googleapis.com/tasks/v1/lists/${list.id}/tasks`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-            params: {
-              showCompleted: false,
-              showHidden: false,
-              maxResults: 100,
-            },
-          }
-        );
-
-        const listTasks =
-          tasksResponse.data.items?.map((task) => ({
-            ...task,
-            listId: list.id,
-            listName: list.title,
-            type: "task",
-          })) || [];
-
-        allTasks.push(...listTasks);
-      }
-
-      setTasks(allTasks);
-      updateStats(events, allTasks, reminders);
-      return allTasks;
-    } catch (error) {
-      console.error("Tasks fetch error:", error);
-      // Tasks API might not be enabled, continue without tasks
-      return [];
+    if (summary.includes("reminder") || description.includes("reminder")) {
+      return "reminder";
     }
-  };
-
-  // Fetch Reminders
-  const fetchReminders = async (token) => {
-    try {
-      // Note: Google Reminders API is limited, using calendar for reminders
-      const now = new Date();
-      const timeMin = now.toISOString();
-      const timeMax = addDays(now, 7).toISOString();
-
-      const { data } = await axios.get(
-        "https://www.googleapis.com/calendar/v3/calendars/primary/events",
-        {
-          headers: { Authorization: `Bearer ${token}` },
-          params: {
-            timeMin,
-            timeMax,
-            singleEvents: true,
-            q: "reminder",
-            maxResults: 50,
-          },
-        }
-      );
-
-      const reminderEvents =
-        data.items
-          ?.filter((event) => event.summary?.toLowerCase().includes("reminder"))
-          .map((event) => ({
-            ...event,
-            type: "reminder",
-            due: event.start?.dateTime || event.start?.date,
-          })) || [];
-
-      setReminders(reminderEvents);
-      updateStats(events, tasks, reminderEvents);
-      return reminderEvents;
-    } catch (error) {
-      console.error("Reminders fetch error:", error);
-      return [];
+    if (summary.includes("meeting") || description.includes("meeting")) {
+      return "meeting";
     }
+    if (
+      summary.includes("appointment") ||
+      description.includes("appointment")
+    ) {
+      return "appointment";
+    }
+    if (summary.includes("task") || description.includes("task")) {
+      return "task";
+    }
+    return "event";
   };
 
   // Extract Service Type from Description
@@ -1017,36 +1172,20 @@ const EnhancedGoogleCalendar = () => {
     const completedEvents = eventsList.filter(
       (event) => new Date(event.end?.dateTime) < now
     ).length;
-    const overdueTasks = tasksList.filter(
-      (task) => task.due && new Date(task.due) < now && !task.completed
-    ).length;
-    const pendingReminders = remindersList.filter(
-      (reminder) => new Date(reminder.due) > now
-    ).length;
-    const meetingsToday = eventsList.filter(
-      (event) =>
-        event.start?.dateTime?.includes(today) &&
-        event.summary?.toLowerCase().includes("meeting")
-    ).length;
-    const appointmentsToday = eventsList.filter(
-      (event) =>
-        event.start?.dateTime?.includes(today) &&
-        event.summary?.toLowerCase().includes("appointment")
-    ).length;
 
     setStats({
       totalEvents,
       todayEvents,
       upcomingEvents,
       completedEvents,
-      overdueTasks,
-      pendingReminders,
-      meetingsToday,
-      appointmentsToday,
+      overdueTasks: 0,
+      pendingReminders: 0,
+      meetingsToday: 0,
+      appointmentsToday: 0,
     });
   };
 
-  // Create Event - Enhanced Version
+  // Create Event - FIXED VERSION
   const createEvent = async () => {
     if (!accessToken) {
       showNotification("Please login first", "warning");
@@ -1054,24 +1193,49 @@ const EnhancedGoogleCalendar = () => {
     }
 
     // Validate form
-    if (!formData.summary || !formData.startTime || !formData.endTime) {
+    if (!formData.summary || !formData.startTime) {
       showNotification("Please fill all required fields", "warning");
       return;
     }
 
     try {
       setLoading(true);
+      console.log("Creating event with data:", formData);
 
-      // Build enhanced event description
+      // FIX: Ensure end time is after start time
+      let startDateTime = fixDateTimeFormat(formData.startTime);
+      let endDateTime = formData.endTime
+        ? fixDateTimeFormat(formData.endTime, true)
+        : new Date(
+            new Date(startDateTime).getTime() + 60 * 60000
+          ).toISOString(); // Default 1 hour
+
+      // Validate time range
+      const startTime = new Date(startDateTime);
+      const endTime = new Date(endDateTime);
+
+      if (endTime <= startTime) {
+        // Auto-correct: add 1 hour if end time is not after start time
+        endDateTime = new Date(startTime.getTime() + 60 * 60000).toISOString();
+        console.log("Auto-corrected end time to be after start time");
+      }
+
+      console.log("Date format conversion:", {
+        originalStart: formData.startTime,
+        fixedStart: startDateTime,
+        originalEnd: formData.endTime,
+        fixedEnd: endDateTime,
+      });
+
+      // Build event description
       let description = formData.description || "";
 
-      // Add customer details if it's a garage event
+      // Add customer details if it's an appointment
       if (formData.type === "appointment") {
         if (
           formData.customerName ||
           formData.customerPhone ||
-          formData.customerEmail ||
-          formData.customerAddress
+          formData.customerEmail
         ) {
           description += `\n\n--- Customer Details ---\n`;
           if (formData.customerName)
@@ -1080,83 +1244,25 @@ const EnhancedGoogleCalendar = () => {
             description += `Phone: ${formData.customerPhone}\n`;
           if (formData.customerEmail)
             description += `Email: ${formData.customerEmail}\n`;
-          if (formData.customerAddress)
-            description += `Address: ${formData.customerAddress}\n`;
         }
-
-        // Add vehicle details
-        description += `\n--- Vehicle Details ---\n`;
-        description += `Type: ${formData.vehicleType}\n`;
-        if (formData.vehicleModel)
-          description += `Model: ${formData.vehicleModel}\n`;
-        if (formData.vehicleYear)
-          description += `Year: ${formData.vehicleYear}\n`;
-        if (formData.licensePlate)
-          description += `License Plate: ${formData.licensePlate}\n`;
-
-        // Add service details
-        description += `\n--- Service Details ---\n`;
-        if (formData.serviceType)
-          description += `Service: ${formData.serviceType}\n`;
-        if (formData.serviceNotes)
-          description += `Notes: ${formData.serviceNotes}\n`;
-        if (formData.priority)
-          description += `Priority: ${formData.priority}\n`;
-        if (formData.estimatedCost)
-          description += `Estimated Cost: $${formData.estimatedCost}\n`;
       }
 
       description += `\nCreated via: Enhanced Calendar App`;
-      description += `\nStatus: ${formData.status}`;
-      if (formData.assignedTo)
-        description += `\nAssigned To: ${formData.assignedTo}`;
 
-      // Add tags and categories
-      if (formData.tags.length > 0) {
-        description += `\nTags: ${formData.tags.join(", ")}`;
-      }
-      if (formData.categories.length > 0) {
-        description += `\nCategories: ${formData.categories.join(", ")}`;
-      }
-
-      // Convert date format
-      const startDateTime = fixDateTimeFormat(formData.startTime);
-      const endDateTime = fixDateTimeFormat(formData.endTime);
-
-      // Build attendees array
-      const attendees = [];
-      if (formData.customerEmail) {
-        attendees.push({
-          email: formData.customerEmail,
-          responseStatus: "needsAction",
-        });
-      }
-      if (formData.attendees && formData.attendees.length > 0) {
-        formData.attendees.forEach((email) => {
-          attendees.push({ email, responseStatus: "needsAction" });
-        });
-      }
-
-      // Build event object
-      const event = {
+      // Build event object with proper Google Calendar API format
+      const eventPayload = {
         summary: formData.summary,
         description: description.trim(),
         start: {
-          dateTime: formData.allDay ? undefined : startDateTime,
-          date: formData.allDay
-            ? format(new Date(startDateTime), "yyyy-MM-dd")
-            : undefined,
+          dateTime: startDateTime,
           timeZone: formData.timeZone,
         },
         end: {
-          dateTime: formData.allDay ? undefined : endDateTime,
-          date: formData.allDay
-            ? format(new Date(endDateTime), "yyyy-MM-dd")
-            : undefined,
+          dateTime: endDateTime,
           timeZone: formData.timeZone,
         },
         location: formData.location || "",
-        attendees: attendees.length > 0 ? attendees : undefined,
+        colorId: formData.color,
         reminders: {
           useDefault: false,
           overrides: formData.notificationTypes.map((type) => ({
@@ -1164,40 +1270,21 @@ const EnhancedGoogleCalendar = () => {
             minutes: parseInt(formData.reminder) || 30,
           })),
         },
-        colorId: getColorId(formData.priority, formData.color),
-        transparency: formData.busy ? "opaque" : "transparent",
-        visibility: formData.private ? "private" : "default",
-        guestsCanModify: formData.guestsCanModify,
-        guestsCanInviteOthers: formData.guestsCanInviteOthers,
-        guestsCanSeeOtherGuests: formData.guestsCanSeeOtherGuests,
-        anyoneCanAddSelf: false,
-        recurrence:
-          formData.recurrence !== "none" ? [formData.recurrence] : undefined,
-        attachments:
-          formData.attachments.length > 0 ? formData.attachments : undefined,
-        conferenceData: formData.conferenceData?.link
-          ? {
-              createRequest: {
-                requestId: `meet-${Date.now()}`,
-                conferenceSolutionKey: { type: "hangoutsMeet" },
-              },
-            }
-          : undefined,
-        extendedProperties: {
-          private: {
-            type: formData.type,
-            priority: formData.priority,
-            project: formData.project,
-            progress: formData.progress.toString(),
-          },
-        },
       };
 
-      console.log("Creating event:", event);
+      // Add attendees if provided
+      if (formData.customerEmail) {
+        eventPayload.attendees = [{ email: formData.customerEmail }];
+      }
+
+      console.log(
+        "Sending event to Google:",
+        JSON.stringify(eventPayload, null, 2)
+      );
 
       const response = await axios.post(
         `https://www.googleapis.com/calendar/v3/calendars/${formData.calendarId}/events`,
-        event,
+        eventPayload,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -1221,23 +1308,8 @@ const EnhancedGoogleCalendar = () => {
         },
       };
 
-      if (formData.type === "task") {
-        setTasks((prev) => [newEvent, ...prev]);
-      } else if (formData.type === "reminder") {
-        setReminders((prev) => [newEvent, ...prev]);
-      } else {
-        setEvents((prev) => [newEvent, ...prev]);
-      }
-
-      updateStats(
-        formData.type === "event" ||
-          formData.type === "meeting" ||
-          formData.type === "appointment"
-          ? [newEvent, ...events]
-          : events,
-        formData.type === "task" ? [newEvent, ...tasks] : tasks,
-        formData.type === "reminder" ? [newEvent, ...reminders] : reminders
-      );
+      setEvents((prev) => [newEvent, ...prev]);
+      updateStats([newEvent, ...events], tasks, reminders);
 
       setOpenDialog(false);
       resetForm();
@@ -1247,13 +1319,29 @@ const EnhancedGoogleCalendar = () => {
         } created successfully!`,
         "success"
       );
-
-      // Send notifications
-      if (formData.sendEmail && formData.customerEmail) {
-        await sendEmailNotification(formData.customerEmail, newEvent);
-      }
     } catch (error) {
       console.error("❌ Event creation error:", error);
+      console.error("Error details:", error.response?.data);
+
+      if (error.response?.data?.error) {
+        const errorMsg = error.response.data.error.message || "Bad Request";
+        showNotification(`❌ Failed: ${errorMsg}`, "error");
+
+        // Special handling for time range errors
+        if (errorMsg.includes("time range") || errorMsg.includes("timeRange")) {
+          setErrorDetails({
+            type: "time_range_error",
+            message: "Time Range Error",
+            details: [
+              "End time must be after start time",
+              "Please check your start and end times",
+            ],
+          });
+        }
+      } else {
+        showNotification("❌ Failed to create event", "error");
+      }
+
       handleGoogleError(error);
     } finally {
       setLoading(false);
@@ -1267,8 +1355,13 @@ const EnhancedGoogleCalendar = () => {
     try {
       setLoading(true);
 
+      // FIX: Ensure end time is after start time
       const startDateTime = fixDateTimeFormat(formData.startTime);
-      const endDateTime = fixDateTimeFormat(formData.endTime);
+      const endDateTime = formData.endTime
+        ? fixDateTimeFormat(formData.endTime, true)
+        : new Date(
+            new Date(startDateTime).getTime() + 60 * 60000
+          ).toISOString();
 
       const event = {
         ...selectedEvent,
@@ -1283,7 +1376,7 @@ const EnhancedGoogleCalendar = () => {
           timeZone: formData.timeZone,
         },
         location: formData.location,
-        colorId: getColorId(formData.priority, formData.color),
+        colorId: formData.color,
       };
 
       await axios.put(
@@ -1337,163 +1430,6 @@ const EnhancedGoogleCalendar = () => {
     }
   };
 
-  // Create Task
-  const createTask = async () => {
-    if (!accessToken) {
-      showNotification("Please login first", "warning");
-      return;
-    }
-
-    try {
-      setLoading(true);
-
-      const task = {
-        title: formData.summary,
-        notes: formData.description,
-        due: formData.startTime ? fixDateTimeFormat(formData.startTime) : null,
-        status: formData.status === "completed" ? "completed" : "needsAction",
-      };
-
-      // First, get or create a task list
-      const listsResponse = await axios.get(
-        "https://www.googleapis.com/tasks/v1/users/@me/lists",
-        {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        }
-      );
-
-      let taskListId = listsResponse.data.items?.[0]?.id;
-      if (!taskListId) {
-        // Create a default task list
-        const createListResponse = await axios.post(
-          "https://www.googleapis.com/tasks/v1/users/@me/lists",
-          { title: "My Tasks" },
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        taskListId = createListResponse.data.id;
-      }
-
-      // Create the task
-      const response = await axios.post(
-        `https://www.googleapis.com/tasks/v1/lists/${taskListId}/tasks`,
-        task,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      const newTask = {
-        ...response.data,
-        type: "task",
-        listId: taskListId,
-      };
-
-      setTasks((prev) => [newTask, ...prev]);
-      updateStats(events, [newTask, ...tasks], reminders);
-      setOpenDialog(false);
-      resetForm();
-      showNotification("✅ Task created successfully!", "success");
-    } catch (error) {
-      console.error("Task creation error:", error);
-      handleGoogleError(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Create Reminder
-  const createReminder = async () => {
-    if (!accessToken) {
-      showNotification("Please login first", "warning");
-      return;
-    }
-
-    try {
-      setLoading(true);
-
-      const reminderEvent = {
-        summary: formData.summary,
-        description: formData.description,
-        start: {
-          dateTime: fixDateTimeFormat(formData.startTime),
-          timeZone: formData.timeZone,
-        },
-        end: {
-          dateTime: fixDateTimeFormat(formData.endTime),
-          timeZone: formData.timeZone,
-        },
-        reminders: {
-          useDefault: false,
-          overrides: [
-            { method: "popup", minutes: parseInt(formData.reminder) || 30 },
-          ],
-        },
-        colorId: "8", // Grey color for reminders
-      };
-
-      const response = await axios.post(
-        "https://www.googleapis.com/calendar/v3/calendars/primary/events",
-        reminderEvent,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      const newReminder = {
-        ...response.data,
-        type: "reminder",
-      };
-
-      setReminders((prev) => [newReminder, ...prev]);
-      updateStats(events, tasks, [newReminder, ...reminders]);
-      setOpenDialog(false);
-      resetForm();
-      showNotification("✅ Reminder created successfully!", "success");
-    } catch (error) {
-      console.error("Reminder creation error:", error);
-      handleGoogleError(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Send Email Notification
-  const sendEmailNotification = async (email, event) => {
-    try {
-      const subject = `New ${event.type}: ${event.summary}`;
-      const body = `
-        You have a new ${event.type} scheduled:
-        
-        Title: ${event.summary}
-        Date: ${format(new Date(event.start.dateTime), "PPPPpppp")}
-        Location: ${event.location || "Not specified"}
-        Description: ${event.description || "No description"}
-        
-        This is an automated notification from Enhanced Calendar App.
-      `;
-
-      // In a real app, you would send this via your backend
-      // For now, we'll just show a notification
-      showNotification(
-        `📧 Email notification would be sent to ${email}`,
-        "info"
-      );
-    } catch (error) {
-      console.error("Email notification error:", error);
-    }
-  };
-
   // Sync Calendar
   const syncCalendar = async () => {
     if (!accessToken) return;
@@ -1502,11 +1438,7 @@ const EnhancedGoogleCalendar = () => {
       setSyncStatus("syncing");
       setLoading(true);
 
-      await Promise.all([
-        fetchCalendarEvents(accessToken, "primary"),
-        fetchTasks(accessToken),
-        fetchReminders(accessToken),
-      ]);
+      await fetchCalendarEvents(accessToken, "primary");
 
       setSyncStatus("synced");
       showNotification("✅ Calendar synced successfully!", "success");
@@ -1524,8 +1456,12 @@ const EnhancedGoogleCalendar = () => {
       setLoading(true);
 
       const { date, time } = dropLocation;
-      const newStartTime = new Date(`${date}T${time}`);
-      const newEndTime = addHours(newStartTime, 1);
+      const [hours, minutes] = time.split(":").map(Number);
+      const newStartTime = new Date(date);
+      newStartTime.setHours(hours, minutes, 0, 0);
+
+      // Ensure end time is after start time
+      const newEndTime = new Date(newStartTime.getTime() + 60 * 60000); // Add 1 hour
 
       const eventToUpdate = events.find((e) => e.id === item.id);
       if (!eventToUpdate) return;
@@ -1534,11 +1470,11 @@ const EnhancedGoogleCalendar = () => {
         ...eventToUpdate,
         start: {
           dateTime: newStartTime.toISOString(),
-          timeZone: eventToUpdate.start.timeZone,
+          timeZone: eventToUpdate.start.timeZone || formData.timeZone,
         },
         end: {
           dateTime: newEndTime.toISOString(),
-          timeZone: eventToUpdate.end.timeZone,
+          timeZone: eventToUpdate.end.timeZone || formData.timeZone,
         },
       };
 
@@ -1571,14 +1507,17 @@ const EnhancedGoogleCalendar = () => {
   // Quick Create Templates
   const quickCreate = (type) => {
     const now = new Date();
+    const startTime = addHours(now, 1);
+    const endTime = addHours(startTime, 1);
+
     let template = {
       type: type,
       summary: "",
       description: "",
-      startTime: formatForDateTimeLocal(addHours(now, 1)),
-      endTime: formatForDateTimeLocal(addHours(now, 2)),
+      startTime: formatForDateTimeLocal(startTime),
+      endTime: formatForDateTimeLocal(endTime),
       color:
-        CALENDAR_COLORS[Math.floor(Math.random() * CALENDAR_COLORS.length)],
+        CALENDAR_COLORS[Math.floor(Math.random() * CALENDAR_COLORS.length)].id,
     };
 
     switch (type) {
@@ -1595,8 +1534,8 @@ const EnhancedGoogleCalendar = () => {
         template.description = "Friends gathering";
         break;
       case "appointment":
-        template.summary = "Doctor Appointment";
-        template.description = "Annual checkup";
+        template.summary = "Client Appointment";
+        template.description = "Client meeting";
         break;
       case "reminder":
         template.summary = "Important Reminder";
@@ -1610,7 +1549,7 @@ const EnhancedGoogleCalendar = () => {
 
   // Export Events
   const exportData = (format = "csv") => {
-    const data = [...events, ...tasks, ...reminders];
+    const data = [...events];
 
     if (data.length === 0) {
       showNotification("No data to export", "warning");
@@ -1624,20 +1563,16 @@ const EnhancedGoogleCalendar = () => {
     if (format === "csv") {
       const csvData = data.map((item) => ({
         Type: item.type || "event",
-        Title: item.summary || item.title || "No Title",
+        Title: item.summary || "No Title",
         Date: item.start?.dateTime
           ? format(new Date(item.start.dateTime), "yyyy-MM-dd HH:mm")
-          : item.due
-          ? format(new Date(item.due), "yyyy-MM-dd HH:mm")
           : "N/A",
         End: item.end?.dateTime
           ? format(new Date(item.end.dateTime), "yyyy-MM-dd HH:mm")
           : "N/A",
         Location: item.location || "N/A",
-        Description: item.description || item.notes || "N/A",
+        Description: item.description || "N/A",
         Status: item.status || "N/A",
-        Priority: item.priority || "N/A",
-        Calendar: item.calendarId || "primary",
       }));
 
       const headers = Object.keys(csvData[0]).join(",");
@@ -1650,38 +1585,6 @@ const EnhancedGoogleCalendar = () => {
       exportContent = [headers, ...rows].join("\n");
       fileName = `calendar-export-${format(new Date(), "yyyy-MM-dd")}.csv`;
       mimeType = "text/csv";
-    } else if (format === "json") {
-      exportContent = JSON.stringify(data, null, 2);
-      fileName = `calendar-export-${format(new Date(), "yyyy-MM-dd")}.json`;
-      mimeType = "application/json";
-    } else if (format === "ical") {
-      // Simple iCal format
-      exportContent = `BEGIN:VCALENDAR
-VERSION:2.0
-PRODID:-//Enhanced Calendar//EN
-${data
-  .map((item) => {
-    const start = item.start?.dateTime
-      ? format(new Date(item.start.dateTime), "yyyyMMdd'T'HHmmss'Z'")
-      : "";
-    const end = item.end?.dateTime
-      ? format(new Date(item.end.dateTime), "yyyyMMdd'T'HHmmss'Z'")
-      : "";
-    return `BEGIN:VEVENT
-UID:${item.id}
-DTSTAMP:${format(new Date(), "yyyyMMdd'T'HHmmss'Z'")}
-DTSTART:${start}
-DTEND:${end}
-SUMMARY:${item.summary || item.title}
-DESCRIPTION:${item.description || item.notes}
-LOCATION:${item.location || ""}
-END:VEVENT`;
-  })
-  .join("\n")}
-END:VCALENDAR`;
-
-      fileName = `calendar-export-${format(new Date(), "yyyy-MM-dd")}.ics`;
-      mimeType = "text/calendar";
     }
 
     const blob = new Blob([exportContent], { type: mimeType });
@@ -1698,21 +1601,6 @@ END:VCALENDAR`;
       `📥 Exported ${data.length} items as ${format.toUpperCase()}`,
       "success"
     );
-  };
-
-  // Import Data
-  const importData = (file) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const content = e.target.result;
-        // Parse and handle imported data
-        showNotification("✅ Data imported successfully!", "success");
-      } catch (error) {
-        showNotification("❌ Failed to import data", "error");
-      }
-    };
-    reader.readAsText(file);
   };
 
   // Print Schedule
@@ -1775,8 +1663,8 @@ END:VCALENDAR`;
               </tr>
             </thead>
             <tbody>
-              ${[...events, ...tasks, ...reminders]
-                .slice(0, 50) // Limit to 50 items for printing
+              ${events
+                .slice(0, 50)
                 .map(
                   (item) => `
                   <tr>
@@ -1785,12 +1673,10 @@ END:VCALENDAR`;
                         ${(item.type || "event").toUpperCase()}
                       </span>
                     </td>
-                    <td>${item.summary || item.title || "No Title"}</td>
+                    <td>${item.summary || "No Title"}</td>
                     <td>${
                       item.start?.dateTime
                         ? format(new Date(item.start.dateTime), "PPpp")
-                        : item.due
-                        ? format(new Date(item.due), "PPpp")
                         : "N/A"
                     }</td>
                     <td>${item.location || "N/A"}</td>
@@ -1803,9 +1689,7 @@ END:VCALENDAR`;
           </table>
           <div class="footer">
             <p>Generated by Enhanced Calendar App</p>
-            <p>Total items: ${
-              events.length + tasks.length + reminders.length
-            }</p>
+            <p>Total items: ${events.length}</p>
           </div>
         </body>
       </html>
@@ -1813,17 +1697,20 @@ END:VCALENDAR`;
     printWindow.document.close();
     printWindow.focus();
     printWindow.print();
-    printWindow.close();
   };
 
   // Reset Form
   const resetForm = () => {
+    const now = new Date();
+    const startTime = addHours(now, 1);
+    const endTime = addHours(startTime, 1);
+
     setFormData({
       type: "event",
       summary: "",
       description: "",
-      startTime: "",
-      endTime: "",
+      startTime: formatForDateTimeLocal(startTime),
+      endTime: formatForDateTimeLocal(endTime),
       location: "",
       customerEmail: "",
       customerPhone: "",
@@ -1841,7 +1728,7 @@ END:VCALENDAR`;
       status: "scheduled",
       assignedTo: "",
       estimatedCost: "",
-      color: CALENDAR_COLORS[0],
+      color: CALENDAR_COLORS[0].id,
       calendarId: "primary",
       attendees: [],
       attachments: [],
@@ -1853,7 +1740,7 @@ END:VCALENDAR`;
       guestsCanModify: false,
       guestsCanInviteOthers: false,
       guestsCanSeeOtherGuests: true,
-      notificationTypes: ["email", "popup"],
+      notificationTypes: ["popup"],
       tags: [],
       categories: [],
       project: "",
@@ -1883,14 +1770,6 @@ END:VCALENDAR`;
   // Show Notification
   const showNotification = (message, severity = "info") => {
     setNotification({ open: true, message, severity });
-  };
-
-  // Format date for datetime-local input
-  const formatForDateTimeLocal = (date) => {
-    const pad = (num) => num.toString().padStart(2, "0");
-    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
-      date.getDate()
-    )}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
   };
 
   // Open Dialog
@@ -1925,13 +1804,13 @@ END:VCALENDAR`;
         customerPhone: customerInfo.phone || "",
         customerName: customerInfo.name || "",
         serviceType: extractServiceType(event.description),
-        color: event.color || CALENDAR_COLORS[0],
+        color: event.colorId || CALENDAR_COLORS[0].id,
         calendarId: event.calendarId || "primary",
         status: event.status || "scheduled",
         priority: event.priority || "medium",
       });
     } else {
-      // Set default times for new event
+      // Set default times for new event (ensuring end time is after start time)
       const now = new Date();
       const startTime = addHours(now, 1);
       const endTime = addHours(startTime, 1);
@@ -1961,7 +1840,8 @@ END:VCALENDAR`;
         assignedTo: "",
         estimatedCost: "",
         color:
-          CALENDAR_COLORS[Math.floor(Math.random() * CALENDAR_COLORS.length)],
+          CALENDAR_COLORS[Math.floor(Math.random() * CALENDAR_COLORS.length)]
+            .id,
         calendarId: "primary",
         attendees: [],
         attachments: [],
@@ -1973,7 +1853,7 @@ END:VCALENDAR`;
         guestsCanModify: false,
         guestsCanInviteOthers: false,
         guestsCanSeeOtherGuests: true,
-        notificationTypes: ["email", "popup"],
+        notificationTypes: ["popup"],
         tags: [],
         categories: [],
         project: "",
@@ -2011,13 +1891,11 @@ END:VCALENDAR`;
   const goToPrevious = () => {
     if (viewMode === "week") setCurrentDate((prev) => subWeeks(prev, 1));
     else if (viewMode === "month") setCurrentDate((prev) => subMonths(prev, 1));
-    else if (viewMode === "year") setCurrentDate((prev) => subMonths(prev, 12));
     else setCurrentDate((prev) => subDays(prev, 1));
   };
   const goToNext = () => {
     if (viewMode === "week") setCurrentDate((prev) => addWeeks(prev, 1));
     else if (viewMode === "month") setCurrentDate((prev) => addMonths(prev, 1));
-    else if (viewMode === "year") setCurrentDate((prev) => addMonths(prev, 12));
     else setCurrentDate((prev) => addDays(prev, 1));
   };
 
@@ -2030,37 +1908,31 @@ END:VCALENDAR`;
     });
   };
 
-  // Get Tasks for Day
-  const getTasksForDay = (day) => {
-    return tasks.filter((task) => {
-      if (!task.due) return false;
-      const dueDate = new Date(task.due);
-      return isSameDay(dueDate, day);
-    });
+  // Get Color by ID
+  const getColorById = (colorId) => {
+    const color =
+      CALENDAR_COLORS.find((c) => c.id === colorId) || CALENDAR_COLORS[0];
+    return color.hex;
   };
 
-  // Get Reminders for Day
-  const getRemindersForDay = (day) => {
-    return reminders.filter((reminder) => {
-      if (!reminder.start?.dateTime) return false;
-      const reminderDate = new Date(reminder.start.dateTime);
-      return isSameDay(reminderDate, day);
-    });
+  // Get Color Name by ID
+  const getColorNameById = (colorId) => {
+    const color =
+      CALENDAR_COLORS.find((c) => c.id === colorId) || CALENDAR_COLORS[0];
+    return color.name;
   };
 
   // Filter Events based on search and filters
   const filteredEvents = useMemo(() => {
-    let filtered = [...events, ...tasks, ...reminders];
+    let filtered = [...events];
 
     // Apply search
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(
         (item) =>
-          (item.summary || item.title || "").toLowerCase().includes(query) ||
-          (item.description || item.notes || "")
-            .toLowerCase()
-            .includes(query) ||
+          (item.summary || "").toLowerCase().includes(query) ||
+          (item.description || "").toLowerCase().includes(query) ||
           (item.location || "").toLowerCase().includes(query)
       );
     }
@@ -2084,39 +1956,8 @@ END:VCALENDAR`;
       }
     });
 
-    // Apply status filters
-    if (!filterSettings.showCompleted) {
-      filtered = filtered.filter((item) => item.status !== "completed");
-    }
-    if (!filterSettings.showCancelled) {
-      filtered = filtered.filter((item) => item.status !== "cancelled");
-    }
-
-    // Apply time filters
-    const now = new Date();
-    if (!filterSettings.showPast) {
-      filtered = filtered.filter((item) => {
-        const itemDate = item.start?.dateTime
-          ? new Date(item.start.dateTime)
-          : item.due
-          ? new Date(item.due)
-          : now;
-        return itemDate >= now;
-      });
-    }
-    if (!filterSettings.showFuture) {
-      filtered = filtered.filter((item) => {
-        const itemDate = item.start?.dateTime
-          ? new Date(item.start.dateTime)
-          : item.due
-          ? new Date(item.due)
-          : now;
-        return itemDate <= now;
-      });
-    }
-
     return filtered;
-  }, [events, tasks, reminders, searchQuery, filterSettings]);
+  }, [events, searchQuery, filterSettings]);
 
   // Toggle Theme
   const toggleTheme = () => {
@@ -2128,11 +1969,6 @@ END:VCALENDAR`;
   // Toggle Sidebar
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
-  };
-
-  // Toggle Mini Mode
-  const toggleMiniMode = () => {
-    setMiniMode(!miniMode);
   };
 
   // Mark Notification as Read
@@ -2169,17 +2005,6 @@ END:VCALENDAR`;
       .slice(0, 5);
   };
 
-  // Get Overdue Tasks
-  const getOverdueTasks = () => {
-    const now = new Date();
-    return tasks
-      .filter(
-        (task) =>
-          task.due && new Date(task.due) < now && task.status !== "completed"
-      )
-      .slice(0, 5);
-  };
-
   // Test Event Creation Function
   const testEventCreation = async () => {
     if (!accessToken) {
@@ -2197,8 +2022,7 @@ END:VCALENDAR`;
 
       const testEvent = {
         summary: "Test Event - Enhanced Calendar",
-        description:
-          "This is a test event created via Enhanced Calendar App\n\nCreated via: Enhanced Calendar App",
+        description: "This is a test event created via Enhanced Calendar App",
         start: {
           dateTime: startTime.toISOString(),
           timeZone: "Asia/Dhaka",
@@ -2235,31 +2059,516 @@ END:VCALENDAR`;
     }
   };
 
-  // Helper function to get color ID
-  const getColorId = (priority, color) => {
-    // Map colors to Google Calendar color IDs
-    const colorMap = {
-      "#4285F4": "1", // Blue
-      "#EA4335": "2", // Red
-      "#FBBC05": "3", // Yellow
-      "#34A853": "4", // Green
-      "#F4B400": "5", // Amber
-      "#AB47BC": "6", // Purple
-      "#00ACC1": "7", // Cyan
-      "#FF7043": "8", // Orange
-      "#9E9E9E": "9", // Grey
-      "#5C6BC0": "10", // Indigo
-    };
-
-    return colorMap[color] || "1";
-  };
-
   // Auto fetch events when token exists
   useEffect(() => {
     if (accessToken) {
       syncCalendar();
     }
   }, [accessToken]);
+
+  // Render Calendar View based on viewMode
+  const renderCalendarView = () => {
+    switch (viewMode) {
+      case "day":
+        return renderDayView();
+      case "week":
+        return renderWeekView();
+      case "month":
+        return renderMonthView();
+      case "agenda":
+        return renderAgendaView();
+      case "schedule":
+        return renderScheduleView();
+      default:
+        return renderWeekView();
+    }
+  };
+
+  const renderDayView = () => {
+    const dayEvents = getEventsForDay(currentDate);
+
+    return (
+      <Box sx={{ height: "calc(100vh - 300px)", overflow: "auto" }}>
+        <Grid container>
+          <Grid item xs={2}>
+            <Box sx={{ borderRight: 1, borderColor: "divider" }}>
+              {TIME_SLOTS.map((time) => (
+                <Box
+                  key={time}
+                  sx={{
+                    height: 60,
+                    borderBottom: 1,
+                    borderColor: "divider",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    position: "relative",
+                  }}
+                >
+                  <Typography variant="caption">{time}</Typography>
+                  {dragDropEnabled && (
+                    <DroppableCalendarSlot
+                      date={format(currentDate, "yyyy-MM-dd")}
+                      time={time}
+                      onDrop={handleDrop}
+                    />
+                  )}
+                </Box>
+              ))}
+            </Box>
+          </Grid>
+          <Grid item xs={10}>
+            <Box sx={{ position: "relative", height: "100%" }}>
+              {TIME_SLOTS.map((time) => (
+                <Box
+                  key={time}
+                  sx={{
+                    height: 60,
+                    borderBottom: 1,
+                    borderColor: "divider",
+                    position: "relative",
+                  }}
+                >
+                  {dragDropEnabled && (
+                    <DroppableCalendarSlot
+                      date={format(currentDate, "yyyy-MM-dd")}
+                      time={time}
+                      onDrop={handleDrop}
+                    />
+                  )}
+                </Box>
+              ))}
+
+              {/* Render events on timeline */}
+              {dayEvents.map((event) => {
+                const startTime = event.start?.dateTime
+                  ? new Date(event.start.dateTime)
+                  : new Date();
+                const endTime = event.end?.dateTime
+                  ? new Date(event.end.dateTime)
+                  : new Date(startTime.getTime() + 60 * 60000);
+
+                const startMinutes =
+                  getHours(startTime) * 60 + getMinutes(startTime);
+                const durationMinutes = differenceInMinutes(endTime, startTime);
+                const top = startMinutes * 1;
+                const height = Math.max(durationMinutes, 30);
+
+                return (
+                  <Box
+                    key={event.id}
+                    sx={{
+                      position: "absolute",
+                      top: `${top}px`,
+                      left: "10px",
+                      right: "10px",
+                      height: `${height}px`,
+                      bgcolor: getColorById(event.colorId),
+                      color: "white",
+                      borderRadius: 1,
+                      p: 1,
+                      overflow: "hidden",
+                      cursor: "pointer",
+                      border: "1px solid rgba(255,255,255,0.3)",
+                      "&:hover": {
+                        opacity: 0.9,
+                        boxShadow: 2,
+                      },
+                    }}
+                    onClick={() => handleOpenDialog(event)}
+                  >
+                    <Typography
+                      variant="caption"
+                      noWrap
+                      sx={{ fontWeight: "bold" }}
+                    >
+                      {format(startTime, "h:mm a")} - {event.summary}
+                    </Typography>
+                    {event.location && (
+                      <Typography
+                        variant="caption"
+                        sx={{ display: "block", opacity: 0.8 }}
+                      >
+                        {event.location}
+                      </Typography>
+                    )}
+                    {dragDropEnabled && (
+                      <DragIndicator
+                        sx={{
+                          position: "absolute",
+                          right: 4,
+                          top: 4,
+                          fontSize: 16,
+                        }}
+                      />
+                    )}
+                  </Box>
+                );
+              })}
+            </Box>
+          </Grid>
+        </Grid>
+      </Box>
+    );
+  };
+
+  const renderWeekView = () => {
+    return (
+      <Grid container spacing={1}>
+        {weekDays.map((day, index) => {
+          const dayEvents = getEventsForDay(day);
+          return (
+            <Grid item xs key={index}>
+              <Card
+                sx={{
+                  height: "600px",
+                  overflow: "auto",
+                  bgcolor: isSameDay(day, new Date()) ? "primary.50" : "white",
+                }}
+              >
+                <CardContent sx={{ p: 1 }}>
+                  <Typography
+                    variant="subtitle2"
+                    align="center"
+                    sx={{
+                      fontWeight: "bold",
+                      color: isSameDay(day, new Date())
+                        ? "primary.main"
+                        : "inherit",
+                    }}
+                  >
+                    {format(day, "EEE")}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    align="center"
+                    sx={{
+                      color: isSameDay(day, new Date())
+                        ? "primary.main"
+                        : "text.secondary",
+                    }}
+                  >
+                    {format(day, "d")}
+                  </Typography>
+                  <Divider sx={{ my: 1 }} />
+
+                  {dayEvents.length > 0 ? (
+                    <Box>
+                      {dayEvents.map((event) => (
+                        <Card
+                          key={event.id}
+                          sx={{
+                            p: 1,
+                            mb: 1,
+                            bgcolor: getColorById(event.colorId),
+                            color: "white",
+                            cursor: "pointer",
+                            border: "1px solid rgba(255,255,255,0.3)",
+                            "&:hover": {
+                              opacity: 0.9,
+                              boxShadow: 2,
+                            },
+                          }}
+                          onClick={() => handleOpenDialog(event)}
+                        >
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                            }}
+                          >
+                            <Typography
+                              variant="caption"
+                              sx={{ fontWeight: "bold" }}
+                            >
+                              {format(
+                                new Date(event.start?.dateTime || new Date()),
+                                "h:mm a"
+                              )}
+                            </Typography>
+                            {dragDropEnabled && (
+                              <DragIndicator sx={{ fontSize: 16 }} />
+                            )}
+                          </Box>
+                          <Typography variant="body2" fontWeight="bold" noWrap>
+                            {event.summary}
+                          </Typography>
+                          <Chip
+                            size="small"
+                            label={event.type || "event"}
+                            sx={{
+                              mt: 0.5,
+                              color: "white",
+                              bgcolor: "rgba(255,255,255,0.2)",
+                            }}
+                          />
+                        </Card>
+                      ))}
+                    </Box>
+                  ) : (
+                    <Typography
+                      variant="body2"
+                      color="textSecondary"
+                      align="center"
+                      sx={{ mt: 2 }}
+                    >
+                      No events
+                    </Typography>
+                  )}
+                </CardContent>
+              </Card>
+            </Grid>
+          );
+        })}
+      </Grid>
+    );
+  };
+
+  const renderMonthView = () => {
+    const weeks = [];
+    for (let i = 0; i < monthDays.length; i += 7) {
+      weeks.push(monthDays.slice(i, i + 7));
+    }
+
+    return (
+      <Box>
+        <Grid container spacing={1}>
+          {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+            <Grid item xs key={day}>
+              <Typography align="center" fontWeight="bold">
+                {day}
+              </Typography>
+            </Grid>
+          ))}
+        </Grid>
+
+        {weeks.map((week, weekIndex) => (
+          <Grid container spacing={1} key={weekIndex} sx={{ mb: 1 }}>
+            {week.map((day, dayIndex) => {
+              const dayEvents = getEventsForDay(day);
+              return (
+                <Grid item xs key={dayIndex}>
+                  <Card
+                    sx={{
+                      height: 120,
+                      overflow: "auto",
+                      bgcolor: isSameDay(day, new Date())
+                        ? "primary.50"
+                        : !isSameMonth(day, currentDate)
+                        ? "grey.50"
+                        : "white",
+                      cursor: "pointer",
+                      "&:hover": {
+                        bgcolor: "action.hover",
+                      },
+                    }}
+                    onClick={() => {
+                      setCurrentDate(day);
+                      setViewMode("day");
+                    }}
+                  >
+                    <CardContent sx={{ p: 1 }}>
+                      <Typography
+                        variant="body2"
+                        align="center"
+                        sx={{
+                          fontWeight: "bold",
+                          color: isSameDay(day, new Date())
+                            ? "primary.main"
+                            : !isSameMonth(day, currentDate)
+                            ? "grey.400"
+                            : "inherit",
+                        }}
+                      >
+                        {format(day, "d")}
+                      </Typography>
+
+                      {dayEvents.slice(0, 3).map((event) => (
+                        <Box
+                          key={event.id}
+                          sx={{
+                            bgcolor: getColorById(event.colorId),
+                            color: "white",
+                            borderRadius: 1,
+                            p: 0.5,
+                            mb: 0.5,
+                            fontSize: "10px",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                            border: "1px solid rgba(255,255,255,0.3)",
+                          }}
+                        >
+                          {format(new Date(event.start.dateTime), "h:mm")} -{" "}
+                          {event.summary.substring(0, 15)}
+                          {event.summary.length > 15 ? "..." : ""}
+                        </Box>
+                      ))}
+
+                      {dayEvents.length > 3 && (
+                        <Typography variant="caption" color="textSecondary">
+                          +{dayEvents.length - 3} more
+                        </Typography>
+                      )}
+                    </CardContent>
+                  </Card>
+                </Grid>
+              );
+            })}
+          </Grid>
+        ))}
+      </Box>
+    );
+  };
+
+  const renderAgendaView = () => {
+    const groupedEvents = {};
+    filteredEvents.forEach((event) => {
+      const date = event.start?.dateTime
+        ? format(new Date(event.start.dateTime), "yyyy-MM-dd")
+        : "unscheduled";
+      if (!groupedEvents[date]) groupedEvents[date] = [];
+      groupedEvents[date].push(event);
+    });
+
+    return (
+      <Box>
+        {Object.entries(groupedEvents)
+          .sort()
+          .map(([date, dateEvents]) => (
+            <Box key={date} sx={{ mb: 3 }}>
+              <Typography variant="h6" gutterBottom>
+                {date === "unscheduled"
+                  ? "Unscheduled"
+                  : format(new Date(date), "EEEE, MMMM d, yyyy")}
+              </Typography>
+              <Grid container spacing={2}>
+                {dateEvents.map((event) => (
+                  <Grid item xs={12} key={event.id}>
+                    <Card>
+                      <CardContent>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                          }}
+                        >
+                          <Box>
+                            <Typography variant="h6">
+                              {event.summary}
+                            </Typography>
+                            <Typography variant="body2" color="textSecondary">
+                              {format(new Date(event.start.dateTime), "h:mm a")}{" "}
+                              - {event.location || "No location"}
+                            </Typography>
+                            <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
+                              <Chip
+                                size="small"
+                                label={event.type || "event"}
+                                color="primary"
+                              />
+                              <Chip
+                                size="small"
+                                label={event.status || "scheduled"}
+                                variant="outlined"
+                              />
+                            </Box>
+                          </Box>
+                          <IconButton
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setAnchorEl({
+                                element: e.currentTarget,
+                                eventId: event.id,
+                              });
+                            }}
+                          >
+                            <MoreVertIcon />
+                          </IconButton>
+                        </Box>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                ))}
+              </Grid>
+            </Box>
+          ))}
+      </Box>
+    );
+  };
+
+  const renderScheduleView = () => {
+    const now = new Date();
+    const upcomingEvents = filteredEvents
+      .filter((event) => {
+        const eventDate = event.start?.dateTime
+          ? new Date(event.start.dateTime)
+          : null;
+        return eventDate && eventDate >= now;
+      })
+      .sort(
+        (a, b) => new Date(a.start?.dateTime) - new Date(b.start?.dateTime)
+      );
+
+    return (
+      <Box>
+        <Typography variant="h6" gutterBottom>
+          Upcoming Schedule
+        </Typography>
+        <List>
+          {upcomingEvents.slice(0, 20).map((event) => {
+            const eventDate = new Date(event.start.dateTime);
+            const timeUntil = formatDistanceToNow(eventDate, {
+              addSuffix: true,
+            });
+
+            return (
+              <ListItem
+                key={event.id}
+                sx={{
+                  mb: 1,
+                  borderLeft: `4px solid ${getColorById(event.colorId)}`,
+                  bgcolor: "background.paper",
+                  borderRadius: 1,
+                }}
+                secondaryAction={
+                  <IconButton
+                    edge="end"
+                    onClick={() => handleOpenDialog(event)}
+                  >
+                    <EditIcon />
+                  </IconButton>
+                }
+              >
+                <ListItemAvatar>
+                  <Avatar sx={{ bgcolor: getColorById(event.colorId) }}>
+                    {EVENT_TYPES.find((t) => t.id === event.type)?.icon || (
+                      <EventIcon />
+                    )}
+                  </Avatar>
+                </ListItemAvatar>
+                <ListItemText
+                  primary={event.summary}
+                  secondary={
+                    <>
+                      <Typography variant="body2" color="text.primary">
+                        {format(eventDate, "PPPPpppp")}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {timeUntil} • {event.location || "No location"}
+                      </Typography>
+                    </>
+                  }
+                />
+              </ListItem>
+            );
+          })}
+        </List>
+      </Box>
+    );
+  };
 
   // Configuration Help Component
   const ConfigHelpDialog = () => (
@@ -2463,17 +2772,10 @@ END:VCALENDAR`;
             </Button>
             <Button
               variant="outlined"
-              onClick={() => exportData("json")}
-              startIcon={<Download />}
+              onClick={printSchedule}
+              startIcon={<Print />}
             >
-              Export JSON
-            </Button>
-            <Button
-              variant="outlined"
-              onClick={() => exportData("ical")}
-              startIcon={<Download />}
-            >
-              Export iCal
+              Print Schedule
             </Button>
           </Box>
         </Box>
@@ -2511,6 +2813,8 @@ END:VCALENDAR`;
                     p: 2,
                     "&:hover": {
                       backgroundColor: alpha(type.color, 0.1),
+                      transform: "translateY(-2px)",
+                      transition: "transform 0.2s",
                     },
                   }}
                   onClick={() => {
@@ -2518,8 +2822,12 @@ END:VCALENDAR`;
                     setQuickAddOpen(false);
                   }}
                 >
-                  <Box sx={{ color: type.color, mb: 1 }}>{type.icon}</Box>
-                  <Typography variant="body2">{type.name}</Typography>
+                  <Box sx={{ color: type.color, mb: 1, fontSize: 32 }}>
+                    {type.icon}
+                  </Box>
+                  <Typography variant="body2" fontWeight="medium">
+                    {type.name}
+                  </Typography>
                 </Card>
               </Grid>
             ))}
@@ -2638,474 +2946,6 @@ END:VCALENDAR`;
     </Popover>
   );
 
-  // Render Calendar View based on viewMode
-  const renderCalendarView = () => {
-    switch (viewMode) {
-      case "day":
-        return renderDayView();
-      case "week":
-        return renderWeekView();
-      case "month":
-        return renderMonthView();
-      case "agenda":
-        return renderAgendaView();
-      case "schedule":
-        return renderScheduleView();
-      default:
-        return renderWeekView();
-    }
-  };
-
-  const renderDayView = () => {
-    const timeSlots = generateTimeSlots();
-    const dayEvents = getEventsForDay(currentDate);
-    const dayTasks = getTasksForDay(currentDate);
-    const dayReminders = getRemindersForDay(currentDate);
-
-    return (
-      <Box sx={{ height: "calc(100vh - 300px)", overflow: "auto" }}>
-        <Grid container>
-          <Grid item xs={2}>
-            <Box sx={{ borderRight: 1, borderColor: "divider" }}>
-              {timeSlots.map((time) => (
-                <Box
-                  key={time}
-                  sx={{
-                    height: 60,
-                    borderBottom: 1,
-                    borderColor: "divider",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <Typography variant="caption">{time}</Typography>
-                </Box>
-              ))}
-            </Box>
-          </Grid>
-          <Grid item xs={10}>
-            <Box sx={{ position: "relative", height: "100%" }}>
-              {timeSlots.map((time) => (
-                <Box
-                  key={time}
-                  sx={{
-                    height: 60,
-                    borderBottom: 1,
-                    borderColor: "divider",
-                    position: "relative",
-                  }}
-                >
-                  {dragDropEnabled && (
-                    <DroppableCalendarSlot
-                      date={format(currentDate, "yyyy-MM-dd")}
-                      time={time}
-                      onDrop={handleDrop}
-                    />
-                  )}
-                </Box>
-              ))}
-
-              {/* Render events on timeline */}
-              {[...dayEvents, ...dayTasks, ...dayReminders].map((item) => {
-                const startTime = item.start?.dateTime
-                  ? new Date(item.start.dateTime)
-                  : new Date();
-                const top =
-                  (getHours(startTime) * 60 + getMinutes(startTime)) * 1;
-                const height = item.duration ? item.duration * 60 : 60; // Default 1 hour
-
-                return (
-                  <Box
-                    key={item.id}
-                    sx={{
-                      position: "absolute",
-                      top: `${top}px`,
-                      left: "10px",
-                      right: "10px",
-                      height: `${height}px`,
-                      bgcolor: item.color || "#4285F4",
-                      color: "white",
-                      borderRadius: 1,
-                      p: 1,
-                      overflow: "hidden",
-                      cursor: "pointer",
-                      "&:hover": {
-                        opacity: 0.9,
-                      },
-                    }}
-                    onClick={() => handleOpenDialog(item)}
-                  >
-                    <Typography variant="caption" noWrap>
-                      {format(startTime, "h:mm a")} - {item.summary}
-                    </Typography>
-                  </Box>
-                );
-              })}
-            </Box>
-          </Grid>
-        </Grid>
-      </Box>
-    );
-  };
-
-  const renderWeekView = () => {
-    return (
-      <Grid container spacing={1}>
-        {weekDays.map((day, index) => {
-          const dayEvents = getEventsForDay(day);
-          const dayTasks = getTasksForDay(day);
-          const dayReminders = getRemindersForDay(day);
-          const allItems = [...dayEvents, ...dayTasks, ...dayReminders];
-
-          return (
-            <Grid item xs key={index}>
-              <Card
-                sx={{
-                  height: "600px",
-                  overflow: "auto",
-                  bgcolor: isSameDay(day, new Date()) ? "primary.50" : "white",
-                }}
-              >
-                <CardContent sx={{ p: 1 }}>
-                  <Typography
-                    variant="subtitle2"
-                    align="center"
-                    sx={{
-                      fontWeight: "bold",
-                      color: isSameDay(day, new Date())
-                        ? "primary.main"
-                        : "inherit",
-                    }}
-                  >
-                    {format(day, "EEE")}
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    align="center"
-                    sx={{
-                      color: isSameDay(day, new Date())
-                        ? "primary.main"
-                        : "text.secondary",
-                    }}
-                  >
-                    {format(day, "d")}
-                  </Typography>
-                  <Divider sx={{ my: 1 }} />
-
-                  {allItems.length > 0 ? (
-                    <Box>
-                      {allItems.map((item) => (
-                        <Card
-                          key={item.id}
-                          sx={{
-                            p: 1,
-                            mb: 1,
-                            bgcolor: item.color || "primary.light",
-                            color: "white",
-                            cursor: "pointer",
-                            "&:hover": {
-                              opacity: 0.9,
-                            },
-                          }}
-                          onClick={() => handleOpenDialog(item)}
-                        >
-                          {dragDropEnabled && (
-                            <Box sx={{ display: "flex", alignItems: "center" }}>
-                              <DragIndicator sx={{ mr: 1, fontSize: 16 }} />
-                              <Typography variant="caption">
-                                {format(
-                                  new Date(item.start?.dateTime || item.due),
-                                  "h:mm a"
-                                )}
-                              </Typography>
-                            </Box>
-                          )}
-                          <Typography variant="body2" fontWeight="bold">
-                            {item.summary || item.title}
-                          </Typography>
-                          <Chip
-                            size="small"
-                            label={item.type || "event"}
-                            sx={{
-                              mt: 0.5,
-                              color: "white",
-                              bgcolor: "primary.dark",
-                            }}
-                          />
-                        </Card>
-                      ))}
-                    </Box>
-                  ) : (
-                    <Typography
-                      variant="body2"
-                      color="textSecondary"
-                      align="center"
-                      sx={{ mt: 2 }}
-                    >
-                      No events
-                    </Typography>
-                  )}
-                </CardContent>
-              </Card>
-            </Grid>
-          );
-        })}
-      </Grid>
-    );
-  };
-
-  const renderMonthView = () => {
-    const weeks = [];
-    for (let i = 0; i < monthDays.length; i += 7) {
-      weeks.push(monthDays.slice(i, i + 7));
-    }
-
-    return (
-      <Box>
-        <Grid container spacing={1}>
-          {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-            <Grid item xs key={day}>
-              <Typography align="center" fontWeight="bold">
-                {day}
-              </Typography>
-            </Grid>
-          ))}
-        </Grid>
-
-        {weeks.map((week, weekIndex) => (
-          <Grid container spacing={1} key={weekIndex} sx={{ mb: 1 }}>
-            {week.map((day, dayIndex) => {
-              const dayEvents = getEventsForDay(day);
-              return (
-                <Grid item xs key={dayIndex}>
-                  <Card
-                    sx={{
-                      height: 120,
-                      overflow: "auto",
-                      bgcolor: isSameDay(day, new Date())
-                        ? "primary.50"
-                        : !isSameMonth(day, currentDate)
-                        ? "grey.50"
-                        : "white",
-                      cursor: "pointer",
-                      "&:hover": {
-                        bgcolor: "action.hover",
-                      },
-                    }}
-                    onClick={() => {
-                      setCurrentDate(day);
-                      setViewMode("day");
-                    }}
-                  >
-                    <CardContent sx={{ p: 1 }}>
-                      <Typography
-                        variant="body2"
-                        align="center"
-                        sx={{
-                          fontWeight: "bold",
-                          color: isSameDay(day, new Date())
-                            ? "primary.main"
-                            : !isSameMonth(day, currentDate)
-                            ? "grey.400"
-                            : "inherit",
-                        }}
-                      >
-                        {format(day, "d")}
-                      </Typography>
-
-                      {dayEvents.slice(0, 3).map((event) => (
-                        <Box
-                          key={event.id}
-                          sx={{
-                            bgcolor: event.color || "primary.main",
-                            color: "white",
-                            borderRadius: 1,
-                            p: 0.5,
-                            mb: 0.5,
-                            fontSize: "10px",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap",
-                          }}
-                        >
-                          {format(new Date(event.start.dateTime), "h:mm")} -{" "}
-                          {event.summary.substring(0, 15)}
-                          {event.summary.length > 15 ? "..." : ""}
-                        </Box>
-                      ))}
-
-                      {dayEvents.length > 3 && (
-                        <Typography variant="caption" color="textSecondary">
-                          +{dayEvents.length - 3} more
-                        </Typography>
-                      )}
-                    </CardContent>
-                  </Card>
-                </Grid>
-              );
-            })}
-          </Grid>
-        ))}
-      </Box>
-    );
-  };
-
-  const renderAgendaView = () => {
-    const groupedEvents = {};
-    filteredEvents.forEach((event) => {
-      const date = event.start?.dateTime
-        ? format(new Date(event.start.dateTime), "yyyy-MM-dd")
-        : event.due
-        ? format(new Date(event.due), "yyyy-MM-dd")
-        : "unscheduled";
-      if (!groupedEvents[date]) groupedEvents[date] = [];
-      groupedEvents[date].push(event);
-    });
-
-    return (
-      <Box>
-        {Object.entries(groupedEvents)
-          .sort()
-          .map(([date, dateEvents]) => (
-            <Box key={date} sx={{ mb: 3 }}>
-              <Typography variant="h6" gutterBottom>
-                {date === "unscheduled"
-                  ? "Unscheduled"
-                  : format(new Date(date), "EEEE, MMMM d, yyyy")}
-              </Typography>
-              <Grid container spacing={2}>
-                {dateEvents.map((event) => (
-                  <Grid item xs={12} key={event.id}>
-                    <Card>
-                      <CardContent>
-                        <Box
-                          sx={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                          }}
-                        >
-                          <Box>
-                            <Typography variant="h6">
-                              {event.summary || event.title}
-                            </Typography>
-                            <Typography variant="body2" color="textSecondary">
-                              {event.description || event.notes}
-                            </Typography>
-                            <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
-                              <Chip
-                                size="small"
-                                label={event.type || "event"}
-                                color="primary"
-                              />
-                              <Chip
-                                size="small"
-                                label={event.status || "scheduled"}
-                                variant="outlined"
-                              />
-                            </Box>
-                          </Box>
-                          <IconButton
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setAnchorEl({
-                                element: e.currentTarget,
-                                eventId: event.id,
-                              });
-                            }}
-                          >
-                            <MoreVertIcon />
-                          </IconButton>
-                        </Box>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                ))}
-              </Grid>
-            </Box>
-          ))}
-      </Box>
-    );
-  };
-
-  const renderScheduleView = () => {
-    const now = new Date();
-    const upcomingEvents = filteredEvents
-      .filter((event) => {
-        const eventDate = event.start?.dateTime
-          ? new Date(event.start.dateTime)
-          : event.due
-          ? new Date(event.due)
-          : null;
-        return eventDate && eventDate >= now;
-      })
-      .sort(
-        (a, b) =>
-          new Date(a.start?.dateTime || a.due) -
-          new Date(b.start?.dateTime || b.due)
-      );
-
-    return (
-      <Box>
-        <Typography variant="h6" gutterBottom>
-          Upcoming Schedule
-        </Typography>
-        <List>
-          {upcomingEvents.slice(0, 20).map((event) => {
-            const eventDate = event.start?.dateTime
-              ? new Date(event.start.dateTime)
-              : new Date(event.due);
-            const timeUntil = formatDistanceToNow(eventDate, {
-              addSuffix: true,
-            });
-
-            return (
-              <ListItem
-                key={event.id}
-                sx={{
-                  mb: 1,
-                  borderLeft: `4px solid ${event.color || "#4285F4"}`,
-                  bgcolor: "background.paper",
-                  borderRadius: 1,
-                }}
-                secondaryAction={
-                  <IconButton
-                    edge="end"
-                    onClick={() => handleOpenDialog(event)}
-                  >
-                    <EditIcon />
-                  </IconButton>
-                }
-              >
-                <ListItemAvatar>
-                  <Avatar sx={{ bgcolor: event.color || "#4285F4" }}>
-                    {EVENT_TYPES.find((t) => t.id === event.type)?.icon || (
-                      <EventIcon />
-                    )}
-                  </Avatar>
-                </ListItemAvatar>
-                <ListItemText
-                  primary={event.summary || event.title}
-                  secondary={
-                    <>
-                      <Typography variant="body2" color="text.primary">
-                        {format(eventDate, "PPPPpppp")}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        {timeUntil} • {event.location || "No location"}
-                      </Typography>
-                    </>
-                  }
-                />
-              </ListItem>
-            );
-          })}
-        </List>
-      </Box>
-    );
-  };
-
   return (
     <DndProvider backend={HTML5Backend}>
       <Box
@@ -3143,7 +2983,7 @@ END:VCALENDAR`;
               </Typography>
               <Typography variant="body2" color="textSecondary">
                 Complete calendar solution with events, tasks, meetings, and
-                more
+                drag & drop
               </Typography>
             </Box>
           </Box>
@@ -3152,7 +2992,7 @@ END:VCALENDAR`;
             {/* Search Bar */}
             <TextField
               size="small"
-              placeholder="Search events, tasks..."
+              placeholder="Search events..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               InputProps={{
@@ -3233,6 +3073,79 @@ END:VCALENDAR`;
           </Box>
         </Box>
 
+        {/* User Info Card */}
+        {userProfile && (
+          <Card sx={{ mb: 3, bgcolor: "primary.light", color: "white" }}>
+            <CardContent>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Box sx={{ display: "flex", alignItems: "center", gap: 3 }}>
+                  <Avatar
+                    src={userProfile.picture}
+                    sx={{ width: 60, height: 60 }}
+                  />
+                  <Box>
+                    <Typography variant="h6">
+                      Welcome, {userProfile.name}!
+                    </Typography>
+                    <Typography variant="body2">
+                      {userProfile.email} | Connected to Google Calendar
+                    </Typography>
+                  </Box>
+                </Box>
+                <Chip
+                  label="Connected"
+                  color="success"
+                  sx={{ color: "white", bgcolor: "success.main" }}
+                />
+              </Box>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Error Display */}
+        {errorDetails && (
+          <Alert
+            severity={
+              errorDetails.type === "config_required" ? "warning" : "error"
+            }
+            sx={{ mb: 3 }}
+            icon={<WarningIcon />}
+            onClose={clearError}
+            action={
+              errorDetails.type === "config_required" && (
+                <Button
+                  color="inherit"
+                  size="small"
+                  onClick={() => setConfigHelpOpen(true)}
+                >
+                  Fix Configuration
+                </Button>
+              )
+            }
+          >
+            <Typography variant="h6" gutterBottom>
+              {errorDetails.message}
+            </Typography>
+            {Array.isArray(errorDetails.details) ? (
+              <Box component="ul" sx={{ mt: 1, pl: 2 }}>
+                {errorDetails.details.map((detail, index) => (
+                  <li key={index}>{detail}</li>
+                ))}
+              </Box>
+            ) : (
+              <Typography variant="body2" sx={{ mt: 1 }}>
+                {errorDetails.details}
+              </Typography>
+            )}
+          </Alert>
+        )}
+
         {/* Sidebar */}
         {sidebarOpen && (
           <Grid container spacing={3}>
@@ -3255,7 +3168,7 @@ END:VCALENDAR`;
                                 width: 12,
                                 height: 12,
                                 borderRadius: "50%",
-                                bgcolor: calendar.color,
+                                bgcolor: getColorById(calendar.color),
                               }}
                             />
                           </ListItemIcon>
@@ -3291,6 +3204,27 @@ END:VCALENDAR`;
                 </CardContent>
               </Card>
 
+              {/* Statistics Cards */}
+              <Grid container spacing={2} sx={{ mb: 3 }}>
+                {Object.entries(stats).map(([key, value]) => (
+                  <Grid item xs={6} key={key}>
+                    <Card>
+                      <CardContent sx={{ textAlign: "center", p: 1 }}>
+                        <Typography variant="h4" color="primary">
+                          {value}
+                        </Typography>
+                        <Typography variant="caption" color="textSecondary">
+                          {key
+                            .replace(/([A-Z])/g, " $1")
+                            .toLowerCase()
+                            .replace(/^\w/, (c) => c.toUpperCase())}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                ))}
+              </Grid>
+
               {/* Upcoming Events */}
               <Card>
                 <CardContent>
@@ -3310,49 +3244,11 @@ END:VCALENDAR`;
                       </ListItem>
                     ))}
                   </List>
-
-                  <Divider sx={{ my: 2 }} />
-
-                  <Typography variant="h6" gutterBottom>
-                    Overdue Tasks
-                  </Typography>
-                  <List dense>
-                    {getOverdueTasks().map((task) => (
-                      <ListItem key={task.id}>
-                        <ListItemText
-                          primary={task.title}
-                          secondary="Overdue"
-                        />
-                      </ListItem>
-                    ))}
-                  </List>
                 </CardContent>
               </Card>
             </Grid>
 
             <Grid item xs={12} md={9}>
-              {/* Main Content */}
-              {/* Statistics Cards */}
-              <Grid container spacing={2} sx={{ mb: 3 }}>
-                {Object.entries(stats).map(([key, value]) => (
-                  <Grid item xs={6} sm={4} md={3} key={key}>
-                    <Card>
-                      <CardContent sx={{ textAlign: "center", p: 2 }}>
-                        <Typography variant="h3" color="primary">
-                          {value}
-                        </Typography>
-                        <Typography variant="body2" color="textSecondary">
-                          {key
-                            .replace(/([A-Z])/g, " $1")
-                            .toLowerCase()
-                            .replace(/^\w/, (c) => c.toUpperCase())}
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                ))}
-              </Grid>
-
               {/* Calendar Navigation */}
               <Paper sx={{ p: 2, mb: 3 }}>
                 <Box
@@ -3407,23 +3303,25 @@ END:VCALENDAR`;
           <Box>
             {/* Statistics Cards */}
             <Grid container spacing={2} sx={{ mb: 3 }}>
-              {Object.entries(stats).map(([key, value]) => (
-                <Grid item xs={6} sm={4} md={3} key={key}>
-                  <Card>
-                    <CardContent sx={{ textAlign: "center", p: 2 }}>
-                      <Typography variant="h3" color="primary">
-                        {value}
-                      </Typography>
-                      <Typography variant="body2" color="textSecondary">
-                        {key
-                          .replace(/([A-Z])/g, " $1")
-                          .toLowerCase()
-                          .replace(/^\w/, (c) => c.toUpperCase())}
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              ))}
+              {Object.entries(stats)
+                .slice(0, 4)
+                .map(([key, value]) => (
+                  <Grid item xs={6} sm={3} key={key}>
+                    <Card>
+                      <CardContent sx={{ textAlign: "center", p: 2 }}>
+                        <Typography variant="h3" color="primary">
+                          {value}
+                        </Typography>
+                        <Typography variant="body2" color="textSecondary">
+                          {key
+                            .replace(/([A-Z])/g, " $1")
+                            .toLowerCase()
+                            .replace(/^\w/, (c) => c.toUpperCase())}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                ))}
             </Grid>
 
             {/* Calendar Navigation */}
@@ -3480,44 +3378,6 @@ END:VCALENDAR`;
           </Box>
         )}
 
-        {/* Error Display */}
-        {errorDetails && (
-          <Alert
-            severity={
-              errorDetails.type === "test_user_required" ? "warning" : "error"
-            }
-            sx={{ mb: 3 }}
-            icon={<WarningIcon />}
-            onClose={clearError}
-            action={
-              errorDetails.type === "config_required" && (
-                <Button
-                  color="inherit"
-                  size="small"
-                  onClick={() => setConfigHelpOpen(true)}
-                >
-                  Fix Configuration
-                </Button>
-              )
-            }
-          >
-            <Typography variant="h6" gutterBottom>
-              {errorDetails.message}
-            </Typography>
-            {Array.isArray(errorDetails.details) ? (
-              <Box component="ul" sx={{ mt: 1, pl: 2 }}>
-                {errorDetails.details.map((detail, index) => (
-                  <li key={index}>{detail}</li>
-                ))}
-              </Box>
-            ) : (
-              <Typography variant="body2" sx={{ mt: 1 }}>
-                {errorDetails.details}
-              </Typography>
-            )}
-          </Alert>
-        )}
-
         {/* Quick Actions Bar */}
         {accessToken && (
           <Box
@@ -3568,7 +3428,7 @@ END:VCALENDAR`;
           <DialogTitle>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               {selectedEvent ? <EditIcon /> : <AddIcon />}
-              {selectedEvent ? "Edit Item" : `Create New ${formData.type}`}
+              {selectedEvent ? "Edit Event" : `Create New ${formData.type}`}
             </Box>
           </DialogTitle>
           <DialogContent dividers>
@@ -3607,6 +3467,8 @@ END:VCALENDAR`;
                       setFormData({ ...formData, summary: e.target.value })
                     }
                     required
+                    error={!formData.summary}
+                    helperText={!formData.summary ? "Title is required" : ""}
                   />
                 </Grid>
 
@@ -3623,18 +3485,34 @@ END:VCALENDAR`;
                   />
                 </Grid>
 
-                {/* Date & Time */}
+                {/* Date & Time - FIXED VERSION */}
                 <Grid item xs={12} md={6}>
                   <TextField
                     fullWidth
                     type="datetime-local"
                     label="Start Time *"
                     value={formData.startTime}
-                    onChange={(e) =>
-                      setFormData({ ...formData, startTime: e.target.value })
-                    }
+                    onChange={(e) => {
+                      const newStartTime = e.target.value;
+                      setFormData({
+                        ...formData,
+                        startTime: newStartTime,
+                        // Auto-set end time to 1 hour after start if not set or if end is before start
+                        endTime:
+                          !formData.endTime ||
+                          new Date(newStartTime) >= new Date(formData.endTime)
+                            ? formatForDateTimeLocal(
+                                addHours(new Date(newStartTime), 1)
+                              )
+                            : formData.endTime,
+                      });
+                    }}
                     InputLabelProps={{ shrink: true }}
                     required
+                    error={!formData.startTime}
+                    helperText={
+                      !formData.startTime ? "Start time is required" : ""
+                    }
                   />
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -3648,6 +3526,18 @@ END:VCALENDAR`;
                     }
                     InputLabelProps={{ shrink: true }}
                     required
+                    error={
+                      !formData.endTime ||
+                      new Date(formData.endTime) <= new Date(formData.startTime)
+                    }
+                    helperText={
+                      !formData.endTime
+                        ? "End time is required"
+                        : new Date(formData.endTime) <=
+                          new Date(formData.startTime)
+                        ? "End time must be after start time"
+                        : ""
+                    }
                   />
                 </Grid>
 
@@ -3708,26 +3598,27 @@ END:VCALENDAR`;
                   </Typography>
                   <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
                     {CALENDAR_COLORS.map((color) => (
-                      <IconButton
-                        key={color}
-                        sx={{
-                          bgcolor: color,
-                          width: 32,
-                          height: 32,
-                          "&:hover": { bgcolor: color, opacity: 0.8 },
-                          border:
-                            formData.color === color
-                              ? "2px solid white"
-                              : "none",
-                          boxShadow:
-                            formData.color === color
-                              ? `0 0 0 2px ${color}`
-                              : "none",
-                        }}
-                        onClick={() =>
-                          setFormData({ ...formData, color: color })
-                        }
-                      />
+                      <Tooltip key={color.id} title={color.name}>
+                        <IconButton
+                          sx={{
+                            bgcolor: color.hex,
+                            width: 32,
+                            height: 32,
+                            "&:hover": { bgcolor: color.hex, opacity: 0.8 },
+                            border:
+                              formData.color === color.id
+                                ? "2px solid white"
+                                : "none",
+                            boxShadow:
+                              formData.color === color.id
+                                ? `0 0 0 2px ${color.hex}`
+                                : "none",
+                          }}
+                          onClick={() =>
+                            setFormData({ ...formData, color: color.id })
+                          }
+                        />
+                      </Tooltip>
                     ))}
                   </Box>
                 </Grid>
@@ -3777,81 +3668,6 @@ END:VCALENDAR`;
                             customerEmail: e.target.value,
                           })
                         }
-                      />
-                    </Grid>
-                  </>
-                )}
-
-                {formData.type === "task" && (
-                  <>
-                    <Grid item xs={12}>
-                      <Divider sx={{ my: 2 }}>
-                        <Typography variant="h6">Task Details</Typography>
-                      </Divider>
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                      <FormControl fullWidth>
-                        <InputLabel>Status</InputLabel>
-                        <Select
-                          value={formData.status}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              status: e.target.value,
-                            })
-                          }
-                          label="Status"
-                        >
-                          <MenuItem value="needsAction">To Do</MenuItem>
-                          <MenuItem value="inProgress">In Progress</MenuItem>
-                          <MenuItem value="completed">Completed</MenuItem>
-                        </Select>
-                      </FormControl>
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                      <TextField
-                        fullWidth
-                        label="Progress"
-                        type="number"
-                        value={formData.progress}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            progress: parseInt(e.target.value) || 0,
-                          })
-                        }
-                        InputProps={{
-                          endAdornment: (
-                            <InputAdornment position="end">%</InputAdornment>
-                          ),
-                        }}
-                      />
-                    </Grid>
-                  </>
-                )}
-
-                {formData.type === "meeting" && (
-                  <>
-                    <Grid item xs={12}>
-                      <Divider sx={{ my: 2 }}>
-                        <Typography variant="h6">Meeting Details</Typography>
-                      </Divider>
-                    </Grid>
-                    <Grid item xs={12}>
-                      <TextField
-                        fullWidth
-                        label="Meeting Link"
-                        value={formData.conferenceData?.link}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            conferenceData: {
-                              ...formData.conferenceData,
-                              link: e.target.value,
-                            },
-                          })
-                        }
-                        placeholder="https://meet.google.com/xxx-xxxx-xxx"
                       />
                     </Grid>
                   </>
@@ -3932,6 +3748,18 @@ END:VCALENDAR`;
                     label="Send email notification"
                   />
                 </Grid>
+
+                {/* Error Alert for Time Range */}
+                {formData.endTime &&
+                  new Date(formData.endTime) <=
+                    new Date(formData.startTime) && (
+                    <Grid item xs={12}>
+                      <Alert severity="error">
+                        End time must be after start time. Please adjust the end
+                        time.
+                      </Alert>
+                    </Grid>
+                  )}
               </Grid>
             </Box>
           </DialogContent>
@@ -3948,10 +3776,8 @@ END:VCALENDAR`;
             <Button
               variant="contained"
               onClick={() => {
-                if (formData.type === "task") {
-                  createTask();
-                } else if (formData.type === "reminder") {
-                  createReminder();
+                if (selectedEvent) {
+                  updateEvent();
                 } else {
                   createEvent();
                 }
@@ -3961,6 +3787,7 @@ END:VCALENDAR`;
                 !formData.summary ||
                 !formData.startTime ||
                 !formData.endTime ||
+                new Date(formData.endTime) <= new Date(formData.startTime) ||
                 loading
               }
               color="primary"
@@ -3984,9 +3811,7 @@ END:VCALENDAR`;
         >
           <MenuItem
             onClick={() => {
-              const event = filteredEvents.find(
-                (e) => e.id === anchorEl.eventId
-              );
+              const event = events.find((e) => e.id === anchorEl.eventId);
               if (event) handleOpenDialog(event);
               setAnchorEl(null);
             }}
@@ -3995,21 +3820,17 @@ END:VCALENDAR`;
           </MenuItem>
           <MenuItem
             onClick={() => {
-              const event = filteredEvents.find(
-                (e) => e.id === anchorEl.eventId
-              );
+              const event = events.find((e) => e.id === anchorEl.eventId);
               if (event) {
                 navigator.clipboard.writeText(`
-                  ${event.type || "Event"}: ${event.summary || event.title}
+                  ${event.type || "Event"}: ${event.summary}
                   Date: ${
                     event.start?.dateTime
                       ? format(new Date(event.start.dateTime), "PPpp")
-                      : event.due
-                      ? format(new Date(event.due), "PPpp")
                       : "N/A"
                   }
                   Location: ${event.location || "N/A"}
-                  Description: ${event.description || event.notes || "N/A"}
+                  Description: ${event.description || "N/A"}
                 `);
                 showNotification("Copied to clipboard", "success");
               }
@@ -4020,9 +3841,7 @@ END:VCALENDAR`;
           </MenuItem>
           <MenuItem
             onClick={() => {
-              const event = filteredEvents.find(
-                (e) => e.id === anchorEl.eventId
-              );
+              const event = events.find((e) => e.id === anchorEl.eventId);
               if (event?.customerInfo?.phone) {
                 window.open(`tel:${event.customerInfo.phone}`, "_blank");
               }
@@ -4033,9 +3852,7 @@ END:VCALENDAR`;
           </MenuItem>
           <MenuItem
             onClick={() => {
-              const event = filteredEvents.find(
-                (e) => e.id === anchorEl.eventId
-              );
+              const event = events.find((e) => e.id === anchorEl.eventId);
               if (event?.customerInfo?.email) {
                 window.open(
                   `mailto:${event.customerInfo.email}?subject=${event.summary}`,
@@ -4049,9 +3866,7 @@ END:VCALENDAR`;
           </MenuItem>
           <MenuItem
             onClick={() => {
-              const event = filteredEvents.find(
-                (e) => e.id === anchorEl.eventId
-              );
+              const event = events.find((e) => e.id === anchorEl.eventId);
               if (event) deleteEvent(event.id, event.calendarId);
               setAnchorEl(null);
             }}
