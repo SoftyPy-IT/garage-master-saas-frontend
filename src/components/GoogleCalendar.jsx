@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-case-declarations */
 /* eslint-disable no-useless-catch */
 /* eslint-disable react/jsx-no-target-blank */
 /* eslint-disable no-unused-vars */
@@ -25,6 +27,7 @@ import {
   Print,
   Refresh as RefreshIcon,
   Save,
+  Settings,
   Share,
   Today as TodayIcon,
   ViewList,
@@ -73,12 +76,10 @@ import {
   addDays,
   addMonths,
   eachDayOfInterval,
-  endOfMonth,
   endOfWeek,
   format,
   isSameDay,
   parseISO,
-  startOfMonth,
   startOfWeek,
   subDays,
   subMonths,
@@ -158,12 +159,11 @@ const GoogleCalendar = () => {
   );
   const [loading, setLoading] = useState(false);
   const [errorDetails, setErrorDetails] = useState(null);
-  const [viewMode, setViewMode] = useState("list"); // 'list', 'week', 'month', 'day'
+  const [viewMode, setViewMode] = useState("list");
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedService, setSelectedService] = useState(null);
   const [activeTab, setActiveTab] = useState(0);
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [reminders, setReminders] = useState([]);
+  const [configHelpOpen, setConfigHelpOpen] = useState(false);
   const [stats, setStats] = useState({
     totalEvents: 0,
     todayEvents: 0,
@@ -191,13 +191,9 @@ const GoogleCalendar = () => {
     priority: "medium",
     reminder: "30",
     sendEmail: true,
-    sendSMS: false,
-    attachments: [],
     status: "scheduled",
     assignedTo: "",
     estimatedCost: "",
-    actualCost: "",
-    paymentStatus: "pending",
   });
 
   // Calendar Navigation
@@ -206,10 +202,20 @@ const GoogleCalendar = () => {
     end: endOfWeek(currentDate),
   });
 
-  const monthDays = eachDayOfInterval({
-    start: startOfMonth(currentDate),
-    end: endOfMonth(currentDate),
-  });
+  // Configuration details
+  const CONFIG = {
+    projectId: "731493911262",
+    clientId:
+      "731493911262-b4vutijvnt9bgdvgu6m1ai7g0nsno7vl.apps.googleusercontent.com",
+    adminEmail: "softypyit@gmail.com",
+    userEmail: "ibrahimsikder5033@gmail.com",
+    domains: ["trustautosolution.com", "worldautosolution.com"],
+    redirectUris: [
+      "https://garage.trustautosolution.com",
+      "https://garage.worldautosolution.com",
+      "https://trustautosolution.com",
+    ],
+  };
 
   // Google Login with all required scopes
   const login = useGoogleLogin({
@@ -222,6 +228,7 @@ const GoogleCalendar = () => {
       "https://www.googleapis.com/auth/userinfo.profile",
     ].join(" "),
     onSuccess: async (response) => {
+      console.log("✅ Login successful, token received");
       setLoading(true);
       setErrorDetails(null);
       const token = response.access_token;
@@ -229,118 +236,137 @@ const GoogleCalendar = () => {
       localStorage.setItem("google_access_token", token);
 
       try {
+        console.log("Fetching user profile...");
         await fetchUserProfile(token);
+        console.log("Fetching calendar events...");
         await fetchCalendarEvents(token);
-        await checkAPIStatus(token);
         showNotification(
           "✅ Successfully connected to Google Calendar!",
           "success"
         );
       } catch (error) {
-        console.error("Login error:", error);
+        console.error("Login process error:", error);
         handleGoogleError(error);
       } finally {
         setLoading(false);
       }
     },
     onError: (error) => {
-      console.error("Google login error:", error);
-      setErrorDetails({
-        type: "login_error",
-        message: "Login failed. Please check your Google Console settings.",
-        details: error,
-      });
-      showNotification("❌ Login failed", "error");
+      console.error("❌ Google login error:", error);
+
+      // Check specific error types
+      if (error.error === "access_denied") {
+        setErrorDetails({
+          type: "test_user_required",
+          message: "Your email needs to be added as a Test User",
+          details: [
+            `Please ask ${CONFIG.adminEmail} to add your email as a test user`,
+            "Then wait 5 minutes and try again",
+          ],
+        });
+        setConfigHelpOpen(true);
+      } else {
+        setErrorDetails({
+          type: "login_error",
+          message: "Login failed",
+          details: error.message || "Unknown error",
+        });
+      }
+
+      showNotification("❌ Login failed. Check configuration.", "error");
       setLoading(false);
     },
     flow: "implicit",
   });
 
-  // Enhanced Error Handling
+  // Handle Google API Errors
   const handleGoogleError = (error) => {
     console.error("Google API Error:", error);
 
     if (error.response) {
-      switch (error.response.status) {
+      const status = error.response.status;
+      const data = error.response.data;
+
+      switch (status) {
         case 400:
           setErrorDetails({
             type: "bad_request",
-            message: "Invalid request to Google API",
-            details: error.response.data,
+            message: "Invalid request",
+            details: data.error?.message || "Bad request",
           });
           break;
+
         case 401:
           setErrorDetails({
             type: "unauthorized",
-            message: "Token expired or invalid. Please login again.",
-            details: error.response.data,
+            message: "Session expired",
+            details: "Please login again",
           });
           logout();
           break;
+
         case 403:
+          const errorMsg = data.error?.message || "";
           if (
-            error.response.data?.error?.message?.includes(
-              "Google Calendar API has not been used"
+            errorMsg.includes(
+              "has not completed the Google verification process"
             )
           ) {
             setErrorDetails({
-              type: "api_disabled",
-              message: "Google Calendar API is disabled. Please enable it.",
+              type: "test_user_required",
+              message: "Test User Configuration Required",
               details: [
-                "1. Click the button below to go to Google Console",
-                "2. Click 'ENABLE' button on the page",
-                "3. Wait 2-5 minutes for activation",
-                "4. Come back and refresh this page",
+                `Your email (${CONFIG.userEmail}) is not in test users list`,
+                `Please contact ${CONFIG.adminEmail} to add your email`,
               ],
-              enableLink:
-                "https://console.developers.google.com/apis/api/calendar-json.googleapis.com/overview?project=731493911262",
             });
-          } else {
+            setConfigHelpOpen(true);
+          } else if (errorMsg.includes("access_denied")) {
             setErrorDetails({
               type: "access_denied",
-              message: "Access denied. Please check:",
+              message: "Access Denied",
               details: [
-                "1. Add ibrahimsikder5033@gmail.com as Test User",
-                "2. Verify domains in Google Console",
-                "3. Check OAuth consent screen status",
+                "Your email is not authorized",
+                "Please make sure it's added as a test user",
               ],
+            });
+            setConfigHelpOpen(true);
+          } else {
+            setErrorDetails({
+              type: "forbidden",
+              message: "Access Forbidden",
+              details: errorMsg,
             });
           }
           break;
+
+        case 404:
+          setErrorDetails({
+            type: "not_found",
+            message: "Resource not found",
+            details: "The requested calendar resource was not found",
+          });
+          break;
+
         default:
           setErrorDetails({
             type: "server_error",
-            message: "Google API error occurred",
-            details: error.response.data,
+            message: "Server Error",
+            details: `Status: ${status}, Message: ${errorMsg}`,
           });
       }
     } else if (error.request) {
       setErrorDetails({
         type: "network_error",
-        message: "Network error. Please check internet connection.",
-        details: error.request,
+        message: "Network Error",
+        details: "No response received from Google API",
       });
     } else {
       setErrorDetails({
         type: "unknown_error",
-        message: "An unknown error occurred",
-        details: error.message,
+        message: "Unknown Error",
+        details: error.message || "Something went wrong",
       });
-    }
-  };
-
-  // Check API Status
-  const checkAPIStatus = async (token) => {
-    try {
-      await axios.get(
-        "https://www.googleapis.com/calendar/v3/users/me/calendarList",
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      return true;
-    } catch (error) {
-      throw error;
     }
   };
 
@@ -365,8 +391,10 @@ const GoogleCalendar = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+      console.log("User profile fetched:", data.email);
       setUserProfile(data);
       localStorage.setItem("google_user_profile", JSON.stringify(data));
+      return data;
     } catch (error) {
       console.error("Profile fetch error:", error);
       throw error;
@@ -376,9 +404,10 @@ const GoogleCalendar = () => {
   // Fetch Calendar Events
   const fetchCalendarEvents = async (token) => {
     try {
+      console.log("Fetching calendar events...");
       const now = new Date();
-      const timeMin = addDays(now, -30).toISOString(); // 30 days ago
-      const timeMax = addDays(now, 90).toISOString(); // 90 days ahead
+      const timeMin = addDays(now, -30).toISOString();
+      const timeMax = addDays(now, 90).toISOString();
 
       const { data } = await axios.get(
         "https://www.googleapis.com/calendar/v3/calendars/primary/events",
@@ -389,10 +418,12 @@ const GoogleCalendar = () => {
             timeMax,
             singleEvents: true,
             orderBy: "startTime",
-            maxResults: 250,
+            maxResults: 100,
           },
         }
       );
+
+      console.log(`Found ${data.items?.length || 0} events`);
 
       const formattedEvents =
         data.items?.map((event) => ({
@@ -406,7 +437,6 @@ const GoogleCalendar = () => {
 
       setEvents(formattedEvents);
       updateStats(formattedEvents);
-
       return formattedEvents;
     } catch (error) {
       console.error("Events fetch error:", error);
@@ -470,7 +500,6 @@ const GoogleCalendar = () => {
       return;
     }
 
-    // Validate form
     if (!formData.summary || !formData.startTime || !formData.endTime) {
       showNotification("Please fill all required fields", "warning");
       return;
@@ -511,7 +540,7 @@ const GoogleCalendar = () => {
         description += `Notes: ${formData.serviceNotes}\n`;
       if (formData.priority) description += `Priority: ${formData.priority}\n`;
       if (formData.estimatedCost)
-        description += `Estimated Cost: ${formData.estimatedCost}\n`;
+        description += `Estimated Cost: $${formData.estimatedCost}\n`;
 
       description += `\nCreated via: Trust Auto Solution`;
       description += `\nStatus: ${formData.status}`;
@@ -540,15 +569,9 @@ const GoogleCalendar = () => {
             { method: "popup", minutes: 10 },
           ],
         },
-        extendedProperties: {
-          private: {
-            garageAppointment: "true",
-            serviceType: formData.serviceType || "general",
-            priority: formData.priority || "medium",
-            vehicleType: formData.vehicleType || "car",
-          },
-        },
       };
+
+      console.log("Creating event:", event);
 
       const response = await axios.post(
         "https://www.googleapis.com/calendar/v3/calendars/primary/events",
@@ -560,6 +583,8 @@ const GoogleCalendar = () => {
           },
         }
       );
+
+      console.log("Event created:", response.data);
 
       // Add to local state
       const newEvent = {
@@ -579,14 +604,10 @@ const GoogleCalendar = () => {
       setOpenDialog(false);
       resetForm();
       showNotification("✅ Appointment booked successfully!", "success");
-
-      // Send email notification if enabled
-      if (formData.sendEmail && formData.customerEmail) {
-        sendEmailNotification(newEvent);
-      }
     } catch (error) {
       console.error("Event creation error:", error);
       handleGoogleError(error);
+      showNotification("❌ Failed to create appointment", "error");
     } finally {
       setLoading(false);
     }
@@ -711,19 +732,13 @@ const GoogleCalendar = () => {
     setOpenDialog(true);
   };
 
-  // Send Email Notification
-  const sendEmailNotification = async (event) => {
-    try {
-      // This is a placeholder - you'll need to implement your email service
-      console.log("Sending email notification for:", event);
-      // Implement your email service here (SendGrid, AWS SES, etc.)
-    } catch (error) {
-      console.error("Email notification error:", error);
-    }
-  };
-
   // Export Events
   const exportEvents = () => {
+    if (events.length === 0) {
+      showNotification("No events to export", "warning");
+      return;
+    }
+
     const exportData = events.map((event) => ({
       Title: event.summary,
       Date: event.start?.dateTime
@@ -756,6 +771,11 @@ const GoogleCalendar = () => {
 
   // Print Schedule
   const printSchedule = () => {
+    if (events.length === 0) {
+      showNotification("No events to print", "warning");
+      return;
+    }
+
     const printWindow = window.open("", "_blank");
     printWindow.document.write(`
       <html>
@@ -837,13 +857,9 @@ const GoogleCalendar = () => {
       priority: "medium",
       reminder: "30",
       sendEmail: true,
-      sendSMS: false,
-      attachments: [],
       status: "scheduled",
       assignedTo: "",
       estimatedCost: "",
-      actualCost: "",
-      paymentStatus: "pending",
     });
     setSelectedEvent(null);
   };
@@ -916,17 +932,175 @@ const GoogleCalendar = () => {
   useEffect(() => {
     if (accessToken) {
       fetchCalendarEvents(accessToken);
-
-      // Refresh every 5 minutes
-      const interval = setInterval(() => {
-        if (accessToken) {
-          fetchCalendarEvents(accessToken);
-        }
-      }, 300000);
-
-      return () => clearInterval(interval);
     }
   }, [accessToken]);
+
+  // Configuration Help Component
+  const ConfigHelpDialog = () => (
+    <Dialog
+      open={configHelpOpen}
+      onClose={() => setConfigHelpOpen(false)}
+      maxWidth="md"
+      fullWidth
+    >
+      <DialogTitle>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <Settings /> Configuration Help
+        </Box>
+      </DialogTitle>
+      <DialogContent dividers>
+        <Box sx={{ pt: 2 }}>
+          <Alert severity="warning" sx={{ mb: 3 }}>
+            <Typography variant="h6">
+              Test User Configuration Required
+            </Typography>
+          </Alert>
+
+          <Typography variant="h6" gutterBottom>
+            📋 Your Configuration Details:
+          </Typography>
+
+          <Grid container spacing={2} sx={{ mb: 3 }}>
+            <Grid item xs={12} md={6}>
+              <Card variant="outlined">
+                <CardContent>
+                  <Typography variant="subtitle2" color="textSecondary">
+                    Project ID
+                  </Typography>
+                  <Typography variant="body1" fontWeight="bold">
+                    {CONFIG.projectId}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              <Card variant="outlined">
+                <CardContent>
+                  <Typography variant="subtitle2" color="textSecondary">
+                    Client ID
+                  </Typography>
+                  <Typography variant="body2" sx={{ wordBreak: "break-all" }}>
+                    {CONFIG.clientId}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              <Card variant="outlined">
+                <CardContent>
+                  <Typography variant="subtitle2" color="textSecondary">
+                    Admin Email
+                  </Typography>
+                  <Typography variant="body1">{CONFIG.adminEmail}</Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              <Card variant="outlined">
+                <CardContent>
+                  <Typography variant="subtitle2" color="textSecondary">
+                    Your Email
+                  </Typography>
+                  <Typography variant="body1" fontWeight="bold" color="primary">
+                    {CONFIG.userEmail}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+
+          <Typography variant="h6" gutterBottom>
+            📝 Step-by-Step Fix:
+          </Typography>
+
+          <Box component="ol" sx={{ pl: 2, mb: 3 }}>
+            <Box component="li" sx={{ mb: 2 }}>
+              <Typography variant="subtitle1">
+                Step 1: Login to Google Cloud Console
+              </Typography>
+              <Typography variant="body2">
+                Use: <strong>{CONFIG.adminEmail}</strong>
+              </Typography>
+            </Box>
+
+            <Box component="li" sx={{ mb: 2 }}>
+              <Typography variant="subtitle1">
+                Step 2: Go to OAuth consent screen
+              </Typography>
+              <Typography variant="body2">
+                Project: <strong>{CONFIG.projectId}</strong>
+              </Typography>
+            </Box>
+
+            <Box component="li" sx={{ mb: 2 }}>
+              <Typography variant="subtitle1">
+                Step 3: Scroll to Test users section
+              </Typography>
+              <Typography variant="body2">
+                Click <strong>ADD USERS</strong>
+              </Typography>
+            </Box>
+
+            <Box component="li" sx={{ mb: 2 }}>
+              <Typography variant="subtitle1">
+                Step 4: Add these emails:
+              </Typography>
+              <Box sx={{ pl: 2, mt: 1 }}>
+                <Typography variant="body2" color="primary">
+                  • {CONFIG.userEmail}
+                </Typography>
+                <Typography variant="body2">• {CONFIG.adminEmail}</Typography>
+              </Box>
+            </Box>
+
+            <Box component="li" sx={{ mb: 2 }}>
+              <Typography variant="subtitle1">Step 5: Save and wait</Typography>
+              <Typography variant="body2">
+                Click <strong>SAVE</strong> and wait 5 minutes
+              </Typography>
+            </Box>
+
+            <Box component="li">
+              <Typography variant="subtitle1">
+                Step 6: Come back and try again
+              </Typography>
+              <Typography variant="body2">
+                Refresh this page and click Connect Google Calendar
+              </Typography>
+            </Box>
+          </Box>
+
+          <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+            <Button
+              variant="contained"
+              href={`https://console.cloud.google.com/apis/credentials/consent?project=${CONFIG.projectId}`}
+              target="_blank"
+              startIcon={<Settings />}
+            >
+              Open Google Console
+            </Button>
+
+            <Button
+              variant="outlined"
+              onClick={() => {
+                localStorage.clear();
+                window.location.reload();
+              }}
+            >
+              Clear Cache & Refresh
+            </Button>
+
+            <Button variant="outlined" onClick={() => setConfigHelpOpen(false)}>
+              Close
+            </Button>
+          </Box>
+        </Box>
+      </DialogContent>
+    </Dialog>
+  );
 
   return (
     <Box sx={{ p: 3 }}>
@@ -1095,10 +1269,23 @@ const GoogleCalendar = () => {
       {/* Error Display */}
       {errorDetails && (
         <Alert
-          severity="error"
+          severity={
+            errorDetails.type === "test_user_required" ? "warning" : "error"
+          }
           sx={{ mb: 3 }}
           icon={<WarningIcon />}
           onClose={clearError}
+          action={
+            errorDetails.type === "test_user_required" && (
+              <Button
+                color="inherit"
+                size="small"
+                onClick={() => setConfigHelpOpen(true)}
+              >
+                Fix Now
+              </Button>
+            )
+          }
         >
           <Typography variant="h6" gutterBottom>
             {errorDetails.message}
@@ -1115,25 +1302,21 @@ const GoogleCalendar = () => {
               {errorDetails.details}
             </Typography>
           )}
-
-          {errorDetails.type === "api_disabled" && (
-            <Box sx={{ mt: 2 }}>
-              <Button
-                variant="contained"
-                color="warning"
-                href={errorDetails.enableLink}
-                target="_blank"
-                startIcon={<EventIcon />}
-                sx={{ mr: 1 }}
-              >
-                Enable Google Calendar API
-              </Button>
-              <Button variant="outlined" onClick={clearError}>
-                Close
-              </Button>
-            </Box>
-          )}
         </Alert>
+      )}
+
+      {/* Configuration Help Button */}
+      {!accessToken && (
+        <Box sx={{ textAlign: "center", mb: 3 }}>
+          <Button
+            variant="text"
+            onClick={() => setConfigHelpOpen(true)}
+            startIcon={<Settings />}
+            sx={{ textDecoration: "underline" }}
+          >
+            Need help with configuration? Click here
+          </Button>
+        </Box>
       )}
 
       {/* Quick Actions */}
@@ -1154,6 +1337,7 @@ const GoogleCalendar = () => {
                   size="small"
                   startIcon={<Download />}
                   onClick={exportEvents}
+                  disabled={events.length === 0}
                 >
                   Export
                 </Button>
@@ -1161,6 +1345,7 @@ const GoogleCalendar = () => {
                   size="small"
                   startIcon={<Print />}
                   onClick={printSchedule}
+                  disabled={events.length === 0}
                 >
                   Print
                 </Button>
@@ -2060,6 +2245,9 @@ const GoogleCalendar = () => {
           <DeleteIcon sx={{ mr: 1 }} /> Delete
         </MenuItem>
       </Menu>
+
+      {/* Configuration Help Dialog */}
+      <ConfigHelpDialog />
 
       {/* Notification Snackbar */}
       <Snackbar

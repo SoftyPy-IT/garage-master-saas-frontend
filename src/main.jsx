@@ -1,3 +1,4 @@
+// src/main.jsx
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
@@ -23,11 +24,19 @@ import PrintProvider from "./context/PrintProvider.jsx";
 import { PermissionProvider } from "./context/PermissionContext.jsx";
 
 const queryClient = new QueryClient();
+
+// আপনার Client ID
 const clientId =
-  import.meta.env.VITE_GOOGLE_CLIENT_ID ||
-  process.env.REACT_APP_GOOGLE_CLIENT_ID ||
-  process.env.VITE_GOOGLE_CLIENT_ID ||
   "731493911262-b4vutijvnt9bgdvgu6m1ai7g0nsno7vl.apps.googleusercontent.com";
+
+localStorage.removeItem("google_access_token");
+localStorage.removeItem("google_user_profile");
+
+console.log("🚀 Google Calendar Integration Ready");
+console.log("Client ID:", clientId);
+console.log("Project: 731493911262");
+console.log("Test Users: ibrahimsikder5033@gmail.com, softypyit@gmail.com");
+
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <ErrorBoundary>
