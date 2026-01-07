@@ -1,53 +1,77 @@
+// /* eslint-disable react-hooks/rules-of-hooks */
 // /* eslint-disable react/prop-types */
 // /* eslint-disable no-case-declarations */
 // /* eslint-disable no-useless-catch */
 // /* eslint-disable react/jsx-no-target-blank */
 // /* eslint-disable no-unused-vars */
 // import {
-//   AccessTime,
 //   Add as AddIcon,
-//   Alarm,
+//   Badge,
+//   Build,
 //   CalendarToday,
-//   CheckBox,
+//   Call,
+//   CarRepair,
+//   CheckCircle,
 //   ChevronLeft,
 //   ChevronRight,
-//   ColorLens,
+//   Close,
+//   Code,
 //   DarkMode,
 //   Delete as DeleteIcon,
-//   Description,
+//   DirectionsCar,
+//   Download,
 //   DragIndicator,
 //   Edit as EditIcon,
+//   Email,
 //   Event as EventIcon,
-//   Group,
 //   LightMode,
-//   Link,
-//   LocationOn,
-//   Menu,
+//   LocalGasStation,
 //   MoreVert as MoreVertIcon,
 //   Notifications,
 //   Person,
+//   Phone,
+//   Print,
+//   Refresh as RefreshIcon,
+//   Save,
 //   Search,
 //   Settings,
-//   Subject,
+//   Share,
 //   TaskAlt,
 //   Timelapse,
 //   Today as TodayIcon,
 //   VideoCall,
-//   VideoCameraFront,
 //   ViewAgenda,
 //   ViewDay,
 //   ViewWeek,
+//   Warning as WarningIcon,
+//   AccessTime,
+//   Alarm,
+//   Check,
+//   CheckBox,
+//   EventRepeat,
+//   Note,
+//   PriorityHigh,
+//   Public,
+//   Visibility,
+//   VisibilityOff,
+//   Send,
+//   Cloud,
+//   CloudOff,
+//   Sync,
+//   SyncDisabled,
+//   Computer,
+//   Smartphone,
+//   Timer,
 // } from "@mui/icons-material";
 // import {
 //   Alert,
 //   alpha,
-//   AppBar,
 //   Avatar,
 //   Backdrop,
 //   Box,
 //   Button,
 //   Card,
-//   Checkbox,
+//   CardContent,
 //   Chip,
 //   CircularProgress,
 //   Dialog,
@@ -55,36 +79,44 @@
 //   DialogContent,
 //   DialogTitle,
 //   Divider,
-//   Drawer,
 //   Fab,
 //   FormControl,
 //   FormControlLabel,
-//   FormGroup,
-//   FormLabel,
 //   Grid,
 //   IconButton,
 //   InputAdornment,
 //   InputLabel,
 //   List,
 //   ListItem,
+//   ListItemAvatar,
 //   ListItemButton,
 //   ListItemIcon,
 //   ListItemText,
+//   Menu,
 //   MenuItem,
 //   Paper,
-//   Radio,
-//   RadioGroup,
+//   Popover,
 //   Select,
 //   Snackbar,
+//   Step,
+//   StepLabel,
+//   Stepper,
 //   Switch,
+//   Tab,
+//   Tabs,
 //   TextField,
 //   ToggleButton,
 //   ToggleButtonGroup,
-//   Toolbar,
 //   Tooltip,
 //   Typography,
-//   useMediaQuery,
-//   useTheme,
+//   Checkbox,
+//   Radio,
+//   RadioGroup,
+//   FormLabel,
+//   Slider,
+//   Input,
+//   Stack,
+//   Badge as MuiBadge,
 // } from "@mui/material";
 // import { googleLogout, useGoogleLogin } from "@react-oauth/google";
 // import axios from "axios";
@@ -93,6 +125,8 @@
 //   addHours,
 //   addMonths,
 //   addWeeks,
+//   addMinutes,
+//   differenceInHours,
 //   differenceInMinutes,
 //   eachDayOfInterval,
 //   endOfMonth,
@@ -108,73 +142,143 @@
 //   subDays,
 //   subMonths,
 //   subWeeks,
+//   isAfter,
+//   isBefore,
+//   parseISO,
+//   isValid,
+//   setHours,
+//   setMinutes,
+//   startOfDay,
+//   endOfDay,
+//   isWithinInterval,
+//   compareAsc,
 // } from "date-fns";
-// import { useEffect, useMemo, useState } from "react";
+// import { useEffect, useMemo, useRef, useState } from "react";
 // import { DndProvider, useDrag, useDrop } from "react-dnd";
 // import { HTML5Backend } from "react-dnd-html5-backend";
+// import { v4 as uuidv4 } from "uuid";
 
-// // ==================== CONFIGURATION ====================
-// const CONFIG = {
-//   projectId: "731493911262",
-//   clientId:
-//     "731493911262-b4vutijvnt9bgdvgu6m1ai7g0nsno7vl.apps.googleusercontent.com",
-//   adminEmail: "softypyit@gmail.com",
-//   userEmail: "ibrahimsikder5033@gmail.com",
-//   scopes: [
-//     "https://www.googleapis.com/auth/calendar",
-//     "https://www.googleapis.com/auth/calendar.events",
-//     "https://www.googleapis.com/auth/calendar.readonly",
-//     "openid",
-//     "https://www.googleapis.com/auth/userinfo.email",
-//     "https://www.googleapis.com/auth/userinfo.profile",
-//   ].join(" "),
-// };
+// // ========== SERVICE TYPES ==========
+// const SERVICE_TYPES = [
+//   {
+//     id: 1,
+//     name: "Oil Change",
+//     icon: <LocalGasStation />,
+//     duration: 60,
+//     color: "#4CAF50",
+//     category: "maintenance",
+//     price: "$50-$80",
+//   },
+//   {
+//     id: 2,
+//     name: "Brake Service",
+//     icon: <DirectionsCar />,
+//     duration: 120,
+//     color: "#FF9800",
+//     category: "safety",
+//     price: "$100-$300",
+//   },
+//   {
+//     id: 3,
+//     name: "Engine Repair",
+//     icon: <Build />,
+//     duration: 240,
+//     color: "#F44336",
+//     category: "repair",
+//     price: "$500-$2000",
+//   },
+//   {
+//     id: 4,
+//     name: "Tire Replacement",
+//     icon: <DirectionsCar />,
+//     duration: 120,
+//     color: "#2196F3",
+//     category: "maintenance",
+//     price: "$80-$200",
+//   },
+//   {
+//     id: 5,
+//     name: "AC Service",
+//     icon: <Build />,
+//     duration: 180,
+//     color: "#9C27B0",
+//     category: "comfort",
+//     price: "$150-$400",
+//   },
+//   {
+//     id: 6,
+//     name: "Battery Check",
+//     icon: <Build />,
+//     duration: 60,
+//     color: "#FFEB3B",
+//     category: "electrical",
+//     price: "$20-$50",
+//   },
+//   {
+//     id: 7,
+//     name: "Wheel Alignment",
+//     icon: <DirectionsCar />,
+//     duration: 120,
+//     color: "#795548",
+//     category: "maintenance",
+//     price: "$80-$120",
+//   },
+//   {
+//     id: 8,
+//     name: "Full Service",
+//     icon: <CarRepair />,
+//     duration: 360,
+//     color: "#607D8B",
+//     category: "comprehensive",
+//     price: "$300-$600",
+//   },
+// ];
 
-// // ==================== EVENT TYPES WITH UNIQUE FORMS ====================
+// // ========== EVENT TYPES ==========
 // const EVENT_TYPES = [
 //   {
 //     id: "event",
 //     name: "Event",
 //     icon: <EventIcon />,
 //     color: "#4285F4",
-//     description: "General event or activity",
-//     formComponent: "EventForm",
-//   },
-//   {
-//     id: "meeting",
-//     name: "Meeting",
-//     icon: <VideoCall />,
-//     color: "#DB4437",
-//     description: "Video or in-person meeting",
-//     formComponent: "MeetingForm",
+//     defaultDuration: 60,
+//     description: "General event",
 //   },
 //   {
 //     id: "task",
 //     name: "Task",
 //     icon: <TaskAlt />,
 //     color: "#0F9D58",
-//     description: "To-do item or checklist",
-//     formComponent: "TaskForm",
+//     defaultDuration: 0,
+//     description: "Task with checklist",
+//   },
+//   {
+//     id: "meeting",
+//     name: "Meeting",
+//     icon: <VideoCall />,
+//     color: "#DB4437",
+//     defaultDuration: 30,
+//     description: "Meeting with agenda",
 //   },
 //   {
 //     id: "appointment",
 //     name: "Appointment",
 //     icon: <Person />,
 //     color: "#F4B400",
-//     description: "Client or service appointment",
-//     formComponent: "AppointmentForm",
+//     defaultDuration: 45,
+//     description: "Appointment with clients",
 //   },
 //   {
 //     id: "reminder",
 //     name: "Reminder",
-//     icon: <Notifications />,
+//     icon: <Alarm />,
 //     color: "#AB47BC",
+//     defaultDuration: 0,
 //     description: "Time-based reminder",
-//     formComponent: "ReminderForm",
 //   },
 // ];
 
-// // ==================== CALENDAR VIEWS ====================
+// // ========== CALENDAR VIEWS ==========
 // const CALENDAR_VIEWS = [
 //   { id: "day", name: "Day", icon: <ViewDay /> },
 //   { id: "week", name: "Week", icon: <ViewWeek /> },
@@ -183,7 +287,16 @@
 //   { id: "schedule", name: "Schedule", icon: <Timelapse /> },
 // ];
 
-// // ==================== CALENDAR COLORS (GOOGLE CALENDAR COLORS) ====================
+// // ========== NOTIFICATION TYPES ==========
+// const NOTIFICATION_TYPES = [
+//   { id: "email", name: "Email", icon: <Email /> },
+//   { id: "popup", name: "Browser", icon: <Notifications /> },
+//   { id: "push", name: "Push", icon: <Smartphone /> },
+//   { id: "sms", name: "SMS", icon: <Phone /> },
+//   { id: "desktop", name: "Desktop", icon: <Computer /> },
+// ];
+
+// // ========== CALENDAR COLORS ==========
 // const CALENDAR_COLORS = [
 //   { id: "1", name: "Lavender", hex: "#7986CB" },
 //   { id: "2", name: "Sage", hex: "#33B679" },
@@ -198,27 +311,87 @@
 //   { id: "11", name: "Tomato", hex: "#D50000" },
 // ];
 
-// // ==================== TIME SLOTS ====================
+// // ========== TIME SLOTS ==========
 // const TIME_SLOTS = Array.from({ length: 48 }, (_, i) => {
 //   const hour = Math.floor(i / 2);
 //   const minute = i % 2 === 0 ? "00" : "30";
 //   return `${hour.toString().padStart(2, "0")}:${minute}`;
 // });
 
-// // ==================== DRAG & DROP TYPES ====================
+// // ========== DRAG AND DROP TYPES ==========
 // const ItemTypes = {
 //   EVENT: "event",
 //   TASK: "task",
 //   APPOINTMENT: "appointment",
-//   MEETING: "meeting",
 //   REMINDER: "reminder",
 // };
 
-// // ==================== DRAGGABLE EVENT COMPONENT ====================
+// // ========== NOTIFICATION TIMING OPTIONS ==========
+// const REMINDER_TIMINGS = [
+//   { value: 0, label: "At time of event" },
+//   { value: 5, label: "5 minutes before" },
+//   { value: 10, label: "10 minutes before" },
+//   { value: 15, label: "15 minutes before" },
+//   { value: 30, label: "30 minutes before" },
+//   { value: 60, label: "1 hour before" },
+//   { value: 120, label: "2 hours before" },
+//   { value: 1440, label: "1 day before" },
+//   { value: 2880, label: "2 days before" },
+//   { value: 10080, label: "1 week before" },
+// ];
+
+// // ========== RECURRENCE PATTERNS ==========
+// const RECURRENCE_PATTERNS = [
+//   { id: "none", label: "Does not repeat" },
+//   { id: "daily", label: "Daily" },
+//   { id: "weekly", label: "Weekly" },
+//   { id: "monthly", label: "Monthly" },
+//   { id: "yearly", label: "Yearly" },
+//   { id: "weekdays", label: "Every weekday (Mon-Fri)" },
+//   { id: "custom", label: "Custom..." },
+// ];
+
+// // ========== PRIORITY LEVELS ==========
+// const PRIORITY_LEVELS = [
+//   { id: "low", label: "Low", color: "#4CAF50", icon: "⬇️" },
+//   { id: "medium", label: "Medium", color: "#FF9800", icon: "➡️" },
+//   { id: "high", label: "High", color: "#F44336", icon: "⬆️" },
+//   { id: "urgent", label: "Urgent", color: "#9C27B0", icon: "🚨" },
+// ];
+
+// // ========== EVENT STATUSES ==========
+// const EVENT_STATUSES = [
+//   { id: "scheduled", label: "Scheduled", color: "#4285F4" },
+//   { id: "confirmed", label: "Confirmed", color: "#0F9D58" },
+//   { id: "tentative", label: "Tentative", color: "#F4B400" },
+//   { id: "cancelled", label: "Cancelled", color: "#757575" },
+//   { id: "completed", label: "Completed", color: "#33B679" },
+//   { id: "in_progress", label: "In Progress", color: "#FF9800" },
+//   { id: "postponed", label: "Postponed", color: "#9C27B0" },
+// ];
+
+// // ========== TASK STATUSES ==========
+// const TASK_STATUSES = [
+//   { id: "not_started", label: "Not Started", color: "#757575" },
+//   { id: "in_progress", label: "In Progress", color: "#FF9800" },
+//   { id: "completed", label: "Completed", color: "#0F9D58" },
+//   { id: "blocked", label: "Blocked", color: "#F44336" },
+//   { id: "deferred", label: "Deferred", color: "#9C27B0" },
+// ];
+
+// // ========== ATTENDEE STATUSES ==========
+// const ATTENDEE_STATUSES = [
+//   { id: "needsAction", label: "No response", color: "#757575" },
+//   { id: "declined", label: "Declined", color: "#F44336" },
+//   { id: "tentative", label: "Maybe", color: "#FF9800" },
+//   { id: "accepted", label: "Accepted", color: "#0F9D58" },
+// ];
+
+// // ========== DRAGGABLE EVENT COMPONENT ==========
 // const DraggableEvent = ({ event, onDragStart, onDragEnd }) => {
 //   const [{ isDragging }, drag] = useDrag(() => ({
-//     type: ItemTypes.EVENT,
-//     item: { type: "event", id: event.id, event },
+//     type: getEventDragType(event.type),
+//     item: { type: event.type, id: event.id, event },
 //     collect: (monitor) => ({
 //       isDragging: !!monitor.isDragging(),
 //     }),
@@ -229,8 +402,23 @@
 //     },
 //   }));
 
-//   const eventType =
-//     EVENT_TYPES.find((t) => t.id === event.type) || EVENT_TYPES[0];
+//   const getEventDragType = (eventType) => {
+//     switch (eventType) {
+//       case "task":
+//         return ItemTypes.TASK;
+//       case "appointment":
+//         return ItemTypes.APPOINTMENT;
+//       case "reminder":
+//         return ItemTypes.REMINDER;
+//       default:
+//         return ItemTypes.EVENT;
+//     }
+//   };
+
+//   const getEventIcon = () => {
+//     const eventType = EVENT_TYPES.find((t) => t.id === event.type);
+//     return eventType ? eventType.icon : <EventIcon />;
+//   };
 
 //   return (
 //     <div
@@ -238,37 +426,40 @@
 //       style={{
 //         opacity: isDragging ? 0.5 : 1,
 //         cursor: "move",
-//         padding: "6px 10px",
-//         margin: "3px 0",
+//         padding: "6px 8px",
+//         margin: "2px 0",
 //         borderRadius: "6px",
-//         backgroundColor: eventType.color,
+//         backgroundColor: event.color || event.colorHex || "#4285F4",
 //         color: "white",
-//         fontSize: "13px",
+//         fontSize: "12px",
 //         overflow: "hidden",
 //         textOverflow: "ellipsis",
 //         whiteSpace: "nowrap",
-//         border: "1px solid rgba(255,255,255,0.3)",
-//         boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
+//         border: `2px solid ${event.color || event.colorHex || "#4285F4"}`,
+//         boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
 //         display: "flex",
 //         alignItems: "center",
 //         gap: "4px",
+//         position: "relative",
 //       }}
 //     >
 //       <DragIndicator sx={{ fontSize: 14, opacity: 0.7 }} />
-//       <span style={{ flex: 1 }}>{event.summary}</span>
-//       <eventType.icon sx={{ fontSize: 14 }} />
+//       {getEventIcon()}
+//       <span style={{ flex: 1, fontWeight: 500 }}>{event.summary}</span>
+//       {event.priority === "high" && (
+//         <span style={{ fontSize: "10px" }}>⚠️</span>
+//       )}
 //     </div>
 //   );
 // };
 
-// // ==================== DROPPABLE CALENDAR SLOT ====================
+// // ========== DROPPABLE CALENDAR SLOT ==========
 // const DroppableCalendarSlot = ({ date, time, onDrop, children }) => {
 //   const [{ isOver }, drop] = useDrop(() => ({
 //     accept: [
 //       ItemTypes.EVENT,
 //       ItemTypes.TASK,
 //       ItemTypes.APPOINTMENT,
-//       ItemTypes.MEETING,
 //       ItemTypes.REMINDER,
 //     ],
 //     drop: (item, monitor) => {
@@ -286,14 +477,12 @@
 //     <div
 //       ref={drop}
 //       style={{
-//         backgroundColor: isOver ? "rgba(66, 133, 244, 0.1)" : "transparent",
+//         backgroundColor: isOver ? "#e3f2fd" : "transparent",
 //         height: "100%",
 //         width: "100%",
-//         border: isOver
-//           ? "2px dashed #4285F4"
-//           : "1px solid rgba(224, 224, 224, 0.5)",
+//         border: isOver ? "2px dashed #1976d2" : "1px solid #e0e0e0",
 //         position: "relative",
-//         borderRadius: isOver ? "4px" : "0",
+//         transition: "all 0.2s ease",
 //       }}
 //     >
 //       {children}
@@ -301,9 +490,88 @@
 //   );
 // };
 
-// // ==================== UTILITY FUNCTIONS ====================
+// // ========== TASK CHECKLIST ITEM ==========
+// const TaskChecklistItem = ({ item, index, onToggle, onEdit, onDelete }) => {
+//   const [editing, setEditing] = useState(false);
+//   const [editText, setEditText] = useState(item.text);
+
+//   const handleSave = () => {
+//     if (editText.trim()) {
+//       onEdit(index, { ...item, text: editText.trim() });
+//       setEditing(false);
+//     }
+//   };
+
+//   return (
+//     <Box
+//       sx={{
+//         display: "flex",
+//         alignItems: "center",
+//         gap: 1,
+//         p: 1,
+//         borderRadius: 1,
+//         "&:hover": { bgcolor: "action.hover" },
+//       }}
+//     >
+//       <Checkbox
+//         checked={item.completed}
+//         onChange={() => onToggle(index)}
+//         size="small"
+//       />
+//       {editing ? (
+//         <TextField
+//           value={editText}
+//           onChange={(e) => setEditText(e.target.value)}
+//           onBlur={handleSave}
+//           onKeyPress={(e) => e.key === "Enter" && handleSave()}
+//           size="small"
+//           autoFocus
+//           fullWidth
+//         />
+//       ) : (
+//         <Typography
+//           sx={{
+//             flex: 1,
+//             textDecoration: item.completed ? "line-through" : "none",
+//             color: item.completed ? "text.disabled" : "text.primary",
+//             cursor: "pointer",
+//           }}
+//           onClick={() => setEditing(true)}
+//         >
+//           {item.text}
+//         </Typography>
+//       )}
+//       <IconButton size="small" onClick={() => onDelete(index)}>
+//         <DeleteIcon fontSize="small" />
+//       </IconButton>
+//     </Box>
+//   );
+// };
+
+// // ========== NOTIFICATION SOUND PLAYER ==========
+// const NotificationSoundPlayer = () => {
+//   const audioRef = useRef(null);
+
+//   const playSound = () => {
+//     if (audioRef.current) {
+//       audioRef.current.currentTime = 0;
+//       audioRef.current.play().catch(console.error);
+//     }
+//   };
+
+//   return (
+//     <audio ref={audioRef} preload="auto">
+//       <source src="/notification-sound.mp3" type="audio/mpeg" />
+//       <source src="/notification-sound.ogg" type="audio/ogg" />
+//     </audio>
+//   );
+// };
+
+// // ========== UTILITY FUNCTIONS ==========
 // const fixDateTimeFormat = (dateTimeString, isEndTime = false) => {
 //   try {
+//     if (!dateTimeString) return new Date().toISOString();
+
 //     if (dateTimeString.includes("Z")) {
 //       return dateTimeString;
 //     }
@@ -322,7 +590,7 @@
 //     }
 
 //     if (isEndTime) {
-//       return new Date(date.getTime() + 60 * 60000).toISOString();
+//       return new Date(date.getTime() + 30 * 60000).toISOString();
 //     }
 
 //     return date.toISOString();
@@ -343,802 +611,117 @@
 //   )}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 // };
 
-// const getColorById = (colorId) => {
-//   const color =
-//     CALENDAR_COLORS.find((c) => c.id === colorId) || CALENDAR_COLORS[0];
-//   return color.hex;
+// const getRandomColor = () => {
+//   const colors = CALENDAR_COLORS.map((c) => c.hex);
+//   return colors[Math.floor(Math.random() * colors.length)];
 // };
 
-// // ==================== FORM COMPONENTS FOR EACH EVENT TYPE ====================
+// // ========== EMAIL TEMPLATES ==========
+// const EmailTemplates = {
+//   eventCreated: (event, user) => ({
+//     subject: `New Event: ${event.summary}`,
+//     body: `
+//       <h2>New Event Created</h2>
+//       <p><strong>Event:</strong> ${event.summary}</p>
+//       <p><strong>Date:</strong> ${format(
+//         new Date(event.start.dateTime),
+//         "PPPP"
+//       )}</p>
+//       <p><strong>Time:</strong> ${format(
+//         new Date(event.start.dateTime),
+//         "p"
+//       )} - ${format(new Date(event.end.dateTime), "p")}</p>
+//       <p><strong>Location:</strong> ${event.location || "Not specified"}</p>
+//       <p><strong>Description:</strong> ${
+//         event.description || "No description"
+//       }</p>
+//       <br>
+//       <p>This event was created by ${user?.name || "System"}.</p>
+//     `,
+//   }),
 
-// // Event Form (General Event)
-// const EventForm = ({ formData, setFormData, errors }) => {
-//   return (
-//     <>
-//       <Grid item xs={12}>
-//         <TextField
-//           fullWidth
-//           label="Event Title *"
-//           value={formData.summary}
-//           onChange={(e) =>
-//             setFormData({ ...formData, summary: e.target.value })
-//           }
-//           error={!!errors.summary}
-//           helperText={errors.summary}
-//           InputProps={{
-//             startAdornment: (
-//               <InputAdornment position="start">
-//                 <Subject />
-//               </InputAdornment>
-//             ),
-//           }}
-//         />
-//       </Grid>
+//   eventUpdated: (event, user) => ({
+//     subject: `Event Updated: ${event.summary}`,
+//     body: `
+//       <h2>Event Updated</h2>
+//       <p><strong>Event:</strong> ${event.summary}</p>
+//       <p><strong>Date:</strong> ${format(
+//         new Date(event.start.dateTime),
+//         "PPPP"
+//       )}</p>
+//       <p><strong>Time:</strong> ${format(
+//         new Date(event.start.dateTime),
+//         "p"
+//       )} - ${format(new Date(event.end.dateTime), "p")}</p>
+//       <p><strong>Location:</strong> ${event.location || "Not specified"}</p>
+//       <p><strong>Status:</strong> ${event.status}</p>
+//       <br>
+//       <p>This event was updated by ${user?.name || "System"}.</p>
+//     `,
+//   }),
 
-//       <Grid item xs={12}>
-//         <TextField
-//           fullWidth
-//           multiline
-//           rows={3}
-//           label="Description"
-//           value={formData.description}
-//           onChange={(e) =>
-//             setFormData({ ...formData, description: e.target.value })
-//           }
-//           InputProps={{
-//             startAdornment: (
-//               <InputAdornment position="start">
-//                 <Description />
-//               </InputAdornment>
-//             ),
-//           }}
-//         />
-//       </Grid>
+//   eventReminder: (event, minutes) => ({
+//     subject: `Reminder: ${event.summary} starts ${
+//       minutes === 0 ? "now" : `in ${minutes} minutes`
+//     }`,
+//     body: `
+//       <h2>Event Reminder</h2>
+//       <p><strong>Event:</strong> ${event.summary}</p>
+//       <p><strong>Starts:</strong> ${format(
+//         new Date(event.start.dateTime),
+//         "PPPPp"
+//       )}</p>
+//       <p><strong>Location:</strong> ${event.location || "Not specified"}</p>
+//       <p><strong>Description:</strong> ${
+//         event.description || "No description"
+//       }</p>
+//     `,
+//   }),
 
-//       <Grid item xs={12} md={6}>
-//         <TextField
-//           fullWidth
-//           type="datetime-local"
-//           label="Start Time *"
-//           value={formData.startTime}
-//           onChange={(e) => {
-//             const newStartTime = e.target.value;
-//             setFormData({
-//               ...formData,
-//               startTime: newStartTime,
-//               endTime:
-//                 !formData.endTime ||
-//                 new Date(newStartTime) >= new Date(formData.endTime)
-//                   ? formatForDateTimeLocal(addHours(new Date(newStartTime), 1))
-//                   : formData.endTime,
-//             });
-//           }}
-//           InputLabelProps={{ shrink: true }}
-//           error={!!errors.startTime}
-//           helperText={errors.startTime}
-//           InputProps={{
-//             startAdornment: (
-//               <InputAdornment position="start">
-//                 <AccessTime />
-//               </InputAdornment>
-//             ),
-//           }}
-//         />
-//       </Grid>
+//   taskAssigned: (task, assignee) => ({
+//     subject: `New Task Assigned: ${task.summary}`,
+//     body: `
+//       <h2>Task Assigned</h2>
+//       <p><strong>Task:</strong> ${task.summary}</p>
+//       <p><strong>Due:</strong> ${format(new Date(task.dueDate), "PPPP")}</p>
+//       <p><strong>Priority:</strong> ${task.priority}</p>
+//       <p><strong>Description:</strong> ${
+//         task.description || "No description"
+//       }</p>
+//       <br>
+//       <p>This task has been assigned to you.</p>
+//     `,
+//   }),
 
-//       <Grid item xs={12} md={6}>
-//         <TextField
-//           fullWidth
-//           type="datetime-local"
-//           label="End Time *"
-//           value={formData.endTime}
-//           onChange={(e) =>
-//             setFormData({ ...formData, endTime: e.target.value })
-//           }
-//           InputLabelProps={{ shrink: true }}
-//           error={!!errors.endTime}
-//           helperText={errors.endTime}
-//           InputProps={{
-//             startAdornment: (
-//               <InputAdornment position="start">
-//                 <AccessTime />
-//               </InputAdornment>
-//             ),
-//           }}
-//         />
-//       </Grid>
-
-//       <Grid item xs={12}>
-//         <TextField
-//           fullWidth
-//           label="Location"
-//           value={formData.location}
-//           onChange={(e) =>
-//             setFormData({ ...formData, location: e.target.value })
-//           }
-//           InputProps={{
-//             startAdornment: (
-//               <InputAdornment position="start">
-//                 <LocationOn />
-//               </InputAdornment>
-//             ),
-//           }}
-//         />
-//       </Grid>
-
-//       <Grid item xs={12}>
-//         <FormControl fullWidth>
-//           <InputLabel>Color</InputLabel>
-//           <Select
-//             value={formData.color}
-//             onChange={(e) =>
-//               setFormData({ ...formData, color: e.target.value })
-//             }
-//             label="Color"
-//             startAdornment={
-//               <InputAdornment position="start">
-//                 <ColorLens />
-//               </InputAdornment>
-//             }
-//           >
-//             {CALENDAR_COLORS.map((color) => (
-//               <MenuItem key={color.id} value={color.id}>
-//                 <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-//                   <Box
-//                     sx={{
-//                       width: 20,
-//                       height: 20,
-//                       borderRadius: "50%",
-//                       backgroundColor: color.hex,
-//                     }}
-//                   />
-//                   <span>{color.name}</span>
-//                 </Box>
-//               </MenuItem>
-//             ))}
-//           </Select>
-//         </FormControl>
-//       </Grid>
-
-//       <Grid item xs={12}>
-//         <FormControlLabel
-//           control={
-//             <Switch
-//               checked={formData.allDay}
-//               onChange={(e) =>
-//                 setFormData({ ...formData, allDay: e.target.checked })
-//               }
-//             />
-//           }
-//           label="All day event"
-//         />
-//       </Grid>
-//     </>
-//   );
+//   appointmentConfirmed: (appointment, customer) => ({
+//     subject: `Appointment Confirmed: ${appointment.summary}`,
+//     body: `
+//       <h2>Appointment Confirmation</h2>
+//       <p><strong>Service:</strong> ${appointment.summary}</p>
+//       <p><strong>Date & Time:</strong> ${format(
+//         new Date(appointment.start.dateTime),
+//         "PPPPp"
+//       )}</p>
+//       <p><strong>Location:</strong> ${
+//         appointment.location || "Not specified"
+//       }</p>
+//       <p><strong>Service Provider:</strong> ${
+//         appointment.organizer?.displayName || "Trust Auto Solution"
+//       }</p>
+//       <br>
+//       <p>Dear ${customer?.name || "Customer"},</p>
+//       <p>Your appointment has been confirmed. We look forward to seeing you!</p>
+//     `,
+//   }),
 // };
 
-// // Meeting Form
-// const MeetingForm = ({ formData, setFormData, errors }) => {
-//   const [meetingType, setMeetingType] = useState("video");
-
-//   return (
-//     <>
-//       <Grid item xs={12}>
-//         <TextField
-//           fullWidth
-//           label="Meeting Title *"
-//           value={formData.summary}
-//           onChange={(e) =>
-//             setFormData({ ...formData, summary: e.target.value })
-//           }
-//           error={!!errors.summary}
-//           helperText={errors.summary}
-//           placeholder="e.g., Team Standup, Client Review"
-//           InputProps={{
-//             startAdornment: (
-//               <InputAdornment position="start">
-//                 <VideoCameraFront />
-//               </InputAdornment>
-//             ),
-//           }}
-//         />
-//       </Grid>
-
-//       <Grid item xs={12}>
-//         <TextField
-//           fullWidth
-//           multiline
-//           rows={2}
-//           label="Agenda"
-//           value={formData.description}
-//           onChange={(e) =>
-//             setFormData({ ...formData, description: e.target.value })
-//           }
-//           placeholder="Meeting agenda, topics to discuss..."
-//         />
-//       </Grid>
-
-//       <Grid item xs={12} md={6}>
-//         <TextField
-//           fullWidth
-//           type="datetime-local"
-//           label="Start Time *"
-//           value={formData.startTime}
-//           onChange={(e) => {
-//             const newStartTime = e.target.value;
-//             setFormData({
-//               ...formData,
-//               startTime: newStartTime,
-//               endTime:
-//                 !formData.endTime ||
-//                 new Date(newStartTime) >= new Date(formData.endTime)
-//                   ? formatForDateTimeLocal(addHours(new Date(newStartTime), 1))
-//                   : formData.endTime,
-//             });
-//           }}
-//           InputLabelProps={{ shrink: true }}
-//           error={!!errors.startTime}
-//           helperText={errors.startTime}
-//         />
-//       </Grid>
-
-//       <Grid item xs={12} md={6}>
-//         <TextField
-//           fullWidth
-//           type="datetime-local"
-//           label="End Time *"
-//           value={formData.endTime}
-//           onChange={(e) =>
-//             setFormData({ ...formData, endTime: e.target.value })
-//           }
-//           InputLabelProps={{ shrink: true }}
-//           error={!!errors.endTime}
-//           helperText={errors.endTime}
-//         />
-//       </Grid>
-
-//       <Grid item xs={12}>
-//         <FormControl component="fieldset">
-//           <FormLabel component="legend">Meeting Type</FormLabel>
-//           <RadioGroup
-//             row
-//             value={meetingType}
-//             onChange={(e) => setMeetingType(e.target.value)}
-//           >
-//             <FormControlLabel
-//               value="video"
-//               control={<Radio />}
-//               label="Video Call"
-//             />
-//             <FormControlLabel
-//               value="in-person"
-//               control={<Radio />}
-//               label="In Person"
-//             />
-//             <FormControlLabel
-//               value="hybrid"
-//               control={<Radio />}
-//               label="Hybrid"
-//             />
-//           </RadioGroup>
-//         </FormControl>
-//       </Grid>
-
-//       <Grid item xs={12}>
-//         <TextField
-//           fullWidth
-//           label="Meeting Link"
-//           value={formData.conferenceData?.link || ""}
-//           onChange={(e) =>
-//             setFormData({
-//               ...formData,
-//               conferenceData: {
-//                 ...formData.conferenceData,
-//                 link: e.target.value,
-//               },
-//             })
-//           }
-//           placeholder="https://meet.google.com/xxx-xxxx-xxx"
-//           InputProps={{
-//             startAdornment: (
-//               <InputAdornment position="start">
-//                 <Link />
-//               </InputAdornment>
-//             ),
-//           }}
-//         />
-//       </Grid>
-
-//       <Grid item xs={12}>
-//         <TextField
-//           fullWidth
-//           label="Attendees (comma separated)"
-//           value={formData.attendees?.join(", ") || ""}
-//           onChange={(e) =>
-//             setFormData({
-//               ...formData,
-//               attendees: e.target.value.split(",").map((email) => email.trim()),
-//             })
-//           }
-//           placeholder="email1@example.com, email2@example.com"
-//           InputProps={{
-//             startAdornment: (
-//               <InputAdornment position="start">
-//                 <Group />
-//               </InputAdornment>
-//             ),
-//           }}
-//         />
-//       </Grid>
-//     </>
-//   );
-// };
-
-// // Task Form
-// const TaskForm = ({ formData, setFormData, errors }) => {
-//   const [subTasks, setSubTasks] = useState([]);
-//   const [newSubTask, setNewSubTask] = useState("");
-
-//   const addSubTask = () => {
-//     if (newSubTask.trim()) {
-//       setSubTasks([
-//         ...subTasks,
-//         { id: Date.now(), text: newSubTask, completed: false },
-//       ]);
-//       setNewSubTask("");
-//     }
-//   };
-
-//   return (
-//     <>
-//       <Grid item xs={12}>
-//         <TextField
-//           fullWidth
-//           label="Task Title *"
-//           value={formData.summary}
-//           onChange={(e) =>
-//             setFormData({ ...formData, summary: e.target.value })
-//           }
-//           error={!!errors.summary}
-//           helperText={errors.summary}
-//           placeholder="What needs to be done?"
-//           InputProps={{
-//             startAdornment: (
-//               <InputAdornment position="start">
-//                 <CheckBox />
-//               </InputAdornment>
-//             ),
-//           }}
-//         />
-//       </Grid>
-
-//       <Grid item xs={12}>
-//         <TextField
-//           fullWidth
-//           multiline
-//           rows={2}
-//           label="Description"
-//           value={formData.description}
-//           onChange={(e) =>
-//             setFormData({ ...formData, description: e.target.value })
-//           }
-//           placeholder="Task details, notes..."
-//         />
-//       </Grid>
-
-//       <Grid item xs={12} md={6}>
-//         <TextField
-//           fullWidth
-//           type="datetime-local"
-//           label="Due Date"
-//           value={formData.startTime}
-//           onChange={(e) =>
-//             setFormData({ ...formData, startTime: e.target.value })
-//           }
-//           InputLabelProps={{ shrink: true }}
-//         />
-//       </Grid>
-
-//       <Grid item xs={12} md={6}>
-//         <FormControl fullWidth>
-//           <InputLabel>Priority</InputLabel>
-//           <Select
-//             value={formData.priority || "medium"}
-//             onChange={(e) =>
-//               setFormData({ ...formData, priority: e.target.value })
-//             }
-//             label="Priority"
-//           >
-//             <MenuItem value="low">Low</MenuItem>
-//             <MenuItem value="medium">Medium</MenuItem>
-//             <MenuItem value="high">High</MenuItem>
-//             <MenuItem value="urgent">Urgent</MenuItem>
-//           </Select>
-//         </FormControl>
-//       </Grid>
-
-//       <Grid item xs={12}>
-//         <FormControl fullWidth>
-//           <InputLabel>Status</InputLabel>
-//           <Select
-//             value={formData.status || "todo"}
-//             onChange={(e) =>
-//               setFormData({ ...formData, status: e.target.value })
-//             }
-//             label="Status"
-//           >
-//             <MenuItem value="todo">To Do</MenuItem>
-//             <MenuItem value="in-progress">In Progress</MenuItem>
-//             <MenuItem value="review">In Review</MenuItem>
-//             <MenuItem value="completed">Completed</MenuItem>
-//           </Select>
-//         </FormControl>
-//       </Grid>
-
-//       <Grid item xs={12}>
-//         <Typography variant="subtitle2" gutterBottom>
-//           Subtasks
-//         </Typography>
-//         <Box sx={{ display: "flex", gap: 1, mb: 2 }}>
-//           <TextField
-//             fullWidth
-//             size="small"
-//             value={newSubTask}
-//             onChange={(e) => setNewSubTask(e.target.value)}
-//             placeholder="Add a subtask"
-//             onKeyPress={(e) => e.key === "Enter" && addSubTask()}
-//           />
-//           <Button onClick={addSubTask} variant="contained" size="small">
-//             Add
-//           </Button>
-//         </Box>
-//         <List dense>
-//           {subTasks.map((task) => (
-//             <ListItem key={task.id}>
-//               <Checkbox
-//                 checked={task.completed}
-//                 onChange={(e) =>
-//                   setSubTasks(
-//                     subTasks.map((t) =>
-//                       t.id === task.id
-//                         ? { ...t, completed: e.target.checked }
-//                         : t
-//                     )
-//                   )
-//                 }
-//                 size="small"
-//               />
-//               <ListItemText
-//                 primary={task.text}
-//                 sx={{
-//                   textDecoration: task.completed ? "line-through" : "none",
-//                   opacity: task.completed ? 0.6 : 1,
-//                 }}
-//               />
-//               <IconButton
-//                 size="small"
-//                 onClick={() =>
-//                   setSubTasks(subTasks.filter((t) => t.id !== task.id))
-//                 }
-//               >
-//                 <DeleteIcon fontSize="small" />
-//               </IconButton>
-//             </ListItem>
-//           ))}
-//         </List>
-//       </Grid>
-//     </>
-//   );
-// };
-
-// // Appointment Form
-// const AppointmentForm = ({ formData, setFormData, errors }) => {
-//   const [services] = useState([
-//     "Consultation",
-//     "Follow-up",
-//     "Check-up",
-//     "Procedure",
-//     "Therapy",
-//     "Test",
-//     "Screening",
-//   ]);
-
-//   return (
-//     <>
-//       <Grid item xs={12}>
-//         <TextField
-//           fullWidth
-//           label="Appointment Title *"
-//           value={formData.summary}
-//           onChange={(e) =>
-//             setFormData({ ...formData, summary: e.target.value })
-//           }
-//           error={!!errors.summary}
-//           helperText={errors.summary}
-//           placeholder="e.g., Annual Check-up, Dental Cleaning"
-//           InputProps={{
-//             startAdornment: (
-//               <InputAdornment position="start">
-//                 <Person />
-//               </InputAdornment>
-//             ),
-//           }}
-//         />
-//       </Grid>
-
-//       <Grid item xs={12}>
-//         <FormControl fullWidth>
-//           <InputLabel>Service Type</InputLabel>
-//           <Select
-//             value={formData.serviceType || ""}
-//             onChange={(e) =>
-//               setFormData({ ...formData, serviceType: e.target.value })
-//             }
-//             label="Service Type"
-//           >
-//             <MenuItem value="">Select a service</MenuItem>
-//             {services.map((service) => (
-//               <MenuItem key={service} value={service}>
-//                 {service}
-//               </MenuItem>
-//             ))}
-//           </Select>
-//         </FormControl>
-//       </Grid>
-
-//       <Grid item xs={12} md={6}>
-//         <TextField
-//           fullWidth
-//           type="datetime-local"
-//           label="Appointment Time *"
-//           value={formData.startTime}
-//           onChange={(e) => {
-//             const newStartTime = e.target.value;
-//             setFormData({
-//               ...formData,
-//               startTime: newStartTime,
-//               endTime:
-//                 !formData.endTime ||
-//                 new Date(newStartTime) >= new Date(formData.endTime)
-//                   ? formatForDateTimeLocal(addHours(new Date(newStartTime), 1))
-//                   : formData.endTime,
-//             });
-//           }}
-//           InputLabelProps={{ shrink: true }}
-//           error={!!errors.startTime}
-//           helperText={errors.startTime}
-//         />
-//       </Grid>
-
-//       <Grid item xs={12} md={6}>
-//         <TextField
-//           fullWidth
-//           type="datetime-local"
-//           label="End Time *"
-//           value={formData.endTime}
-//           onChange={(e) =>
-//             setFormData({ ...formData, endTime: e.target.value })
-//           }
-//           InputLabelProps={{ shrink: true }}
-//           error={!!errors.endTime}
-//           helperText={errors.endTime}
-//         />
-//       </Grid>
-
-//       <Grid item xs={12}>
-//         <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>
-//           Customer Information
-//         </Typography>
-//       </Grid>
-
-//       <Grid item xs={12} md={6}>
-//         <TextField
-//           fullWidth
-//           label="Customer Name"
-//           value={formData.customerName || ""}
-//           onChange={(e) =>
-//             setFormData({ ...formData, customerName: e.target.value })
-//           }
-//           placeholder="John Doe"
-//         />
-//       </Grid>
-
-//       <Grid item xs={12} md={6}>
-//         <TextField
-//           fullWidth
-//           label="Phone Number"
-//           value={formData.customerPhone || ""}
-//           onChange={(e) =>
-//             setFormData({ ...formData, customerPhone: e.target.value })
-//           }
-//           placeholder="+1 (555) 123-4567"
-//         />
-//       </Grid>
-
-//       <Grid item xs={12}>
-//         <TextField
-//           fullWidth
-//           label="Email Address"
-//           type="email"
-//           value={formData.customerEmail || ""}
-//           onChange={(e) =>
-//             setFormData({ ...formData, customerEmail: e.target.value })
-//           }
-//           placeholder="customer@example.com"
-//         />
-//       </Grid>
-
-//       <Grid item xs={12}>
-//         <TextField
-//           fullWidth
-//           multiline
-//           rows={2}
-//           label="Notes"
-//           value={formData.serviceNotes || ""}
-//           onChange={(e) =>
-//             setFormData({ ...formData, serviceNotes: e.target.value })
-//           }
-//           placeholder="Any special requirements or notes..."
-//         />
-//       </Grid>
-//     </>
-//   );
-// };
-
-// // Reminder Form
-// const ReminderForm = ({ formData, setFormData, errors }) => {
-//   const reminderOptions = [
-//     { value: "5", label: "5 minutes before" },
-//     { value: "10", label: "10 minutes before" },
-//     { value: "30", label: "30 minutes before" },
-//     { value: "60", label: "1 hour before" },
-//     { value: "1440", label: "1 day before" },
-//     { value: "10080", label: "1 week before" },
-//   ];
-
-//   return (
-//     <>
-//       <Grid item xs={12}>
-//         <TextField
-//           fullWidth
-//           label="Reminder *"
-//           value={formData.summary}
-//           onChange={(e) =>
-//             setFormData({ ...formData, summary: e.target.value })
-//           }
-//           error={!!errors.summary}
-//           helperText={errors.summary}
-//           placeholder="What do you want to be reminded about?"
-//           InputProps={{
-//             startAdornment: (
-//               <InputAdornment position="start">
-//                 <Alarm />
-//               </InputAdornment>
-//             ),
-//           }}
-//         />
-//       </Grid>
-
-//       <Grid item xs={12}>
-//         <TextField
-//           fullWidth
-//           multiline
-//           rows={2}
-//           label="Details"
-//           value={formData.description}
-//           onChange={(e) =>
-//             setFormData({ ...formData, description: e.target.value })
-//           }
-//           placeholder="Additional details about this reminder..."
-//         />
-//       </Grid>
-
-//       <Grid item xs={12} md={6}>
-//         <TextField
-//           fullWidth
-//           type="datetime-local"
-//           label="Remind me at *"
-//           value={formData.startTime}
-//           onChange={(e) =>
-//             setFormData({ ...formData, startTime: e.target.value })
-//           }
-//           InputLabelProps={{ shrink: true }}
-//           error={!!errors.startTime}
-//           helperText={errors.startTime}
-//         />
-//       </Grid>
-
-//       <Grid item xs={12} md={6}>
-//         <FormControl fullWidth>
-//           <InputLabel>Repeat</InputLabel>
-//           <Select
-//             value={formData.recurrence || "none"}
-//             onChange={(e) =>
-//               setFormData({ ...formData, recurrence: e.target.value })
-//             }
-//             label="Repeat"
-//           >
-//             <MenuItem value="none">Does not repeat</MenuItem>
-//             <MenuItem value="daily">Daily</MenuItem>
-//             <MenuItem value="weekly">Weekly</MenuItem>
-//             <MenuItem value="monthly">Monthly</MenuItem>
-//             <MenuItem value="yearly">Yearly</MenuItem>
-//             <MenuItem value="weekdays">Every weekday (Mon-Fri)</MenuItem>
-//           </Select>
-//         </FormControl>
-//       </Grid>
-
-//       <Grid item xs={12}>
-//         <FormControl fullWidth>
-//           <InputLabel>Notification Type</InputLabel>
-//           <Select
-//             value={formData.notificationTypes?.[0] || "popup"}
-//             onChange={(e) =>
-//               setFormData({
-//                 ...formData,
-//                 notificationTypes: [e.target.value],
-//               })
-//             }
-//             label="Notification Type"
-//             multiple={false}
-//           >
-//             <MenuItem value="popup">Popup Notification</MenuItem>
-//             <MenuItem value="email">Email</MenuItem>
-//             <MenuItem value="sms">SMS</MenuItem>
-//             <MenuItem value="push">Push Notification</MenuItem>
-//           </Select>
-//         </FormControl>
-//       </Grid>
-
-//       <Grid item xs={12}>
-//         <FormControl component="fieldset" fullWidth>
-//           <FormLabel component="legend">Reminder Options</FormLabel>
-//           <FormGroup>
-//             {reminderOptions.map((option) => (
-//               <FormControlLabel
-//                 key={option.value}
-//                 control={
-//                   <Checkbox
-//                     checked={formData.reminder === option.value}
-//                     onChange={(e) =>
-//                       setFormData({
-//                         ...formData,
-//                         reminder: e.target.checked ? option.value : "30",
-//                       })
-//                     }
-//                   />
-//                 }
-//                 label={option.label}
-//               />
-//             ))}
-//           </FormGroup>
-//         </FormControl>
-//       </Grid>
-
-//       <Grid item xs={12}>
-//         <FormControlLabel
-//           control={
-//             <Switch
-//               checked={formData.sendEmail || false}
-//               onChange={(e) =>
-//                 setFormData({ ...formData, sendEmail: e.target.checked })
-//               }
-//             />
-//           }
-//           label="Send email reminder"
-//         />
-//       </Grid>
-//     </>
-//   );
-// };
-
-// // ==================== MAIN COMPONENT ====================
+// // ========== MAIN CALENDAR COMPONENT ==========
 // const EnhancedGoogleCalendar = () => {
-//   const theme = useTheme();
-//   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-
-//   // State Management
+//   // ========== STATE MANAGEMENT ==========
 //   const [events, setEvents] = useState([]);
+//   const [tasks, setTasks] = useState([]);
+//   const [reminders, setReminders] = useState([]);
+//   const [appointments, setAppointments] = useState([]);
 //   const [calendars, setCalendars] = useState([]);
 //   const [openDialog, setOpenDialog] = useState(false);
 //   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -1158,7 +741,24 @@
 //   const [errorDetails, setErrorDetails] = useState(null);
 //   const [viewMode, setViewMode] = useState("week");
 //   const [currentDate, setCurrentDate] = useState(new Date());
+//   const [activeTab, setActiveTab] = useState(0);
+//   const [configHelpOpen, setConfigHelpOpen] = useState(false);
+//   const [isOnline, setIsOnline] = useState(navigator.onLine);
+//   const [syncStatus, setSyncStatus] = useState("synced");
 //   const [searchQuery, setSearchQuery] = useState("");
+//   const [filterSettings, setFilterSettings] = useState({
+//     showTasks: true,
+//     showEvents: true,
+//     showMeetings: true,
+//     showAppointments: true,
+//     showReminders: true,
+//     showCompleted: false,
+//     showCancelled: false,
+//     showPast: false,
+//     showFuture: true,
+//     minPriority: "low",
+//     category: "all",
+//   });
 //   const [settingsOpen, setSettingsOpen] = useState(false);
 //   const [quickAddOpen, setQuickAddOpen] = useState(false);
 //   const [dragDropEnabled, setDragDropEnabled] = useState(true);
@@ -1166,56 +766,185 @@
 //   const [themeMode, setThemeMode] = useState(
 //     localStorage.getItem("calendar_theme") || "light"
 //   );
-//   const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
+//   const [sidebarOpen, setSidebarOpen] = useState(true);
 //   const [notifications, setNotifications] = useState([]);
-//   const [selectedEventType, setSelectedEventType] = useState("event");
-//   const [formErrors, setFormErrors] = useState({});
+//   const [notificationSettings, setNotificationSettings] = useState({
+//     email: true,
+//     popup: true,
+//     sound: true,
+//     vibrate: false,
+//     desktop: false,
+//     mobile: true,
+//     web: true,
+//     browser: true,
+//   });
+//   const [emailSettings, setEmailSettings] = useState({
+//     sendEmails: true,
+//     sendUpdates: true,
+//     sendReminders: true,
+//     sendInvitations: true,
+//     sendCancellations: true,
+//     includeDetails: true,
+//     signature: "Sent from Enhanced Calendar",
+//   });
+//   const [stats, setStats] = useState({
+//     totalEvents: 0,
+//     todayEvents: 0,
+//     upcomingEvents: 0,
+//     completedEvents: 0,
+//     overdueTasks: 0,
+//     pendingReminders: 0,
+//     meetingsToday: 0,
+//     appointmentsToday: 0,
+//   });
+//   const [eventMenuAnchor, setEventMenuAnchor] = useState(null);
+//   const [selectedEventForMenu, setSelectedEventForMenu] = useState(null);
+//   const [isSendingEmail, setIsSendingEmail] = useState(false);
+//   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
+//   const [emailContent, setEmailContent] = useState({
+//     to: "",
+//     subject: "",
+//     body: "",
+//   });
 
-//   // Form State
+//   // ========== FORM STATE ==========
 //   const [formData, setFormData] = useState({
+//     // Basic Info
 //     type: "event",
 //     summary: "",
 //     description: "",
-//     startTime: "",
-//     endTime: "",
+//     startTime: formatForDateTimeLocal(addHours(new Date(), 1)),
+//     endTime: formatForDateTimeLocal(addHours(new Date(), 2)),
 //     location: "",
-//     customerEmail: "",
-//     customerPhone: "",
-//     customerName: "",
-//     serviceType: "",
-//     serviceNotes: "",
-//     priority: "medium",
-//     reminder: "30",
-//     sendEmail: true,
-//     status: "scheduled",
-//     color: CALENDAR_COLORS[0].id,
-//     calendarId: "primary",
-//     attendees: [],
-//     recurrence: "none",
-//     timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-//     allDay: false,
-//     private: false,
-//     busy: true,
-//     notificationTypes: ["popup"],
-//     conferenceData: {
-//       link: "",
-//     },
+
+//     // Event Type Specific
+//     ...(() => {
+//       const baseData = {
+//         // For tasks
+//         taskStatus: "not_started",
+//         checklist: [],
+//         dueDate: formatForDateTimeLocal(addDays(new Date(), 1)),
+//         completionDate: "",
+//         subtasks: [],
+
+//         // For reminders
+//         reminderTime: formatForDateTimeLocal(addHours(new Date(), 1)),
+//         repeatReminder: "none",
+//         important: false,
+
+//         // For appointments
+//         customerName: "",
+//         customerEmail: "",
+//         customerPhone: "",
+//         customerAddress: "",
+//         serviceType: "",
+//         serviceNotes: "",
+//         vehicleInfo: {
+//           type: "car",
+//           model: "",
+//           year: "",
+//           license: "",
+//         },
+
+//         // For meetings
+//         agenda: "",
+//         attendees: [],
+//         meetingType: "in_person",
+//         conferenceLink: "",
+
+//         // Common
+//         priority: "medium",
+//         status: "scheduled",
+//         category: "personal",
+//         tags: [],
+//         attachments: [],
+//         color: CALENDAR_COLORS[0].id,
+//         calendarId: "primary",
+//         timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+//         allDay: false,
+//         private: false,
+//         busy: true,
+
+//         // Notifications
+//         notifications: [
+//           { type: "popup", minutes: 30, sent: false },
+//           { type: "email", minutes: 60, sent: false },
+//         ],
+
+//         // Recurrence
+//         recurrence: "none",
+//         recurrenceEndDate: "",
+//         recurrenceCount: 1,
+
+//         // Access
+//         guestsCanModify: false,
+//         guestsCanInviteOthers: false,
+//         guestsCanSeeOtherGuests: true,
+//         visibility: "default",
+
+//         // Additional
+//         estimatedDuration: 60,
+//         actualDuration: 0,
+//         progress: 0,
+//         notes: "",
+//         locationDetails: {
+//           lat: null,
+//           lng: null,
+//           address: "",
+//           link: "",
+//         },
+//         conferenceData: {
+//           type: "hangoutsMeet",
+//           link: "",
+//           phoneNumber: "",
+//           pin: "",
+//         },
+//       };
+
+//       // Initialize based on type
+//       const now = new Date();
+//       const tomorrow = addDays(now, 1);
+
+//       baseData.startTime = formatForDateTimeLocal(addHours(now, 1));
+//       baseData.endTime = formatForDateTimeLocal(addHours(now, 2));
+//       baseData.dueDate = formatForDateTimeLocal(tomorrow);
+//       baseData.reminderTime = formatForDateTimeLocal(addHours(now, 1));
+
+//       return baseData;
+//     })(),
 //   });
 
-//   // Calendar Navigation
-//   const weekDays = eachDayOfInterval({
-//     start: startOfWeek(currentDate),
-//     end: endOfWeek(currentDate),
-//   });
+//   // ========== REFS ==========
+//   const calendarRef = useRef(null);
+//   const searchRef = useRef(null);
+//   const notificationRef = useRef(null);
+//   const notificationSoundRef = useRef(null);
 
-//   const monthDays = useMemo(() => {
-//     const start = startOfMonth(currentDate);
-//     const end = endOfMonth(currentDate);
-//     return eachDayOfInterval({ start, end });
-//   }, [currentDate]);
+//   // ========== CONFIGURATION ==========
+//   const CONFIG = {
+//     projectId: "731493911262",
+//     clientId:
+//       "731493911262-b4vutijvnt9bgdvgu6m1ai7g0nsno7vl.apps.googleusercontent.com",
+//     adminEmail: "softypyit@gmail.com",
+//     userEmail: "ibrahimsikder5033@gmail.com",
+//     scopes: [
+//       "https://www.googleapis.com/auth/calendar",
+//       "https://www.googleapis.com/auth/calendar.events",
+//       "https://www.googleapis.com/auth/calendar.readonly",
+//       "https://www.googleapis.com/auth/calendar.settings.readonly",
+//       "https://www.googleapis.com/auth/gmail.send",
+//       "openid",
+//       "https://www.googleapis.com/auth/userinfo.email",
+//       "https://www.googleapis.com/auth/userinfo.profile",
+//     ].join(" "),
+//   };
 
-//   // Initialize Calendars
+//   // ========== INITIALIZATION ==========
 //   useEffect(() => {
+//     initializeApp();
+//   }, []);
+
+//   const initializeApp = () => {
 //     const defaultCalendars = [
 //       {
 //         id: "primary",
@@ -1241,16 +970,226 @@
 //         visible: true,
 //         type: "personal",
 //       },
+//       {
+//         id: "tasks",
+//         name: "Tasks",
+//         color: CALENDAR_COLORS[3].id,
+//         selected: false,
+//         visible: true,
+//         type: "task",
+//       },
+//       {
+//         id: "reminders",
+//         name: "Reminders",
+//         color: CALENDAR_COLORS[4].id,
+//         selected: false,
+//         visible: true,
+//         type: "reminder",
+//       },
 //     ];
 //     setCalendars(defaultCalendars);
-//   }, []);
 
-//   // Google Login
+//     // Load offline data
+//     const savedEvents = localStorage.getItem("calendar_events");
+//     if (savedEvents) {
+//       setEvents(JSON.parse(savedEvents));
+//     }
+
+//     // Check for notifications
+//     checkForScheduledNotifications();
+//   };
+
+//   // ========== ONLINE/OFFLINE HANDLING ==========
+//   useEffect(() => {
+//     const handleOnline = () => {
+//       setIsOnline(true);
+//       if (accessToken) {
+//         syncCalendar();
+//       }
+//     };
+//     const handleOffline = () => setIsOnline(false);
+
+//     window.addEventListener("online", handleOnline);
+//     window.addEventListener("offline", handleOffline);
+
+//     return () => {
+//       window.removeEventListener("online", handleOnline);
+//       window.removeEventListener("offline", handleOffline);
+//     };
+//   }, [accessToken]);
+
+//   // ========== NOTIFICATION SCHEDULING ==========
+//   useEffect(() => {
+//     const notificationInterval = setInterval(() => {
+//       checkForScheduledNotifications();
+//     }, 30000); // Check every 30 seconds
+
+//     return () => clearInterval(notificationInterval);
+//   }, [events, tasks, reminders, appointments]);
+
+//   const checkForScheduledNotifications = () => {
+//     const now = new Date();
+//     const allItems = [...events, ...tasks, ...reminders, ...appointments];
+
+//     allItems.forEach((item) => {
+//       if (!item.start?.dateTime && !item.dueDate && !item.reminderTime) return;
+
+//       const eventTime = new Date(
+//         item.start?.dateTime || item.dueDate || item.reminderTime
+//       );
+//       const timeDiff = differenceInMinutes(eventTime, now);
+
+//       // Check for upcoming notifications
+//       if (item.notifications) {
+//         item.notifications.forEach((notification) => {
+//           if (
+//             !notification.sent &&
+//             timeDiff > 0 &&
+//             timeDiff <= notification.minutes
+//           ) {
+//             triggerNotification(item, notification);
+//             notification.sent = true;
+//           }
+//         });
+//       }
+
+//       // Check for overdue items
+//       if (timeDiff < 0 && !item.notifiedOverdue) {
+//         if (item.type === "task" && item.status !== "completed") {
+//           triggerOverdueNotification(item);
+//           item.notifiedOverdue = true;
+//         }
+//       }
+//     });
+//   };
+
+//   const triggerNotification = (item, notification) => {
+//     const notificationObj = {
+//       id: uuidv4(),
+//       type: "reminder",
+//       title: `${
+//         item.type.charAt(0).toUpperCase() + item.type.slice(1)
+//       } Reminder`,
+//       message: `${item.summary} - ${format(
+//         new Date(item.start?.dateTime || item.dueDate || item.reminderTime),
+//         "h:mm a"
+//       )}`,
+//       data: item,
+//       timestamp: new Date(),
+//       read: false,
+//     };
+
+//     // Add to notifications list
+//     setNotifications((prev) => [notificationObj, ...prev.slice(0, 99)]);
+
+//     // Show browser notification if enabled
+//     if (notificationSettings.browser && Notification.permission === "granted") {
+//       new Notification(notificationObj.title, {
+//         body: notificationObj.message,
+//         icon: "/calendar-icon.png",
+//         tag: item.id,
+//       });
+//     }
+
+//     // Play sound if enabled
+//     if (notificationSettings.sound && notificationSoundRef.current) {
+//       notificationSoundRef.current.currentTime = 0;
+//       notificationSoundRef.current.play().catch(console.error);
+//     }
+
+//     // Send email if enabled
+//     if (notification.type === "email" && emailSettings.sendReminders) {
+//       sendEmailNotification(item, notification);
+//     }
+
+//     showNotification(
+//       `Reminder: ${item.summary} at ${format(
+//         new Date(item.start?.dateTime || item.dueDate || item.reminderTime),
+//         "h:mm a"
+//       )}`,
+//       "info"
+//     );
+//   };
+
+//   const triggerOverdueNotification = (item) => {
+//     const notificationObj = {
+//       id: uuidv4(),
+//       type: "overdue",
+//       title: `Overdue ${item.type}`,
+//       message: `${item.summary} is overdue`,
+//       data: item,
+//       timestamp: new Date(),
+//       read: false,
+//     };
+
+//     setNotifications((prev) => [notificationObj, ...prev.slice(0, 99)]);
+//   };
+
+//   // ========== EMAIL NOTIFICATION SYSTEM ==========
+//   const sendEmailNotification = async (item, notification) => {
+//     if (!emailSettings.sendEmails || !item.customerEmail) return;
+
+//     setIsSendingEmail(true);
+//     try {
+//       let emailData;
+//       switch (item.type) {
+//         case "event":
+//           emailData = EmailTemplates.eventReminder(item, notification.minutes);
+//           break;
+//         case "appointment":
+//           emailData = EmailTemplates.appointmentConfirmed(item, {
+//             name: item.customerName,
+//           });
+//           break;
+//         case "task":
+//           emailData = EmailTemplates.taskAssigned(item, item.assignedTo);
+//           break;
+//         default:
+//           emailData = {
+//             subject: `Reminder: ${item.summary}`,
+//             body: `<p>Reminder: ${item.summary}</p>`,
+//           };
+//       }
+
+//       // In a real app, you would send this through your backend
+//       // For demo purposes, we'll simulate sending
+//       console.log("Sending email:", {
+//         to: item.customerEmail,
+//         ...emailData,
+//       });
+
+//       showNotification("Email notification sent", "success");
+//     } catch (error) {
+//       console.error("Failed to send email:", error);
+//       showNotification("Failed to send email", "error");
+//     } finally {
+//       setIsSendingEmail(false);
+//     }
+//   };
+
+//   const sendCustomEmail = async (to, subject, body) => {
+//     setIsSendingEmail(true);
+//     try {
+//       // Simulate email sending
+//       await new Promise((resolve) => setTimeout(resolve, 1000));
+
+//       console.log("Email sent:", { to, subject, body });
+//       showNotification("Email sent successfully", "success");
+//       setEmailDialogOpen(false);
+//     } catch (error) {
+//       showNotification("Failed to send email", "error");
+//     } finally {
+//       setIsSendingEmail(false);
+//     }
+//   };
+
+//   // ========== GOOGLE AUTHENTICATION ==========
 //   const login = useGoogleLogin({
 //     scope: CONFIG.scopes,
 //     onSuccess: async (response) => {
 //       console.log("✅ Login successful");
 //       setLoading(true);
+//       setErrorDetails(null);
 //       const token = response.access_token;
 //       setAccessToken(token);
 //       localStorage.setItem("google_access_token", token);
@@ -1266,13 +1205,25 @@
 //       }
 //     },
 //     onError: (error) => {
-//       console.error("❌ Login error:", error);
 //       handleGoogleError(error);
 //     },
 //     flow: "implicit",
 //   });
 
-//   // Fetch User Profile
+//   const logout = () => {
+//     googleLogout();
+//     setAccessToken(null);
+//     setUserProfile(null);
+//     setEvents([]);
+//     setTasks([]);
+//     setReminders([]);
+//     setAppointments([]);
+//     setErrorDetails(null);
+//     localStorage.removeItem("google_access_token");
+//     localStorage.removeItem("google_user_profile");
+//     showNotification("Logged out successfully", "info");
+//   };
+
 //   const fetchUserProfile = async (token) => {
 //     try {
 //       const { data } = await axios.get(
@@ -1291,7 +1242,7 @@
 //     }
 //   };
 
-//   // Fetch Calendar Events
+//   // ========== CALENDAR EVENTS MANAGEMENT ==========
 //   const fetchCalendarEvents = async (token, calendarId = "primary") => {
 //     try {
 //       setLoading(true);
@@ -1308,7 +1259,7 @@
 //             timeMax,
 //             singleEvents: true,
 //             orderBy: "startTime",
-//             maxResults: 100,
+//             maxResults: 250,
 //             showDeleted: false,
 //           },
 //         }
@@ -1324,11 +1275,40 @@
 //         location: event.location || "",
 //         colorId: event.colorId || "1",
 //         status: event.status || "confirmed",
+//         creator: event.creator,
+//         organizer: event.organizer,
+//         attendees: event.attendees || [],
+//         reminders: event.reminders,
+//         recurrence: event.recurrence || [],
 //         type: determineEventType(event),
+//         isGarageEvent: event.description?.includes("Trust Auto Solution"),
+//         serviceType: extractServiceType(event.description),
+//         customerInfo: extractCustomerInfo(event.description),
 //         calendarId: calendarId,
+//         created: event.created,
+//         updated: event.updated,
+//         notifications: event.notifications || [],
 //       }));
 
-//       setEvents(formattedEvents);
+//       // Categorize events by type
+//       const eventsList = formattedEvents.filter((e) => e.type === "event");
+//       const tasksList = formattedEvents.filter((e) => e.type === "task");
+//       const remindersList = formattedEvents.filter(
+//         (e) => e.type === "reminder"
+//       );
+//       const appointmentsList = formattedEvents.filter(
+//         (e) => e.type === "appointment"
+//       );
+
+//       setEvents(eventsList);
+//       setTasks(tasksList);
+//       setReminders(remindersList);
+//       setAppointments(appointmentsList);
+
+//       // Save to localStorage for offline access
+//       localStorage.setItem("calendar_events", JSON.stringify(formattedEvents));
+
+//       updateStats(eventsList, tasksList, remindersList, appointmentsList);
 //       return formattedEvents;
 //     } catch (error) {
 //       console.error("Events fetch error:", error);
@@ -1361,56 +1341,108 @@
 //     return "event";
 //   };
 
-//   // Create Event
+//   const extractServiceType = (description) => {
+//     if (!description) return "General";
+//     const service = SERVICE_TYPES.find((service) =>
+//       description.toLowerCase().includes(service.name.toLowerCase())
+//     );
+//     return service?.name || "General";
+//   };
+
+//   const extractCustomerInfo = (description) => {
+//     if (!description) return {};
+//     const lines = description.split("\n");
+//     const info = {};
+//     lines.forEach((line) => {
+//       if (line.includes("Name:")) info.name = line.split("Name:")[1]?.trim();
+//       if (line.includes("Phone:")) info.phone = line.split("Phone:")[1]?.trim();
+//       if (line.includes("Email:")) info.email = line.split("Email:")[1]?.trim();
+//       if (line.includes("Vehicle:"))
+//         info.vehicle = line.split("Vehicle:")[1]?.trim();
+//     });
+//     return info;
+//   };
+
+//   // ========== EVENT CRUD OPERATIONS ==========
 //   const createEvent = async () => {
-//     if (!accessToken) {
-//       showNotification("Please login first", "warning");
-//       return;
-//     }
-
-//     // Validate form
-//     const errors = {};
-//     if (!formData.summary) errors.summary = "Title is required";
-//     if (!formData.startTime) errors.startTime = "Start time is required";
-//     if (!formData.endTime) errors.endTime = "End time is required";
-//     if (
-//       formData.endTime &&
-//       new Date(formData.endTime) <= new Date(formData.startTime)
-//     ) {
-//       errors.endTime = "End time must be after start time";
-//     }
-
-//     setFormErrors(errors);
-//     if (Object.keys(errors).length > 0) {
-//       showNotification("Please fix the errors in the form", "error");
+//     if (!accessToken && !formData.customerEmail) {
+//       showNotification("Please login or provide customer email", "warning");
 //       return;
 //     }
 
 //     try {
 //       setLoading(true);
 
-//       const startDateTime = fixDateTimeFormat(formData.startTime);
-//       const endDateTime = fixDateTimeFormat(formData.endTime, true);
+//       // Validate form
+//       if (!formData.summary || !formData.startTime) {
+//         showNotification("Please fill required fields", "warning");
+//         return;
+//       }
 
-//       // Build event description based on type
+//       // Fix date formats
+//       const startDateTime = fixDateTimeFormat(formData.startTime);
+//       const endDateTime = formData.endTime
+//         ? fixDateTimeFormat(formData.endTime, true)
+//         : new Date(
+//             new Date(startDateTime).getTime() + 60 * 60000
+//           ).toISOString();
+
+//       // Validate time range
+//       const startTime = new Date(startDateTime);
+//       const endTime = new Date(endDateTime);
+//       if (endTime <= startTime) {
+//         showNotification("End time must be after start time", "error");
+//         return;
+//       }
+
+//       // Build event description
 //       let description = formData.description || "";
 
-//       if (formData.type === "appointment") {
-//         description += `\n\n--- Customer Details ---\n`;
-//         if (formData.customerName)
-//           description += `Name: ${formData.customerName}\n`;
-//         if (formData.customerPhone)
-//           description += `Phone: ${formData.customerPhone}\n`;
-//         if (formData.customerEmail)
-//           description += `Email: ${formData.customerEmail}\n`;
-//         if (formData.serviceType)
-//           description += `Service: ${formData.serviceType}\n`;
-//         if (formData.serviceNotes)
-//           description += `Notes: ${formData.serviceNotes}\n`;
+//       // Add type-specific details
+//       switch (formData.type) {
+//         case "task":
+//           description += `\n\n--- Task Details ---\n`;
+//           description += `Status: ${formData.taskStatus}\n`;
+//           description += `Priority: ${formData.priority}\n`;
+//           description += `Due: ${formData.dueDate}\n`;
+//           if (formData.checklist.length > 0) {
+//             description += `Checklist:\n`;
+//             formData.checklist.forEach((item, idx) => {
+//               description += `  ${idx + 1}. ${item.text} ${
+//                 item.completed ? "[✓]" : "[ ]"
+//               }\n`;
+//             });
+//           }
+//           break;
+//         case "appointment":
+//           description += `\n\n--- Appointment Details ---\n`;
+//           if (formData.customerName)
+//             description += `Customer: ${formData.customerName}\n`;
+//           if (formData.customerPhone)
+//             description += `Phone: ${formData.customerPhone}\n`;
+//           if (formData.customerEmail)
+//             description += `Email: ${formData.customerEmail}\n`;
+//           if (formData.serviceType)
+//             description += `Service: ${formData.serviceType}\n`;
+//           if (formData.serviceNotes)
+//             description += `Notes: ${formData.serviceNotes}\n`;
+//           break;
+//         case "reminder":
+//           description += `\n\n--- Reminder Details ---\n`;
+//           description += `Important: ${formData.important ? "Yes" : "No"}\n`;
+//           description += `Repeat: ${formData.repeatReminder}\n`;
+//           break;
+//         case "meeting":
+//           description += `\n\n--- Meeting Details ---\n`;
+//           if (formData.agenda) description += `Agenda: ${formData.agenda}\n`;
+//           if (formData.conferenceLink)
+//             description += `Join: ${formData.conferenceLink}\n`;
+//           break;
 //       }
 
 //       description += `\nCreated via: Enhanced Calendar App`;
 
+//       // Prepare event payload
 //       const eventPayload = {
 //         summary: formData.summary,
 //         description: description.trim(),
@@ -1426,68 +1458,259 @@
 //         colorId: formData.color,
 //         reminders: {
 //           useDefault: false,
-//           overrides: formData.notificationTypes.map((type) => ({
-//             method: type,
-//             minutes: parseInt(formData.reminder) || 30,
+//           overrides: formData.notifications.map((notif) => ({
+//             method: notif.type === "email" ? "email" : "popup",
+//             minutes: notif.minutes,
 //           })),
 //         },
+//         attendees: formData.customerEmail
+//           ? [{ email: formData.customerEmail }]
+//           : [],
+//         guestsCanModify: formData.guestsCanModify,
+//         guestsCanInviteOthers: formData.guestsCanInviteOthers,
+//         guestsCanSeeOtherGuests: formData.guestsCanSeeOtherGuests,
+//         visibility: formData.private ? "private" : "default",
+//         transparency: formData.busy ? "opaque" : "transparent",
 //       };
 
-//       // Add conference data for meetings
-//       if (formData.type === "meeting" && formData.conferenceData?.link) {
-//         eventPayload.conferenceData = {
-//           createRequest: {
-//             requestId: `meet-${Date.now()}`,
-//             conferenceSolutionKey: { type: "hangoutsMeet" },
+//       let response;
+//       if (accessToken) {
+//         // Create in Google Calendar
+//         response = await axios.post(
+//           `https://www.googleapis.com/calendar/v3/calendars/${formData.calendarId}/events`,
+//           eventPayload,
+//           {
+//             headers: {
+//               Authorization: `Bearer ${accessToken}`,
+//               "Content-Type": "application/json",
+//             },
+//           }
+//         );
+//       } else {
+//         // Create local event
+//         response = {
+//           data: {
+//             ...eventPayload,
+//             id: uuidv4(),
+//             created: new Date().toISOString(),
+//             updated: new Date().toISOString(),
+//             status: "confirmed",
+//             creator: { email: "local@user.com" },
+//             organizer: { email: "local@user.com" },
 //           },
 //         };
 //       }
 
-//       // Add attendees if provided
-//       if (formData.attendees && formData.attendees.length > 0) {
-//         eventPayload.attendees = formData.attendees.map((email) => ({
-//           email,
-//           responseStatus: "needsAction",
-//         }));
-//       }
-
-//       if (formData.customerEmail) {
-//         eventPayload.attendees = [
-//           ...(eventPayload.attendees || []),
-//           { email: formData.customerEmail, responseStatus: "needsAction" },
-//         ];
-//       }
-
-//       const response = await axios.post(
-//         `https://www.googleapis.com/calendar/v3/calendars/${formData.calendarId}/events`,
-//         eventPayload,
-//         {
-//           headers: {
-//             Authorization: `Bearer ${accessToken}`,
-//             "Content-Type": "application/json",
-//           },
-//         }
-//       );
-
+//       // Create local event object
 //       const newEvent = {
 //         ...response.data,
 //         type: formData.type,
-//         colorId: formData.color,
+//         isGarageEvent: formData.type === "appointment",
+//         serviceType: formData.serviceType,
+//         customerInfo: {
+//           name: formData.customerName,
+//           phone: formData.customerPhone,
+//           email: formData.customerEmail,
+//         },
+//         taskStatus: formData.taskStatus,
+//         checklist: formData.checklist,
+//         dueDate: formData.dueDate,
+//         priority: formData.priority,
+//         notifications: formData.notifications,
+//         important: formData.important,
+//         repeatReminder: formData.repeatReminder,
 //       };
 
-//       setEvents((prev) => [newEvent, ...prev]);
+//       // Update appropriate state
+//       switch (formData.type) {
+//         case "task":
+//           setTasks((prev) => [newEvent, ...prev]);
+//           break;
+//         case "reminder":
+//           setReminders((prev) => [newEvent, ...prev]);
+//           break;
+//         case "appointment":
+//           setAppointments((prev) => [newEvent, ...prev]);
+//           break;
+//         default:
+//           setEvents((prev) => [newEvent, ...prev]);
+//       }
+
+//       // Save to localStorage
+//       const allEvents = [...events, ...tasks, ...reminders, ...appointments];
+//       localStorage.setItem(
+//         "calendar_events",
+//         JSON.stringify([newEvent, ...allEvents])
+//       );
+
+//       // Send notifications
+//       if (formData.customerEmail && emailSettings.sendEmails) {
+//         sendEmailNotification(newEvent, { type: "email", minutes: 0 });
+//       }
+
+//       // Show success
 //       setOpenDialog(false);
 //       resetForm();
-//       showNotification(`✅ ${formData.type} created successfully!`, "success");
+//       showNotification(`${formData.type} created successfully!`, "success");
+
+//       // Update stats
+//       updateStats([...events, newEvent], tasks, reminders, appointments);
 //     } catch (error) {
-//       console.error("❌ Event creation error:", error);
+//       console.error("Event creation error:", error);
 //       handleGoogleError(error);
 //     } finally {
 //       setLoading(false);
 //     }
 //   };
 
-//   // Handle Drag and Drop
+//   const updateEvent = async () => {
+//     if (!selectedEvent) return;
+
+//     try {
+//       setLoading(true);
+
+//       // Fix date formats
+//       const startDateTime = fixDateTimeFormat(formData.startTime);
+//       const endDateTime = formData.endTime
+//         ? fixDateTimeFormat(formData.endTime, true)
+//         : new Date(
+//             new Date(startDateTime).getTime() + 60 * 60000
+//           ).toISOString();
+
+//       const eventUpdate = {
+//         ...selectedEvent,
+//         summary: formData.summary,
+//         description: formData.description,
+//         start: {
+//           dateTime: startDateTime,
+//           timeZone: formData.timeZone,
+//         },
+//         end: {
+//           dateTime: endDateTime,
+//           timeZone: formData.timeZone,
+//         },
+//         location: formData.location,
+//         colorId: formData.color,
+//       };
+
+//       if (accessToken) {
+//         await axios.put(
+//           `https://www.googleapis.com/calendar/v3/calendars/${
+//             selectedEvent.calendarId || "primary"
+//           }/events/${selectedEvent.id}`,
+//           eventUpdate,
+//           {
+//             headers: {
+//               Authorization: `Bearer ${accessToken}`,
+//               "Content-Type": "application/json",
+//             },
+//           }
+//         );
+//         await fetchCalendarEvents(
+//           accessToken,
+//           selectedEvent.calendarId || "primary"
+//         );
+//       } else {
+//         // Update locally
+//         const updateState = (state, setState) => {
+//           const updated = state.map((item) =>
+//             item.id === selectedEvent.id ? { ...item, ...eventUpdate } : item
+//           );
+//           setState(updated);
+//           return updated;
+//         };
+
+//         switch (selectedEvent.type) {
+//           case "task":
+//             updateState(tasks, setTasks);
+//             break;
+//           case "reminder":
+//             updateState(reminders, setReminders);
+//             break;
+//           case "appointment":
+//             updateState(appointments, setAppointments);
+//             break;
+//           default:
+//             updateState(events, setEvents);
+//         }
+//       }
+
+//       // Send update email if enabled
+//       if (emailSettings.sendUpdates && selectedEvent.customerEmail) {
+//         sendEmailNotification(selectedEvent, { type: "email", minutes: 0 });
+//       }
+
+//       setOpenDialog(false);
+//       resetForm();
+//       showNotification("Event updated successfully!", "success");
+//     } catch (error) {
+//       console.error("Update error:", error);
+//       handleGoogleError(error);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const deleteEvent = async (eventId, calendarId = "primary") => {
+//     try {
+//       if (accessToken) {
+//         await axios.delete(
+//           `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events/${eventId}`,
+//           {
+//             headers: { Authorization: `Bearer ${accessToken}` },
+//           }
+//         );
+//       }
+
+//       // Remove from all states
+//       const removeFromState = (state) =>
+//         state.filter((event) => event.id !== eventId);
+
+//       setEvents(removeFromState);
+//       setTasks(removeFromState);
+//       setReminders(removeFromState);
+//       setAppointments(removeFromState);
+
+//       // Update localStorage
+//       const allEvents = [...events, ...tasks, ...reminders, ...appointments];
+//       localStorage.setItem(
+//         "calendar_events",
+//         JSON.stringify(allEvents.filter((e) => e.id !== eventId))
+//       );
+
+//       // Send cancellation email if enabled
+//       const event = allEvents.find((e) => e.id === eventId);
+//       if (event && emailSettings.sendCancellations && event.customerEmail) {
+//         // Send cancellation email
+//       }
+
+//       showNotification("Event deleted successfully!", "success");
+//     } catch (error) {
+//       console.error("Delete error:", error);
+//       handleGoogleError(error);
+//     }
+//   };
+
+//   // ========== SYNC AND DRAG-DROP ==========
+//   const syncCalendar = async () => {
+//     if (!accessToken) return;
+
+//     try {
+//       setSyncStatus("syncing");
+//       setLoading(true);
+
+//       await fetchCalendarEvents(accessToken, "primary");
+
+//       setSyncStatus("synced");
+//       showNotification("Calendar synced successfully!", "success");
+//     } catch (error) {
+//       setSyncStatus("error");
+//       handleGoogleError(error);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
 //   const handleDrop = async (item, dropLocation) => {
 //     try {
 //       setLoading(true);
@@ -1498,7 +1721,13 @@
 //       newStartTime.setHours(hours, minutes, 0, 0);
 //       const newEndTime = new Date(newStartTime.getTime() + 60 * 60000);
 
-//       const eventToUpdate = events.find((e) => e.id === item.id);
+//       const eventToUpdate = [
+//         ...events,
+//         ...tasks,
+//         ...reminders,
+//         ...appointments,
+//       ].find((e) => e.id === item.id);
+
 //       if (!eventToUpdate) return;
 
 //       const updatedEvent = {
@@ -1513,24 +1742,48 @@
 //         },
 //       };
 
-//       await axios.put(
-//         `https://www.googleapis.com/calendar/v3/calendars/${
+//       if (accessToken) {
+//         await axios.put(
+//           `https://www.googleapis.com/calendar/v3/calendars/${
+//             eventToUpdate.calendarId || "primary"
+//           }/events/${eventToUpdate.id}`,
+//           updatedEvent,
+//           {
+//             headers: {
+//               Authorization: `Bearer ${accessToken}`,
+//               "Content-Type": "application/json",
+//             },
+//           }
+//         );
+//         await fetchCalendarEvents(
+//           accessToken,
 //           eventToUpdate.calendarId || "primary"
-//         }/events/${eventToUpdate.id}`,
-//         updatedEvent,
-//         {
-//           headers: {
-//             Authorization: `Bearer ${accessToken}`,
-//             "Content-Type": "application/json",
-//           },
-//         }
-//       );
+//         );
+//       } else {
+//         // Update locally
+//         const updateState = (state, setState) => {
+//           const updated = state.map((item) =>
+//             item.id === eventToUpdate.id ? { ...item, ...updatedEvent } : item
+//           );
+//           setState(updated);
+//         };
 
-//       await fetchCalendarEvents(
-//         accessToken,
-//         eventToUpdate.calendarId || "primary"
-//       );
-//       showNotification("✅ Event moved successfully!", "success");
+//         switch (eventToUpdate.type) {
+//           case "task":
+//             updateState(tasks, setTasks);
+//             break;
+//           case "reminder":
+//             updateState(reminders, setReminders);
+//             break;
+//           case "appointment":
+//             updateState(appointments, setAppointments);
+//             break;
+//           default:
+//             updateState(events, setEvents);
+//         }
+//       }
+
+//       showNotification("Event moved successfully!", "success");
 //     } catch (error) {
 //       console.error("Drag and drop error:", error);
 //       handleGoogleError(error);
@@ -1539,7 +1792,275 @@
 //     }
 //   };
 
-//   // Reset Form
+//   // ========== STATISTICS ==========
+//   const updateStats = (
+//     eventsList,
+//     tasksList,
+//     remindersList,
+//     appointmentsList
+//   ) => {
+//     const now = new Date();
+//     const today = format(now, "yyyy-MM-dd");
+
+//     const allItems = [
+//       ...eventsList,
+//       ...tasksList,
+//       ...remindersList,
+//       ...appointmentsList,
+//     ];
+//     const todayItems = allItems.filter((item) => {
+//       const itemDate =
+//         item.start?.dateTime || item.dueDate || item.reminderTime;
+//       return itemDate && format(new Date(itemDate), "yyyy-MM-dd") === today;
+//     });
+
+//     const upcomingItems = allItems.filter((item) => {
+//       const itemDate =
+//         item.start?.dateTime || item.dueDate || item.reminderTime;
+//       return itemDate && new Date(itemDate) > now;
+//     });
+
+//     const completedTasks = tasksList.filter(
+//       (task) => task.taskStatus === "completed"
+//     );
+//     const overdueTasks = tasksList.filter((task) => {
+//       if (task.taskStatus === "completed") return false;
+//       const dueDate = task.dueDate ? new Date(task.dueDate) : null;
+//       return dueDate && dueDate < now;
+//     });
+
+//     setStats({
+//       totalEvents: allItems.length,
+//       todayEvents: todayItems.length,
+//       upcomingEvents: upcomingItems.length,
+//       completedEvents: eventsList.filter((e) => e.status === "completed")
+//         .length,
+//       overdueTasks: overdueTasks.length,
+//       pendingReminders: remindersList.filter((r) => !r.notified).length,
+//       meetingsToday: eventsList.filter(
+//         (e) =>
+//           e.type === "meeting" &&
+//           e.start?.dateTime &&
+//           format(new Date(e.start.dateTime), "yyyy-MM-dd") === today
+//       ).length,
+//       appointmentsToday: appointmentsList.filter(
+//         (a) =>
+//           a.start?.dateTime &&
+//           format(new Date(a.start.dateTime), "yyyy-MM-dd") === today
+//       ).length,
+//     });
+//   };
+
+//   // ========== QUICK ACTIONS ==========
+//   const quickCreate = (type) => {
+//     const now = new Date();
+//     const startTime = addHours(now, 1);
+//     const endTime = addHours(startTime, 1);
+
+//     let template = {
+//       type: type,
+//       summary: "",
+//       description: "",
+//       startTime: formatForDateTimeLocal(startTime),
+//       endTime: formatForDateTimeLocal(endTime),
+//       dueDate: formatForDateTimeLocal(addDays(now, 1)),
+//       reminderTime: formatForDateTimeLocal(addHours(now, 1)),
+//       color:
+//         CALENDAR_COLORS[Math.floor(Math.random() * CALENDAR_COLORS.length)].id,
+//     };
+
+//     switch (type) {
+//       case "meeting":
+//         template.summary = "Team Meeting";
+//         template.description = "Weekly team sync";
+//         template.agenda =
+//           "1. Project updates\n2. Roadmap discussion\n3. Action items";
+//         break;
+//       case "task":
+//         template.summary = "Complete project report";
+//         template.description = "Finish the quarterly project report";
+//         template.taskStatus = "not_started";
+//         template.checklist = [
+//           { id: uuidv4(), text: "Gather data", completed: false },
+//           { id: uuidv4(), text: "Write draft", completed: false },
+//           { id: uuidv4(), text: "Review with team", completed: false },
+//         ];
+//         break;
+//       case "event":
+//         template.summary = "Company Event";
+//         template.description = "Annual company gathering";
+//         break;
+//       case "appointment":
+//         template.summary = "Client Meeting";
+//         template.description = "Project kickoff meeting";
+//         template.customerName = "John Doe";
+//         template.customerEmail = "john@example.com";
+//         template.customerPhone = "+1234567890";
+//         template.serviceType = "Consultation";
+//         break;
+//       case "reminder":
+//         template.summary = "Submit timesheet";
+//         template.description = "Weekly timesheet submission";
+//         template.important = true;
+//         template.repeatReminder = "weekly";
+//         break;
+//     }
+
+//     setFormData((prev) => ({ ...prev, ...template }));
+//     setOpenDialog(true);
+//   };
+
+//   // ========== EXPORT AND PRINT ==========
+//   const exportData = (format = "csv") => {
+//     const allData = [...events, ...tasks, ...reminders, ...appointments];
+
+//     if (allData.length === 0) {
+//       showNotification("No data to export", "warning");
+//       return;
+//     }
+
+//     let exportContent;
+//     let fileName;
+//     let mimeType;
+
+//     if (format === "csv") {
+//       const csvData = allData.map((item) => ({
+//         Type: item.type || "event",
+//         Title: item.summary || "No Title",
+//         Date: item.start?.dateTime
+//           ? format(new Date(item.start.dateTime), "yyyy-MM-dd HH:mm")
+//           : "N/A",
+//         End: item.end?.dateTime
+//           ? format(new Date(item.end.dateTime), "yyyy-MM-dd HH:mm")
+//           : "N/A",
+//         Location: item.location || "N/A",
+//         Description: item.description || "N/A",
+//         Status: item.status || "N/A",
+//         Priority: item.priority || "N/A",
+//       }));
+
+//       const headers = Object.keys(csvData[0]).join(",");
+//       const rows = csvData.map((row) =>
+//         Object.values(row)
+//           .map((val) => `"${val}"`)
+//           .join(",")
+//       );
+
+//       exportContent = [headers, ...rows].join("\n");
+//       fileName = `calendar-export-${format(new Date(), "yyyy-MM-dd")}.csv`;
+//       mimeType = "text/csv";
+//     }
+
+//     const blob = new Blob([exportContent], { type: mimeType });
+//     const url = window.URL.createObjectURL(blob);
+//     const a = document.createElement("a");
+//     a.href = url;
+//     a.download = fileName;
+//     document.body.appendChild(a);
+//     a.click();
+//     document.body.removeChild(a);
+//     window.URL.revokeObjectURL(url);
+
+//     showNotification(`Exported ${allData.length} items`, "success");
+//   };
+
+//   const printSchedule = () => {
+//     const printWindow = window.open("", "_blank");
+//     const now = new Date();
+//     const allData = [...events, ...tasks, ...reminders, ...appointments];
+
+//     printWindow.document.write(`
+//       <html>
+//         <head>
+//           <title>Calendar Schedule - ${format(now, "PPPP")}</title>
+//           <style>
+//             body { font-family: Arial, sans-serif; margin: 20px; }
+//             h1 { color: #333; border-bottom: 2px solid #4285F4; padding-bottom: 10px; }
+//             .header { display: flex; justify-content: space-between; margin-bottom: 30px; }
+//             .stats { background: #f8f9fa; padding: 15px; border-radius: 8px; display: flex; gap: 20px; }
+//             .stat-item { text-align: center; }
+//             .stat-value { font-size: 24px; font-weight: bold; color: #4285F4; }
+//             .stat-label { font-size: 12px; color: #666; }
+//             table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+//             th { background-color: #4285F4; color: white; padding: 12px; text-align: left; }
+//             td { border: 1px solid #ddd; padding: 10px; }
+//             tr:nth-child(even) { background-color: #f9f9f9; }
+//             .event-type { display: inline-block; padding: 2px 8px; border-radius: 4px; color: white; font-size: 12px; }
+//             .event-event { background: #4285F4; }
+//             .event-task { background: #0F9D58; }
+//             .event-meeting { background: #DB4437; }
+//             .event-appointment { background: #F4B400; }
+//             .event-reminder { background: #AB47BC; }
+//             .footer { margin-top: 30px; text-align: center; color: #666; font-size: 12px; }
+//           </style>
+//         </head>
+//         <body>
+//           <div class="header">
+//             <h1>Enhanced Calendar - Schedule Report</h1>
+//             <div class="stats">
+//               <div class="stat-item">
+//                 <div class="stat-value">${stats.totalEvents}</div>
+//                 <div class="stat-label">Total Items</div>
+//               </div>
+//               <div class="stat-item">
+//                 <div class="stat-value">${stats.todayEvents}</div>
+//                 <div class="stat-label">Today</div>
+//               </div>
+//               <div class="stat-item">
+//                 <div class="stat-value">${stats.upcomingEvents}</div>
+//                 <div class="stat-label">Upcoming</div>
+//               </div>
+//             </div>
+//           </div>
+//           <p><strong>Generated:</strong> ${format(now, "PPPPpppp")}</p>
+//           <table>
+//             <thead>
+//               <tr>
+//                 <th>Type</th>
+//                 <th>Title</th>
+//                 <th>Date & Time</th>
+//                 <th>Location</th>
+//                 <th>Status</th>
+//               </tr>
+//             </thead>
+//             <tbody>
+//               ${allData
+//                 .slice(0, 50)
+//                 .map(
+//                   (item) => `
+//                   <tr>
+//                     <td>
+//                       <span class="event-type event-${item.type || "event"}">
+//                         ${(item.type || "event").toUpperCase()}
+//                       </span>
+//                     </td>
+//                     <td>${item.summary || "No Title"}</td>
+//                     <td>${
+//                       item.start?.dateTime
+//                         ? format(new Date(item.start.dateTime), "PPpp")
+//                         : "N/A"
+//                     }</td>
+//                     <td>${item.location || "N/A"}</td>
+//                     <td>${item.status || item.taskStatus || "scheduled"}</td>
+//                   </tr>
+//                 `
+//                 )
+//                 .join("")}
+//             </tbody>
+//           </table>
+//           <div class="footer">
+//             <p>Generated by Enhanced Calendar App</p>
+//             <p>Total items: ${allData.length}</p>
+//           </div>
+//         </body>
+//       </html>
+//     `);
+//     printWindow.document.close();
+//     printWindow.focus();
+//     printWindow.print();
+//   };
+
+//   // ========== FORM MANAGEMENT ==========
 //   const resetForm = () => {
 //     const now = new Date();
 //     const startTime = addHours(now, 1);
@@ -1552,36 +2073,158 @@
 //       startTime: formatForDateTimeLocal(startTime),
 //       endTime: formatForDateTimeLocal(endTime),
 //       location: "",
+
+//       // Task specific
+//       taskStatus: "not_started",
+//       checklist: [],
+//       dueDate: formatForDateTimeLocal(addDays(now, 1)),
+//       completionDate: "",
+//       subtasks: [],
+
+//       // Reminder specific
+//       reminderTime: formatForDateTimeLocal(addHours(now, 1)),
+//       repeatReminder: "none",
+//       important: false,
+
+//       // Appointment specific
+//       customerName: "",
 //       customerEmail: "",
 //       customerPhone: "",
-//       customerName: "",
+//       customerAddress: "",
 //       serviceType: "",
 //       serviceNotes: "",
+//       vehicleInfo: {
+//         type: "car",
+//         model: "",
+//         year: "",
+//         license: "",
+//       },
+
+//       // Meeting specific
+//       agenda: "",
+//       attendees: [],
+//       meetingType: "in_person",
+//       conferenceLink: "",
+
+//       // Common
 //       priority: "medium",
-//       reminder: "30",
-//       sendEmail: true,
 //       status: "scheduled",
+//       category: "personal",
+//       tags: [],
+//       attachments: [],
 //       color: CALENDAR_COLORS[0].id,
 //       calendarId: "primary",
-//       attendees: [],
-//       recurrence: "none",
 //       timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
 //       allDay: false,
 //       private: false,
 //       busy: true,
-//       notificationTypes: ["popup"],
-//       conferenceData: {
+
+//       // Notifications
+//       notifications: [
+//         { type: "popup", minutes: 30, sent: false },
+//         { type: "email", minutes: 60, sent: false },
+//       ],
+
+//       // Recurrence
+//       recurrence: "none",
+//       recurrenceEndDate: "",
+//       recurrenceCount: 1,
+
+//       // Access
+//       guestsCanModify: false,
+//       guestsCanInviteOthers: false,
+//       guestsCanSeeOtherGuests: true,
+//       visibility: "default",
+
+//       // Additional
+//       estimatedDuration: 60,
+//       actualDuration: 0,
+//       progress: 0,
+//       notes: "",
+//       locationDetails: {
+//         lat: null,
+//         lng: null,
+//         address: "",
 //         link: "",
 //       },
+//       conferenceData: {
+//         type: "hangoutsMeet",
+//         link: "",
+//         phoneNumber: "",
+//         pin: "",
+//       },
 //     });
-//     setFormErrors({});
 //     setSelectedEvent(null);
 //   };
 
-//   // Handle Google Errors
+//   const showNotification = (message, severity = "info") => {
+//     setNotification({ open: true, message, severity });
+//   };
+
+//   const handleOpenDialog = (event = null, type = "event") => {
+//     if (event) {
+//       setSelectedEvent(event);
+//       const customerInfo = extractCustomerInfo(event.description);
+
+//       const formatISOToInput = (isoDate) => {
+//         try {
+//           const date = new Date(isoDate);
+//           return formatForDateTimeLocal(date);
+//         } catch {
+//           return "";
+//         }
+//       };
+
+//       setFormData((prev) => ({
+//         ...prev,
+//         type: event.type || "event",
+//         summary: event.summary || "",
+//         description: event.description || "",
+//         startTime: event.start?.dateTime
+//           ? formatISOToInput(event.start.dateTime)
+//           : "",
+//         endTime: event.end?.dateTime
+//           ? formatISOToInput(event.end.dateTime)
+//           : "",
+//         location: event.location || "",
+//         customerEmail: customerInfo.email || "",
+//         customerPhone: customerInfo.phone || "",
+//         customerName: customerInfo.name || "",
+//         serviceType: extractServiceType(event.description),
+//         color: event.colorId || CALENDAR_COLORS[0].id,
+//         calendarId: event.calendarId || "primary",
+//         status: event.status || "scheduled",
+//         priority: event.priority || "medium",
+//         taskStatus: event.taskStatus || "not_started",
+//         checklist: event.checklist || [],
+//         dueDate: event.dueDate ? formatISOToInput(event.dueDate) : "",
+//         important: event.important || false,
+//         repeatReminder: event.repeatReminder || "none",
+//         notifications: event.notifications || [
+//           { type: "popup", minutes: 30, sent: false },
+//           { type: "email", minutes: 60, sent: false },
+//         ],
+//       }));
+//     } else {
+//       const now = new Date();
+//       const startTime = addHours(now, 1);
+//       const endTime = addHours(startTime, 1);
+
+//       resetForm();
+//       setFormData((prev) => ({
+//         ...prev,
+//         type: type,
+//         color:
+//           CALENDAR_COLORS[Math.floor(Math.random() * CALENDAR_COLORS.length)]
+//             .id,
+//       }));
+//     }
+//     setOpenDialog(true);
+//   };
+
+//   // ========== EVENT HANDLERS ==========
 //   const handleGoogleError = (error) => {
 //     console.error("Google API Error:", error);
-
 //     if (error.response) {
 //       const status = error.response.status;
 //       const data = error.response.data;
@@ -1590,8 +2233,12 @@
 //         case 400:
 //           setErrorDetails({
 //             type: "bad_request",
-//             message: "Invalid request",
-//             details: data.error?.message || "Bad Request",
+//             message: "Invalid request data format",
+//             details: [
+//               "Check date/time format",
+//               "Ensure end time is after start time",
+//               data.error?.message || "Bad Request",
+//             ],
 //           });
 //           break;
 //         case 401:
@@ -1600,14 +2247,21 @@
 //             message: "Session expired",
 //             details: "Please login again",
 //           });
-//           // logout();
+//           logout();
 //           break;
 //         case 403:
-//           setErrorDetails({
-//             type: "config_required",
-//             message: "Configuration Required",
-//             details: "Please enable Calendar API in Google Cloud Console",
-//           });
+//           const errorMsg = data.error?.message || "";
+//           if (errorMsg.includes("has not been used in project")) {
+//             setErrorDetails({
+//               type: "config_required",
+//               message: "Configuration Required",
+//               details: [
+//                 "Please enable Calendar API in Google Cloud Console",
+//                 "Add your email as a test user",
+//               ],
+//             });
+//             setConfigHelpOpen(true);
+//           }
 //           break;
 //         default:
 //           setErrorDetails({
@@ -1617,16 +2271,13 @@
 //           });
 //       }
 //     }
-
-//     showNotification("❌ Operation failed", "error");
+//     showNotification("Operation failed. Check error details.", "error");
 //   };
 
-//   // Show Notification
-//   const showNotification = (message, severity = "info") => {
-//     setNotification({ open: true, message, severity });
+//   const clearError = () => {
+//     setErrorDetails(null);
 //   };
 
-//   // Navigation Functions
 //   const goToToday = () => setCurrentDate(new Date());
 //   const goToPrevious = () => {
 //     if (viewMode === "week") setCurrentDate((prev) => subWeeks(prev, 1));
@@ -1639,83 +2290,139 @@
 //     else setCurrentDate((prev) => addDays(prev, 1));
 //   };
 
-//   // Get Events for Day
 //   const getEventsForDay = (day) => {
-//     return events.filter((event) => {
-//       if (!event.start?.dateTime) return false;
-//       const eventDate = new Date(event.start.dateTime);
-//       return isSameDay(eventDate, day);
+//     const allItems = [...events, ...tasks, ...reminders, ...appointments];
+//     return allItems.filter((item) => {
+//       if (!item.start?.dateTime && !item.dueDate && !item.reminderTime)
+//         return false;
+//       const itemDate = new Date(
+//         item.start?.dateTime || item.dueDate || item.reminderTime
+//       );
+//       return isSameDay(itemDate, day);
 //     });
 //   };
 
-//   // Open Dialog for specific event type
-//   const handleOpenDialog = (event = null, type = "event") => {
-//     if (event) {
-//       setSelectedEvent(event);
-//       setSelectedEventType(event.type);
-//       setFormData({
-//         ...formData,
-//         type: event.type,
-//         summary: event.summary || "",
-//         description: event.description || "",
-//         startTime: event.start?.dateTime
-//           ? formatForDateTimeLocal(new Date(event.start.dateTime))
-//           : "",
-//         endTime: event.end?.dateTime
-//           ? formatForDateTimeLocal(new Date(event.end.dateTime))
-//           : "",
-//         location: event.location || "",
-//         color: event.colorId || CALENDAR_COLORS[0].id,
-//         calendarId: event.calendarId || "primary",
-//       });
-//     } else {
+//   const getColorById = (colorId) => {
+//     const color =
+//       CALENDAR_COLORS.find((c) => c.id === colorId) || CALENDAR_COLORS[0];
+//     return color.hex;
+//   };
+
+//   // ========== FILTERING ==========
+//   const filteredEvents = useMemo(() => {
+//     const allItems = [...events, ...tasks, ...reminders, ...appointments];
+//     let filtered = [...allItems];
+
+//     // Apply search
+//     if (searchQuery) {
+//       const query = searchQuery.toLowerCase();
+//       filtered = filtered.filter(
+//         (item) =>
+//           (item.summary || "").toLowerCase().includes(query) ||
+//           (item.description || "").toLowerCase().includes(query) ||
+//           (item.location || "").toLowerCase().includes(query) ||
+//           (item.customerInfo?.name || "").toLowerCase().includes(query) ||
+//           (item.serviceType || "").toLowerCase().includes(query)
+//       );
+//     }
+
+//     // Apply type filters
+//     filtered = filtered.filter((item) => {
+//       const type = item.type || "event";
+//       switch (type) {
+//         case "task":
+//           return filterSettings.showTasks;
+//         case "event":
+//           return filterSettings.showEvents;
+//         case "meeting":
+//           return filterSettings.showMeetings;
+//         case "appointment":
+//           return filterSettings.showAppointments;
+//         case "reminder":
+//           return filterSettings.showReminders;
+//         default:
+//           return true;
+//       }
+//     });
+
+//     // Apply status filters
+//     if (!filterSettings.showCompleted) {
+//       filtered = filtered.filter(
+//         (item) => item.status !== "completed" && item.taskStatus !== "completed"
+//       );
+//     }
+
+//     if (!filterSettings.showCancelled) {
+//       filtered = filtered.filter((item) => item.status !== "cancelled");
+//     }
+
+//     if (!filterSettings.showPast) {
 //       const now = new Date();
-//       const startTime = addHours(now, 1);
-//       const endTime = addHours(startTime, 1);
-
-//       setSelectedEventType(type);
-//       setFormData({
-//         ...formData,
-//         type: type,
-//         summary: "",
-//         description: "",
-//         startTime: formatForDateTimeLocal(startTime),
-//         endTime: formatForDateTimeLocal(endTime),
-//         location: "",
-//         color:
-//           CALENDAR_COLORS[Math.floor(Math.random() * CALENDAR_COLORS.length)]
-//             .id,
+//       filtered = filtered.filter((item) => {
+//         const itemDate = new Date(
+//           item.start?.dateTime || item.dueDate || item.reminderTime
+//         );
+//         return isAfter(itemDate, now) || isSameDay(itemDate, now);
 //       });
-//       setSelectedEvent(null);
 //     }
-//     setOpenDialog(true);
+
+//     return filtered;
+//   }, [events, tasks, reminders, appointments, searchQuery, filterSettings]);
+
+//   // ========== THEME AND UI ==========
+//   const toggleTheme = () => {
+//     const newTheme = themeMode === "light" ? "dark" : "light";
+//     setThemeMode(newTheme);
+//     localStorage.setItem("calendar_theme", newTheme);
 //   };
 
-//   // Render Form based on selected event type
-//   const renderForm = () => {
-//     const formProps = {
-//       formData,
-//       setFormData,
-//       errors: formErrors,
-//     };
-
-//     switch (selectedEventType) {
-//       case "event":
-//         return <EventForm {...formProps} />;
-//       case "meeting":
-//         return <MeetingForm {...formProps} />;
-//       case "task":
-//         return <TaskForm {...formProps} />;
-//       case "appointment":
-//         return <AppointmentForm {...formProps} />;
-//       case "reminder":
-//         return <ReminderForm {...formProps} />;
-//       default:
-//         return <EventForm {...formProps} />;
-//     }
+//   const toggleSidebar = () => {
+//     setSidebarOpen(!sidebarOpen);
 //   };
 
-//   // Render Calendar View
+//   const markNotificationAsRead = (id) => {
+//     setNotifications((prev) =>
+//       prev.map((notif) => (notif.id === id ? { ...notif, read: true } : notif))
+//     );
+//   };
+
+//   const markAllNotificationsAsRead = () => {
+//     setNotifications((prev) => prev.map((notif) => ({ ...notif, read: true })));
+//   };
+
+//   const clearAllNotifications = () => {
+//     setNotifications([]);
+//   };
+
+//   const getUnreadNotificationCount = () => {
+//     return notifications.filter((n) => !n.read).length;
+//   };
+
+//   const getUpcomingEvents = () => {
+//     const now = new Date();
+//     const allItems = [...events, ...tasks, ...reminders, ...appointments];
+//     return allItems
+//       .filter((item) => {
+//         if (!item.start?.dateTime && !item.dueDate && !item.reminderTime)
+//           return false;
+//         const itemTime = new Date(
+//           item.start?.dateTime || item.dueDate || item.reminderTime
+//         );
+//         return itemTime > now && differenceInHours(itemTime, now) <= 24;
+//       })
+//       .sort((a, b) => {
+//         const aTime = new Date(
+//           a.start?.dateTime || a.dueDate || a.reminderTime
+//         );
+//         const bTime = new Date(
+//           b.start?.dateTime || b.dueDate || b.reminderTime
+//         );
+//         return aTime - bTime;
+//       })
+//       .slice(0, 5);
+//   };
+
+//   // ========== RENDER CALENDAR VIEWS ==========
 //   const renderCalendarView = () => {
 //     switch (viewMode) {
 //       case "day":
@@ -1752,12 +2459,9 @@
 //                     alignItems: "center",
 //                     justifyContent: "center",
 //                     position: "relative",
-//                     bgcolor: "background.paper",
 //                   }}
 //                 >
-//                   <Typography variant="caption" color="text.secondary">
-//                     {time}
-//                   </Typography>
+//                   <Typography variant="caption">{time}</Typography>
 //                   {dragDropEnabled && (
 //                     <DroppableCalendarSlot
 //                       date={format(currentDate, "yyyy-MM-dd")}
@@ -1779,7 +2483,6 @@
 //                     borderBottom: 1,
 //                     borderColor: "divider",
 //                     position: "relative",
-//                     bgcolor: "background.paper",
 //                   }}
 //                 >
 //                   {dragDropEnabled && (
@@ -1795,7 +2498,7 @@
 //               {dayEvents.map((event) => {
 //                 const startTime = event.start?.dateTime
 //                   ? new Date(event.start.dateTime)
-//                   : new Date();
+//                   : new Date(event.dueDate || event.reminderTime || new Date());
 //                 const endTime = event.end?.dateTime
 //                   ? new Date(event.end.dateTime)
 //                   : new Date(startTime.getTime() + 60 * 60000);
@@ -1805,9 +2508,6 @@
 //                 const durationMinutes = differenceInMinutes(endTime, startTime);
 //                 const top = startMinutes * 1;
 //                 const height = Math.max(durationMinutes, 30);
-//                 const eventType =
-//                   EVENT_TYPES.find((t) => t.id === event.type) ||
-//                   EVENT_TYPES[0];
 
 //                 return (
 //                   <Box
@@ -1818,38 +2518,44 @@
 //                       left: "10px",
 //                       right: "10px",
 //                       height: `${height}px`,
-//                       bgcolor: eventType.color,
+//                       bgcolor:
+//                         getColorById(event.colorId) ||
+//                         event.colorHex ||
+//                         "#4285F4",
 //                       color: "white",
 //                       borderRadius: 1,
 //                       p: 1,
 //                       overflow: "hidden",
 //                       cursor: "pointer",
 //                       border: "1px solid rgba(255,255,255,0.3)",
-//                       boxShadow: 1,
 //                       "&:hover": {
 //                         opacity: 0.9,
-//                         boxShadow: 3,
+//                         boxShadow: 2,
 //                       },
 //                     }}
 //                     onClick={() => handleOpenDialog(event)}
 //                   >
-//                     <Typography
-//                       variant="caption"
-//                       noWrap
-//                       sx={{
-//                         fontWeight: "bold",
-//                         display: "flex",
-//                         alignItems: "center",
-//                         gap: 0.5,
-//                       }}
+//                     <Box
+//                       sx={{ display: "flex", alignItems: "center", gap: 0.5 }}
 //                     >
-//                       {eventType.icon}
-//                       {format(startTime, "h:mm a")} - {event.summary}
-//                     </Typography>
+//                       {EVENT_TYPES.find((t) => t.id === event.type)?.icon || (
+//                         <EventIcon sx={{ fontSize: 14 }} />
+//                       )}
+//                       <Typography
+//                         variant="caption"
+//                         noWrap
+//                         sx={{ fontWeight: "bold", flex: 1 }}
+//                       >
+//                         {format(startTime, "h:mm a")} - {event.summary}
+//                       </Typography>
+//                       {event.priority === "high" && (
+//                         <span style={{ fontSize: "10px" }}>⚠️</span>
+//                       )}
+//                     </Box>
 //                     {event.location && (
 //                       <Typography
 //                         variant="caption"
-//                         sx={{ display: "block", opacity: 0.8, mt: 0.5 }}
+//                         sx={{ display: "block", opacity: 0.8 }}
 //                       >
 //                         {event.location}
 //                       </Typography>
@@ -1861,7 +2567,6 @@
 //                           right: 4,
 //                           top: 4,
 //                           fontSize: 16,
-//                           opacity: 0.7,
 //                         }}
 //                       />
 //                     )}
@@ -1876,26 +2581,25 @@
 //   };
 
 //   const renderWeekView = () => {
+//     const weekDays = eachDayOfInterval({
+//       start: startOfWeek(currentDate),
+//       end: endOfWeek(currentDate),
+//     });
+
 //     return (
-//       <Grid container spacing={0.5}>
+//       <Grid container spacing={1}>
 //         {weekDays.map((day, index) => {
 //           const dayEvents = getEventsForDay(day);
 //           return (
 //             <Grid item xs key={index}>
-//               <Paper
-//                 elevation={0}
+//               <Card
 //                 sx={{
-//                   height: "calc(100vh - 250px)",
+//                   height: "600px",
 //                   overflow: "auto",
-//                   bgcolor: isSameDay(day, new Date())
-//                     ? "primary.50"
-//                     : "background.paper",
-//                   border: "1px solid",
-//                   borderColor: "divider",
-//                   borderRadius: 1,
+//                   bgcolor: isSameDay(day, new Date()) ? "primary.50" : "white",
 //                 }}
 //               >
-//                 <Box sx={{ p: 1 }}>
+//                 <CardContent sx={{ p: 1 }}>
 //                   <Typography
 //                     variant="subtitle2"
 //                     align="center"
@@ -1903,7 +2607,7 @@
 //                       fontWeight: "bold",
 //                       color: isSameDay(day, new Date())
 //                         ? "primary.main"
-//                         : "text.primary",
+//                         : "inherit",
 //                     }}
 //                   >
 //                     {format(day, "EEE")}
@@ -1923,76 +2627,74 @@
 
 //                   {dayEvents.length > 0 ? (
 //                     <Box>
-//                       {dayEvents.map((event) => {
-//                         const eventType =
-//                           EVENT_TYPES.find((t) => t.id === event.type) ||
-//                           EVENT_TYPES[0];
-//                         return (
-//                           <Paper
-//                             key={event.id}
-//                             elevation={1}
+//                       {dayEvents.map((event) => (
+//                         <Card
+//                           key={event.id}
+//                           sx={{
+//                             p: 1,
+//                             mb: 1,
+//                             bgcolor:
+//                               getColorById(event.colorId) ||
+//                               event.colorHex ||
+//                               "#4285F4",
+//                             color: "white",
+//                             cursor: "pointer",
+//                             border: "1px solid rgba(255,255,255,0.3)",
+//                             "&:hover": {
+//                               opacity: 0.9,
+//                               boxShadow: 2,
+//                             },
+//                           }}
+//                           onClick={() => handleOpenDialog(event)}
+//                         >
+//                           <Box
 //                             sx={{
-//                               p: 1,
-//                               mb: 1,
-//                               bgcolor: eventType.color,
-//                               color: "white",
-//                               cursor: "pointer",
-//                               border: "1px solid rgba(255,255,255,0.3)",
-//                               "&:hover": {
-//                                 opacity: 0.9,
-//                                 boxShadow: 3,
-//                               },
+//                               display: "flex",
+//                               alignItems: "center",
+//                               justifyContent: "space-between",
 //                             }}
-//                             onClick={() => handleOpenDialog(event)}
 //                           >
 //                             <Box
 //                               sx={{
 //                                 display: "flex",
 //                                 alignItems: "center",
-//                                 justifyContent: "space-between",
+//                                 gap: 0.5,
 //                               }}
 //                             >
+//                               {EVENT_TYPES.find((t) => t.id === event.type)
+//                                 ?.icon || <EventIcon sx={{ fontSize: 14 }} />}
 //                               <Typography
 //                                 variant="caption"
-//                                 sx={{
-//                                   fontWeight: "bold",
-//                                   display: "flex",
-//                                   alignItems: "center",
-//                                   gap: 0.5,
-//                                 }}
+//                                 sx={{ fontWeight: "bold" }}
 //                               >
-//                                 {eventType.icon}
 //                                 {format(
-//                                   new Date(event.start?.dateTime || new Date()),
+//                                   new Date(
+//                                     event.start?.dateTime ||
+//                                       event.dueDate ||
+//                                       event.reminderTime
+//                                   ),
 //                                   "h:mm a"
 //                                 )}
 //                               </Typography>
-//                               {dragDropEnabled && (
-//                                 <DragIndicator
-//                                   sx={{ fontSize: 14, opacity: 0.7 }}
-//                                 />
-//                               )}
 //                             </Box>
-//                             <Typography
-//                               variant="body2"
-//                               fontWeight="bold"
-//                               noWrap
-//                             >
-//                               {event.summary}
-//                             </Typography>
-//                             <Chip
-//                               size="small"
-//                               label={event.type}
-//                               sx={{
-//                                 mt: 0.5,
-//                                 color: "white",
-//                                 bgcolor: "rgba(255,255,255,0.2)",
-//                                 fontSize: "10px",
-//                               }}
-//                             />
-//                           </Paper>
-//                         );
-//                       })}
+//                             {dragDropEnabled && (
+//                               <DragIndicator sx={{ fontSize: 16 }} />
+//                             )}
+//                           </Box>
+//                           <Typography variant="body2" fontWeight="bold" noWrap>
+//                             {event.summary}
+//                           </Typography>
+//                           <Chip
+//                             size="small"
+//                             label={event.type || "event"}
+//                             sx={{
+//                               mt: 0.5,
+//                               color: "white",
+//                               bgcolor: "rgba(255,255,255,0.2)",
+//                             }}
+//                           />
+//                         </Card>
+//                       ))}
 //                     </Box>
 //                   ) : (
 //                     <Typography
@@ -2004,8 +2706,8 @@
 //                       No events
 //                     </Typography>
 //                   )}
-//                 </Box>
-//               </Paper>
+//                 </CardContent>
+//               </Card>
 //             </Grid>
 //           );
 //         })}
@@ -2014,6 +2716,12 @@
 //   };
 
 //   const renderMonthView = () => {
+//     const monthDays = useMemo(() => {
+//       const start = startOfMonth(currentDate);
+//       const end = endOfMonth(currentDate);
+//       return eachDayOfInterval({ start, end });
+//     }, [currentDate]);
+
 //     const weeks = [];
 //     for (let i = 0; i < monthDays.length; i += 7) {
 //       weeks.push(monthDays.slice(i, i + 7));
@@ -2021,14 +2729,10 @@
 
 //     return (
 //       <Box>
-//         <Grid container spacing={0.5}>
+//         <Grid container spacing={1}>
 //           {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
 //             <Grid item xs key={day}>
-//               <Typography
-//                 align="center"
-//                 fontWeight="bold"
-//                 color="text.secondary"
-//               >
+//               <Typography align="center" fontWeight="bold">
 //                 {day}
 //               </Typography>
 //             </Grid>
@@ -2036,24 +2740,20 @@
 //         </Grid>
 
 //         {weeks.map((week, weekIndex) => (
-//           <Grid container spacing={0.5} key={weekIndex} sx={{ mb: 0.5 }}>
+//           <Grid container spacing={1} key={weekIndex} sx={{ mb: 1 }}>
 //             {week.map((day, dayIndex) => {
 //               const dayEvents = getEventsForDay(day);
 //               return (
 //                 <Grid item xs key={dayIndex}>
-//                   <Paper
-//                     elevation={0}
+//                   <Card
 //                     sx={{
 //                       height: 120,
-//                       overflow: "hidden",
+//                       overflow: "auto",
 //                       bgcolor: isSameDay(day, new Date())
 //                         ? "primary.50"
 //                         : !isSameMonth(day, currentDate)
 //                         ? "grey.50"
-//                         : "background.paper",
-//                       border: "1px solid",
-//                       borderColor: "divider",
-//                       borderRadius: 1,
+//                         : "white",
 //                       cursor: "pointer",
 //                       "&:hover": {
 //                         bgcolor: "action.hover",
@@ -2064,7 +2764,7 @@
 //                       setViewMode("day");
 //                     }}
 //                   >
-//                     <Box sx={{ p: 0.5 }}>
+//                     <CardContent sx={{ p: 1 }}>
 //                       <Typography
 //                         variant="body2"
 //                         align="center"
@@ -2074,46 +2774,51 @@
 //                             ? "primary.main"
 //                             : !isSameMonth(day, currentDate)
 //                             ? "grey.400"
-//                             : "text.primary",
+//                             : "inherit",
 //                         }}
 //                       >
 //                         {format(day, "d")}
 //                       </Typography>
 
-//                       {dayEvents.slice(0, 3).map((event) => {
-//                         const eventType =
-//                           EVENT_TYPES.find((t) => t.id === event.type) ||
-//                           EVENT_TYPES[0];
-//                         return (
-//                           <Box
-//                             key={event.id}
-//                             sx={{
-//                               bgcolor: eventType.color,
-//                               color: "white",
-//                               borderRadius: 0.5,
-//                               p: 0.25,
-//                               mb: 0.25,
-//                               fontSize: "9px",
-//                               overflow: "hidden",
-//                               textOverflow: "ellipsis",
-//                               whiteSpace: "nowrap",
-//                               border: "1px solid rgba(255,255,255,0.3)",
-//                             }}
-//                           >
-//                             {format(new Date(event.start.dateTime), "h:mm")} -{" "}
-//                             {event.summary.substring(0, 12)}
-//                             {event.summary.length > 12 ? "..." : ""}
-//                           </Box>
-//                         );
-//                       })}
+//                       {dayEvents.slice(0, 3).map((event) => (
+//                         <Box
+//                           key={event.id}
+//                           sx={{
+//                             bgcolor:
+//                               getColorById(event.colorId) ||
+//                               event.colorHex ||
+//                               "#4285F4",
+//                             color: "white",
+//                             borderRadius: 1,
+//                             p: 0.5,
+//                             mb: 0.5,
+//                             fontSize: "10px",
+//                             overflow: "hidden",
+//                             textOverflow: "ellipsis",
+//                             whiteSpace: "nowrap",
+//                             border: "1px solid rgba(255,255,255,0.3)",
+//                           }}
+//                         >
+//                           {format(
+//                             new Date(
+//                               event.start?.dateTime ||
+//                                 event.dueDate ||
+//                                 event.reminderTime
+//                             ),
+//                             "h:mm"
+//                           )}{" "}
+//                           - {event.summary.substring(0, 15)}
+//                           {event.summary.length > 15 ? "..." : ""}
+//                         </Box>
+//                       ))}
 
 //                       {dayEvents.length > 3 && (
 //                         <Typography variant="caption" color="textSecondary">
 //                           +{dayEvents.length - 3} more
 //                         </Typography>
 //                       )}
-//                     </Box>
-//                   </Paper>
+//                     </CardContent>
+//                   </Card>
 //                 </Grid>
 //               );
 //             })}
@@ -2125,9 +2830,13 @@
 
 //   const renderAgendaView = () => {
 //     const groupedEvents = {};
-//     events.forEach((event) => {
+//     filteredEvents.forEach((event) => {
 //       const date = event.start?.dateTime
 //         ? format(new Date(event.start.dateTime), "yyyy-MM-dd")
+//         : event.dueDate
+//         ? format(new Date(event.dueDate), "yyyy-MM-dd")
+//         : event.reminderTime
+//         ? format(new Date(event.reminderTime), "yyyy-MM-dd")
 //         : "unscheduled";
 //       if (!groupedEvents[date]) groupedEvents[date] = [];
 //       groupedEvents[date].push(event);
@@ -2144,96 +2853,91 @@
 //                   ? "Unscheduled"
 //                   : format(new Date(date), "EEEE, MMMM d, yyyy")}
 //               </Typography>
-//               {dateEvents.map((event) => {
-//                 const eventType =
-//                   EVENT_TYPES.find((t) => t.id === event.type) ||
-//                   EVENT_TYPES[0];
-//                 return (
-//                   <Paper key={event.id} sx={{ mb: 1, overflow: "hidden" }}>
-//                     <Box
-//                       sx={{
-//                         p: 2,
-//                         borderLeft: `4px solid ${eventType.color}`,
-//                         bgcolor: "background.paper",
-//                       }}
-//                     >
-//                       <Box
-//                         sx={{
-//                           display: "flex",
-//                           justifyContent: "space-between",
-//                           alignItems: "flex-start",
-//                         }}
-//                       >
-//                         <Box>
-//                           <Box
-//                             sx={{
-//                               display: "flex",
-//                               alignItems: "center",
-//                               gap: 1,
-//                               mb: 1,
+//               <Grid container spacing={2}>
+//                 {dateEvents.map((event) => (
+//                   <Grid item xs={12} key={event.id}>
+//                     <Card>
+//                       <CardContent>
+//                         <Box
+//                           sx={{
+//                             display: "flex",
+//                             justifyContent: "space-between",
+//                             alignItems: "center",
+//                           }}
+//                         >
+//                           <Box sx={{ flex: 1 }}>
+//                             <Box
+//                               sx={{
+//                                 display: "flex",
+//                                 alignItems: "center",
+//                                 gap: 1,
+//                                 mb: 1,
+//                               }}
+//                             >
+//                               {EVENT_TYPES.find((t) => t.id === event.type)
+//                                 ?.icon || <EventIcon />}
+//                               <Typography variant="h6">
+//                                 {event.summary}
+//                               </Typography>
+//                               <Chip
+//                                 size="small"
+//                                 label={event.type || "event"}
+//                                 color="primary"
+//                                 sx={{ ml: 1 }}
+//                               />
+//                               {event.priority === "high" && (
+//                                 <Chip
+//                                   size="small"
+//                                   label="High Priority"
+//                                   color="error"
+//                                 />
+//                               )}
+//                             </Box>
+//                             <Typography
+//                               variant="body2"
+//                               color="textSecondary"
+//                               gutterBottom
+//                             >
+//                               {event.start?.dateTime
+//                                 ? format(
+//                                     new Date(event.start.dateTime),
+//                                     "h:mm a"
+//                                   )
+//                                 : event.dueDate
+//                                 ? `Due: ${format(
+//                                     new Date(event.dueDate),
+//                                     "h:mm a"
+//                                   )}`
+//                                 : event.reminderTime
+//                                 ? `Reminder: ${format(
+//                                     new Date(event.reminderTime),
+//                                     "h:mm a"
+//                                   )}`
+//                                 : "No time specified"}{" "}
+//                               • {event.location || "No location"}
+//                             </Typography>
+//                             {event.description && (
+//                               <Typography variant="body2" sx={{ mt: 1 }}>
+//                                 {event.description.substring(0, 200)}
+//                                 {event.description.length > 200 ? "..." : ""}
+//                               </Typography>
+//                             )}
+//                           </Box>
+//                           <IconButton
+//                             onClick={(e) => {
+//                               e.stopPropagation();
+//                               setEventMenuAnchor(e.currentTarget);
+//                               setSelectedEventForMenu(event);
 //                             }}
 //                           >
-//                             {eventType.icon}
-//                             <Typography
-//                               variant="h6"
-//                               sx={{ color: eventType.color }}
-//                             >
-//                               {event.summary}
-//                             </Typography>
-//                           </Box>
-//                           <Typography
-//                             variant="body2"
-//                             color="text.secondary"
-//                             sx={{ mb: 1 }}
-//                           >
-//                             {format(new Date(event.start.dateTime), "h:mm a")} -{" "}
-//                             {event.location || "No location"}
-//                           </Typography>
-//                           <Box
-//                             sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}
-//                           >
-//                             <Chip
-//                               size="small"
-//                               label={event.type}
-//                               sx={{ bgcolor: eventType.color, color: "white" }}
-//                             />
-//                             <Chip
-//                               size="small"
-//                               label={event.status || "scheduled"}
-//                               variant="outlined"
-//                             />
-//                           </Box>
+//                             <MoreVertIcon />
+//                           </IconButton>
 //                         </Box>
-//                         <IconButton
-//                           size="small"
-//                           onClick={(e) => {
-//                             e.stopPropagation();
-//                             setAnchorEl({
-//                               element: e.currentTarget,
-//                               eventId: event.id,
-//                             });
-//                           }}
-//                         >
-//                           <MoreVertIcon />
-//                         </IconButton>
-//                       </Box>
-//                       {event.description && (
-//                         <Typography
-//                           variant="body2"
-//                           sx={{
-//                             mt: 2,
-//                             p: 1,
-//                             bgcolor: "grey.50",
-//                             borderRadius: 1,
-//                           }}
-//                         >
-//                           {event.description}
-//                         </Typography>
-//                       )}
-//                     </Box>
-//                   </Paper>
-//                 );
-//               })}
+//                       </CardContent>
+//                     </Card>
+//                   </Grid>
+//                 ))}
+//               </Grid>
 //             </Box>
 //           ))}
 //       </Box>
@@ -2242,145 +2946,299 @@
 
 //   const renderScheduleView = () => {
 //     const now = new Date();
-//     const upcomingEvents = events
-//       .filter((event) => {
-//         const eventDate = event.start?.dateTime
-//           ? new Date(event.start.dateTime)
-//           : null;
-//         return eventDate && eventDate >= now;
+//     const upcomingEvents = filteredEvents
+//       .filter((item) => {
+//         const itemDate = new Date(
+//           item.start?.dateTime || item.dueDate || item.reminderTime
+//         );
+//         return itemDate && itemDate >= now;
 //       })
-//       .sort(
-//         (a, b) => new Date(a.start?.dateTime) - new Date(b.start?.dateTime)
-//       );
+//       .sort((a, b) => {
+//         const aTime = new Date(
+//           a.start?.dateTime || a.dueDate || a.reminderTime
+//         );
+//         const bTime = new Date(
+//           b.start?.dateTime || b.dueDate || b.reminderTime
+//         );
+//         return aTime - bTime;
+//       });
 
 //     return (
 //       <Box>
 //         <Typography variant="h6" gutterBottom>
-//           Upcoming Schedule
+//           Upcoming Schedule ({upcomingEvents.length})
 //         </Typography>
-//         {upcomingEvents.slice(0, 10).map((event) => {
-//           const eventDate = new Date(event.start.dateTime);
-//           const timeUntil = formatDistanceToNow(eventDate, {
-//             addSuffix: true,
-//           });
-//           const eventType =
-//             EVENT_TYPES.find((t) => t.id === event.type) || EVENT_TYPES[0];
+//         <List>
+//           {upcomingEvents.slice(0, 20).map((event) => {
+//             const eventDate = new Date(
+//               event.start?.dateTime || event.dueDate || event.reminderTime
+//             );
+//             const timeUntil = formatDistanceToNow(eventDate, {
+//               addSuffix: true,
+//             });
 
-//           return (
-//             <Paper key={event.id} sx={{ mb: 1, overflow: "hidden" }}>
-//               <Box
+//             return (
+//               <ListItem
+//                 key={event.id}
 //                 sx={{
-//                   p: 2,
-//                   borderLeft: `4px solid ${eventType.color}`,
+//                   mb: 1,
+//                   borderLeft: `4px solid ${
+//                     getColorById(event.colorId) || event.colorHex || "#4285F4"
+//                   }`,
 //                   bgcolor: "background.paper",
+//                   borderRadius: 1,
 //                 }}
-//               >
-//                 <Box
-//                   sx={{
-//                     display: "flex",
-//                     alignItems: "center",
-//                     justifyContent: "space-between",
-//                   }}
-//                 >
-//                   <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-//                     <Avatar sx={{ bgcolor: eventType.color }}>
-//                       {eventType.icon}
-//                     </Avatar>
-//                     <Box>
-//                       <Typography variant="subtitle1" fontWeight="bold">
-//                         {event.summary}
-//                       </Typography>
-//                       <Typography variant="body2" color="text.secondary">
-//                         {format(eventDate, "PPPPpp")}
-//                       </Typography>
-//                       <Typography variant="caption" color="text.secondary">
-//                         {timeUntil} • {event.location || "No location"}
-//                       </Typography>
-//                     </Box>
-//                   </Box>
-//                   <Button
-//                     variant="outlined"
-//                     size="small"
+//                 secondaryAction={
+//                   <IconButton
+//                     edge="end"
 //                     onClick={() => handleOpenDialog(event)}
 //                   >
-//                     View Details
-//                   </Button>
-//                 </Box>
-//               </Box>
-//             </Paper>
-//           );
-//         })}
+//                     <EditIcon />
+//                   </IconButton>
+//                 }
+//               >
+//                 <ListItemAvatar>
+//                   <Avatar
+//                     sx={{
+//                       bgcolor:
+//                         getColorById(event.colorId) ||
+//                         event.colorHex ||
+//                         "#4285F4",
+//                     }}
+//                   >
+//                     {EVENT_TYPES.find((t) => t.id === event.type)?.icon || (
+//                       <EventIcon />
+//                     )}
+//                   </Avatar>
+//                 </ListItemAvatar>
+//                 <ListItemText
+//                   primary={
+//                     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+//                       <Typography variant="body1" fontWeight="bold">
+//                         {event.summary}
+//                       </Typography>
+//                       {event.priority === "high" && (
+//                         <Chip size="small" label="High" color="error" />
+//                       )}
+//                     </Box>
+//                   }
+//                   secondary={
+//                     <>
+//                       <Typography variant="body2" color="text.primary">
+//                         {format(eventDate, "PPPPp")}
+//                       </Typography>
+//                       <Typography variant="caption" color="text.secondary">
+//                         {timeUntil} • {event.location || "No location"} •{" "}
+//                         {event.type}
+//                       </Typography>
+//                     </>
+//                   }
+//                 />
+//               </ListItem>
+//             );
+//           })}
+//         </List>
 //       </Box>
 //     );
 //   };
 
-//   return (
-//     <DndProvider backend={HTML5Backend}>
-//       <Box
-//         sx={{
-//           display: "flex",
-//           minHeight: "100vh",
-//           bgcolor: "background.default",
-//         }}
-//       >
-//         {/* Sidebar */}
-//         <Drawer
-//           variant={isMobile ? "temporary" : "persistent"}
-//           open={sidebarOpen}
-//           onClose={() => setSidebarOpen(false)}
-//           sx={{
-//             width: 280,
-//             flexShrink: 0,
-//             "& .MuiDrawer-paper": {
-//               width: 280,
-//               boxSizing: "border-box",
-//               borderRight: "1px solid",
-//               borderColor: "divider",
-//             },
-//           }}
+//   // ========== DIALOG COMPONENTS ==========
+//   const ConfigHelpDialog = () => (
+//     <Dialog
+//       open={configHelpOpen}
+//       onClose={() => setConfigHelpOpen(false)}
+//       maxWidth="md"
+//       fullWidth
+//     >
+//       <DialogTitle>
+//         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+//           <Settings /> Google Calendar API Configuration
+//         </Box>
+//       </DialogTitle>
+//       <DialogContent dividers>
+//         <Box sx={{ pt: 2 }}>
+//           <Alert severity="info" sx={{ mb: 3 }}>
+//             <Typography variant="h6">Required Configuration Steps</Typography>
+//           </Alert>
+//           {/* ... rest of config help content ... */}
+//         </Box>
+//       </DialogContent>
+//       <DialogActions>
+//         <Button onClick={() => setConfigHelpOpen(false)}>Close</Button>
+//         <Button onClick={login} variant="contained">
+//           Try Login Again
+//         </Button>
+//       </DialogActions>
+//     </Dialog>
+//   );
+
+//   const SettingsDialog = () => (
+//     <Dialog
+//       open={settingsOpen}
+//       onClose={() => setSettingsOpen(false)}
+//       maxWidth="md"
+//       fullWidth
+//     >
+//       <DialogTitle>
+//         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+//           <Settings /> Calendar Settings
+//         </Box>
+//       </DialogTitle>
+//       <DialogContent dividers>
+//         <Tabs
+//           value={activeTab}
+//           onChange={(e, newValue) => setActiveTab(newValue)}
+//           sx={{ mb: 2 }}
 //         >
-//           <Box sx={{ p: 2 }}>
-//             <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 3 }}>
-//               <Avatar
-//                 src={userProfile?.picture}
-//                 sx={{ width: 40, height: 40 }}
-//               />
-//               <Box>
-//                 <Typography variant="subtitle1" fontWeight="bold">
-//                   {userProfile?.name || "Guest"}
-//                 </Typography>
-//                 <Typography variant="caption" color="text.secondary">
-//                   {userProfile?.email || "Not logged in"}
-//                 </Typography>
-//               </Box>
-//             </Box>
+//           <Tab label="General" />
+//           <Tab label="Notifications" />
+//           <Tab label="Email" />
+//           <Tab label="Calendars" />
+//         </Tabs>
 
-//             <Button
-//               variant="contained"
-//               fullWidth
-//               startIcon={<AddIcon />}
-//               onClick={() => setQuickAddOpen(true)}
-//               sx={{ mb: 3 }}
-//             >
-//               Create
-//             </Button>
-
-//             <Typography
-//               variant="subtitle2"
-//               color="text.secondary"
-//               sx={{ mb: 1 }}
-//             >
-//               CALENDARS
+//         {activeTab === 0 && (
+//           <Box sx={{ pt: 2 }}>
+//             <Typography variant="h6" gutterBottom>
+//               Appearance
 //             </Typography>
-//             <List dense>
+//             <FormControlLabel
+//               control={
+//                 <Switch checked={themeMode === "dark"} onChange={toggleTheme} />
+//               }
+//               label="Dark Mode"
+//             />
+//             <FormControlLabel
+//               control={
+//                 <Switch
+//                   checked={sidebarOpen}
+//                   onChange={() => setSidebarOpen(!sidebarOpen)}
+//                 />
+//               }
+//               label="Show Sidebar"
+//             />
+//             <FormControlLabel
+//               control={
+//                 <Switch
+//                   checked={dragDropEnabled}
+//                   onChange={() => setDragDropEnabled(!dragDropEnabled)}
+//                 />
+//               }
+//               label="Enable Drag & Drop"
+//             />
+//           </Box>
+//         )}
+
+//         {activeTab === 1 && (
+//           <Box sx={{ pt: 2 }}>
+//             <Typography variant="h6" gutterBottom>
+//               Notification Settings
+//             </Typography>
+//             <Grid container spacing={2}>
+//               {Object.entries(notificationSettings).map(([key, value]) => (
+//                 <Grid item xs={6} key={key}>
+//                   <FormControlLabel
+//                     control={
+//                       <Switch
+//                         checked={value}
+//                         onChange={(e) =>
+//                           setNotificationSettings({
+//                             ...notificationSettings,
+//                             [key]: e.target.checked,
+//                           })
+//                         }
+//                       />
+//                     }
+//                     label={key.charAt(0).toUpperCase() + key.slice(1)}
+//                   />
+//                 </Grid>
+//               ))}
+//             </Grid>
+
+//             <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
+//               Default Reminders
+//             </Typography>
+//             <FormControl fullWidth sx={{ mt: 2 }}>
+//               <InputLabel>Default Reminder Time</InputLabel>
+//               <Select
+//                 value={emailSettings.defaultReminder || 30}
+//                 onChange={(e) =>
+//                   setEmailSettings({
+//                     ...emailSettings,
+//                     defaultReminder: e.target.value,
+//                   })
+//                 }
+//                 label="Default Reminder Time"
+//               >
+//                 {REMINDER_TIMINGS.map((timing) => (
+//                   <MenuItem key={timing.value} value={timing.value}>
+//                     {timing.label}
+//                   </MenuItem>
+//                 ))}
+//               </Select>
+//             </FormControl>
+//           </Box>
+//         )}
+
+//         {activeTab === 2 && (
+//           <Box sx={{ pt: 2 }}>
+//             <Typography variant="h6" gutterBottom>
+//               Email Settings
+//             </Typography>
+//             <Grid container spacing={2}>
+//               {Object.entries(emailSettings).map(([key, value]) => {
+//                 if (typeof value === "boolean") {
+//                   return (
+//                     <Grid item xs={12} key={key}>
+//                       <FormControlLabel
+//                         control={
+//                           <Switch
+//                             checked={value}
+//                             onChange={(e) =>
+//                               setEmailSettings({
+//                                 ...emailSettings,
+//                                 [key]: e.target.checked,
+//                               })
+//                             }
+//                           />
+//                         }
+//                         label={key
+//                           .replace(/([A-Z])/g, " $1")
+//                           .replace(/^\w/, (c) => c.toUpperCase())}
+//                       />
+//                     </Grid>
+//                   );
+//                 }
+//                 return null;
+//               })}
+//             </Grid>
+
+//             <TextField
+//               fullWidth
+//               multiline
+//               rows={4}
+//               label="Email Signature"
+//               value={emailSettings.signature}
+//               onChange={(e) =>
+//                 setEmailSettings({
+//                   ...emailSettings,
+//                   signature: e.target.value,
+//                 })
+//               }
+//               sx={{ mt: 3 }}
+//             />
+//           </Box>
+//         )}
+
+//         {activeTab === 3 && (
+//           <Box sx={{ pt: 2 }}>
+//             <Typography variant="h6" gutterBottom>
+//               Manage Calendars
+//             </Typography>
+//             <List>
 //               {calendars.map((calendar) => (
 //                 <ListItem key={calendar.id} disablePadding>
-//                   <ListItemButton
-//                     selected={selectedCalendar === calendar.id}
-//                     onClick={() => setSelectedCalendar(calendar.id)}
-//                     sx={{ borderRadius: 1 }}
-//                   >
-//                     <ListItemIcon sx={{ minWidth: 36 }}>
+//                   <ListItemButton>
+//                     <ListItemIcon>
 //                       <Box
 //                         sx={{
 //                           width: 12,
@@ -2391,192 +3249,791 @@
 //                       />
 //                     </ListItemIcon>
 //                     <ListItemText primary={calendar.name} />
+//                     <Switch
+//                       checked={calendar.visible}
+//                       onChange={() => {
+//                         setCalendars(
+//                           calendars.map((c) =>
+//                             c.id === calendar.id
+//                               ? { ...c, visible: !c.visible }
+//                               : c
+//                           )
+//                         );
+//                       }}
+//                     />
 //                   </ListItemButton>
 //                 </ListItem>
 //               ))}
 //             </List>
-
-//             <Divider sx={{ my: 2 }} />
-
-//             <Typography
-//               variant="subtitle2"
-//               color="text.secondary"
-//               sx={{ mb: 1 }}
-//             >
-//               EVENT TYPES
-//             </Typography>
-//             <List dense>
-//               {EVENT_TYPES.map((type) => (
-//                 <ListItem key={type.id} disablePadding>
-//                   <ListItemButton
-//                     onClick={() => handleOpenDialog(null, type.id)}
-//                     sx={{ borderRadius: 1 }}
-//                   >
-//                     <ListItemIcon sx={{ minWidth: 36, color: type.color }}>
-//                       {type.icon}
-//                     </ListItemIcon>
-//                     <ListItemText primary={type.name} />
-//                   </ListItemButton>
-//                 </ListItem>
-//               ))}
-//             </List>
-
-//             <Divider sx={{ my: 2 }} />
-
-//             <Typography
-//               variant="subtitle2"
-//               color="text.secondary"
-//               sx={{ mb: 1 }}
-//             >
-//               QUICK STATS
-//             </Typography>
-//             <Grid container spacing={1}>
-//               <Grid item xs={6}>
-//                 <Paper sx={{ p: 1, textAlign: "center" }}>
-//                   <Typography variant="h6" color="primary">
-//                     {events.length}
-//                   </Typography>
-//                   <Typography variant="caption" color="text.secondary">
-//                     Total Events
-//                   </Typography>
-//                 </Paper>
-//               </Grid>
-//               <Grid item xs={6}>
-//                 <Paper sx={{ p: 1, textAlign: "center" }}>
-//                   <Typography variant="h6" color="success.main">
-//                     {
-//                       events.filter(
-//                         (e) => new Date(e.start?.dateTime) > new Date()
-//                       ).length
-//                     }
-//                   </Typography>
-//                   <Typography variant="caption" color="text.secondary">
-//                     Upcoming
-//                   </Typography>
-//                 </Paper>
-//               </Grid>
-//             </Grid>
 //           </Box>
-//         </Drawer>
+//         )}
+//       </DialogContent>
+//       <DialogActions>
+//         <Button onClick={() => setSettingsOpen(false)}>Close</Button>
+//         <Button onClick={() => setSettingsOpen(false)} variant="contained">
+//           Save Settings
+//         </Button>
+//       </DialogActions>
+//     </Dialog>
+//   );
 
-//         {/* Main Content */}
-//         <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
-//           {/* App Bar */}
-//           <AppBar
-//             position="static"
-//             color="default"
-//             elevation={0}
-//             sx={{
-//               borderBottom: "1px solid",
-//               borderColor: "divider",
-//               bgcolor: "background.paper",
-//             }}
-//           >
-//             <Toolbar>
-//               <IconButton
-//                 edge="start"
-//                 onClick={() => setSidebarOpen(!sidebarOpen)}
-//                 sx={{ mr: 2 }}
-//               >
-//                 <Menu />
-//               </IconButton>
+//   const EmailDialog = () => (
+//     <Dialog
+//       open={emailDialogOpen}
+//       onClose={() => setEmailDialogOpen(false)}
+//       maxWidth="sm"
+//       fullWidth
+//     >
+//       <DialogTitle>Send Email</DialogTitle>
+//       <DialogContent>
+//         <Box sx={{ pt: 2 }}>
+//           <TextField
+//             fullWidth
+//             label="To"
+//             value={emailContent.to}
+//             onChange={(e) =>
+//               setEmailContent({ ...emailContent, to: e.target.value })
+//             }
+//             sx={{ mb: 2 }}
+//           />
+//           <TextField
+//             fullWidth
+//             label="Subject"
+//             value={emailContent.subject}
+//             onChange={(e) =>
+//               setEmailContent({ ...emailContent, subject: e.target.value })
+//             }
+//             sx={{ mb: 2 }}
+//           />
+//           <TextField
+//             fullWidth
+//             multiline
+//             rows={6}
+//             label="Message"
+//             value={emailContent.body}
+//             onChange={(e) =>
+//               setEmailContent({ ...emailContent, body: e.target.value })
+//             }
+//           />
+//         </Box>
+//       </DialogContent>
+//       <DialogActions>
+//         <Button onClick={() => setEmailDialogOpen(false)}>Cancel</Button>
+//         <Button
+//           onClick={() =>
+//             sendCustomEmail(
+//               emailContent.to,
+//               emailContent.subject,
+//               emailContent.body
+//             )
+//           }
+//           variant="contained"
+//           disabled={isSendingEmail}
+//           startIcon={isSendingEmail ? <CircularProgress size={20} /> : <Send />}
+//         >
+//           {isSendingEmail ? "Sending..." : "Send"}
+//         </Button>
+//       </DialogActions>
+//     </Dialog>
+//   );
 
-//               <Box
-//                 sx={{
-//                   flexGrow: 1,
-//                   display: "flex",
-//                   alignItems: "center",
-//                   gap: 2,
-//                 }}
-//               >
-//                 <IconButton onClick={goToPrevious} size="small">
-//                   <ChevronLeft />
-//                 </IconButton>
-//                 <Button
-//                   variant="outlined"
-//                   size="small"
-//                   startIcon={<TodayIcon />}
-//                   onClick={goToToday}
-//                 >
-//                   Today
-//                 </Button>
-//                 <IconButton onClick={goToNext} size="small">
-//                   <ChevronRight />
-//                 </IconButton>
-//                 <Typography variant="h6" sx={{ ml: 1 }}>
-//                   {format(currentDate, "MMMM yyyy")}
-//                 </Typography>
-//               </Box>
-
-//               <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-//                 <TextField
-//                   size="small"
-//                   placeholder="Search events..."
-//                   value={searchQuery}
-//                   onChange={(e) => setSearchQuery(e.target.value)}
-//                   InputProps={{
-//                     startAdornment: (
-//                       <InputAdornment position="start">
-//                         <Search />
-//                       </InputAdornment>
-//                     ),
+//   const QuickAddDialog = () => (
+//     <Dialog
+//       open={quickAddOpen}
+//       onClose={() => setQuickAddOpen(false)}
+//       maxWidth="xs"
+//       fullWidth
+//     >
+//       <DialogTitle>Quick Add</DialogTitle>
+//       <DialogContent>
+//         <Box sx={{ pt: 2 }}>
+//           <Typography variant="body2" color="textSecondary" gutterBottom>
+//             What would you like to add?
+//           </Typography>
+//           <Grid container spacing={2}>
+//             {EVENT_TYPES.map((type) => (
+//               <Grid item xs={6} key={type.id}>
+//                 <Card
+//                   sx={{
+//                     cursor: "pointer",
+//                     textAlign: "center",
+//                     p: 2,
+//                     "&:hover": {
+//                       backgroundColor: alpha(type.color, 0.1),
+//                       transform: "translateY(-2px)",
+//                       transition: "transform 0.2s",
+//                     },
 //                   }}
-//                   sx={{ width: 200 }}
-//                 />
-
-//                 <ToggleButtonGroup
-//                   value={viewMode}
-//                   exclusive
-//                   onChange={(e, newMode) => newMode && setViewMode(newMode)}
-//                   size="small"
+//                   onClick={() => {
+//                     quickCreate(type.id);
+//                     setQuickAddOpen(false);
+//                   }}
 //                 >
-//                   {CALENDAR_VIEWS.map((view) => (
-//                     <Tooltip key={view.id} title={view.name}>
-//                       <ToggleButton value={view.id}>{view.icon}</ToggleButton>
-//                     </Tooltip>
-//                   ))}
-//                 </ToggleButtonGroup>
+//                   <Box sx={{ color: type.color, mb: 1, fontSize: 32 }}>
+//                     {type.icon}
+//                   </Box>
+//                   <Typography variant="body2" fontWeight="medium">
+//                     {type.name}
+//                   </Typography>
+//                   <Typography variant="caption" color="textSecondary">
+//                     {type.description}
+//                   </Typography>
+//                 </Card>
+//               </Grid>
+//             ))}
+//           </Grid>
+//         </Box>
+//       </DialogContent>
+//       <DialogActions>
+//         <Button onClick={() => setQuickAddOpen(false)}>Cancel</Button>
+//       </DialogActions>
+//     </Dialog>
+//   );
 
-//                 <IconButton onClick={() => setSettingsOpen(true)}>
-//                   <Settings />
-//                 </IconButton>
-
-//                 {!accessToken ? (
-//                   <Button
-//                     variant="contained"
-//                     onClick={() => login()}
-//                     disabled={loading}
-//                     startIcon={<EventIcon />}
-//                   >
-//                     {loading ? <CircularProgress size={20} /> : "Sign In"}
-//                   </Button>
-//                 ) : (
-//                   <Button
-//                     variant="outlined"
-//                     onClick={() => {
-//                       googleLogout();
-//                       setAccessToken(null);
-//                       setUserProfile(null);
-//                       setEvents([]);
-//                       localStorage.removeItem("google_access_token");
-//                       localStorage.removeItem("google_user_profile");
-//                       showNotification("Logged out successfully", "info");
-//                     }}
-//                   >
-//                     Sign Out
-//                   </Button>
-//                 )}
-//               </Box>
-//             </Toolbar>
-//           </AppBar>
-
-//           {/* Calendar View */}
-//           <Box sx={{ flexGrow: 1, p: 3, overflow: "auto" }}>
-//             {renderCalendarView()}
+//   // ========== NOTIFICATIONS PANEL ==========
+//   const NotificationsPanel = () => (
+//     <Popover
+//       open={Boolean(anchorEl)}
+//       anchorEl={anchorEl}
+//       onClose={() => setAnchorEl(null)}
+//       anchorOrigin={{
+//         vertical: "bottom",
+//         horizontal: "right",
+//       }}
+//       transformOrigin={{
+//         vertical: "top",
+//         horizontal: "right",
+//       }}
+//     >
+//       <Box sx={{ width: 360, p: 2 }}>
+//         <Box
+//           sx={{
+//             display: "flex",
+//             justifyContent: "space-between",
+//             alignItems: "center",
+//             mb: 2,
+//           }}
+//         >
+//           <Typography variant="h6">Notifications</Typography>
+//           <Box>
+//             <IconButton
+//               size="small"
+//               onClick={markAllNotificationsAsRead}
+//               title="Mark all as read"
+//             >
+//               <CheckCircle />
+//             </IconButton>
+//             <IconButton
+//               size="small"
+//               onClick={clearAllNotifications}
+//               title="Clear all"
+//             >
+//               <DeleteIcon />
+//             </IconButton>
 //           </Box>
 //         </Box>
 
-//         {/* Event Creation Dialog */}
+//         {notifications.length === 0 ? (
+//           <Typography
+//             variant="body2"
+//             color="textSecondary"
+//             align="center"
+//             sx={{ py: 4 }}
+//           >
+//             No notifications
+//           </Typography>
+//         ) : (
+//           <List sx={{ maxHeight: 400, overflow: "auto" }}>
+//             {notifications.slice(0, 10).map((notification) => (
+//               <ListItem
+//                 key={notification.id}
+//                 sx={{
+//                   bgcolor: notification.read ? "transparent" : "action.hover",
+//                   mb: 1,
+//                   borderRadius: 1,
+//                 }}
+//                 secondaryAction={
+//                   <IconButton
+//                     edge="end"
+//                     size="small"
+//                     onClick={() => markNotificationAsRead(notification.id)}
+//                   >
+//                     <CheckCircle />
+//                   </IconButton>
+//                 }
+//               >
+//                 <ListItemAvatar>
+//                   <Avatar sx={{ bgcolor: "primary.main" }}>
+//                     <Notifications />
+//                   </Avatar>
+//                 </ListItemAvatar>
+//                 <ListItemText
+//                   primary={notification.title}
+//                   secondary={
+//                     <>
+//                       <Typography variant="body2" color="text.primary">
+//                         {notification.message}
+//                       </Typography>
+//                       <Typography variant="caption" color="text.secondary">
+//                         {formatDistanceToNow(new Date(notification.timestamp), {
+//                           addSuffix: true,
+//                         })}
+//                       </Typography>
+//                     </>
+//                   }
+//                 />
+//               </ListItem>
+//             ))}
+//           </List>
+//         )}
+
+//         {notifications.length > 10 && (
+//           <Button fullWidth sx={{ mt: 1 }}>
+//             View All Notifications
+//           </Button>
+//         )}
+//       </Box>
+//     </Popover>
+//   );
+
+//   // ========== EVENT MENU ==========
+//   const EventMenu = () => (
+//     <Menu
+//       anchorEl={eventMenuAnchor}
+//       open={Boolean(eventMenuAnchor)}
+//       onClose={() => setEventMenuAnchor(null)}
+//     >
+//       <MenuItem
+//         onClick={() => {
+//           if (selectedEventForMenu) {
+//             handleOpenDialog(selectedEventForMenu);
+//             setEventMenuAnchor(null);
+//           }
+//         }}
+//       >
+//         <EditIcon sx={{ mr: 1 }} /> Edit
+//       </MenuItem>
+//       <MenuItem
+//         onClick={() => {
+//           if (selectedEventForMenu) {
+//             setEmailContent({
+//               to: selectedEventForMenu.customerInfo?.email || "",
+//               subject: `Regarding: ${selectedEventForMenu.summary}`,
+//               body: `Hello,\n\nRegarding your ${selectedEventForMenu.type}: ${
+//                 selectedEventForMenu.summary
+//               }\n\nBest regards,\n${userProfile?.name || "Calendar System"}`,
+//             });
+//             setEmailDialogOpen(true);
+//             setEventMenuAnchor(null);
+//           }
+//         }}
+//       >
+//         <Email sx={{ mr: 1 }} /> Send Email
+//       </MenuItem>
+//       <MenuItem
+//         onClick={() => {
+//           if (selectedEventForMenu?.customerInfo?.phone) {
+//             window.open(
+//               `tel:${selectedEventForMenu.customerInfo.phone}`,
+//               "_blank"
+//             );
+//           }
+//           setEventMenuAnchor(null);
+//         }}
+//       >
+//         <Call sx={{ mr: 1 }} /> Call
+//       </MenuItem>
+//       <MenuItem
+//         onClick={() => {
+//           if (selectedEventForMenu) {
+//             deleteEvent(
+//               selectedEventForMenu.id,
+//               selectedEventForMenu.calendarId
+//             );
+//             setEventMenuAnchor(null);
+//           }
+//         }}
+//         sx={{ color: "error.main" }}
+//       >
+//         <DeleteIcon sx={{ mr: 1 }} /> Delete
+//       </MenuItem>
+//     </Menu>
+//   );
+
+//   // ========== MAIN RENDER ==========
+//   return (
+//     <DndProvider backend={HTML5Backend}>
+//       <Box
+//         sx={{
+//           p: 3,
+//           bgcolor: "background.default",
+//           color: "text.primary",
+//           minHeight: "100vh",
+//         }}
+//       >
+//         {/* Header Section */}
+//         <Box
+//           sx={{
+//             display: "flex",
+//             justifyContent: "space-between",
+//             alignItems: "center",
+//             mb: 3,
+//             flexWrap: "wrap",
+//             gap: 2,
+//           }}
+//         >
+//           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+//             {sidebarOpen && (
+//               <IconButton onClick={toggleSidebar}>
+//                 <ChevronLeft />
+//               </IconButton>
+//             )}
+//             <Box>
+//               <Typography
+//                 variant="h4"
+//                 gutterBottom
+//                 sx={{ display: "flex", alignItems: "center", gap: 1 }}
+//               >
+//                 <EventIcon /> Enhanced Google Calendar
+//               </Typography>
+//               <Typography variant="body2" color="textSecondary">
+//                 Complete calendar solution with events, tasks, meetings,
+//                 appointments, reminders, and notifications
+//               </Typography>
+//             </Box>
+//           </Box>
+
+//           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+//             {/* Search Bar */}
+//             <TextField
+//               size="small"
+//               placeholder="Search events..."
+//               value={searchQuery}
+//               onChange={(e) => setSearchQuery(e.target.value)}
+//               InputProps={{
+//                 startAdornment: (
+//                   <InputAdornment position="start">
+//                     <Search />
+//                   </InputAdornment>
+//                 ),
+//               }}
+//               sx={{ width: 200 }}
+//             />
+
+//             {/* Notification Bell */}
+//             <IconButton
+//               onClick={(e) => setAnchorEl(e.currentTarget)}
+//               sx={{ position: "relative" }}
+//             >
+//               <Badge badgeContent={getUnreadNotificationCount()} color="error">
+//                 <Notifications />
+//               </Badge>
+//             </IconButton>
+
+//             {/* Settings */}
+//             <IconButton onClick={() => setSettingsOpen(true)}>
+//               <Settings />
+//             </IconButton>
+
+//             {/* Theme Toggle */}
+//             <IconButton onClick={toggleTheme}>
+//               {themeMode === "light" ? <DarkMode /> : <LightMode />}
+//             </IconButton>
+
+//             {!accessToken ? (
+//               <Button
+//                 variant="contained"
+//                 startIcon={<EventIcon />}
+//                 onClick={() => login()}
+//                 disabled={loading}
+//                 size="large"
+//                 color="primary"
+//               >
+//                 {loading ? (
+//                   <CircularProgress size={24} />
+//                 ) : (
+//                   "Connect Google Calendar"
+//                 )}
+//               </Button>
+//             ) : (
+//               <>
+//                 <Chip
+//                   avatar={<Avatar src={userProfile?.picture} />}
+//                   label={userProfile?.email || "User"}
+//                   variant="outlined"
+//                   color="primary"
+//                 />
+//                 <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+//                   <Button
+//                     variant="contained"
+//                     startIcon={<AddIcon />}
+//                     onClick={() => setQuickAddOpen(true)}
+//                   >
+//                     Quick Add
+//                   </Button>
+//                   <Button
+//                     variant="outlined"
+//                     startIcon={<RefreshIcon />}
+//                     onClick={syncCalendar}
+//                     disabled={loading}
+//                   >
+//                     {syncStatus === "syncing" ? "Syncing..." : "Sync"}
+//                   </Button>
+//                   <Button variant="outlined" color="error" onClick={logout}>
+//                     Logout
+//                   </Button>
+//                 </Box>
+//               </>
+//             )}
+//           </Box>
+//         </Box>
+
+//         {/* User Info Card */}
+//         {userProfile && (
+//           <Card sx={{ mb: 3, bgcolor: "primary.light", color: "white" }}>
+//             <CardContent>
+//               <Box
+//                 sx={{
+//                   display: "flex",
+//                   alignItems: "center",
+//                   justifyContent: "space-between",
+//                 }}
+//               >
+//                 <Box sx={{ display: "flex", alignItems: "center", gap: 3 }}>
+//                   <Avatar
+//                     src={userProfile.picture}
+//                     sx={{ width: 60, height: 60 }}
+//                   />
+//                   <Box>
+//                     <Typography variant="h6">
+//                       Welcome, {userProfile.name}!
+//                     </Typography>
+//                     <Typography variant="body2">
+//                       {userProfile.email} | Connected to Google Calendar
+//                     </Typography>
+//                   </Box>
+//                 </Box>
+//                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+//                   <Chip
+//                     icon={isOnline ? <Cloud /> : <CloudOff />}
+//                     label={isOnline ? "Online" : "Offline"}
+//                     color={isOnline ? "success" : "default"}
+//                     sx={{ color: "white" }}
+//                   />
+//                   <Chip
+//                     label={`${stats.totalEvents} Events`}
+//                     color="info"
+//                     sx={{ color: "white" }}
+//                   />
+//                 </Box>
+//               </Box>
+//             </CardContent>
+//           </Card>
+//         )}
+
+//         {/* Error Display */}
+//         {errorDetails && (
+//           <Alert
+//             severity={
+//               errorDetails.type === "config_required" ? "warning" : "error"
+//             }
+//             sx={{ mb: 3 }}
+//             icon={<WarningIcon />}
+//             onClose={clearError}
+//             action={
+//               errorDetails.type === "config_required" && (
+//                 <Button
+//                   color="inherit"
+//                   size="small"
+//                   onClick={() => setConfigHelpOpen(true)}
+//                 >
+//                   Fix Configuration
+//                 </Button>
+//               )
+//             }
+//           >
+//             <Typography variant="h6" gutterBottom>
+//               {errorDetails.message}
+//             </Typography>
+//             {Array.isArray(errorDetails.details) ? (
+//               <Box component="ul" sx={{ mt: 1, pl: 2 }}>
+//                 {errorDetails.details.map((detail, index) => (
+//                   <li key={index}>{detail}</li>
+//                 ))}
+//               </Box>
+//             ) : (
+//               <Typography variant="body2" sx={{ mt: 1 }}>
+//                 {errorDetails.details}
+//               </Typography>
+//             )}
+//           </Alert>
+//         )}
+
+//         {/* Main Content */}
+//         {sidebarOpen ? (
+//           <Grid container spacing={3}>
+//             <Grid item xs={12} md={3}>
+//               {/* Sidebar Content */}
+//               <Card sx={{ mb: 3 }}>
+//                 <CardContent>
+//                   <Typography variant="h6" gutterBottom>
+//                     Calendars
+//                   </Typography>
+//                   <List>
+//                     {calendars.map((calendar) => (
+//                       <ListItem key={calendar.id} disablePadding>
+//                         <ListItemButton
+//                           selected={selectedCalendar === calendar.id}
+//                           onClick={() => setSelectedCalendar(calendar.id)}
+//                         >
+//                           <ListItemIcon>
+//                             <Box
+//                               sx={{
+//                                 width: 12,
+//                                 height: 12,
+//                                 borderRadius: "50%",
+//                                 bgcolor: getColorById(calendar.color),
+//                               }}
+//                             />
+//                           </ListItemIcon>
+//                           <ListItemText primary={calendar.name} />
+//                           <Switch
+//                             size="small"
+//                             checked={calendar.visible}
+//                             onChange={(e) => {
+//                               e.stopPropagation();
+//                               setCalendars(
+//                                 calendars.map((c) =>
+//                                   c.id === calendar.id
+//                                     ? { ...c, visible: !c.visible }
+//                                     : c
+//                                 )
+//                               );
+//                             }}
+//                           />
+//                         </ListItemButton>
+//                       </ListItem>
+//                     ))}
+//                   </List>
+//                 </CardContent>
+//               </Card>
+
+//               {/* Statistics */}
+//               <Grid container spacing={2} sx={{ mb: 3 }}>
+//                 {Object.entries(stats).map(([key, value]) => (
+//                   <Grid item xs={6} key={key}>
+//                     <Card>
+//                       <CardContent sx={{ textAlign: "center", p: 1 }}>
+//                         <Typography variant="h4" color="primary">
+//                           {value}
+//                         </Typography>
+//                         <Typography variant="caption" color="textSecondary">
+//                           {key
+//                             .replace(/([A-Z])/g, " $1")
+//                             .toLowerCase()
+//                             .replace(/^\w/, (c) => c.toUpperCase())}
+//                         </Typography>
+//                       </CardContent>
+//                     </Card>
+//                   </Grid>
+//                 ))}
+//               </Grid>
+
+//               {/* Upcoming Events */}
+//               <Card>
+//                 <CardContent>
+//                   <Typography variant="h6" gutterBottom>
+//                     Upcoming
+//                   </Typography>
+//                   <List dense>
+//                     {getUpcomingEvents().map((event) => (
+//                       <ListItem key={event.id}>
+//                         <ListItemText
+//                           primary={event.summary}
+//                           secondary={format(
+//                             new Date(
+//                               event.start?.dateTime ||
+//                                 event.dueDate ||
+//                                 event.reminderTime
+//                             ),
+//                             "MMM d, h:mm a"
+//                           )}
+//                         />
+//                       </ListItem>
+//                     ))}
+//                   </List>
+//                 </CardContent>
+//               </Card>
+//             </Grid>
+
+//             <Grid item xs={12} md={9}>
+//               {/* Calendar Navigation */}
+//               <Paper sx={{ p: 2, mb: 3 }}>
+//                 <Box
+//                   sx={{
+//                     display: "flex",
+//                     justifyContent: "space-between",
+//                     alignItems: "center",
+//                     mb: 2,
+//                   }}
+//                 >
+//                   <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+//                     <IconButton onClick={goToPrevious}>
+//                       <ChevronLeft />
+//                     </IconButton>
+//                     <Button
+//                       variant="outlined"
+//                       startIcon={<TodayIcon />}
+//                       onClick={goToToday}
+//                     >
+//                       Today
+//                     </Button>
+//                     <IconButton onClick={goToNext}>
+//                       <ChevronRight />
+//                     </IconButton>
+//                     <Typography variant="h6" sx={{ ml: 2 }}>
+//                       {format(currentDate, "MMMM yyyy")}
+//                     </Typography>
+//                   </Box>
+
+//                   <ToggleButtonGroup
+//                     value={viewMode}
+//                     exclusive
+//                     onChange={(e, newMode) => newMode && setViewMode(newMode)}
+//                     size="small"
+//                   >
+//                     {CALENDAR_VIEWS.map((view) => (
+//                       <ToggleButton key={view.id} value={view.id}>
+//                         {view.icon}
+//                       </ToggleButton>
+//                     ))}
+//                   </ToggleButtonGroup>
+//                 </Box>
+
+//                 {/* Calendar View */}
+//                 {renderCalendarView()}
+//               </Paper>
+//             </Grid>
+//           </Grid>
+//         ) : (
+//           <Box>
+//             {/* Statistics Cards */}
+//             <Grid container spacing={2} sx={{ mb: 3 }}>
+//               {Object.entries(stats)
+//                 .slice(0, 4)
+//                 .map(([key, value]) => (
+//                   <Grid item xs={6} sm={3} key={key}>
+//                     <Card>
+//                       <CardContent sx={{ textAlign: "center", p: 2 }}>
+//                         <Typography variant="h3" color="primary">
+//                           {value}
+//                         </Typography>
+//                         <Typography variant="body2" color="textSecondary">
+//                           {key
+//                             .replace(/([A-Z])/g, " $1")
+//                             .toLowerCase()
+//                             .replace(/^\w/, (c) => c.toUpperCase())}
+//                         </Typography>
+//                       </CardContent>
+//                     </Card>
+//                   </Grid>
+//                 ))}
+//             </Grid>
+
+//             {/* Calendar Navigation */}
+//             <Paper sx={{ p: 2, mb: 3 }}>
+//               <Box
+//                 sx={{
+//                   display: "flex",
+//                   justifyContent: "space-between",
+//                   alignItems: "center",
+//                   mb: 2,
+//                 }}
+//               >
+//                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+//                   <IconButton onClick={goToPrevious}>
+//                     <ChevronLeft />
+//                   </IconButton>
+//                   <Button
+//                     variant="outlined"
+//                     startIcon={<TodayIcon />}
+//                     onClick={goToToday}
+//                   >
+//                     Today
+//                   </Button>
+//                   <IconButton onClick={goToNext}>
+//                     <ChevronRight />
+//                   </IconButton>
+//                   <Typography variant="h6" sx={{ ml: 2 }}>
+//                     {format(currentDate, "MMMM yyyy")}
+//                   </Typography>
+//                 </Box>
+
+//                 <Box sx={{ display: "flex", gap: 1 }}>
+//                   <ToggleButtonGroup
+//                     value={viewMode}
+//                     exclusive
+//                     onChange={(e, newMode) => newMode && setViewMode(newMode)}
+//                     size="small"
+//                   >
+//                     {CALENDAR_VIEWS.map((view) => (
+//                       <ToggleButton key={view.id} value={view.id}>
+//                         {view.icon}
+//                       </ToggleButton>
+//                     ))}
+//                   </ToggleButtonGroup>
+//                   <IconButton onClick={toggleSidebar}>
+//                     <ChevronRight />
+//                   </IconButton>
+//                 </Box>
+//               </Box>
+
+//               {/* Calendar View */}
+//               {renderCalendarView()}
+//             </Paper>
+//           </Box>
+//         )}
+
+//         {/* Quick Actions Bar */}
+//         {accessToken && (
+//           <Box
+//             sx={{
+//               position: "fixed",
+//               bottom: 20,
+//               right: 20,
+//               display: "flex",
+//               flexDirection: "column",
+//               gap: 1,
+//               zIndex: 1000,
+//             }}
+//           >
+//             <Fab
+//               color="primary"
+//               onClick={() => setQuickAddOpen(true)}
+//               sx={{ boxShadow: 3 }}
+//             >
+//               <AddIcon />
+//             </Fab>
+//             <Fab
+//               color="secondary"
+//               onClick={() => setSettingsOpen(true)}
+//               size="small"
+//               sx={{ boxShadow: 2 }}
+//             >
+//               <Settings />
+//             </Fab>
+//             <Fab
+//               color="default"
+//               onClick={printSchedule}
+//               size="small"
+//               sx={{ boxShadow: 2 }}
+//             >
+//               <Print />
+//             </Fab>
+//           </Box>
+//         )}
+
+//         {/* Event Creation/Edit Dialog */}
 //         <Dialog
 //           open={openDialog}
 //           onClose={() => setOpenDialog(false)}
@@ -2586,29 +4043,702 @@
 //         >
 //           <DialogTitle>
 //             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-//               {EVENT_TYPES.find((t) => t.id === selectedEventType)?.icon}
-//               {selectedEvent ? "Edit " : "Create New "}
-//               {EVENT_TYPES.find((t) => t.id === selectedEventType)?.name}
+//               {selectedEvent ? <EditIcon /> : <AddIcon />}
+//               {selectedEvent ? "Edit Event" : `Create New ${formData.type}`}
 //             </Box>
 //           </DialogTitle>
 //           <DialogContent dividers>
-//             <Grid container spacing={2} sx={{ pt: 2 }}>
-//               {renderForm()}
-//             </Grid>
+//             <Box sx={{ pt: 2 }}>
+//               <Tabs
+//                 value={formData.type}
+//                 onChange={(e, newType) =>
+//                   setFormData({ ...formData, type: newType })
+//                 }
+//                 sx={{ mb: 3 }}
+//               >
+//                 {EVENT_TYPES.map((type) => (
+//                   <Tab
+//                     key={type.id}
+//                     value={type.id}
+//                     icon={type.icon}
+//                     label={type.name}
+//                   />
+//                 ))}
+//               </Tabs>
+
+//               <Grid container spacing={2}>
+//                 {/* Basic Information */}
+//                 <Grid item xs={12}>
+//                   <Typography variant="h6" gutterBottom>
+//                     Basic Information
+//                   </Typography>
+//                 </Grid>
+
+//                 <Grid item xs={12}>
+//                   <TextField
+//                     fullWidth
+//                     label="Title *"
+//                     value={formData.summary}
+//                     onChange={(e) =>
+//                       setFormData({ ...formData, summary: e.target.value })
+//                     }
+//                     required
+//                     error={!formData.summary}
+//                     helperText={!formData.summary ? "Title is required" : ""}
+//                   />
+//                 </Grid>
+
+//                 <Grid item xs={12}>
+//                   <TextField
+//                     fullWidth
+//                     multiline
+//                     rows={3}
+//                     label="Description"
+//                     value={formData.description}
+//                     onChange={(e) =>
+//                       setFormData({ ...formData, description: e.target.value })
+//                     }
+//                   />
+//                 </Grid>
+
+//                 {/* Date & Time */}
+//                 <Grid item xs={12} md={6}>
+//                   <TextField
+//                     fullWidth
+//                     type="datetime-local"
+//                     label="Start Time *"
+//                     value={formData.startTime}
+//                     onChange={(e) => {
+//                       const newStartTime = e.target.value;
+//                       setFormData({
+//                         ...formData,
+//                         startTime: newStartTime,
+//                         endTime:
+//                           !formData.endTime ||
+//                           new Date(newStartTime) >= new Date(formData.endTime)
+//                             ? formatForDateTimeLocal(
+//                                 addHours(new Date(newStartTime), 1)
+//                               )
+//                             : formData.endTime,
+//                       });
+//                     }}
+//                     InputLabelProps={{ shrink: true }}
+//                     required
+//                     error={!formData.startTime}
+//                     helperText={
+//                       !formData.startTime ? "Start time is required" : ""
+//                     }
+//                   />
+//                 </Grid>
+//                 <Grid item xs={12} md={6}>
+//                   <TextField
+//                     fullWidth
+//                     type="datetime-local"
+//                     label="End Time *"
+//                     value={formData.endTime}
+//                     onChange={(e) =>
+//                       setFormData({ ...formData, endTime: e.target.value })
+//                     }
+//                     InputLabelProps={{ shrink: true }}
+//                     required
+//                     error={
+//                       !formData.endTime ||
+//                       new Date(formData.endTime) <= new Date(formData.startTime)
+//                     }
+//                     helperText={
+//                       !formData.endTime
+//                         ? "End time is required"
+//                         : new Date(formData.endTime) <=
+//                           new Date(formData.startTime)
+//                         ? "End time must be after start time"
+//                         : ""
+//                     }
+//                   />
+//                 </Grid>
+
+//                 <Grid item xs={12}>
+//                   <FormControlLabel
+//                     control={
+//                       <Switch
+//                         checked={formData.allDay}
+//                         onChange={(e) =>
+//                           setFormData({
+//                             ...formData,
+//                             allDay: e.target.checked,
+//                           })
+//                         }
+//                       />
+//                     }
+//                     label="All Day Event"
+//                   />
+//                 </Grid>
+
+//                 {/* Location & Calendar */}
+//                 <Grid item xs={12} md={6}>
+//                   <TextField
+//                     fullWidth
+//                     label="Location"
+//                     value={formData.location}
+//                     onChange={(e) =>
+//                       setFormData({ ...formData, location: e.target.value })
+//                     }
+//                   />
+//                 </Grid>
+//                 <Grid item xs={12} md={6}>
+//                   <FormControl fullWidth>
+//                     <InputLabel>Calendar</InputLabel>
+//                     <Select
+//                       value={formData.calendarId}
+//                       onChange={(e) =>
+//                         setFormData({
+//                           ...formData,
+//                           calendarId: e.target.value,
+//                         })
+//                       }
+//                       label="Calendar"
+//                     >
+//                       {calendars.map((calendar) => (
+//                         <MenuItem key={calendar.id} value={calendar.id}>
+//                           {calendar.name}
+//                         </MenuItem>
+//                       ))}
+//                     </Select>
+//                   </FormControl>
+//                 </Grid>
+
+//                 {/* Color */}
+//                 <Grid item xs={12}>
+//                   <Typography variant="subtitle2" gutterBottom>
+//                     Color
+//                   </Typography>
+//                   <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+//                     {CALENDAR_COLORS.map((color) => (
+//                       <Tooltip key={color.id} title={color.name}>
+//                         <IconButton
+//                           sx={{
+//                             bgcolor: color.hex,
+//                             width: 32,
+//                             height: 32,
+//                             "&:hover": { bgcolor: color.hex, opacity: 0.8 },
+//                             border:
+//                               formData.color === color.id
+//                                 ? "2px solid white"
+//                                 : "none",
+//                             boxShadow:
+//                               formData.color === color.id
+//                                 ? `0 0 0 2px ${color.hex}`
+//                                 : "none",
+//                           }}
+//                           onClick={() =>
+//                             setFormData({ ...formData, color: color.id })
+//                           }
+//                         />
+//                       </Tooltip>
+//                     ))}
+//                   </Box>
+//                 </Grid>
+
+//                 {/* Type-Specific Fields */}
+//                 {formData.type === "task" && (
+//                   <>
+//                     <Grid item xs={12}>
+//                       <Divider sx={{ my: 2 }}>
+//                         <Typography variant="h6">Task Details</Typography>
+//                       </Divider>
+//                     </Grid>
+//                     <Grid item xs={12} md={6}>
+//                       <FormControl fullWidth>
+//                         <InputLabel>Status</InputLabel>
+//                         <Select
+//                           value={formData.taskStatus}
+//                           onChange={(e) =>
+//                             setFormData({
+//                               ...formData,
+//                               taskStatus: e.target.value,
+//                             })
+//                           }
+//                           label="Status"
+//                         >
+//                           {TASK_STATUSES.map((status) => (
+//                             <MenuItem key={status.id} value={status.id}>
+//                               {status.label}
+//                             </MenuItem>
+//                           ))}
+//                         </Select>
+//                       </FormControl>
+//                     </Grid>
+//                     <Grid item xs={12} md={6}>
+//                       <TextField
+//                         fullWidth
+//                         type="datetime-local"
+//                         label="Due Date"
+//                         value={formData.dueDate}
+//                         onChange={(e) =>
+//                           setFormData({ ...formData, dueDate: e.target.value })
+//                         }
+//                         InputLabelProps={{ shrink: true }}
+//                       />
+//                     </Grid>
+//                     <Grid item xs={12}>
+//                       <Typography variant="subtitle2" gutterBottom>
+//                         Checklist
+//                       </Typography>
+//                       <Box sx={{ maxHeight: 200, overflow: "auto" }}>
+//                         {formData.checklist.map((item, index) => (
+//                           <TaskChecklistItem
+//                             key={item.id || index}
+//                             item={item}
+//                             index={index}
+//                             onToggle={(idx) => {
+//                               const newChecklist = [...formData.checklist];
+//                               newChecklist[idx].completed =
+//                                 !newChecklist[idx].completed;
+//                               setFormData({
+//                                 ...formData,
+//                                 checklist: newChecklist,
+//                               });
+//                             }}
+//                             onEdit={(idx, updatedItem) => {
+//                               const newChecklist = [...formData.checklist];
+//                               newChecklist[idx] = updatedItem;
+//                               setFormData({
+//                                 ...formData,
+//                                 checklist: newChecklist,
+//                               });
+//                             }}
+//                             onDelete={(idx) => {
+//                               const newChecklist = formData.checklist.filter(
+//                                 (_, i) => i !== idx
+//                               );
+//                               setFormData({
+//                                 ...formData,
+//                                 checklist: newChecklist,
+//                               });
+//                             }}
+//                           />
+//                         ))}
+//                       </Box>
+//                       <Button
+//                         size="small"
+//                         startIcon={<AddIcon />}
+//                         onClick={() => {
+//                           setFormData({
+//                             ...formData,
+//                             checklist: [
+//                               ...formData.checklist,
+//                               {
+//                                 id: uuidv4(),
+//                                 text: "New item",
+//                                 completed: false,
+//                               },
+//                             ],
+//                           });
+//                         }}
+//                         sx={{ mt: 1 }}
+//                       >
+//                         Add Item
+//                       </Button>
+//                     </Grid>
+//                   </>
+//                 )}
+
+//                 {formData.type === "appointment" && (
+//                   <>
+//                     <Grid item xs={12}>
+//                       <Divider sx={{ my: 2 }}>
+//                         <Typography variant="h6">Customer Details</Typography>
+//                       </Divider>
+//                     </Grid>
+//                     <Grid item xs={12} md={6}>
+//                       <TextField
+//                         fullWidth
+//                         label="Customer Name"
+//                         value={formData.customerName}
+//                         onChange={(e) =>
+//                           setFormData({
+//                             ...formData,
+//                             customerName: e.target.value,
+//                           })
+//                         }
+//                       />
+//                     </Grid>
+//                     <Grid item xs={12} md={6}>
+//                       <TextField
+//                         fullWidth
+//                         label="Customer Phone"
+//                         value={formData.customerPhone}
+//                         onChange={(e) =>
+//                           setFormData({
+//                             ...formData,
+//                             customerPhone: e.target.value,
+//                           })
+//                         }
+//                       />
+//                     </Grid>
+//                     <Grid item xs={12}>
+//                       <TextField
+//                         fullWidth
+//                         label="Customer Email"
+//                         value={formData.customerEmail}
+//                         onChange={(e) =>
+//                           setFormData({
+//                             ...formData,
+//                             customerEmail: e.target.value,
+//                           })
+//                         }
+//                       />
+//                     </Grid>
+//                     <Grid item xs={12} md={6}>
+//                       <FormControl fullWidth>
+//                         <InputLabel>Service Type</InputLabel>
+//                         <Select
+//                           value={formData.serviceType}
+//                           onChange={(e) =>
+//                             setFormData({
+//                               ...formData,
+//                               serviceType: e.target.value,
+//                             })
+//                           }
+//                           label="Service Type"
+//                         >
+//                           <MenuItem value="">Select a service</MenuItem>
+//                           {SERVICE_TYPES.map((service) => (
+//                             <MenuItem key={service.id} value={service.name}>
+//                               {service.name}
+//                             </MenuItem>
+//                           ))}
+//                         </Select>
+//                       </FormControl>
+//                     </Grid>
+//                     <Grid item xs={12} md={6}>
+//                       <TextField
+//                         fullWidth
+//                         label="Vehicle Model"
+//                         value={formData.vehicleInfo.model}
+//                         onChange={(e) =>
+//                           setFormData({
+//                             ...formData,
+//                             vehicleInfo: {
+//                               ...formData.vehicleInfo,
+//                               model: e.target.value,
+//                             },
+//                           })
+//                         }
+//                       />
+//                     </Grid>
+//                   </>
+//                 )}
+
+//                 {formData.type === "reminder" && (
+//                   <>
+//                     <Grid item xs={12}>
+//                       <Divider sx={{ my: 2 }}>
+//                         <Typography variant="h6">Reminder Settings</Typography>
+//                       </Divider>
+//                     </Grid>
+//                     <Grid item xs={12} md={6}>
+//                       <TextField
+//                         fullWidth
+//                         type="datetime-local"
+//                         label="Reminder Time"
+//                         value={formData.reminderTime}
+//                         onChange={(e) =>
+//                           setFormData({
+//                             ...formData,
+//                             reminderTime: e.target.value,
+//                           })
+//                         }
+//                         InputLabelProps={{ shrink: true }}
+//                       />
+//                     </Grid>
+//                     <Grid item xs={12} md={6}>
+//                       <FormControl fullWidth>
+//                         <InputLabel>Repeat</InputLabel>
+//                         <Select
+//                           value={formData.repeatReminder}
+//                           onChange={(e) =>
+//                             setFormData({
+//                               ...formData,
+//                               repeatReminder: e.target.value,
+//                             })
+//                           }
+//                           label="Repeat"
+//                         >
+//                           {RECURRENCE_PATTERNS.map((pattern) => (
+//                             <MenuItem key={pattern.id} value={pattern.id}>
+//                               {pattern.label}
+//                             </MenuItem>
+//                           ))}
+//                         </Select>
+//                       </FormControl>
+//                     </Grid>
+//                     <Grid item xs={12}>
+//                       <FormControlLabel
+//                         control={
+//                           <Switch
+//                             checked={formData.important}
+//                             onChange={(e) =>
+//                               setFormData({
+//                                 ...formData,
+//                                 important: e.target.checked,
+//                               })
+//                             }
+//                           />
+//                         }
+//                         label="Important Reminder"
+//                       />
+//                     </Grid>
+//                   </>
+//                 )}
+
+//                 {formData.type === "meeting" && (
+//                   <>
+//                     <Grid item xs={12}>
+//                       <Divider sx={{ my: 2 }}>
+//                         <Typography variant="h6">Meeting Details</Typography>
+//                       </Divider>
+//                     </Grid>
+//                     <Grid item xs={12}>
+//                       <TextField
+//                         fullWidth
+//                         multiline
+//                         rows={3}
+//                         label="Agenda"
+//                         value={formData.agenda}
+//                         onChange={(e) =>
+//                           setFormData({ ...formData, agenda: e.target.value })
+//                         }
+//                       />
+//                     </Grid>
+//                     <Grid item xs={12}>
+//                       <TextField
+//                         fullWidth
+//                         label="Meeting Link"
+//                         value={formData.conferenceLink}
+//                         onChange={(e) =>
+//                           setFormData({
+//                             ...formData,
+//                             conferenceLink: e.target.value,
+//                           })
+//                         }
+//                         placeholder="https://meet.google.com/xxx-xxxx-xxx"
+//                       />
+//                     </Grid>
+//                   </>
+//                 )}
+
+//                 {/* Priority */}
+//                 <Grid item xs={12}>
+//                   <Divider sx={{ my: 2 }}>
+//                     <Typography variant="h6">Priority & Status</Typography>
+//                   </Divider>
+//                 </Grid>
+//                 <Grid item xs={12} md={6}>
+//                   <FormControl fullWidth>
+//                     <InputLabel>Priority</InputLabel>
+//                     <Select
+//                       value={formData.priority}
+//                       onChange={(e) =>
+//                         setFormData({ ...formData, priority: e.target.value })
+//                       }
+//                       label="Priority"
+//                     >
+//                       {PRIORITY_LEVELS.map((level) => (
+//                         <MenuItem key={level.id} value={level.id}>
+//                           <Box
+//                             sx={{
+//                               display: "flex",
+//                               alignItems: "center",
+//                               gap: 1,
+//                             }}
+//                           >
+//                             <span>{level.icon}</span>
+//                             {level.label}
+//                           </Box>
+//                         </MenuItem>
+//                       ))}
+//                     </Select>
+//                   </FormControl>
+//                 </Grid>
+//                 <Grid item xs={12} md={6}>
+//                   <FormControl fullWidth>
+//                     <InputLabel>Status</InputLabel>
+//                     <Select
+//                       value={formData.status}
+//                       onChange={(e) =>
+//                         setFormData({ ...formData, status: e.target.value })
+//                       }
+//                       label="Status"
+//                     >
+//                       {EVENT_STATUSES.map((status) => (
+//                         <MenuItem key={status.id} value={status.id}>
+//                           {status.label}
+//                         </MenuItem>
+//                       ))}
+//                     </Select>
+//                   </FormControl>
+//                 </Grid>
+
+//                 {/* Notifications */}
+//                 <Grid item xs={12}>
+//                   <Divider sx={{ my: 2 }}>
+//                     <Typography variant="h6">Notifications</Typography>
+//                   </Divider>
+//                 </Grid>
+//                 <Grid item xs={12}>
+//                   <Typography variant="subtitle2" gutterBottom>
+//                     Notification Methods
+//                   </Typography>
+//                   <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+//                     {NOTIFICATION_TYPES.map((type) => (
+//                       <Chip
+//                         key={type.id}
+//                         icon={type.icon}
+//                         label={type.name}
+//                         onClick={() => {
+//                           const current = formData.notifications;
+//                           const exists = current.some(
+//                             (n) => n.type === type.id
+//                           );
+//                           const newTypes = exists
+//                             ? current.filter((n) => n.type !== type.id)
+//                             : [
+//                                 ...current,
+//                                 { type: type.id, minutes: 30, sent: false },
+//                               ];
+//                           setFormData({
+//                             ...formData,
+//                             notifications: newTypes,
+//                           });
+//                         }}
+//                         color={
+//                           formData.notifications.some((n) => n.type === type.id)
+//                             ? "primary"
+//                             : "default"
+//                         }
+//                         variant={
+//                           formData.notifications.some((n) => n.type === type.id)
+//                             ? "filled"
+//                             : "outlined"
+//                         }
+//                       />
+//                     ))}
+//                   </Box>
+//                 </Grid>
+
+//                 {formData.notifications.length > 0 && (
+//                   <Grid item xs={12}>
+//                     <Typography variant="subtitle2" gutterBottom>
+//                       Notification Timing
+//                     </Typography>
+//                     <Grid container spacing={1}>
+//                       {formData.notifications.map((notif, index) => (
+//                         <Grid item xs={12} key={index}>
+//                           <Box
+//                             sx={{
+//                               display: "flex",
+//                               alignItems: "center",
+//                               gap: 2,
+//                             }}
+//                           >
+//                             <Typography variant="body2" sx={{ minWidth: 80 }}>
+//                               {
+//                                 NOTIFICATION_TYPES.find(
+//                                   (t) => t.id === notif.type
+//                                 )?.name
+//                               }
+//                             </Typography>
+//                             <FormControl size="small" sx={{ flex: 1 }}>
+//                               <Select
+//                                 value={notif.minutes}
+//                                 onChange={(e) => {
+//                                   const newNotifications = [
+//                                     ...formData.notifications,
+//                                   ];
+//                                   newNotifications[index].minutes =
+//                                     e.target.value;
+//                                   setFormData({
+//                                     ...formData,
+//                                     notifications: newNotifications,
+//                                   });
+//                                 }}
+//                               >
+//                                 {REMINDER_TIMINGS.map((timing) => (
+//                                   <MenuItem
+//                                     key={timing.value}
+//                                     value={timing.value}
+//                                   >
+//                                     {timing.label}
+//                                   </MenuItem>
+//                                 ))}
+//                               </Select>
+//                             </FormControl>
+//                           </Box>
+//                         </Grid>
+//                       ))}
+//                     </Grid>
+//                   </Grid>
+//                 )}
+
+//                 <Grid item xs={12}>
+//                   <FormControlLabel
+//                     control={
+//                       <Switch
+//                         checked={formData.sendEmail}
+//                         onChange={(e) =>
+//                           setFormData({
+//                             ...formData,
+//                             sendEmail: e.target.checked,
+//                           })
+//                         }
+//                       />
+//                     }
+//                     label="Send email notification"
+//                   />
+//                 </Grid>
+
+//                 {/* Error Alert for Time Range */}
+//                 {formData.endTime &&
+//                   new Date(formData.endTime) <=
+//                     new Date(formData.startTime) && (
+//                     <Grid item xs={12}>
+//                       <Alert severity="error">
+//                         End time must be after start time. Please adjust the end
+//                         time.
+//                       </Alert>
+//                     </Grid>
+//                   )}
+//               </Grid>
+//             </Box>
 //           </DialogContent>
 //           <DialogActions sx={{ p: 2 }}>
 //             <Button
 //               onClick={() => setOpenDialog(false)}
+//               startIcon={<Close />}
 //               color="inherit"
 //               disabled={loading}
 //             >
 //               Cancel
 //             </Button>
+
 //             <Button
 //               variant="contained"
-//               onClick={createEvent}
-//               disabled={loading}
-//               startIcon={selectedEvent ? <EditIcon /> : <AddIcon />}
+//               onClick={() => {
+//                 if (selectedEvent) {
+//                   updateEvent();
+//                 } else {
+//                   createEvent();
+//                 }
+//               }}
+//               startIcon={selectedEvent ? <Save /> : <AddIcon />}
+//               disabled={
+//                 !formData.summary ||
+//                 !formData.startTime ||
+//                 !formData.endTime ||
+//                 new Date(formData.endTime) <= new Date(formData.startTime) ||
+//                 loading
+//               }
+//               color="primary"
 //             >
 //               {loading ? (
 //                 <CircularProgress size={24} />
@@ -2621,148 +4751,23 @@
 //           </DialogActions>
 //         </Dialog>
 
-//         {/* Quick Add Dialog */}
-//         <Dialog
-//           open={quickAddOpen}
-//           onClose={() => setQuickAddOpen(false)}
-//           maxWidth="xs"
-//           fullWidth
-//         >
-//           <DialogTitle>Quick Add</DialogTitle>
-//           <DialogContent>
-//             <Grid container spacing={2} sx={{ mt: 1 }}>
-//               {EVENT_TYPES.map((type) => (
-//                 <Grid item xs={6} key={type.id}>
-//                   <Card
-//                     sx={{
-//                       cursor: "pointer",
-//                       textAlign: "center",
-//                       p: 3,
-//                       border: "2px solid transparent",
-//                       "&:hover": {
-//                         borderColor: type.color,
-//                         bgcolor: alpha(type.color, 0.05),
-//                         transform: "translateY(-4px)",
-//                         transition: "all 0.2s",
-//                       },
-//                     }}
-//                     onClick={() => {
-//                       handleOpenDialog(null, type.id);
-//                       setQuickAddOpen(false);
-//                     }}
-//                   >
-//                     <Box sx={{ color: type.color, mb: 2, fontSize: 40 }}>
-//                       {type.icon}
-//                     </Box>
-//                     <Typography variant="subtitle1" fontWeight="bold">
-//                       {type.name}
-//                     </Typography>
-//                     <Typography variant="caption" color="text.secondary">
-//                       {type.description}
-//                     </Typography>
-//                   </Card>
-//                 </Grid>
-//               ))}
-//             </Grid>
-//           </DialogContent>
-//           <DialogActions>
-//             <Button onClick={() => setQuickAddOpen(false)}>Cancel</Button>
-//           </DialogActions>
-//         </Dialog>
+//         {/* Event Menu */}
+//         <EventMenu />
+
+//         {/* Configuration Help Dialog */}
+//         <ConfigHelpDialog />
 
 //         {/* Settings Dialog */}
-//         <Dialog
-//           open={settingsOpen}
-//           onClose={() => setSettingsOpen(false)}
-//           maxWidth="sm"
-//           fullWidth
-//         >
-//           <DialogTitle>Settings</DialogTitle>
-//           <DialogContent dividers>
-//             <Box sx={{ pt: 2 }}>
-//               <Typography variant="h6" gutterBottom>
-//                 Appearance
-//               </Typography>
-//               <FormControlLabel
-//                 control={
-//                   <Switch
-//                     checked={themeMode === "dark"}
-//                     onChange={() =>
-//                       setThemeMode(themeMode === "light" ? "dark" : "light")
-//                     }
-//                   />
-//                 }
-//                 label="Dark Mode"
-//               />
-//               <FormControlLabel
-//                 control={
-//                   <Switch
-//                     checked={dragDropEnabled}
-//                     onChange={() => setDragDropEnabled(!dragDropEnabled)}
-//                   />
-//                 }
-//                 label="Enable Drag & Drop"
-//               />
+//         <SettingsDialog />
 
-//               <Divider sx={{ my: 3 }} />
+//         {/* Email Dialog */}
+//         <EmailDialog />
 
-//               <Typography variant="h6" gutterBottom>
-//                 Calendar Settings
-//               </Typography>
-//               <FormControl fullWidth sx={{ mb: 2 }}>
-//                 <InputLabel>Default View</InputLabel>
-//                 <Select
-//                   value={viewMode}
-//                   onChange={(e) => setViewMode(e.target.value)}
-//                   label="Default View"
-//                 >
-//                   {CALENDAR_VIEWS.map((view) => (
-//                     <MenuItem key={view.id} value={view.id}>
-//                       {view.name}
-//                     </MenuItem>
-//                   ))}
-//                 </Select>
-//               </FormControl>
+//         {/* Quick Add Dialog */}
+//         <QuickAddDialog />
 
-//               <FormControl fullWidth>
-//                 <InputLabel>Default Calendar</InputLabel>
-//                 <Select
-//                   value={selectedCalendar}
-//                   onChange={(e) => setSelectedCalendar(e.target.value)}
-//                   label="Default Calendar"
-//                 >
-//                   {calendars.map((calendar) => (
-//                     <MenuItem key={calendar.id} value={calendar.id}>
-//                       {calendar.name}
-//                     </MenuItem>
-//                   ))}
-//                 </Select>
-//               </FormControl>
-//             </Box>
-//           </DialogContent>
-//           <DialogActions>
-//             <Button onClick={() => setSettingsOpen(false)}>Close</Button>
-//             <Button onClick={() => setSettingsOpen(false)} variant="contained">
-//               Save
-//             </Button>
-//           </DialogActions>
-//         </Dialog>
-
-//         {/* Floating Action Button */}
-//         {accessToken && (
-//           <Fab
-//             color="primary"
-//             sx={{
-//               position: "fixed",
-//               bottom: 24,
-//               right: 24,
-//               zIndex: 1000,
-//             }}
-//             onClick={() => setQuickAddOpen(true)}
-//           >
-//             <AddIcon />
-//           </Fab>
-//         )}
+//         {/* Notifications Panel */}
+//         <NotificationsPanel />
 
 //         {/* Notification Snackbar */}
 //         <Snackbar
@@ -2787,6 +4792,11 @@
 //         >
 //           <CircularProgress color="inherit" />
 //         </Backdrop>
+
+//         {/* Notification Sound */}
+//         <audio ref={notificationSoundRef} preload="auto">
+//           <source src="/notification.mp3" type="audio/mpeg" />
+//         </audio>
 //       </Box>
 //     </DndProvider>
 //   );

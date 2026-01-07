@@ -3594,7 +3594,7 @@ const EnhancedGoogleCalendar = () => {
                 gutterBottom
                 sx={{ display: "flex", alignItems: "center", gap: 1 }}
               >
-                <EventIcon /> Enhanced Google Calendar
+                <EventIcon /> Google Calendar
               </Typography>
               <Typography variant="body2" color="textSecondary">
                 Complete calendar solution with events, tasks, meetings,
@@ -3605,20 +3605,6 @@ const EnhancedGoogleCalendar = () => {
 
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
             {/* Search Bar */}
-            <TextField
-              size="small"
-              placeholder="Search events..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Search />
-                  </InputAdornment>
-                ),
-              }}
-              sx={{ width: 200 }}
-            />
 
             {/* Notification Bell */}
             <IconButton

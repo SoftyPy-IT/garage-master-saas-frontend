@@ -44,7 +44,7 @@
     "dayjs": "^1.11.11",
     "flatpickr": "^4.6.13",
     "formik": "^2.4.6",
-    "framer-motion": "^12.24.7",
+    "framer-motion": "^12.24.8",
     "gapi-script": "^1.2.0",
     "googleapis": "^169.0.0",
     "html2canvas": "^1.4.1",
