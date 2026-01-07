@@ -4,163 +4,139 @@
 // src/components/Calendar/GoogleCalendar.jsx
 import {
   Add as AddIcon,
-  Event as EventIcon,
-  MoreVert as MoreVertIcon,
-  Refresh as RefreshIcon,
-  Warning as WarningIcon,
-  Delete as DeleteIcon,
-  Edit as EditIcon,
+  Build,
   CalendarToday,
-  AccessTime,
-  LocationOn,
-  Person,
-  Phone,
-  Email,
-  Close,
-  Save,
-  CheckCircle,
-  Error as ErrorIcon,
-  Info as InfoIcon,
+  Call,
+  CarRepair,
   ChevronLeft,
   ChevronRight,
-  Today as TodayIcon,
-  ViewWeek,
-  ViewList,
-  Send,
-  Download,
-  Print,
-  Share,
-  Notifications,
-  Repeat,
-  Alarm,
-  AttachFile,
-  Tag,
-  Groups,
-  VideoCall,
-  Call,
-  Chat,
-  Note,
-  Task,
-  MeetingRoom,
-  Business,
-  CarRepair,
-  Build,
+  Close,
+  Delete as DeleteIcon,
   DirectionsCar,
+  Download,
+  Edit as EditIcon,
+  Email,
+  Event as EventIcon,
   LocalGasStation,
-  TwoWheeler,
-  DirectionsBus,
-  LocalShipping,
+  LocationOn,
+  MoreVert as MoreVertIcon,
+  Notifications,
+  Person,
+  Print,
+  Refresh as RefreshIcon,
+  Save,
+  Share,
+  Today as TodayIcon,
+  ViewList,
+  ViewWeek,
+  Warning as WarningIcon,
 } from "@mui/icons-material";
 import {
   Alert,
+  Avatar,
   Box,
   Button,
   Card,
   CardContent,
   Chip,
   CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  Fab,
+  FormControl,
+  FormControlLabel,
   Grid,
   IconButton,
-  Typography,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
+  InputLabel,
   Menu,
   MenuItem,
-  Snackbar,
-  Divider,
-  Avatar,
-  Tooltip,
-  Badge,
-  ToggleButton,
-  ToggleButtonGroup,
-  FormControl,
-  InputLabel,
+  Paper,
   Select,
-  OutlinedInput,
-  Checkbox,
-  ListItemText,
-  FormControlLabel,
-  RadioGroup,
-  Radio,
-  Switch,
-  Slider,
-  Rating,
-  Stepper,
+  Snackbar,
   Step,
   StepLabel,
-  Paper,
+  Stepper,
+  Switch,
   Tab,
   Tabs,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  LinearProgress,
-  Fab,
-  SpeedDial,
-  SpeedDialIcon,
-  SpeedDialAction,
-  Breadcrumbs,
-  Link,
-  Pagination,
-  Drawer,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText as MuiListItemText,
-  Collapse,
-  Popover,
-  MobileStepper,
-  Timeline,
-  TimelineItem,
-  TimelineSeparator,
-  TimelineDot,
-  TimelineConnector,
-  TimelineContent,
-  TimelineOppositeContent,
+  TextField,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography,
 } from "@mui/material";
 import { googleLogout, useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
 import {
-  addHours,
-  format,
-  parseISO,
-  startOfWeek,
-  endOfWeek,
-  eachDayOfInterval,
-  isSameDay,
   addDays,
-  subDays,
-  startOfMonth,
-  endOfMonth,
-  isSameMonth,
   addMonths,
+  eachDayOfInterval,
+  endOfMonth,
+  endOfWeek,
+  format,
+  isSameDay,
+  parseISO,
+  startOfMonth,
+  startOfWeek,
+  subDays,
   subMonths,
-  addYears,
-  subYears,
-  differenceInHours,
-  differenceInMinutes,
 } from "date-fns";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 // Service types for garage management
 const SERVICE_TYPES = [
-  { id: 1, name: "Oil Change", icon: <LocalGasStation />, duration: 1, color: "#4CAF50" },
-  { id: 2, name: "Brake Service", icon: <DirectionsCar />, duration: 2, color: "#FF9800" },
-  { id: 3, name: "Engine Repair", icon: <Build />, duration: 4, color: "#F44336" },
-  { id: 4, name: "Tire Replacement", icon: <DirectionsCar />, duration: 2, color: "#2196F3" },
+  {
+    id: 1,
+    name: "Oil Change",
+    icon: <LocalGasStation />,
+    duration: 1,
+    color: "#4CAF50",
+  },
+  {
+    id: 2,
+    name: "Brake Service",
+    icon: <DirectionsCar />,
+    duration: 2,
+    color: "#FF9800",
+  },
+  {
+    id: 3,
+    name: "Engine Repair",
+    icon: <Build />,
+    duration: 4,
+    color: "#F44336",
+  },
+  {
+    id: 4,
+    name: "Tire Replacement",
+    icon: <DirectionsCar />,
+    duration: 2,
+    color: "#2196F3",
+  },
   { id: 5, name: "AC Service", icon: <Build />, duration: 3, color: "#9C27B0" },
-  { id: 6, name: "Battery Check", icon: <Build />, duration: 1, color: "#FFEB3B" },
-  { id: 7, name: "Wheel Alignment", icon: <DirectionsCar />, duration: 2, color: "#795548" },
-  { id: 8, name: "Full Service", icon: <CarRepair />, duration: 6, color: "#607D8B" },
+  {
+    id: 6,
+    name: "Battery Check",
+    icon: <Build />,
+    duration: 1,
+    color: "#FFEB3B",
+  },
+  {
+    id: 7,
+    name: "Wheel Alignment",
+    icon: <DirectionsCar />,
+    duration: 2,
+    color: "#795548",
+  },
+  {
+    id: 8,
+    name: "Full Service",
+    icon: <CarRepair />,
+    duration: 6,
+    color: "#607D8B",
+  },
 ];
 
 const GoogleCalendar = () => {
@@ -256,7 +232,10 @@ const GoogleCalendar = () => {
         await fetchUserProfile(token);
         await fetchCalendarEvents(token);
         await checkAPIStatus(token);
-        showNotification("✅ Successfully connected to Google Calendar!", "success");
+        showNotification(
+          "✅ Successfully connected to Google Calendar!",
+          "success"
+        );
       } catch (error) {
         console.error("Login error:", error);
         handleGoogleError(error);
@@ -299,7 +278,11 @@ const GoogleCalendar = () => {
           logout();
           break;
         case 403:
-          if (error.response.data?.error?.message?.includes("Google Calendar API has not been used")) {
+          if (
+            error.response.data?.error?.message?.includes(
+              "Google Calendar API has not been used"
+            )
+          ) {
             setErrorDetails({
               type: "api_disabled",
               message: "Google Calendar API is disabled. Please enable it.",
@@ -309,7 +292,8 @@ const GoogleCalendar = () => {
                 "3. Wait 2-5 minutes for activation",
                 "4. Come back and refresh this page",
               ],
-              enableLink: "https://console.developers.google.com/apis/api/calendar-json.googleapis.com/overview?project=731493911262",
+              enableLink:
+                "https://console.developers.google.com/apis/api/calendar-json.googleapis.com/overview?project=731493911262",
             });
           } else {
             setErrorDetails({
@@ -410,16 +394,19 @@ const GoogleCalendar = () => {
         }
       );
 
-      const formattedEvents = data.items?.map(event => ({
-        ...event,
-        isGarageEvent: event.description?.includes("Created via: Trust Auto Solution") || false,
-        serviceType: extractServiceType(event.description),
-        customerInfo: extractCustomerInfo(event.description),
-      })) || [];
+      const formattedEvents =
+        data.items?.map((event) => ({
+          ...event,
+          isGarageEvent:
+            event.description?.includes("Created via: Trust Auto Solution") ||
+            false,
+          serviceType: extractServiceType(event.description),
+          customerInfo: extractCustomerInfo(event.description),
+        })) || [];
 
       setEvents(formattedEvents);
       updateStats(formattedEvents);
-      
+
       return formattedEvents;
     } catch (error) {
       console.error("Events fetch error:", error);
@@ -431,7 +418,7 @@ const GoogleCalendar = () => {
   // Extract Service Type from Description
   const extractServiceType = (description) => {
     if (!description) return "General";
-    const service = SERVICE_TYPES.find(service => 
+    const service = SERVICE_TYPES.find((service) =>
       description.toLowerCase().includes(service.name.toLowerCase())
     );
     return service?.name || "General";
@@ -440,13 +427,14 @@ const GoogleCalendar = () => {
   // Extract Customer Info from Description
   const extractCustomerInfo = (description) => {
     if (!description) return {};
-    const lines = description.split('\n');
+    const lines = description.split("\n");
     const info = {};
-    lines.forEach(line => {
-      if (line.includes('Name:')) info.name = line.split('Name:')[1]?.trim();
-      if (line.includes('Phone:')) info.phone = line.split('Phone:')[1]?.trim();
-      if (line.includes('Email:')) info.email = line.split('Email:')[1]?.trim();
-      if (line.includes('Vehicle:')) info.vehicle = line.split('Vehicle:')[1]?.trim();
+    lines.forEach((line) => {
+      if (line.includes("Name:")) info.name = line.split("Name:")[1]?.trim();
+      if (line.includes("Phone:")) info.phone = line.split("Phone:")[1]?.trim();
+      if (line.includes("Email:")) info.email = line.split("Email:")[1]?.trim();
+      if (line.includes("Vehicle:"))
+        info.vehicle = line.split("Vehicle:")[1]?.trim();
     });
     return info;
   };
@@ -454,17 +442,17 @@ const GoogleCalendar = () => {
   // Update Statistics
   const updateStats = (eventsList) => {
     const now = new Date();
-    const today = format(now, 'yyyy-MM-dd');
-    
+    const today = format(now, "yyyy-MM-dd");
+
     const totalEvents = eventsList.length;
-    const todayEvents = eventsList.filter(event => 
+    const todayEvents = eventsList.filter((event) =>
       event.start?.dateTime?.includes(today)
     ).length;
-    const upcomingEvents = eventsList.filter(event => 
-      new Date(event.start?.dateTime) > now
+    const upcomingEvents = eventsList.filter(
+      (event) => new Date(event.start?.dateTime) > now
     ).length;
-    const completedEvents = eventsList.filter(event => 
-      new Date(event.end?.dateTime) < now
+    const completedEvents = eventsList.filter(
+      (event) => new Date(event.end?.dateTime) < now
     ).length;
 
     setStats({
@@ -493,31 +481,42 @@ const GoogleCalendar = () => {
 
       // Build event description
       let description = formData.description || "";
-      
+
       // Add customer details
       description += `\n\n--- Customer Details ---\n`;
-      if (formData.customerName) description += `Name: ${formData.customerName}\n`;
-      if (formData.customerPhone) description += `Phone: ${formData.customerPhone}\n`;
-      if (formData.customerEmail) description += `Email: ${formData.customerEmail}\n`;
-      if (formData.customerAddress) description += `Address: ${formData.customerAddress}\n`;
-      
+      if (formData.customerName)
+        description += `Name: ${formData.customerName}\n`;
+      if (formData.customerPhone)
+        description += `Phone: ${formData.customerPhone}\n`;
+      if (formData.customerEmail)
+        description += `Email: ${formData.customerEmail}\n`;
+      if (formData.customerAddress)
+        description += `Address: ${formData.customerAddress}\n`;
+
       // Add vehicle details
       description += `\n--- Vehicle Details ---\n`;
       description += `Type: ${formData.vehicleType}\n`;
-      if (formData.vehicleModel) description += `Model: ${formData.vehicleModel}\n`;
-      if (formData.vehicleYear) description += `Year: ${formData.vehicleYear}\n`;
-      if (formData.licensePlate) description += `License Plate: ${formData.licensePlate}\n`;
-      
+      if (formData.vehicleModel)
+        description += `Model: ${formData.vehicleModel}\n`;
+      if (formData.vehicleYear)
+        description += `Year: ${formData.vehicleYear}\n`;
+      if (formData.licensePlate)
+        description += `License Plate: ${formData.licensePlate}\n`;
+
       // Add service details
       description += `\n--- Service Details ---\n`;
-      if (formData.serviceType) description += `Service: ${formData.serviceType}\n`;
-      if (formData.serviceNotes) description += `Notes: ${formData.serviceNotes}\n`;
+      if (formData.serviceType)
+        description += `Service: ${formData.serviceType}\n`;
+      if (formData.serviceNotes)
+        description += `Notes: ${formData.serviceNotes}\n`;
       if (formData.priority) description += `Priority: ${formData.priority}\n`;
-      if (formData.estimatedCost) description += `Estimated Cost: ${formData.estimatedCost}\n`;
-      
+      if (formData.estimatedCost)
+        description += `Estimated Cost: ${formData.estimatedCost}\n`;
+
       description += `\nCreated via: Trust Auto Solution`;
       description += `\nStatus: ${formData.status}`;
-      if (formData.assignedTo) description += `\nAssigned To: ${formData.assignedTo}`;
+      if (formData.assignedTo)
+        description += `\nAssigned To: ${formData.assignedTo}`;
 
       const event = {
         summary: formData.summary,
@@ -574,18 +573,17 @@ const GoogleCalendar = () => {
         },
       };
 
-      setEvents(prev => [newEvent, ...prev]);
+      setEvents((prev) => [newEvent, ...prev]);
       updateStats([newEvent, ...events]);
-      
+
       setOpenDialog(false);
       resetForm();
       showNotification("✅ Appointment booked successfully!", "success");
-      
+
       // Send email notification if enabled
       if (formData.sendEmail && formData.customerEmail) {
         sendEmailNotification(newEvent);
       }
-      
     } catch (error) {
       console.error("Event creation error:", error);
       handleGoogleError(error);
@@ -643,8 +641,8 @@ const GoogleCalendar = () => {
         }
       );
 
-      setEvents(prev => prev.filter(event => event.id !== eventId));
-      updateStats(events.filter(event => event.id !== eventId));
+      setEvents((prev) => prev.filter((event) => event.id !== eventId));
+      updateStats(events.filter((event) => event.id !== eventId));
       showNotification("🗑️ Appointment deleted successfully!", "success");
     } catch (error) {
       console.error("Delete error:", error);
@@ -726,9 +724,11 @@ const GoogleCalendar = () => {
 
   // Export Events
   const exportEvents = () => {
-    const exportData = events.map(event => ({
+    const exportData = events.map((event) => ({
       Title: event.summary,
-      Date: event.start?.dateTime ? format(parseISO(event.start.dateTime), "PPpp") : "N/A",
+      Date: event.start?.dateTime
+        ? format(parseISO(event.start.dateTime), "PPpp")
+        : "N/A",
       Location: event.location || "N/A",
       Description: event.description || "N/A",
       Status: event.status || "scheduled",
@@ -737,7 +737,11 @@ const GoogleCalendar = () => {
 
     const csvContent = [
       Object.keys(exportData[0]).join(","),
-      ...exportData.map(row => Object.values(row).map(val => `"${val}"`).join(","))
+      ...exportData.map((row) =>
+        Object.values(row)
+          .map((val) => `"${val}"`)
+          .join(",")
+      ),
     ].join("\n");
 
     const blob = new Blob([csvContent], { type: "text/csv" });
@@ -746,7 +750,7 @@ const GoogleCalendar = () => {
     a.href = url;
     a.download = `garage-appointments-${format(new Date(), "yyyy-MM-dd")}.csv`;
     a.click();
-    
+
     showNotification("📥 Events exported successfully!", "success");
   };
 
@@ -786,15 +790,23 @@ const GoogleCalendar = () => {
               </tr>
             </thead>
             <tbody>
-              ${events.map(event => `
+              ${events
+                .map(
+                  (event) => `
                 <tr>
-                  <td>${event.start?.dateTime ? format(parseISO(event.start.dateTime), "PPpp") : "N/A"}</td>
+                  <td>${
+                    event.start?.dateTime
+                      ? format(parseISO(event.start.dateTime), "PPpp")
+                      : "N/A"
+                  }</td>
                   <td>${event.summary}</td>
                   <td>${event.customerInfo?.name || "N/A"}</td>
                   <td>${event.customerInfo?.vehicle || "N/A"}</td>
                   <td>${event.status || "scheduled"}</td>
                 </tr>
-              `).join("")}
+              `
+                )
+                .join("")}
             </tbody>
           </table>
         </body>
@@ -881,14 +893,14 @@ const GoogleCalendar = () => {
   // Navigation Functions
   const goToToday = () => setCurrentDate(new Date());
   const goToPrevious = () => {
-    if (viewMode === "week") setCurrentDate(prev => subDays(prev, 7));
-    else if (viewMode === "month") setCurrentDate(prev => subMonths(prev, 1));
-    else setCurrentDate(prev => subDays(prev, 1));
+    if (viewMode === "week") setCurrentDate((prev) => subDays(prev, 7));
+    else if (viewMode === "month") setCurrentDate((prev) => subMonths(prev, 1));
+    else setCurrentDate((prev) => subDays(prev, 1));
   };
   const goToNext = () => {
-    if (viewMode === "week") setCurrentDate(prev => addDays(prev, 7));
-    else if (viewMode === "month") setCurrentDate(prev => addMonths(prev, 1));
-    else setCurrentDate(prev => addDays(prev, 1));
+    if (viewMode === "week") setCurrentDate((prev) => addDays(prev, 7));
+    else if (viewMode === "month") setCurrentDate((prev) => addMonths(prev, 1));
+    else setCurrentDate((prev) => addDays(prev, 1));
   };
 
   // Get Events for Day
@@ -904,14 +916,14 @@ const GoogleCalendar = () => {
   useEffect(() => {
     if (accessToken) {
       fetchCalendarEvents(accessToken);
-      
+
       // Refresh every 5 minutes
       const interval = setInterval(() => {
         if (accessToken) {
           fetchCalendarEvents(accessToken);
         }
       }, 300000);
-      
+
       return () => clearInterval(interval);
     }
   }, [accessToken]);
@@ -930,7 +942,11 @@ const GoogleCalendar = () => {
         }}
       >
         <Box>
-          <Typography variant="h4" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Typography
+            variant="h4"
+            gutterBottom
+            sx={{ display: "flex", alignItems: "center", gap: 1 }}
+          >
             <CarRepair /> Garage Appointment Calendar
           </Typography>
           <Typography variant="body2" color="textSecondary">
@@ -962,8 +978,8 @@ const GoogleCalendar = () => {
                 variant="outlined"
                 color="primary"
               />
-              
-              <Box sx={{ display: "flex", gap: 1, flexWrap: 'wrap' }}>
+
+              <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
                 <Button
                   variant="contained"
                   startIcon={<AddIcon />}
@@ -978,11 +994,7 @@ const GoogleCalendar = () => {
                 >
                   Refresh
                 </Button>
-                <Button
-                  variant="outlined"
-                  color="error"
-                  onClick={logout}
-                >
+                <Button variant="outlined" color="error" onClick={logout}>
                   Logout
                 </Button>
               </Box>
@@ -993,11 +1005,20 @@ const GoogleCalendar = () => {
 
       {/* User Info Card */}
       {userProfile && (
-        <Card sx={{ mb: 3, bgcolor: 'primary.light', color: 'white' }}>
+        <Card sx={{ mb: 3, bgcolor: "primary.light", color: "white" }}>
           <CardContent>
-            <Box sx={{ display: "flex", alignItems: "center", justifyContent: 'space-between' }}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
               <Box sx={{ display: "flex", alignItems: "center", gap: 3 }}>
-                <Avatar src={userProfile.picture} sx={{ width: 60, height: 60 }} />
+                <Avatar
+                  src={userProfile.picture}
+                  sx={{ width: 60, height: 60 }}
+                />
                 <Box>
                   <Typography variant="h6">
                     Welcome, {userProfile.name}!
@@ -1007,10 +1028,10 @@ const GoogleCalendar = () => {
                   </Typography>
                 </Box>
               </Box>
-              <Chip 
-                label="Connected" 
-                color="success" 
-                sx={{ color: 'white', bgcolor: 'success.main' }}
+              <Chip
+                label="Connected"
+                color="success"
+                sx={{ color: "white", bgcolor: "success.main" }}
               />
             </Box>
           </CardContent>
@@ -1022,7 +1043,7 @@ const GoogleCalendar = () => {
         <Grid container spacing={2} sx={{ mb: 3 }}>
           <Grid item xs={12} sm={6} md={3}>
             <Card>
-              <CardContent sx={{ textAlign: 'center' }}>
+              <CardContent sx={{ textAlign: "center" }}>
                 <Typography variant="h3" color="primary">
                   {stats.totalEvents}
                 </Typography>
@@ -1034,7 +1055,7 @@ const GoogleCalendar = () => {
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
             <Card>
-              <CardContent sx={{ textAlign: 'center' }}>
+              <CardContent sx={{ textAlign: "center" }}>
                 <Typography variant="h3" color="success.main">
                   {stats.todayEvents}
                 </Typography>
@@ -1046,7 +1067,7 @@ const GoogleCalendar = () => {
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
             <Card>
-              <CardContent sx={{ textAlign: 'center' }}>
+              <CardContent sx={{ textAlign: "center" }}>
                 <Typography variant="h3" color="warning.main">
                   {stats.upcomingEvents}
                 </Typography>
@@ -1058,7 +1079,7 @@ const GoogleCalendar = () => {
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
             <Card>
-              <CardContent sx={{ textAlign: 'center' }}>
+              <CardContent sx={{ textAlign: "center" }}>
                 <Typography variant="h3" color="info.main">
                   {stats.completedEvents}
                 </Typography>
@@ -1119,11 +1140,16 @@ const GoogleCalendar = () => {
       {accessToken && (
         <Card sx={{ mb: 3 }}>
           <CardContent>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-              <Typography variant="h6">
-                ⚡ Quick Service Booking
-              </Typography>
-              <Box sx={{ display: 'flex', gap: 1 }}>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                mb: 2,
+              }}
+            >
+              <Typography variant="h6">⚡ Quick Service Booking</Typography>
+              <Box sx={{ display: "flex", gap: 1 }}>
                 <Button
                   size="small"
                   startIcon={<Download />}
@@ -1140,23 +1166,31 @@ const GoogleCalendar = () => {
                 </Button>
               </Box>
             </Box>
-            
+
             <Grid container spacing={2}>
               {SERVICE_TYPES.slice(0, 8).map((service) => (
                 <Grid item xs={6} sm={4} md={3} lg={2.4} key={service.id}>
-                  <Card 
-                    sx={{ 
-                      cursor: 'pointer',
-                      border: '2px solid',
-                      borderColor: selectedService?.id === service.id ? service.color : 'transparent',
-                      '&:hover': { transform: 'translateY(-4px)', transition: 'transform 0.2s' }
+                  <Card
+                    sx={{
+                      cursor: "pointer",
+                      border: "2px solid",
+                      borderColor:
+                        selectedService?.id === service.id
+                          ? service.color
+                          : "transparent",
+                      "&:hover": {
+                        transform: "translateY(-4px)",
+                        transition: "transform 0.2s",
+                      },
                     }}
                     onClick={() => {
                       setSelectedService(service);
-                      quickCreateEvent(service.name.toLowerCase().replace(' ', '_'));
+                      quickCreateEvent(
+                        service.name.toLowerCase().replace(" ", "_")
+                      );
                     }}
                   >
-                    <CardContent sx={{ textAlign: 'center', p: 2 }}>
+                    <CardContent sx={{ textAlign: "center", p: 2 }}>
                       <Box sx={{ color: service.color, mb: 1 }}>
                         {service.icon}
                       </Box>
@@ -1164,7 +1198,7 @@ const GoogleCalendar = () => {
                         {service.name}
                       </Typography>
                       <Typography variant="caption" color="textSecondary">
-                        {service.duration} hour{service.duration > 1 ? 's' : ''}
+                        {service.duration} hour{service.duration > 1 ? "s" : ""}
                       </Typography>
                     </CardContent>
                   </Card>
@@ -1178,8 +1212,15 @@ const GoogleCalendar = () => {
       {/* Calendar Navigation */}
       {accessToken && (
         <Paper sx={{ p: 2, mb: 3 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              mb: 2,
+            }}
+          >
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <IconButton onClick={goToPrevious}>
                 <ChevronLeft />
               </IconButton>
@@ -1197,22 +1238,18 @@ const GoogleCalendar = () => {
                 {format(currentDate, "MMMM yyyy")}
               </Typography>
             </Box>
-            
+
             <ToggleButtonGroup
               value={viewMode}
               exclusive
               onChange={(e, newMode) => newMode && setViewMode(newMode)}
               size="small"
             >
-              <ToggleButton value="day">
-                Day
-              </ToggleButton>
+              <ToggleButton value="day">Day</ToggleButton>
               <ToggleButton value="week">
                 <ViewWeek />
               </ToggleButton>
-              <ToggleButton value="month">
-                Month
-              </ToggleButton>
+              <ToggleButton value="month">Month</ToggleButton>
               <ToggleButton value="list">
                 <ViewList />
               </ToggleButton>
@@ -1226,11 +1263,13 @@ const GoogleCalendar = () => {
                 const dayEvents = getEventsForDay(day);
                 return (
                   <Grid item xs key={index}>
-                    <Card 
-                      sx={{ 
-                        height: '300px',
-                        overflow: 'auto',
-                        bgcolor: isSameDay(day, new Date()) ? 'primary.50' : 'white'
+                    <Card
+                      sx={{
+                        height: "300px",
+                        overflow: "auto",
+                        bgcolor: isSameDay(day, new Date())
+                          ? "primary.50"
+                          : "white",
                       }}
                     >
                       <CardContent sx={{ p: 1 }}>
@@ -1239,7 +1278,9 @@ const GoogleCalendar = () => {
                           align="center"
                           sx={{
                             fontWeight: "bold",
-                            color: isSameDay(day, new Date()) ? "primary.main" : "inherit",
+                            color: isSameDay(day, new Date())
+                              ? "primary.main"
+                              : "inherit",
                           }}
                         >
                           {format(day, "EEE")}
@@ -1248,7 +1289,9 @@ const GoogleCalendar = () => {
                           variant="body2"
                           align="center"
                           sx={{
-                            color: isSameDay(day, new Date()) ? "primary.main" : "text.secondary",
+                            color: isSameDay(day, new Date())
+                              ? "primary.main"
+                              : "text.secondary",
                           }}
                         >
                           {format(day, "d")}
@@ -1262,33 +1305,59 @@ const GoogleCalendar = () => {
                                 sx={{
                                   p: 1,
                                   mb: 1,
-                                  bgcolor: event.isGarageEvent ? 'primary.light' : 'grey.100',
-                                  cursor: 'pointer',
-                                  '&:hover': { bgcolor: event.isGarageEvent ? 'primary.main' : 'grey.200' }
+                                  bgcolor: event.isGarageEvent
+                                    ? "primary.light"
+                                    : "grey.100",
+                                  cursor: "pointer",
+                                  "&:hover": {
+                                    bgcolor: event.isGarageEvent
+                                      ? "primary.main"
+                                      : "grey.200",
+                                  },
                                 }}
                                 onClick={() => handleOpenDialog(event)}
                               >
-                                <Typography variant="caption" sx={{ color: 'white' }}>
-                                  {format(parseISO(event.start.dateTime), "h:mm a")}
+                                <Typography
+                                  variant="caption"
+                                  sx={{ color: "white" }}
+                                >
+                                  {format(
+                                    parseISO(event.start.dateTime),
+                                    "h:mm a"
+                                  )}
                                 </Typography>
-                                <Typography variant="body2" sx={{ 
-                                  fontWeight: "bold",
-                                  color: event.isGarageEvent ? 'white' : 'inherit'
-                                }}>
+                                <Typography
+                                  variant="body2"
+                                  sx={{
+                                    fontWeight: "bold",
+                                    color: event.isGarageEvent
+                                      ? "white"
+                                      : "inherit",
+                                  }}
+                                >
                                   {event.summary}
                                 </Typography>
                                 {event.isGarageEvent && (
                                   <Chip
                                     size="small"
                                     label={event.serviceType || "Service"}
-                                    sx={{ mt: 0.5, color: 'white', bgcolor: 'primary.dark' }}
+                                    sx={{
+                                      mt: 0.5,
+                                      color: "white",
+                                      bgcolor: "primary.dark",
+                                    }}
                                   />
                                 )}
                               </Card>
                             ))}
                           </Box>
                         ) : (
-                          <Typography variant="body2" color="textSecondary" align="center" sx={{ mt: 2 }}>
+                          <Typography
+                            variant="body2"
+                            color="textSecondary"
+                            align="center"
+                            sx={{ mt: 2 }}
+                          >
                             No appointments
                           </Typography>
                         )}
@@ -1303,8 +1372,8 @@ const GoogleCalendar = () => {
           {/* List View (Default) */}
           {viewMode === "list" && (
             <>
-              <Tabs 
-                value={activeTab} 
+              <Tabs
+                value={activeTab}
                 onChange={(e, newValue) => setActiveTab(newValue)}
                 sx={{ mb: 2 }}
               >
@@ -1315,12 +1384,18 @@ const GoogleCalendar = () => {
               </Tabs>
 
               {events.length === 0 ? (
-                <Box sx={{ textAlign: 'center', py: 4 }}>
-                  <CalendarToday sx={{ fontSize: 60, color: 'text.secondary', mb: 2 }} />
+                <Box sx={{ textAlign: "center", py: 4 }}>
+                  <CalendarToday
+                    sx={{ fontSize: 60, color: "text.secondary", mb: 2 }}
+                  />
                   <Typography variant="h6" gutterBottom>
                     No appointments found
                   </Typography>
-                  <Typography variant="body2" color="textSecondary" sx={{ mb: 3 }}>
+                  <Typography
+                    variant="body2"
+                    color="textSecondary"
+                    sx={{ mb: 3 }}
+                  >
                     Create your first vehicle service appointment
                   </Typography>
                   <Button
@@ -1334,7 +1409,7 @@ const GoogleCalendar = () => {
               ) : (
                 <Grid container spacing={2}>
                   {events
-                    .filter(event => {
+                    .filter((event) => {
                       const now = new Date();
                       const eventDate = new Date(event.start?.dateTime);
                       if (activeTab === 1) return isSameDay(eventDate, now);
@@ -1343,101 +1418,157 @@ const GoogleCalendar = () => {
                       return true;
                     })
                     .map((event) => (
-                    <Grid item xs={12} key={event.id}>
-                      <Card>
-                        <CardContent>
-                          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                            <Box sx={{ flex: 1 }}>
-                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                                <Typography variant="h6">
-                                  {event.summary}
-                                </Typography>
-                                {event.isGarageEvent && (
-                                  <Chip
-                                    size="small"
-                                    label="Garage Service"
-                                    color="primary"
-                                    icon={<CarRepair />}
-                                  />
-                                )}
-                                <Chip
-                                  size="small"
-                                  label={event.status || "scheduled"}
-                                  color={
-                                    event.status === "completed" ? "success" :
-                                    event.status === "cancelled" ? "error" : "default"
-                                  }
-                                />
-                              </Box>
-                              
-                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap', mb: 1 }}>
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                                  <CalendarToday fontSize="small" color="action" />
-                                  <Typography variant="body2">
-                                    {format(parseISO(event.start.dateTime), "PPpp")}
-                                  </Typography>
-                                </Box>
-                                
-                                {event.location && (
-                                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                                    <LocationOn fontSize="small" color="action" />
-                                    <Typography variant="body2">{event.location}</Typography>
-                                  </Box>
-                                )}
-                                
-                                {event.serviceType && (
-                                  <Chip
-                                    size="small"
-                                    label={event.serviceType}
-                                    variant="outlined"
-                                  />
-                                )}
-                              </Box>
-                              
-                              {event.customerInfo?.name && (
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                                  <Person fontSize="small" color="action" />
-                                  <Typography variant="body2">
-                                    Customer: {event.customerInfo.name}
-                                    {event.customerInfo.phone && ` | ${event.customerInfo.phone}`}
-                                    {event.customerInfo.email && ` | ${event.customerInfo.email}`}
-                                  </Typography>
-                                </Box>
-                              )}
-                              
-                              {event.description && (
-                                <Typography
-                                  variant="body2"
+                      <Grid item xs={12} key={event.id}>
+                        <Card>
+                          <CardContent>
+                            <Box
+                              sx={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "flex-start",
+                              }}
+                            >
+                              <Box sx={{ flex: 1 }}>
+                                <Box
                                   sx={{
-                                    mt: 1,
-                                    p: 1,
-                                    bgcolor: 'grey.50',
-                                    borderRadius: 1,
-                                    whiteSpace: 'pre-line',
-                                    maxHeight: '100px',
-                                    overflow: 'auto',
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 1,
+                                    mb: 1,
                                   }}
                                 >
-                                  {event.description}
-                                </Typography>
-                              )}
+                                  <Typography variant="h6">
+                                    {event.summary}
+                                  </Typography>
+                                  {event.isGarageEvent && (
+                                    <Chip
+                                      size="small"
+                                      label="Garage Service"
+                                      color="primary"
+                                      icon={<CarRepair />}
+                                    />
+                                  )}
+                                  <Chip
+                                    size="small"
+                                    label={event.status || "scheduled"}
+                                    color={
+                                      event.status === "completed"
+                                        ? "success"
+                                        : event.status === "cancelled"
+                                        ? "error"
+                                        : "default"
+                                    }
+                                  />
+                                </Box>
+
+                                <Box
+                                  sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 2,
+                                    flexWrap: "wrap",
+                                    mb: 1,
+                                  }}
+                                >
+                                  <Box
+                                    sx={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                      gap: 0.5,
+                                    }}
+                                  >
+                                    <CalendarToday
+                                      fontSize="small"
+                                      color="action"
+                                    />
+                                    <Typography variant="body2">
+                                      {format(
+                                        parseISO(event.start.dateTime),
+                                        "PPpp"
+                                      )}
+                                    </Typography>
+                                  </Box>
+
+                                  {event.location && (
+                                    <Box
+                                      sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: 0.5,
+                                      }}
+                                    >
+                                      <LocationOn
+                                        fontSize="small"
+                                        color="action"
+                                      />
+                                      <Typography variant="body2">
+                                        {event.location}
+                                      </Typography>
+                                    </Box>
+                                  )}
+
+                                  {event.serviceType && (
+                                    <Chip
+                                      size="small"
+                                      label={event.serviceType}
+                                      variant="outlined"
+                                    />
+                                  )}
+                                </Box>
+
+                                {event.customerInfo?.name && (
+                                  <Box
+                                    sx={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                      gap: 1,
+                                      mb: 1,
+                                    }}
+                                  >
+                                    <Person fontSize="small" color="action" />
+                                    <Typography variant="body2">
+                                      Customer: {event.customerInfo.name}
+                                      {event.customerInfo.phone &&
+                                        ` | ${event.customerInfo.phone}`}
+                                      {event.customerInfo.email &&
+                                        ` | ${event.customerInfo.email}`}
+                                    </Typography>
+                                  </Box>
+                                )}
+
+                                {event.description && (
+                                  <Typography
+                                    variant="body2"
+                                    sx={{
+                                      mt: 1,
+                                      p: 1,
+                                      bgcolor: "grey.50",
+                                      borderRadius: 1,
+                                      whiteSpace: "pre-line",
+                                      maxHeight: "100px",
+                                      overflow: "auto",
+                                    }}
+                                  >
+                                    {event.description}
+                                  </Typography>
+                                )}
+                              </Box>
+
+                              <IconButton
+                                onClick={(e) =>
+                                  setAnchorEl({
+                                    element: e.currentTarget,
+                                    eventId: event.id,
+                                  })
+                                }
+                              >
+                                <MoreVertIcon />
+                              </IconButton>
                             </Box>
-                            
-                            <IconButton
-                              onClick={(e) =>
-                                setAnchorEl({
-                                  element: e.currentTarget,
-                                  eventId: event.id,
-                                })
-                              }
-                            >
-                              <MoreVertIcon />
-                            </IconButton>
-                          </Box>
-                        </CardContent>
-                      </Card>
-                    </Grid>
-                  ))}
+                          </CardContent>
+                        </Card>
+                      </Grid>
+                    ))}
                 </Grid>
               )}
             </>
@@ -1476,11 +1607,15 @@ const GoogleCalendar = () => {
             <Grid container spacing={2}>
               {/* Appointment Details */}
               <Grid item xs={12}>
-                <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography
+                  variant="h6"
+                  gutterBottom
+                  sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                >
                   <EventIcon /> Appointment Details
                 </Typography>
               </Grid>
-              
+
               <Grid item xs={12}>
                 <TextField
                   fullWidth
@@ -1550,7 +1685,10 @@ const GoogleCalendar = () => {
               {/* Customer Information */}
               <Grid item xs={12}>
                 <Divider sx={{ my: 2 }}>
-                  <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Typography
+                    variant="h6"
+                    sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                  >
                     <Person /> Customer Information
                   </Typography>
                 </Divider>
@@ -1593,7 +1731,10 @@ const GoogleCalendar = () => {
                   label="Customer Address"
                   value={formData.customerAddress}
                   onChange={(e) =>
-                    setFormData({ ...formData, customerAddress: e.target.value })
+                    setFormData({
+                      ...formData,
+                      customerAddress: e.target.value,
+                    })
                   }
                 />
               </Grid>
@@ -1601,7 +1742,10 @@ const GoogleCalendar = () => {
               {/* Vehicle Details */}
               <Grid item xs={12}>
                 <Divider sx={{ my: 2 }}>
-                  <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Typography
+                    variant="h6"
+                    sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                  >
                     <DirectionsCar /> Vehicle Details
                   </Typography>
                 </Divider>
@@ -1660,7 +1804,10 @@ const GoogleCalendar = () => {
               {/* Service Details */}
               <Grid item xs={12}>
                 <Divider sx={{ my: 2 }}>
-                  <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Typography
+                    variant="h6"
+                    sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                  >
                     <Build /> Service Details
                   </Typography>
                 </Divider>
@@ -1750,7 +1897,10 @@ const GoogleCalendar = () => {
               {/* Status & Notifications */}
               <Grid item xs={12}>
                 <Divider sx={{ my: 2 }}>
-                  <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Typography
+                    variant="h6"
+                    sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                  >
                     <Notifications /> Status & Notifications
                   </Typography>
                 </Divider>
@@ -1792,7 +1942,10 @@ const GoogleCalendar = () => {
                     <Switch
                       checked={formData.sendEmail}
                       onChange={(e) =>
-                        setFormData({ ...formData, sendEmail: e.target.checked })
+                        setFormData({
+                          ...formData,
+                          sendEmail: e.target.checked,
+                        })
                       }
                     />
                   }
@@ -1802,16 +1955,17 @@ const GoogleCalendar = () => {
 
               <Grid item xs={12}>
                 <Alert severity="info">
-                  This appointment will be saved to Google Calendar and will sync across all your devices.
-                  Customer will receive email confirmation if enabled.
+                  This appointment will be saved to Google Calendar and will
+                  sync across all your devices. Customer will receive email
+                  confirmation if enabled.
                 </Alert>
               </Grid>
             </Grid>
           </Box>
         </DialogContent>
         <DialogActions sx={{ p: 2 }}>
-          <Button 
-            onClick={() => setOpenDialog(false)} 
+          <Button
+            onClick={() => setOpenDialog(false)}
             startIcon={<Close />}
             color="inherit"
           >
@@ -1821,7 +1975,12 @@ const GoogleCalendar = () => {
             variant="contained"
             onClick={selectedEvent ? updateEvent : createEvent}
             startIcon={<Save />}
-            disabled={!formData.summary || !formData.startTime || !formData.endTime || loading}
+            disabled={
+              !formData.summary ||
+              !formData.startTime ||
+              !formData.endTime ||
+              loading
+            }
             color="primary"
           >
             {loading ? (
@@ -1843,9 +2002,7 @@ const GoogleCalendar = () => {
       >
         <MenuItem
           onClick={() => {
-            handleOpenDialog(
-              events.find((e) => e.id === anchorEl.eventId)
-            );
+            handleOpenDialog(events.find((e) => e.id === anchorEl.eventId));
             setAnchorEl(null);
           }}
         >
@@ -1872,7 +2029,7 @@ const GoogleCalendar = () => {
           onClick={() => {
             const event = events.find((e) => e.id === anchorEl.eventId);
             if (event?.customerInfo?.phone) {
-              window.open(`tel:${event.customerInfo.phone}`, '_blank');
+              window.open(`tel:${event.customerInfo.phone}`, "_blank");
             }
             setAnchorEl(null);
           }}
@@ -1883,7 +2040,10 @@ const GoogleCalendar = () => {
           onClick={() => {
             const event = events.find((e) => e.id === anchorEl.eventId);
             if (event?.customerInfo?.email) {
-              window.open(`mailto:${event.customerInfo.email}?subject=Appointment: ${event.summary}`, '_blank');
+              window.open(
+                `mailto:${event.customerInfo.email}?subject=Appointment: ${event.summary}`,
+                "_blank"
+              );
             }
             setAnchorEl(null);
           }}
@@ -1911,7 +2071,7 @@ const GoogleCalendar = () => {
         <Alert
           severity={notification.severity}
           onClose={() => setNotification({ ...notification, open: false })}
-          sx={{ width: '100%' }}
+          sx={{ width: "100%" }}
         >
           {notification.message}
         </Alert>
@@ -1921,7 +2081,7 @@ const GoogleCalendar = () => {
       {accessToken && (
         <Fab
           color="primary"
-          sx={{ position: 'fixed', bottom: 24, right: 24 }}
+          sx={{ position: "fixed", bottom: 24, right: 24 }}
           onClick={() => handleOpenDialog()}
         >
           <AddIcon />
