@@ -1,15 +1,14 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-case-declarations */
 /* eslint-disable no-useless-catch */
 /* eslint-disable react/jsx-no-target-blank */
 /* eslint-disable no-unused-vars */
-// src/components/Calendar/GoogleCalendar.jsx
 import {
   Add as AddIcon,
   Build,
   CalendarToday,
   Call,
   CarRepair,
+  CheckCircle,
   ChevronLeft,
   ChevronRight,
   Close,
@@ -24,6 +23,7 @@ import {
   MoreVert as MoreVertIcon,
   Notifications,
   Person,
+  Phone,
   Print,
   Refresh as RefreshIcon,
   Save,
@@ -74,12 +74,15 @@ import { googleLogout, useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
 import {
   addDays,
+  addHours,
   addMonths,
   eachDayOfInterval,
+  endOfMonth,
   endOfWeek,
   format,
   isSameDay,
   parseISO,
+  startOfMonth,
   startOfWeek,
   subDays,
   subMonths,
@@ -139,6 +142,38 @@ const SERVICE_TYPES = [
     color: "#607D8B",
   },
 ];
+
+// Utility function to fix date format
+const fixDateTimeFormat = (dateTimeString) => {
+  try {
+    // If it's already in ISO format with Z
+    if (dateTimeString.includes("Z")) {
+      return dateTimeString;
+    }
+
+    // If it's in format "2026-01-07T08:39" (missing seconds)
+    if (dateTimeString.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/)) {
+      return dateTimeString + ":00.000Z";
+    }
+
+    // If it's in format "2026-01-07T08:39:00"
+    if (dateTimeString.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/)) {
+      return dateTimeString + ".000Z";
+    }
+
+    // Try to parse and format
+    const date = new Date(dateTimeString);
+    if (isNaN(date.getTime())) {
+      throw new Error("Invalid date");
+    }
+
+    return date.toISOString();
+  } catch (error) {
+    console.error("Date format error:", error);
+    // Return current time as fallback
+    return new Date().toISOString();
+  }
+};
 
 const GoogleCalendar = () => {
   // State Management
@@ -209,12 +244,6 @@ const GoogleCalendar = () => {
       "731493911262-b4vutijvnt9bgdvgu6m1ai7g0nsno7vl.apps.googleusercontent.com",
     adminEmail: "softypyit@gmail.com",
     userEmail: "ibrahimsikder5033@gmail.com",
-    domains: ["trustautosolution.com", "worldautosolution.com"],
-    redirectUris: [
-      "https://garage.trustautosolution.com",
-      "https://garage.worldautosolution.com",
-      "https://trustautosolution.com",
-    ],
   };
 
   // Google Login with all required scopes
@@ -254,7 +283,6 @@ const GoogleCalendar = () => {
     onError: (error) => {
       console.error("❌ Google login error:", error);
 
-      // Check specific error types
       if (error.error === "access_denied") {
         setErrorDetails({
           type: "test_user_required",
@@ -289,10 +317,16 @@ const GoogleCalendar = () => {
 
       switch (status) {
         case 400:
+          console.error("Bad Request Details:", data);
           setErrorDetails({
             type: "bad_request",
-            message: "Invalid request",
-            details: data.error?.message || "Bad request",
+            message: "Invalid request data format",
+            details: [
+              "Please check date/time format",
+              "Ensure all required fields are filled correctly",
+              data.error?.message || "Bad Request",
+            ],
+            rawError: data,
           });
           break;
 
@@ -321,16 +355,6 @@ const GoogleCalendar = () => {
               ],
             });
             setConfigHelpOpen(true);
-          } else if (errorMsg.includes("access_denied")) {
-            setErrorDetails({
-              type: "access_denied",
-              message: "Access Denied",
-              details: [
-                "Your email is not authorized",
-                "Please make sure it's added as a test user",
-              ],
-            });
-            setConfigHelpOpen(true);
           } else {
             setErrorDetails({
               type: "forbidden",
@@ -338,14 +362,6 @@ const GoogleCalendar = () => {
               details: errorMsg,
             });
           }
-          break;
-
-        case 404:
-          setErrorDetails({
-            type: "not_found",
-            message: "Resource not found",
-            details: "The requested calendar resource was not found",
-          });
           break;
 
         default:
@@ -493,13 +509,14 @@ const GoogleCalendar = () => {
     });
   };
 
-  // Create Event
+  // Create Event - FIXED VERSION
   const createEvent = async () => {
     if (!accessToken) {
       showNotification("Please login first", "warning");
       return;
     }
 
+    // Validate form
     if (!formData.summary || !formData.startTime || !formData.endTime) {
       showNotification("Please fill all required fields", "warning");
       return;
@@ -507,20 +524,28 @@ const GoogleCalendar = () => {
 
     try {
       setLoading(true);
+      console.log("Creating event with data:", formData);
 
       // Build event description
       let description = formData.description || "";
 
       // Add customer details
-      description += `\n\n--- Customer Details ---\n`;
-      if (formData.customerName)
-        description += `Name: ${formData.customerName}\n`;
-      if (formData.customerPhone)
-        description += `Phone: ${formData.customerPhone}\n`;
-      if (formData.customerEmail)
-        description += `Email: ${formData.customerEmail}\n`;
-      if (formData.customerAddress)
-        description += `Address: ${formData.customerAddress}\n`;
+      if (
+        formData.customerName ||
+        formData.customerPhone ||
+        formData.customerEmail ||
+        formData.customerAddress
+      ) {
+        description += `\n\n--- Customer Details ---\n`;
+        if (formData.customerName)
+          description += `Name: ${formData.customerName}\n`;
+        if (formData.customerPhone)
+          description += `Phone: ${formData.customerPhone}\n`;
+        if (formData.customerEmail)
+          description += `Email: ${formData.customerEmail}\n`;
+        if (formData.customerAddress)
+          description += `Address: ${formData.customerAddress}\n`;
+      }
 
       // Add vehicle details
       description += `\n--- Vehicle Details ---\n`;
@@ -547,15 +572,26 @@ const GoogleCalendar = () => {
       if (formData.assignedTo)
         description += `\nAssigned To: ${formData.assignedTo}`;
 
+      // FIX: Convert date format from "2026-01-07T08:39" to "2026-01-07T08:39:00.000Z"
+      const startDateTime = fixDateTimeFormat(formData.startTime);
+      const endDateTime = fixDateTimeFormat(formData.endTime);
+
+      console.log("Date format conversion:", {
+        originalStart: formData.startTime,
+        fixedStart: startDateTime,
+        originalEnd: formData.endTime,
+        fixedEnd: endDateTime,
+      });
+
       const event = {
         summary: formData.summary,
-        description: description,
+        description: description.trim(),
         start: {
-          dateTime: formData.startTime,
+          dateTime: startDateTime,
           timeZone: "Asia/Dhaka",
         },
         end: {
-          dateTime: formData.endTime,
+          dateTime: endDateTime,
           timeZone: "Asia/Dhaka",
         },
         location: formData.location || "Trust Auto Solution Garage",
@@ -569,9 +605,10 @@ const GoogleCalendar = () => {
             { method: "popup", minutes: 10 },
           ],
         },
+        colorId: getColorId(formData.priority),
       };
 
-      console.log("Creating event:", event);
+      console.log("Sending event to Google:", JSON.stringify(event, null, 2));
 
       const response = await axios.post(
         "https://www.googleapis.com/calendar/v3/calendars/primary/events",
@@ -584,7 +621,7 @@ const GoogleCalendar = () => {
         }
       );
 
-      console.log("Event created:", response.data);
+      console.log("✅ Event created successfully:", response.data);
 
       // Add to local state
       const newEvent = {
@@ -605,11 +642,40 @@ const GoogleCalendar = () => {
       resetForm();
       showNotification("✅ Appointment booked successfully!", "success");
     } catch (error) {
-      console.error("Event creation error:", error);
+      console.error("❌ Event creation error:", error);
+      console.error("Error details:", error.response?.data);
+      console.error("Request payload:", error.config?.data);
+
+      // Show detailed error
+      if (error.response?.data?.error) {
+        const errorMsg = error.response.data.error.message || "Bad Request";
+        showNotification(`❌ Failed: ${errorMsg}`, "error");
+
+        // Log detailed error
+        console.error("Google API Error Details:", error.response.data.error);
+      } else {
+        showNotification("❌ Failed to create appointment", "error");
+      }
+
       handleGoogleError(error);
-      showNotification("❌ Failed to create appointment", "error");
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Helper function to get color ID based on priority
+  const getColorId = (priority) => {
+    switch (priority) {
+      case "high":
+        return "11"; // Red
+      case "urgent":
+        return "6"; // Orange
+      case "medium":
+        return "5"; // Yellow
+      case "low":
+        return "2"; // Green
+      default:
+        return "1"; // Blue
     }
   };
 
@@ -620,12 +686,22 @@ const GoogleCalendar = () => {
     try {
       setLoading(true);
 
+      // FIX: Convert date format
+      const startDateTime = fixDateTimeFormat(formData.startTime);
+      const endDateTime = fixDateTimeFormat(formData.endTime);
+
       const event = {
         ...selectedEvent,
         summary: formData.summary,
         description: formData.description,
-        start: { dateTime: formData.startTime, timeZone: "Asia/Dhaka" },
-        end: { dateTime: formData.endTime, timeZone: "Asia/Dhaka" },
+        start: {
+          dateTime: startDateTime,
+          timeZone: "Asia/Dhaka",
+        },
+        end: {
+          dateTime: endDateTime,
+          timeZone: "Asia/Dhaka",
+        },
         location: formData.location,
       };
 
@@ -722,11 +798,19 @@ const GoogleCalendar = () => {
         };
     }
 
+    // Format dates for input field
+    const formatForInput = (date) => {
+      const pad = (num) => num.toString().padStart(2, "0");
+      return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
+        date.getDate()
+      )}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+    };
+
     setFormData({
       ...formData,
       ...template,
-      startTime: startTime.toISOString().slice(0, 16),
-      endTime: endTime.toISOString().slice(0, 16),
+      startTime: formatForInput(startTime),
+      endTime: formatForInput(endTime),
     });
 
     setOpenDialog(true);
@@ -869,17 +953,40 @@ const GoogleCalendar = () => {
     setNotification({ open: true, message, severity });
   };
 
+  // Format date for datetime-local input
+  const formatForDateTimeLocal = (date) => {
+    const pad = (num) => num.toString().padStart(2, "0");
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
+      date.getDate()
+    )}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+  };
+
   // Open Dialog
   const handleOpenDialog = (event = null) => {
     if (event) {
       setSelectedEvent(event);
       const customerInfo = extractCustomerInfo(event.description);
+
+      // Convert ISO date to datetime-local format
+      const formatISOToInput = (isoDate) => {
+        try {
+          const date = new Date(isoDate);
+          return formatForDateTimeLocal(date);
+        } catch {
+          return "";
+        }
+      };
+
       setFormData({
         ...formData,
         summary: event.summary || "",
         description: event.description || "",
-        startTime: event.start?.dateTime || "",
-        endTime: event.end?.dateTime || "",
+        startTime: event.start?.dateTime
+          ? formatISOToInput(event.start.dateTime)
+          : "",
+        endTime: event.end?.dateTime
+          ? formatISOToInput(event.end.dateTime)
+          : "",
         location: event.location || "",
         customerEmail: customerInfo.email || "",
         customerPhone: customerInfo.phone || "",
@@ -894,8 +1001,27 @@ const GoogleCalendar = () => {
 
       setFormData({
         ...formData,
-        startTime: startTime.toISOString().slice(0, 16),
-        endTime: endTime.toISOString().slice(0, 16),
+        summary: "",
+        description: "",
+        startTime: formatForDateTimeLocal(startTime),
+        endTime: formatForDateTimeLocal(endTime),
+        location: "Trust Auto Solution Garage",
+        customerEmail: "",
+        customerPhone: "",
+        customerName: "",
+        customerAddress: "",
+        vehicleType: "car",
+        vehicleModel: "",
+        vehicleYear: "",
+        licensePlate: "",
+        serviceType: "",
+        serviceNotes: "",
+        priority: "medium",
+        reminder: "30",
+        sendEmail: true,
+        status: "scheduled",
+        assignedTo: "",
+        estimatedCost: "",
       });
     }
     setOpenDialog(true);
@@ -928,6 +1054,73 @@ const GoogleCalendar = () => {
     });
   };
 
+  // Test Event Creation Function
+  const testEventCreation = async () => {
+    if (!accessToken) {
+      showNotification("Please login first", "warning");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      // Create a simple test event with correct format
+      const now = new Date();
+      const startTime = new Date(now.getTime() + 60 * 60 * 1000);
+      const endTime = new Date(startTime.getTime() + 60 * 60 * 1000);
+
+      const testEvent = {
+        summary: "Test Appointment - Garage Service",
+        description:
+          "This is a test appointment created via Trust Auto Solution\n\nCreated via: Trust Auto Solution",
+        start: {
+          dateTime: startTime.toISOString(), // Already in correct ISO format
+          timeZone: "Asia/Dhaka",
+        },
+        end: {
+          dateTime: endTime.toISOString(), // Already in correct ISO format
+          timeZone: "Asia/Dhaka",
+        },
+        location: "Test Garage Location",
+      };
+
+      console.log("Test event data:", testEvent);
+
+      const response = await axios.post(
+        "https://www.googleapis.com/calendar/v3/calendars/primary/events",
+        testEvent,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      console.log("✅ Test event created successfully:", response.data);
+      showNotification("✅ Test event created successfully!", "success");
+
+      // Refresh events
+      await fetchCalendarEvents(accessToken);
+    } catch (error) {
+      console.error("❌ Test event creation error:", error);
+
+      if (error.response?.data) {
+        console.error("Error response:", error.response.data);
+        showNotification(
+          `❌ Test failed: ${JSON.stringify(
+            error.response.data.error || error.message
+          )}`,
+          "error"
+        );
+      } else {
+        showNotification("❌ Test event creation failed", "error");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Auto fetch events when token exists
   useEffect(() => {
     if (accessToken) {
@@ -951,9 +1144,7 @@ const GoogleCalendar = () => {
       <DialogContent dividers>
         <Box sx={{ pt: 2 }}>
           <Alert severity="warning" sx={{ mb: 3 }}>
-            <Typography variant="h6">
-              Test User Configuration Required
-            </Typography>
+            <Typography variant="h6">Configuration Required</Typography>
           </Alert>
 
           <Typography variant="h6" gutterBottom>
@@ -986,119 +1177,23 @@ const GoogleCalendar = () => {
                 </CardContent>
               </Card>
             </Grid>
-
-            <Grid item xs={12} md={6}>
-              <Card variant="outlined">
-                <CardContent>
-                  <Typography variant="subtitle2" color="textSecondary">
-                    Admin Email
-                  </Typography>
-                  <Typography variant="body1">{CONFIG.adminEmail}</Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-
-            <Grid item xs={12} md={6}>
-              <Card variant="outlined">
-                <CardContent>
-                  <Typography variant="subtitle2" color="textSecondary">
-                    Your Email
-                  </Typography>
-                  <Typography variant="body1" fontWeight="bold" color="primary">
-                    {CONFIG.userEmail}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
           </Grid>
 
-          <Typography variant="h6" gutterBottom>
-            📝 Step-by-Step Fix:
-          </Typography>
-
-          <Box component="ol" sx={{ pl: 2, mb: 3 }}>
-            <Box component="li" sx={{ mb: 2 }}>
-              <Typography variant="subtitle1">
-                Step 1: Login to Google Cloud Console
-              </Typography>
-              <Typography variant="body2">
-                Use: <strong>{CONFIG.adminEmail}</strong>
-              </Typography>
-            </Box>
-
-            <Box component="li" sx={{ mb: 2 }}>
-              <Typography variant="subtitle1">
-                Step 2: Go to OAuth consent screen
-              </Typography>
-              <Typography variant="body2">
-                Project: <strong>{CONFIG.projectId}</strong>
-              </Typography>
-            </Box>
-
-            <Box component="li" sx={{ mb: 2 }}>
-              <Typography variant="subtitle1">
-                Step 3: Scroll to Test users section
-              </Typography>
-              <Typography variant="body2">
-                Click <strong>ADD USERS</strong>
-              </Typography>
-            </Box>
-
-            <Box component="li" sx={{ mb: 2 }}>
-              <Typography variant="subtitle1">
-                Step 4: Add these emails:
-              </Typography>
-              <Box sx={{ pl: 2, mt: 1 }}>
-                <Typography variant="body2" color="primary">
-                  • {CONFIG.userEmail}
-                </Typography>
-                <Typography variant="body2">• {CONFIG.adminEmail}</Typography>
-              </Box>
-            </Box>
-
-            <Box component="li" sx={{ mb: 2 }}>
-              <Typography variant="subtitle1">Step 5: Save and wait</Typography>
-              <Typography variant="body2">
-                Click <strong>SAVE</strong> and wait 5 minutes
-              </Typography>
-            </Box>
-
-            <Box component="li">
-              <Typography variant="subtitle1">
-                Step 6: Come back and try again
-              </Typography>
-              <Typography variant="body2">
-                Refresh this page and click Connect Google Calendar
-              </Typography>
-            </Box>
-          </Box>
-
-          <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
-            <Button
-              variant="contained"
-              href={`https://console.cloud.google.com/apis/credentials/consent?project=${CONFIG.projectId}`}
-              target="_blank"
-              startIcon={<Settings />}
-            >
-              Open Google Console
-            </Button>
-
-            <Button
-              variant="outlined"
-              onClick={() => {
-                localStorage.clear();
-                window.location.reload();
-              }}
-            >
-              Clear Cache & Refresh
-            </Button>
-
-            <Button variant="outlined" onClick={() => setConfigHelpOpen(false)}>
-              Close
-            </Button>
-          </Box>
+          <Button
+            variant="contained"
+            href={`https://console.cloud.google.com/apis/credentials/consent?project=${CONFIG.projectId}`}
+            target="_blank"
+            startIcon={<Settings />}
+            fullWidth
+            sx={{ mb: 3 }}
+          >
+            Open Google Console
+          </Button>
         </Box>
       </DialogContent>
+      <DialogActions>
+        <Button onClick={() => setConfigHelpOpen(false)}>Close</Button>
+      </DialogActions>
     </Dialog>
   );
 
@@ -1212,6 +1307,72 @@ const GoogleCalendar = () => {
         </Card>
       )}
 
+      {/* Test Button */}
+      {accessToken && (
+        <Box sx={{ mb: 2, display: "flex", gap: 1 }}>
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={testEventCreation}
+            disabled={loading}
+            startIcon={<EventIcon />}
+          >
+            Test Event Creation
+          </Button>
+
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={() => {
+              console.log("Current form data:", formData);
+              console.log("Access token present:", !!accessToken);
+              showNotification("Data logged to console", "info");
+            }}
+          >
+            Debug Form
+          </Button>
+        </Box>
+      )}
+
+      {/* Error Display */}
+      {errorDetails && (
+        <Alert
+          severity={
+            errorDetails.type === "test_user_required" ? "warning" : "error"
+          }
+          sx={{ mb: 3 }}
+          icon={<WarningIcon />}
+          onClose={clearError}
+          action={
+            errorDetails.type === "test_user_required" && (
+              <Button
+                color="inherit"
+                size="small"
+                onClick={() => setConfigHelpOpen(true)}
+              >
+                Fix Now
+              </Button>
+            )
+          }
+        >
+          <Typography variant="h6" gutterBottom>
+            {errorDetails.message}
+          </Typography>
+
+          {Array.isArray(errorDetails.details) ? (
+            <Box component="ul" sx={{ mt: 1, pl: 2 }}>
+              {errorDetails.details.map((detail, index) => (
+                <li key={index}>{detail}</li>
+              ))}
+            </Box>
+          ) : (
+            <Typography variant="body2" sx={{ mt: 1 }}>
+              {errorDetails.details}
+            </Typography>
+          )}
+        </Alert>
+      )}
+
       {/* Statistics Cards */}
       {accessToken && (
         <Grid container spacing={2} sx={{ mb: 3 }}>
@@ -1264,45 +1425,6 @@ const GoogleCalendar = () => {
             </Card>
           </Grid>
         </Grid>
-      )}
-
-      {/* Error Display */}
-      {errorDetails && (
-        <Alert
-          severity={
-            errorDetails.type === "test_user_required" ? "warning" : "error"
-          }
-          sx={{ mb: 3 }}
-          icon={<WarningIcon />}
-          onClose={clearError}
-          action={
-            errorDetails.type === "test_user_required" && (
-              <Button
-                color="inherit"
-                size="small"
-                onClick={() => setConfigHelpOpen(true)}
-              >
-                Fix Now
-              </Button>
-            )
-          }
-        >
-          <Typography variant="h6" gutterBottom>
-            {errorDetails.message}
-          </Typography>
-
-          {Array.isArray(errorDetails.details) ? (
-            <Box component="ul" sx={{ mt: 1, pl: 2 }}>
-              {errorDetails.details.map((detail, index) => (
-                <li key={index}>{detail}</li>
-              ))}
-            </Box>
-          ) : (
-            <Typography variant="body2" sx={{ mt: 1 }}>
-              {errorDetails.details}
-            </Typography>
-          )}
-        </Alert>
       )}
 
       {/* Configuration Help Button */}
@@ -1811,6 +1933,7 @@ const GoogleCalendar = () => {
                   }
                   required
                   placeholder="e.g., Oil Change Service, Brake Repair"
+                  helperText="Brief description of the appointment"
                 />
               </Grid>
 
@@ -1839,6 +1962,7 @@ const GoogleCalendar = () => {
                   }
                   InputLabelProps={{ shrink: true }}
                   required
+                  helperText="Format: YYYY-MM-DDTHH:mm"
                 />
               </Grid>
               <Grid item xs={12} md={6}>
@@ -1852,6 +1976,7 @@ const GoogleCalendar = () => {
                   }
                   InputLabelProps={{ shrink: true }}
                   required
+                  helperText="Format: YYYY-MM-DDTHH:mm"
                 />
               </Grid>
 
@@ -2140,9 +2265,14 @@ const GoogleCalendar = () => {
 
               <Grid item xs={12}>
                 <Alert severity="info">
-                  This appointment will be saved to Google Calendar and will
-                  sync across all your devices. Customer will receive email
-                  confirmation if enabled.
+                  <Typography variant="body2">
+                    This appointment will be saved to Google Calendar and will
+                    sync across all your devices.
+                  </Typography>
+                  <Typography variant="body2" sx={{ mt: 1 }}>
+                    <strong>Note:</strong> Dates are automatically converted to
+                    proper format for Google Calendar.
+                  </Typography>
                 </Alert>
               </Grid>
             </Grid>
@@ -2153,12 +2283,14 @@ const GoogleCalendar = () => {
             onClick={() => setOpenDialog(false)}
             startIcon={<Close />}
             color="inherit"
+            disabled={loading}
           >
             Cancel
           </Button>
+
           <Button
             variant="contained"
-            onClick={selectedEvent ? updateEvent : createEvent}
+            onClick={createEvent}
             startIcon={<Save />}
             disabled={
               !formData.summary ||
