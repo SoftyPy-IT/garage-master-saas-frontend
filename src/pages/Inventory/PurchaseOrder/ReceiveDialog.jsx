@@ -1,22 +1,13 @@
 /* eslint-disable react/prop-types */
 import {
   CalendarToday,
-  Cancel,
   CheckCircle,
-  Inventory,
 } from "@mui/icons-material";
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Avatar,
-  Typography,
-  Divider,
   Grid,
   InputAdornment,
   Button,
-  useTheme,
+  Box,
 } from "@mui/material";
 import { toast } from "react-toastify";
 import { useUpdatePurchaseOrderMutation } from "../../../redux/api/purchaseOrderApi";
@@ -27,9 +18,9 @@ import TASSelect from "../../../components/form/Select";
 import { useAppOptions } from "../../../hooks/useAppOptions";
 import { purchaseBtn } from "../../../utils/customStyle";
 import Can from "../../../components/Can";
+import GarageModal from "../../../components/Share/Modal/GarageModal";
+const ReceiveDialog = ({ open, purchaseId, onClose, setOpen }) => {
 
-const ReceiveDialog = ({ open, purchaseId, onClose }) => {
-  const theme = useTheme();
   const [updatePurchaseOrder, { isLoading }] = useUpdatePurchaseOrderMutation();
   const { performActionWithPermission, tenantDomain } = useAppOptions()
 
@@ -60,85 +51,54 @@ const ReceiveDialog = ({ open, purchaseId, onClose }) => {
       }, "You don't have permission to update order"
     )
   };
-
+  const title = ' Receive Order'
   return (
-    <Dialog
+    <GarageModal
       open={open}
-      onClose={onClose}
+      setOpen={setOpen}
+      title={title}
       maxWidth="sm"
-      fullWidth
-      PaperProps={{
-        sx: {
-          borderRadius: 3,
-          boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
-        },
-      }}
     >
-      {/* ✅ wrap form inside Dialog */}
+
       <GarageForm onSubmit={handleReceiveOrder}>
-        <DialogTitle sx={{ pb: 1, display: "flex", alignItems: "center" }}>
-          <Avatar
-            sx={{
-              bgcolor: theme.palette.success.main,
-              mr: 2,
-              boxShadow: "0 4px 8px rgba(0,0,0,0.15)",
-            }}
-          >
-            <Inventory />
-          </Avatar>
-          <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-            Receive Order
-          </Typography>
-        </DialogTitle>
-        <Divider />
-        <DialogContent>
-          <Grid container spacing={2} sx={{ mt: 1 }}>
-            <Grid item xs={12}>
-              <FormDatePicker
-                fullWidth
-                name="receiveDate"
-                label="Receive Date"
-                InputLabelProps={{ shrink: true }}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <CalendarToday fontSize="small" />
-                    </InputAdornment>
-                  ),
-                  sx: { borderRadius: 2 },
-                }}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TASSelect
-                size="normal"
-                name="status"
-                items={["Pending", "Cancelled", "Shipped", "Received"]}
-                label="Receive Status"
-                sx={{ borderRadius: 2 }}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <FormInput
-                fullWidth
-                label="Notes"
-                multiline
-                rows={3}
-                name="note"
-                InputProps={{ sx: { borderRadius: 2 } }}
-              />
-            </Grid>
+        <Grid container spacing={2} sx={{ mt: 1 }}>
+          <Grid item xs={12}>
+            <FormDatePicker
+              fullWidth
+              name="receiveDate"
+              label="Receive Date"
+              InputLabelProps={{ shrink: true }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <CalendarToday fontSize="small" />
+                  </InputAdornment>
+                ),
+                sx: { borderRadius: 2 },
+              }}
+            />
           </Grid>
-        </DialogContent>
-        <DialogActions sx={{ p: 3 }}>
-          <Button
-            onClick={onClose}
-            variant="outlined"
-            startIcon={<Cancel />}
-            sx={{ borderRadius: 2 }}
-          >
-            Cancel
-          </Button>
+          <Grid item xs={12}>
+            <TASSelect
+              size="normal"
+              name="status"
+              items={["Received", "Pending", "Cancelled", "Shipped",]}
+              label="Receive Status"
+              sx={{ borderRadius: 2 }}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <FormInput
+              fullWidth
+              label="Notes"
+              multiline
+              rows={3}
+              name="note"
+              InputProps={{ sx: { borderRadius: 2 } }}
+            />
+          </Grid>
+        </Grid>
+        <Box display='flex' justifyContent='flex-end'>
           <Can action='edit'
             page="/dashboard/purchase-order">
             <Button
@@ -152,10 +112,9 @@ const ReceiveDialog = ({ open, purchaseId, onClose }) => {
               {isLoading ? "Processing..." : "Confirm Receipt"}
             </Button>
           </Can>
-
-        </DialogActions>
+        </Box>
       </GarageForm>
-    </Dialog>
+    </GarageModal>
   );
 };
 

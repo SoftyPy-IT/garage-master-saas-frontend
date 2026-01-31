@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 const FinancialCards = ({ financialCards }) => {
     return (
-        <div className="flex flex-wrap gap-3 items-center relative gap-x-3 customerSingleRightCard">
+        <div className="flex flex-wrap gap-3 items-center relative gap-x-3 customerSingleRightCard mt-5 md:mt-0">
             {financialCards.map((card, index) => (
                 <div
                     key={index}

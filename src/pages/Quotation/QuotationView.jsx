@@ -11,6 +11,8 @@ import Loading from "../../components/Loading/Loading";
 import { useGetSingleQuotationQuery } from "../../redux/api/quotation";
 import { useGetCompanyProfileQuery } from "../../redux/api/companyProfile";
 import { useTenantDomain } from "../../hooks/useTenantDomain";
+import { formateNumber } from "../../utils/formateSemicolon";
+import { useCompanyProfileData } from "../../hooks/useCompanyProfileData";
 
 const Detail = () => {
   const componentRef = useRef();
@@ -21,15 +23,7 @@ const Detail = () => {
     tenantDomain,
   });
 
-  const companyProfileData = {
-    companyName: profileData?.data?.companyName,
-    address: profileData?.data?.address,
-    website: profileData?.data?.website,
-    phone: profileData?.data?.phone,
-    email: profileData?.data?.email,
-    logo: profileData?.data?.logo[0],
-    companyNameBN: profileData?.data?.companyNameBN,
-  };
+  const { companyProfileData } = useCompanyProfileData();
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
   });
@@ -40,6 +34,7 @@ const Detail = () => {
     tenantDomain,
     id,
   });
+  console.log("quotaton preview check this ", quotationPreview);
 
   useEffect(() => {
     if (data?.data) {
@@ -50,6 +45,8 @@ const Detail = () => {
   if (loading) {
     return <Loading />;
   }
+
+  console.log("quotation view this ", quotationPreview);
 
   return (
     <div ref={componentRef}>
@@ -66,13 +63,17 @@ const Detail = () => {
                   />
                   <div>
                     <div className="flex-1 text-center">
-                      <h2 className="trustAutoTitle">
-                        {profileData?.data?.companyNameBN}
-                      </h2>
+                      {profileData?.data?.companyNameBN && (
+                        <h2 className="trustAutoTitle">
+                          {profileData.data.companyNameBN}
+                        </h2>
+                      )}
 
-                      <h3 className="text-lg md:text-xl english-font mt-1 text-[#4671A1] font-bold ">
-                        ({profileData?.data?.companyName})
-                      </h3>
+                      {profileData?.data?.companyName && (
+                        <h3 className="text-lg md:text-xl english-font mt-1 text-[#4671A1] font-bold">
+                          {profileData.data.companyName}
+                        </h3>
+                      )}
                     </div>
                     <small className="block mt-2">
                       Office: {profileData?.data?.address}
@@ -156,51 +157,51 @@ const Detail = () => {
                     <div className="invoiceCustomerInfo">
                       <small>
                         <span className="mr-1">:</span>{" "}
-                        {quotationPreview?.quotation_no}
+                        {quotationPreview?.job_no}
                       </small>
                       {(quotationPreview?.customer?.customer_name ||
                         quotationPreview?.company?.company_name ||
                         quotationPreview?.showRoom?.showRoom_name) && (
-                          <small>
-                            <span className="mr-1">:</span>
-                            {quotationPreview?.customer?.customer_name ||
-                              quotationPreview?.company?.company_name ||
-                              quotationPreview?.showRoom?.showRoom_name}
-                          </small>
-                        )}
+                        <small>
+                          <span className="mr-1">:</span>
+                          {quotationPreview?.customer?.customer_name ||
+                            quotationPreview?.company?.company_name ||
+                            quotationPreview?.showRoom?.showRoom_name}
+                        </small>
+                      )}
 
                       {(quotationPreview?.customer?.company_name ||
                         quotationPreview?.company?.vehicle_username ||
                         quotationPreview?.showRoom?.vehicle_username) && (
-                          <small>
-                            <span className="mr-1">:</span>
-                            {quotationPreview?.customer?.company_name ||
-                              quotationPreview?.company?.vehicle_username ||
-                              quotationPreview?.showRoom?.vehicle_username}
-                          </small>
-                        )}
+                        <small>
+                          <span className="mr-1">:</span>
+                          {quotationPreview?.customer?.company_name ||
+                            quotationPreview?.company?.vehicle_username ||
+                            quotationPreview?.showRoom?.vehicle_username}
+                        </small>
+                      )}
 
                       {(quotationPreview?.customer?.fullCustomerNum ||
                         quotationPreview?.company?.fullCompanyNum ||
                         quotationPreview?.showRoom?.fullCompanyNum) && (
-                          <small>
-                            <span className="mr-1">:</span>
-                            {quotationPreview?.customer?.fullCustomerNum ||
-                              quotationPreview?.company?.fullCompanyNum ||
-                              quotationPreview?.showRoom?.fullCompanyNum}
-                          </small>
-                        )}
+                        <small>
+                          <span className="mr-1">:</span>
+                          {quotationPreview?.customer?.fullCustomerNum ||
+                            quotationPreview?.company?.fullCompanyNum ||
+                            quotationPreview?.showRoom?.fullCompanyNum}
+                        </small>
+                      )}
 
                       {(quotationPreview?.customer?.customer_address ||
                         quotationPreview?.company?.company_address ||
                         quotationPreview?.showRoom?.showRoom_address) && (
-                          <small>
-                            <span className="mr-1">:</span>
-                            {quotationPreview?.customer?.customer_address ||
-                              quotationPreview?.company?.company_address ||
-                              quotationPreview?.showRoom?.showRoom_address}
-                          </small>
-                        )}
+                        <small>
+                          <span className="mr-1">:</span>
+                          {quotationPreview?.customer?.customer_address ||
+                            quotationPreview?.company?.company_address ||
+                            quotationPreview?.showRoom?.showRoom_address}
+                        </small>
+                      )}
                     </div>
                   </div>
                   <div className="invoiceLine"></div>
@@ -262,8 +263,8 @@ const Detail = () => {
                           <td>
                             {data?.quantity} {data.unit}
                           </td>
-                          <td>{data.rate}</td>
-                          <td>{data.total}</td>
+                          <td>{formateNumber(data.rate)}</td>
+                          <td>{formateNumber(data.total)}</td>
                         </tr>
                       )
                     )}
@@ -274,56 +275,57 @@ const Detail = () => {
                 <span>Total Services Amount :</span>
                 <b className="ml-3 ">৳ {quotationPreview?.service_total}</b>
               </div>
-              <div>
-                <table className="mt-5 invoiceTable2 qutationTables">
-                  <thead className="tableWrap">
-                    <tr>
-                      <th className="serialNo">SL No</th>
-                      <th>Parts Description</th>
-                      <th>Qty </th>
-                      <th>Rate</th>
-                      <th>Amount </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <>
-                      {quotationPreview?.input_data?.map((data, index) => (
-                        <tr key={data._id}>
-                          <td>{index + 1}</td>
-                          <td>{data.description}</td>
-                          <td>
-                            {data.quantity} {data.unit}{" "}
-                          </td>
-                          <td>{data.rate}</td>
-                          <td>{data.total}</td>
+
+              {quotationPreview.input_data?.length > 0 && (
+                <>
+                  <div>
+                    <table className="mt-5 invoiceTable2 qutationTables">
+                      <thead className="tableWrap">
+                        <tr>
+                          <th className="serialNo">SL No</th>
+                          <th>Parts Description</th>
+                          <th>Qty </th>
+                          <th>Rate</th>
+                          <th>Amount </th>
                         </tr>
-                      ))}
-                    </>
-                  </tbody>
-                </table>
-              </div>
-              <div>
-                <div className="flex items-center justify-end text-[12px] mt-2">
-                  <span>Total Parts Amount :</span>
-                  <b className="ml-3 ">৳ {quotationPreview?.parts_total}</b>
-                </div>
-                <div className="flex  justify-end ">
-                  <Divider sx={{ width: "200px", marginTop: "5px" }} />
-                </div>
-              </div>
+                      </thead>
+                      <tbody>
+                        <>
+                          {quotationPreview?.input_data?.map((data, index) => (
+                            <tr key={data._id}>
+                              <td>{index + 1}</td>
+                              <td>{data.description}</td>
+                              <td>
+                                {data.quantity} {data.unit}{" "}
+                              </td>
+                              <td>{formateNumber(data.rate)}</td>
+                              <td>{formateNumber(data.total)}</td>
+                            </tr>
+                          ))}
+                        </>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div>
+                    <div className="flex items-center justify-end text-[12px] mt-2">
+                      <span>Total Parts Amount :</span>
+                      <b className="ml-3 ">৳ {quotationPreview?.parts_total}</b>
+                    </div>
+                    <div className="flex  justify-end ">
+                      <Divider sx={{ width: "200px", marginTop: "5px" }} />
+                    </div>
+                  </div>
+                </>
+              )}
               <div>
                 <div className="flex justify-between items-end mt-3 border-b-[1px] pb-3 border-[#ddd]">
-                  <div className="mt-5 text-[12px] invisible">
-
-                  </div>
+                  <div className="mt-5 text-[12px] invisible"></div>
                   <div className="flex netTotalAmounts">
                     <div className="">
                       <b>Sub Total </b>
                       {quotationPreview?.discount !== 0 && <b> Discount </b>}
                       {quotationPreview?.vat !== 0 && <b> VAT </b>}
-                      {quotationPreview?.tax !== 0 && (
-                        <b> Tax included </b>
-                      )}
+                      {quotationPreview?.tax !== 0 && <b> Tax included </b>}
                       <b> Grand Total </b>
                     </div>
                     <div>
@@ -361,7 +363,6 @@ const Detail = () => {
               </div>
             </div>
           </div>
-
         </div>
         <div>
           <div className="printInvoiceBtnGroup">
@@ -372,10 +373,11 @@ const Detail = () => {
             </Link>
             <a
               className="bg-[#42A0D9] text-white px-2 py-1  rounded-full "
-              href={`${import.meta.env.VITE_API_URL}/quotations/quotation/${quotationPreview?._id
-                }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
-                  JSON.stringify(companyProfileData)
-                )}`}
+              href={`${import.meta.env.VITE_API_URL}/quotations/quotation/${
+                quotationPreview?._id
+              }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
+                JSON.stringify(companyProfileData)
+              )}`}
               target="_blank"
               rel="noreferrer"
             >

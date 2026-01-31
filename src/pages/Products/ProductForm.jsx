@@ -1,7 +1,5 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable react/no-unescaped-entities */
 /* eslint-disable react/prop-types */
-/* eslint-disable no-unused-vars */
+
 "use client";
 
 import { useMemo, useEffect } from "react";
@@ -27,7 +25,6 @@ import {
 import {
   Save as SaveIcon,
   Clear as ClearIcon,
-  ArrowBack as ArrowBackIcon,
   ShoppingBag,
   MonetizationOn,
   Inventory,
@@ -54,7 +51,11 @@ import ProductStatusSelector from "../../components/form/Status";
 import { toast } from "react-toastify";
 import TASSelect from "../../components/form/Select";
 import FormDatePicker from "../../components/form/Datepicker";
-import { addButtonStyle, pBtnStyle } from "../../utils/customStyle";
+import {
+  addButtonStyle,
+  pBtnStyle,
+  wrapBoxStyle,
+} from "../../utils/customStyle";
 import { CreateBrandModal } from "../Brand/CreateBrandModal";
 import { CreateProductTypeModal } from "../ProductType/CreateProductTypeModal";
 import { AddSupplierModal } from "../Suppliers/AddSupplierModal";
@@ -66,6 +67,7 @@ import { useFormController } from "../../hooks/useFormController";
 import WarrantyModal from "../Inventory/Warranty/WarrantyModal";
 import WarehouseModal from "../Inventory/Warehouse/WarehouseModal";
 import { CreateCategoryModal } from "../Category/CreateCategoryModal";
+import { ProductHeader } from "./ProductHeader";
 
 export default function ProductForm({ id }) {
   const {
@@ -118,7 +120,7 @@ export default function ProductForm({ id }) {
     updateProduct,
     createProduct,
     performActionWithPermission,
-    tenantDomain
+    tenantDomain,
   } = useAppOptions();
 
   const { data: singleProduct, isLoading: singleProductLoading } =
@@ -170,53 +172,53 @@ export default function ProductForm({ id }) {
       expiryAlertDays: singleProduct.data.expiryAlertDays || 30,
       category: singleProduct.data.category
         ? [
-          categoryOptions.find(
-            (cat) => cat.value === singleProduct.data.category._id
-          )?.label || "",
-        ]
+            categoryOptions.find(
+              (cat) => cat.value === singleProduct.data.category._id
+            )?.label || "",
+          ]
         : [],
       brand: singleProduct.data.brand
         ? [
-          brandOptions.find(
-            (brand) => brand.value === singleProduct.data.brand._id
-          )?.label || "",
-        ]
+            brandOptions.find(
+              (brand) => brand.value === singleProduct.data.brand._id
+            )?.label || "",
+          ]
         : [],
       unit: singleProduct.data.unit
         ? [
-          unitOptions.find(
-            (unit) => unit.value === singleProduct.data.unit._id
-          )?.label || "",
-        ]
+            unitOptions.find(
+              (unit) => unit.value === singleProduct.data.unit._id
+            )?.label || "",
+          ]
         : [],
       warehouse: singleProduct.data.warehouse
         ? [
-          warehouseOptions.find(
-            (warehouse) =>
-              warehouse.value === singleProduct.data.warehouse._id
-          )?.label || "",
-        ]
+            warehouseOptions.find(
+              (warehouse) =>
+                warehouse.value === singleProduct.data.warehouse._id
+            )?.label || "",
+          ]
         : [],
       product_type: singleProduct.data.product_type
         ? [
-          productTypeOptions.find(
-            (type) => type.value === singleProduct.data.product_type._id
-          )?.label || "",
-        ]
+            productTypeOptions.find(
+              (type) => type.value === singleProduct.data.product_type._id
+            )?.label || "",
+          ]
         : [],
       suppliers: singleProduct.data.suppliers
         ? [
-          supplierOptions.find(
-            (supplier) => supplier.value === singleProduct.data.suppliers._id
-          )?.label || "",
-        ]
+            supplierOptions.find(
+              (supplier) => supplier.value === singleProduct.data.suppliers._id
+            )?.label || "",
+          ]
         : [],
       warranties: singleProduct.data.warranties
         ? [
-          warrantyOptions.find(
-            (war) => war.value === singleProduct.data.warranties._id
-          )?.label || "",
-        ]
+            warrantyOptions.find(
+              (war) => war.value === singleProduct.data.warranties._id
+            )?.label || "",
+          ]
         : [],
       initialStock: singleProduct.data.initialStock || 0,
       stock: singleProduct.data.stock || 0,
@@ -271,9 +273,28 @@ export default function ProductForm({ id }) {
   }
 
   const handleSubmit = async (data) => {
+    const requiredFields = [
+      { key: "product_type", label: "Product Type" },
+      { key: "category", label: "Category" },
+      { key: "brand", label: "Brand" },
+      { key: "warehouse", label: "Warehouse" },
+      { key: "suppliers", label: "Suppliers" },
+      { key: "warranties", label: "Warranties" },
+      { key: "unit", label: "Unit" },
+    ];
+
+    const missingField = requiredFields.find(
+      (field) => !data[field.key]?.length
+    );
+
+    if (missingField) {
+      toast.error(`Please select ${missingField.label}!`);
+      return;
+    }
+
     performActionWithPermission(
-      '/dashboard/add-product',
-      id ? 'edit' : 'create',
+      "/dashboard/add-product",
+      id ? "edit" : "create",
       async () => {
         try {
           let res;
@@ -285,58 +306,70 @@ export default function ProductForm({ id }) {
             image: imageUrl,
             suppliers:
               data.suppliers?.[0] &&
-                supplierOptions.find((cat) => cat.label === data.suppliers[0])?.value
+              supplierOptions.find((cat) => cat.label === data.suppliers[0])
+                ?.value
                 ? [
-                  supplierOptions.find((cat) => cat.label === data.suppliers[0])
-                    .value,
-                ]
+                    supplierOptions.find(
+                      (cat) => cat.label === data.suppliers[0]
+                    ).value,
+                  ]
                 : [],
             category:
               data.category?.[0] &&
-                categoryOptions.find((cat) => cat.label === data.category[0])?.value
+              categoryOptions.find((cat) => cat.label === data.category[0])
+                ?.value
                 ? [
-                  categoryOptions.find((cat) => cat.label === data.category[0])
-                    .value,
-                ]
+                    categoryOptions.find(
+                      (cat) => cat.label === data.category[0]
+                    ).value,
+                  ]
                 : [],
             warehouse:
               data.warehouse?.[0] &&
-                warehouseOptions.find((cat) => cat.label === data.warehouse[0])?.value
+              warehouseOptions.find((cat) => cat.label === data.warehouse[0])
+                ?.value
                 ? [
-                  warehouseOptions.find((cat) => cat.label === data.warehouse[0])
-                    .value,
-                ]
+                    warehouseOptions.find(
+                      (cat) => cat.label === data.warehouse[0]
+                    ).value,
+                  ]
                 : [],
             warranties:
               data.warranties?.[0] &&
-                warrantyOptions.find((cat) => cat.label === data.warranties[0])?.value
+              warrantyOptions.find((cat) => cat.label === data.warranties[0])
+                ?.value
                 ? [
-                  warrantyOptions.find((cat) => cat.label === data.warranties[0])
-                    .value,
-                ]
+                    warrantyOptions.find(
+                      (cat) => cat.label === data.warranties[0]
+                    ).value,
+                  ]
                 : [],
             brand:
               data.brand?.[0] &&
-                brandOptions.find((brand) => brand.label === data.brand[0])?.value
+              brandOptions.find((brand) => brand.label === data.brand[0])?.value
                 ? [
-                  brandOptions.find((brand) => brand.label === data.brand[0])
-                    .value,
-                ]
+                    brandOptions.find((brand) => brand.label === data.brand[0])
+                      .value,
+                  ]
                 : [],
             unit:
               data.unit?.[0] &&
-                unitOptions.find((unit) => unit.label === data.unit[0])?.value
-                ? [unitOptions.find((unit) => unit.label === data.unit[0]).value]
+              unitOptions.find((unit) => unit.label === data.unit[0])?.value
+                ? [
+                    unitOptions.find((unit) => unit.label === data.unit[0])
+                      .value,
+                  ]
                 : [],
             product_type:
               data.product_type?.[0] &&
-                productTypeOptions.find((type) => type.label === data.product_type[0])
-                  ?.value
+              productTypeOptions.find(
+                (type) => type.label === data.product_type[0]
+              )?.value
                 ? [
-                  productTypeOptions.find(
-                    (type) => type.label === data.product_type[0]
-                  ).value,
-                ]
+                    productTypeOptions.find(
+                      (type) => type.label === data.product_type[0]
+                    ).value,
+                  ]
                 : [],
             minimumSalePrice: Number(data.minimumSalePrice),
             purchasePrice: Number(data.purchasePrice),
@@ -367,6 +400,8 @@ export default function ProductForm({ id }) {
             isDeleted: data.isDeleted || false,
           };
 
+          console.log("modify value this ", modifyValues);
+
           if (id) {
             res = await updateProduct({
               tenantDomain,
@@ -374,7 +409,7 @@ export default function ProductForm({ id }) {
               ...modifyValues,
             }).unwrap();
             if (res.success) {
-              toast.success('Product updated successfully!');
+              toast.success("Product updated successfully!");
               navigate("/dashboard/product-list");
             }
           } else {
@@ -383,7 +418,7 @@ export default function ProductForm({ id }) {
               ...modifyValues,
             }).unwrap();
             if (res.success) {
-              toast.success('Product created successfully!');
+              toast.success("Product created successfully!");
               navigate("/dashboard/product-list");
             }
           }
@@ -396,11 +431,11 @@ export default function ProductForm({ id }) {
           } else if (apiError?.message) {
             toast.error(apiError.message);
           } else {
-            toast.error(`Failed to ${id ? 'update' : 'create'} product`);
+            toast.error(`Failed to ${id ? "update" : "create"} product`);
           }
         }
       },
-      `You don't have permission to ${id ? 'update' : 'create'} product!`
+      `You don't have permission to ${id ? "update" : "create"} product!`
     );
   };
 
@@ -606,7 +641,12 @@ export default function ProductForm({ id }) {
                 <TASAutocomplete
                   size="medium"
                   name="warranties"
-                  label="Warranty"
+                  label={
+                    <>
+                      Warranty
+                      <span style={{ color: "red", fontSize: "25px" }}> *</span>
+                    </>
+                  }
                   placeholder="Warranty"
                   icon={Category}
                   iconPosition="start"
@@ -840,9 +880,9 @@ export default function ProductForm({ id }) {
           </Grid>
           <Grid item xs={12} md={4}>
             <Grid container spacing={1} alignItems="center">
-              <Grid item lg={11}>
+              <Grid item xs={9} lg={11}>
                 <TASAutocomplete
-                  size="medium"
+                  // size="large"
                   name="unit"
                   label={
                     <>
@@ -854,6 +894,7 @@ export default function ProductForm({ id }) {
                   icon={Category}
                   iconPosition="start"
                   options={unitOptions}
+                  size="300px"
                 />
               </Grid>
               <Grid item lg={1} display="flex" justifyContent="center">
@@ -963,7 +1004,7 @@ export default function ProductForm({ id }) {
                 <MenuItem value="none">No Expiration Date</MenuItem>
               </Select>
               <FormHelperText>
-                Select how you want to track this product's expiration
+                Select how you want to track this products expiration
               </FormHelperText>
             </FormControl>
           </Grid>
@@ -977,6 +1018,7 @@ export default function ProductForm({ id }) {
                   icon={CalendarMonth}
                 />
               </Grid>
+
               <Grid item xs={12} md={6}>
                 <TASInput
                   name="batchNumber"
@@ -1123,54 +1165,9 @@ export default function ProductForm({ id }) {
     <Loading />
   ) : (
     <>
-      <Box
-        sx={{
-          minHeight: "100vh",
-          background: "linear-gradient(to bottom, #f9f9f9, #f0f0f0)",
-          pt: 2,
-          pb: 8,
-        }}
-      >
-        {/* Header */}
-        <Box
-          sx={{
-            background: "#42A0D9",
-            color: "white",
-            py: 3,
-            mb: 2,
-            borderRadius: { xs: "0 0 20px 20px", md: "0 0 20px 20px" },
-            boxShadow: "0 4px 20px rgba(106, 27, 154, 0.4)",
-          }}
-        >
-          <Container maxWidth="xl">
-            <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-              <ShoppingBag sx={{ fontSize: 40, mr: 2 }} />
-              <span className="font-[700] text-[30px] md:text-[35px]">
-                {id ? 'Edit Product' : 'Create New Product'}
-              </span>
-            </Box>
-            <Typography variant="body1" sx={{ opacity: 0.9, maxWidth: 700 }}>
-              {id ? 'Edit the product information.' : 'Create a new product by filling in the required information. Follow the steps to complete the process.'}
-            </Typography>
-          </Container>
-        </Box>
+      <Box sx={wrapBoxStyle}>
+        <ProductHeader id={id} navigate={navigate} />
         <Container maxWidth="xl" sx={{ p: { xs: 1, md: 2 } }}>
-          <Box sx={{ mb: 3 }}>
-            <Button
-              startIcon={<ArrowBackIcon />}
-              variant="outlined"
-              onClick={() => navigate(-1)}
-              sx={{
-                borderRadius: 100,
-                borderColor: "rgba(0,0,0,0.12)",
-                color: "text.secondary",
-                px: 3,
-              }}
-            >
-              Back to Product List
-            </Button>
-          </Box>
-
           <Paper
             elevation={3}
             sx={{
@@ -1210,6 +1207,7 @@ export default function ProductForm({ id }) {
                               sx={{
                                 borderRadius: 100,
                                 px: 3,
+                                mb: { xs: 2, sm: 0 },
                                 color: "white",
                               }}
                             >
@@ -1223,8 +1221,11 @@ export default function ProductForm({ id }) {
                                 disabled={submitting}
                                 sx={pBtnStyle}
                               >
-                                <Can page='/dashboard/update-product' action={id ? 'edit' : 'create'}>
-                                  {id ? 'Update' : 'Create'} Product
+                                <Can
+                                  page="/dashboard/update-product"
+                                  action={id ? "edit" : "create"}
+                                >
+                                  {id ? "Update" : "Create"} Product
                                 </Can>
                               </Button>
                             ) : (
@@ -1268,16 +1269,11 @@ export default function ProductForm({ id }) {
               </Box>
             </GarageForm>
           </Paper>
-
         </Container>
-
       </Box>
 
       {warrantyOpen && (
-        <WarrantyModal
-          open={warrantyOpen}
-          onClose={handleWarrantyClose}
-        />
+        <WarrantyModal open={warrantyOpen} onClose={handleWarrantyClose} />
       )}
 
       {categoryOpen && (
@@ -1290,10 +1286,7 @@ export default function ProductForm({ id }) {
         <CreateBrandModal open={brandOpen} setOpen={handleBrandClose} />
       )}
       {warehouseOpen && (
-        <WarehouseModal
-          open={warehouseOpen}
-          onClose={handleWarehouseClose}
-        />
+        <WarehouseModal open={warehouseOpen} onClose={handleWarehouseClose} />
       )}
       {productTypeOpen && (
         <CreateProductTypeModal
@@ -1304,9 +1297,8 @@ export default function ProductForm({ id }) {
       {supplierOpen && (
         <AddSupplierModal open={supplierOpen} setOpen={handleSupplierClose} />
       )}
-      {unitOpen && (
-        <UnitModal open={unitOpen} setOpen={handleUnitClose} />
-      )}
+
+      {unitOpen && <UnitModal open={unitOpen} setOpen={handleUnitClose} />}
     </>
   );
 }

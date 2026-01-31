@@ -20,6 +20,7 @@ import ProfileTabs from "./ProfileTabs";
 import SubscriptionSection from "./SubscriptionSection";
 import { useTenantDomain } from "../../hooks/useTenantDomain";
 import { FaCreditCard, FaMoneyBillWave } from "react-icons/fa";
+import { formatDate } from "../../utils/formateDate";
 
 const Profile = () => {
   const [activeTab, setActiveTab] = useState(0);
@@ -30,17 +31,6 @@ const Profile = () => {
   const tenantInfo = userData.tenantInfo || {};
   const subscription = tenantInfo.subscription || {};
 
-  // Format dates utility
-  const formatDate = (dateString) => {
-    if (!dateString) return "N/A";
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
-
-  // Calculate subscription progress
   const getSubscriptionProgress = () => {
     if (!subscription.startDate || !subscription.endDate) return 0;
     const start = new Date(subscription.startDate);
@@ -50,8 +40,6 @@ const Profile = () => {
     const elapsed = now - start;
     return Math.max(0, Math.min(100, (elapsed / total) * 100));
   };
-
-  // Calculate days remaining
   const getDaysRemaining = () => {
     if (!subscription.endDate) return 0;
     const end = new Date(subscription.endDate);
@@ -80,7 +68,7 @@ const Profile = () => {
 
   return (
     <Box
-      sx={{ maxWidth: 1400, margin: "auto", padding: 3, minHeight: "100vh" }}
+      sx={{ maxWidth: 1400, margin: "auto", padding: 0, minHeight: "100vh" }}
     >
 
       <ProfileHeader
@@ -125,7 +113,6 @@ const Profile = () => {
           <Fade in timeout={1000}>
             <Alert
               severity="warning"
-              // icon={<FaExclamationTriangle/>}
               sx={{
                 mb: 3,
                 borderRadius: "12px",
@@ -141,7 +128,6 @@ const Profile = () => {
 
 
       <Grid container spacing={4}>
-        {/* Left Column - Tabs */}
         <Grid item xs={12} lg={8}>
           <ProfileTabs
             activeTab={activeTab}
@@ -152,8 +138,6 @@ const Profile = () => {
             formatDate={formatDate}
           />
         </Grid>
-
-        {/* Right Column - Subscription */}
         <Grid item xs={12} lg={4}>
           <SubscriptionSection
             subscription={subscription}

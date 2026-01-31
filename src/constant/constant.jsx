@@ -55,3 +55,12 @@ export const returnStatuses = [
   { value: "cancelled", label: "Cancelled", color: "error" },
 ];
 
+
+export const statusColors = {
+  Received: { bg: "#10b981", color: "#fff" },
+  Pending: { bg: "#f59e0b", color: "#fff" },
+  Ordered: { bg: "#3b82f6", color: "#fff" },
+  Canceled: { bg: "#ef4444", color: "#fff" },
+  Partial: { bg: "#8b5cf6", color: "#fff" },
+  Paid: { bg: "#10b981", color: "#fff" },
+};

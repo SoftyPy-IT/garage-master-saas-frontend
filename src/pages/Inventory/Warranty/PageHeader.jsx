@@ -1,10 +1,10 @@
 /* eslint-disable react/prop-types */
-import { Box, Typography, Button, TextField } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import SearchIcon from "@mui/icons-material/Search";
 import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
+import { Box, Button, Typography } from "@mui/material";
+import { purchaseBtn } from "../../../utils/customStyle";
 
-export const PageHeader = ({ searchTerm, setSearchTerm, handleOpenModal }) => {
+export const PageHeader = ({ handleOpenModal }) => {
   return (
     <Box
       sx={{
@@ -30,42 +30,12 @@ export const PageHeader = ({ searchTerm, setSearchTerm, handleOpenModal }) => {
       </Typography>
 
       <Box sx={{ display: { sm: "flex" }, gap: 2 }}>
-        <div className="md:hidden flex justify-end mb-2">
+        <div className=" flex justify-end mb-2">
           <Button
             variant="contained"
+            sx={purchaseBtn}
             startIcon={<AddIcon />}
             onClick={handleOpenModal}
-            sx={{
-              background: "linear-gradient(45deg, #6a1b9a, #8e24aa)",
-              color: "white",
-            }}
-          >
-            New Warranty
-          </Button>
-        </div>
-
-        <TextField
-          placeholder="Search..."
-          size="small"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          InputProps={{
-            startAdornment: (
-              <SearchIcon sx={{ mr: 1, color: "text.secondary" }} />
-            ),
-          }}
-          sx={{ width: { xs: "100%", sm: 220 } }}
-        />
-
-        <div className="hidden md:flex">
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={handleOpenModal}
-            sx={{
-              background: "linear-gradient(45deg, #6a1b9a, #8e24aa)",
-              color: "white",
-            }}
           >
             New Warranty
           </Button>

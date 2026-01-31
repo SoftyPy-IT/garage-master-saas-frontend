@@ -15,7 +15,7 @@ const FormDatePicker = ({
   sx,
   // disableFuture = true,
   // disablePast = false,
-  defaultValue = dayjs().format("YYYY-MM-DD"),
+  defaultValue = null,
 }) => {
   const { control } = useFormContext();
 
@@ -25,6 +25,7 @@ const FormDatePicker = ({
       control={control}
       defaultValue={defaultValue}
       render={({ field: { onChange, value, ref } }) => {
+        // Show today's date as placeholder but don't submit it
         const dateValue = value ? dayjs(value) : null;
 
         return (
@@ -34,11 +35,14 @@ const FormDatePicker = ({
               label={label}
               value={dateValue}
               onChange={(date) => {
-                const formatted = date ? dayjs(date).format("YYYY-MM-DD") : "";
-                onChange(formatted);
+                // Only update the form value when user explicitly selects a date
+                if (date && dayjs(date).isValid()) {
+                  const formatted = dayjs(date).format("YYYY-MM-DD");
+                  onChange(formatted);
+                } else {
+                  onChange(null);
+                }
               }}
-              // disableFuture={disableFuture}
-              // disablePast={disablePast}
               slotProps={{
                 textField: {
                   required: required,
@@ -47,6 +51,8 @@ const FormDatePicker = ({
                   margin: margin,
                   variant: "outlined",
                   sx: { ...sx, width: fullWidth ? "100%" : undefined },
+                  // Optional: Add placeholder to indicate no date selected
+                  placeholder: "Select expiration date",
                 },
               }}
             />

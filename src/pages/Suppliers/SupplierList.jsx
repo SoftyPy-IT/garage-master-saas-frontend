@@ -1,25 +1,52 @@
-import { Box, Typography } from "@mui/material";
+import { Box } from "@mui/material";
+import swal from "sweetalert";
+import { useTenantDomain } from "@/hooks/useTenantDomain";
+import { useMoveRecycledSupplierMutation } from "../../redux/api/supplier";
 import SupplierListTable from "./SupplierListTable";
-import { FaUsers } from "react-icons/fa";
+import { wrapBoxStyle } from "../../utils/customStyle";
+import { usePermissions } from "../../context/PermissionContext";
 
 const SupplierList = () => {
+  const { performActionWithPermission } = usePermissions();
+  const [moveRecycledSupplier] = useMoveRecycledSupplierMutation();
+  const { tenantDomain } = useTenantDomain();
+  const isRecycled = false;
+
+  const handleDeleteSupplier = async (id) => {
+    performActionWithPermission(
+      "/dashboard",
+      "delete",
+      async () => {
+        const willDelete = await swal({
+          title: "Move Supplier to Recycle Bin?",
+          text: "This supplier will be moved to the recycle bin. Continue?",
+          icon: "warning",
+          buttons: true,
+          dangerMode: true,
+        });
+
+        if (willDelete) {
+          try {
+            await moveRecycledSupplier({ tenantDomain, id }).unwrap();
+            swal("Moved!", "Supplier moved to recycle bin.", "success");
+          } catch (error) {
+            console.error("❌ Move error:", error);
+            swal("Error", "Failed to move supplier.", "error");
+          }
+        }
+      },
+      "You don't have permission to delete suppliers!"
+    );
+  };
+
   return (
-    <>
-      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 4, mt:5 }}>
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          <FaUsers size={40} color="#42A1DA" />
-          <Box sx={{ ml: 2 }}>
-            <Typography variant="h4" fontWeight="bold">
-              Supplier Management
-            </Typography>
-            <Typography variant="subtitle1" color="text.secondary">
-              Manage and track your suppliers
-            </Typography>
-          </Box>
-        </Box>
-      </Box>
-      <SupplierListTable />
-    </>
+    <Box sx={wrapBoxStyle}>
+      <SupplierListTable
+        title="Supplier List"
+        handleDeleteSupplier={handleDeleteSupplier}
+        isRecycled={isRecycled}
+      />
+    </Box>
   );
 };
 

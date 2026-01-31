@@ -1,44 +1,25 @@
-/* eslint-disable no-unused-vars */
-import { FaTrashAlt, FaEdit, FaUserTie } from "react-icons/fa";
-import { Link, useNavigate } from "react-router-dom";
-import { Diversity3 } from "@mui/icons-material";
-import { HiOutlineSearch } from "react-icons/hi";
-import { useRef, useState } from "react";
-import swal from "sweetalert";
-import { Pagination, } from "@mui/material";
-import { toast } from "react-toastify";
+/* eslint-disable react/prop-types */
+import { ArrowBack } from "@mui/icons-material";
+import { Box, Button } from "@mui/material";
+import { useState } from "react";
+import { FaEdit, FaTrashAlt, FaUserTie } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import Breadcrumb from "../../components/Breadcrumb";
+import Loading from "../../components/Loading/Loading";
+import Table from "../../components/Table";
 import { usePermissions } from "../../context/PermissionContext";
 import { useTenantDomain } from "../../hooks/useTenantDomain";
-import { useGetAllCompaniesQuery, useMoveRecycledCompanyMutation } from "../../redux/api/companyApi";
-import Loading from "../../components/Loading/Loading";
-import EmptyData from "../../components/EmptyData/EmptyData";
-import Can from "../../components/Can";
-
-const CompanyListTable = () => {
-  const textInputRef = useRef(null);
+import { useGetAllCompaniesQuery } from "../../redux/api/companyApi";
+import { purchaseBtn, wrapBoxStyle } from "../../utils/customStyle";
+import { formatDate } from "../../utils/formateDate";
+const CompanyListTable = ({ handleDeleteAction, isRecycled, title }) => {
   const [filterType, setFilterType] = useState("");
-  const { performActionWithPermission } = usePermissions();
-
   const [currentPage, setCurrentPage] = useState(1);
-
+  const { tenantDomain } = useTenantDomain();
+  const { performActionWithPermission } = usePermissions();
   const navigate = useNavigate();
 
-
-
-
-  const handleIconPreview = async (e) => {
-    performActionWithPermission(
-      "/dashboard/customer-list",
-      "view",
-      () => {
-        navigate(`/dashboard/company-profile?id=${e}`);
-      },
-      "You don't have permission to view customer details."
-    );
-  };
-
   const limit = 10;
-  const { tenantDomain } = useTenantDomain();
 
   const { data: companyData, isLoading: companyLoading } =
     useGetAllCompaniesQuery({
@@ -46,42 +27,17 @@ const CompanyListTable = () => {
       limit,
       page: currentPage,
       searchTerm: filterType,
-      isRecycled: false,
+      isRecycled,
     });
 
-  const [
-    moveRecycledCompany,
-    { isLoading: companyDeleteLoading, error: deleteError },
-  ] = useMoveRecycledCompanyMutation();
-
-  const handleMoveToRecycled = async (id) => {
-    performActionWithPermission('/dashboard/company-list', 'delete',
-      async () => {
-        const willDelete = await swal({
-          title: "Are you sure?",
-          text: "You want to move this Company to Recycle Bin?",
-          icon: "warning",
-          dangerMode: true,
-        });
-
-        if (willDelete) {
-          try {
-            await moveRecycledCompany({ tenantDomain, id }).unwrap();
-            swal(
-              "Moved to Recycle Bin!",
-              "Company successfully moved to the recycle bin.",
-              "success"
-            );
-          } catch (error) {
-            console.error("Recycling error:", error);
-            swal("Error", "An error occurred while moving the company.", "error");
-          }
-        }
-      }
-    )
+  const handleIconPreview = (id) => {
+    performActionWithPermission(
+      "/dashboard/customer-list",
+      "view",
+      () => navigate(`/dashboard/company-profile?id=${id}`),
+      "You don't have permission to view customer details."
+    );
   };
-
-
 
   if (companyLoading) {
     return (
@@ -91,176 +47,119 @@ const CompanyListTable = () => {
     );
   }
 
-  if (deleteError) {
-    toast.error(deleteError?.message);
-  }
+  const companies = companyData?.data?.companies || [];
+  const totalPages = companyData?.data?.meta?.totalPages || 1;
+  const columns = [
+    { key: "index", label: "SL No", type: "index" },
+    { key: "companyId", label: "Company ID" },
+    { key: "company_name", label: "Company Name" },
+    { key: "fullCompanyNum", label: "Phone No." },
+    {
+      key: "vehicle_name",
+      label: "Vehicle Name",
+      render: (item) => {
+        const lastVehicle = item?.vehicles
+          ? [...item.vehicles].sort(
+              (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+            )[0]
+          : null;
+        return lastVehicle?.vehicle_name || "—";
+      },
+    },
+    {
+      key: "vehicles",
+      label: "Vehicle Reg No",
+      render: (item) => {
+        const firstVehicle = item?.vehicles?.[0];
+        if (!firstVehicle) return "—";
+
+        const carRegNo = firstVehicle?.carReg_no || "";
+        const carRegistrationNo = firstVehicle?.car_registration_no || "";
+        const combined =
+          carRegNo && carRegistrationNo
+            ? `${carRegNo}-${carRegistrationNo}`
+            : carRegNo || carRegistrationNo || "—";
+
+        return combined;
+      },
+    },
+    {
+      key: "createdAt",
+      label: "Date",
+      render: (item) => (item?.createdAt ? formatDate(item.createdAt) : "—"),
+    },
+  ];
+
+  const actions = [
+    {
+      key: "view",
+      icon: FaUserTie,
+      color: "#0EA5E9",
+      tooltip: "View Company Profile",
+      onClick: (item) => handleIconPreview(item._id),
+      requirePermission: true,
+      permissionPage: "/dashboard/customer-list",
+      permissionAction: "view",
+    },
+    {
+      key: "edit",
+      icon: FaEdit,
+      color: "#2563EB",
+      tooltip: "Edit Company",
+      link: (item) => `/dashboard/update-company?id=${item._id}`,
+      requirePermission: true,
+      permissionPage: "/dashboard/update-company",
+      permissionAction: "edit",
+    },
+    {
+      key: "delete",
+      icon: FaTrashAlt,
+      color: "#EF4444",
+      tooltip: "Delete Company",
+      onClick: (item) => handleDeleteAction(item._id),
+      requirePermission: true,
+      permissionPage: "/dashboard/company-list",
+      permissionAction: "delete",
+    },
+  ];
+
+  const breadcrumbItems = [
+    { label: "Home", href: "/" },
+    { label: "Company", href: "/dashboard/company-list" },
+    { label: title },
+  ];
 
   return (
-    <div className="w-full mt-5 mb-24">
-      <div className="flex-wrap flex items-center justify-between mb- py-5 px-3">
-        <h3 className="mb-3 text-xl font-bold md:text-3xl"> Company List:</h3>
-        <div className="flex items-center">
-          <input
-            type="text"
-            placeholder="Search"
-            className="border py-2 px-3 rounded-md border-[#ddd]"
-            onChange={(e) => {
-              setFilterType(e.target.value);
-              setCurrentPage(1);
-            }}
-            ref={textInputRef}
-          />
-          <button className="bg-[#42A1DA] text-white px-2 py-2 rounded-sm ml-1">
-            {" "}
-            <HiOutlineSearch size={22} />
-          </button>
-        </div>
-      </div>
-
-      {companyLoading ? (
-        <div className="flex flex-wrap items-center justify-center text-xl">
-          <Loading />
-        </div>
-      ) : (
-        <div>
-          {companyData?.data?.companies?.length === 0 ? (
-            <EmptyData
-              icon={Diversity3}
-              title="No Company Found"
-              message="We couldn't find any company matching your search criteria."
-              subMessage="Try adjusting your filters or add a new company."
-            />
-          ) : (
-            <>
-              <section className="tableContainer overflow-x-auto">
-                <table className="customTable">
-                  <thead>
-                    <tr>
-                      <th>SL No</th>
-                      <th>Company ID</th>
-                      <th>Company Name</th>
-                      <th>Vechile User Name</th>
-                      <th>Car Reg No. </th>
-                      {/* <th>Mileage History </th> */}
-                      <th> Mobile No.</th>
-                      <th>Vehicle Name </th>
-                      <th colSpan={3}>Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {companyData?.data?.companies?.map((card, index) => {
-
-                      const lastVehicle = card?.vehicles
-                        ? [...card.vehicles].sort(
-                          (a, b) =>
-                            new Date(b.createdAt) - new Date(a.createdAt)
-                        )[0]
-                        : null;
-
-                      const globalIndex =
-                        (companyData?.data?.meta?.currentPage - 1) * limit +
-                        (index + 1);
-                      return (
-                        <tr key={card._id} className={`transition-all duration-300 hover:bg-gradient-to-r hover:from-blue-300 hover:to-blue-100 hover:text-black`}>
-                          <td>{globalIndex}</td>
-                          <td>{card.companyId}</td>
-                          <td>{card?.company_name}</td>
-                          <td>{card?.vehicle_username}</td>
-                          <td>{lastVehicle?.fullRegNum}</td>
-                          {/* <td>
-                            {card?.vehicles
-                              ?.slice(0, 1)
-                              ?.map((vehicle, idx) => (
-                                <div key={idx} className="flex flex-wrap gap-1">
-                                  {vehicle?.mileageHistory?.length > 0 ? (
-                                    vehicle.mileageHistory.map(
-                                      (history, historyIdx) => (
-                                        <Tooltip
-                                          key={historyIdx}
-                                          title={new Date(
-                                            history.date
-                                          ).toLocaleDateString()}
-                                          arrow
-                                        >
-                                          <Chip
-                                            bg="primary"
-                                            color="primary"
-                                            label={`${history.mileage} km`}
-                                            size="small"
-                                            variant="outlined"
-                                            sx={mileageStyle}
-                                          />
-                                        </Tooltip>
-                                      )
-                                    )
-                                  ) : (
-                                    <span>No mileage data</span>
-                                  )}
-                                </div>
-                              ))}
-                          </td> */}
-                          <td>{card?.fullCompanyNum} </td>
-                          <td>{lastVehicle?.vehicle_name}</td>
-
-                          <td>
-                            <div
-                              onClick={() => handleIconPreview(card._id)}
-                              className="flex items-center justify-center cursor-pointer"
-                            >
-                              <FaUserTie size={25} className="" />
-                            </div>
-                          </td>
-
-                          <td>
-
-                            <Can page="/dashboard/update-company" action="edit">
-                              <div className="editIconWrap edit">
-                                <Link
-                                  to={`/dashboard/update-company?id=${card?._id}`}
-                                >
-                                  <FaEdit className="editIcon text-blue-500" />
-                                </Link>
-                              </div>
-                            </Can>
-
-
-                          </td>
-                          <td>
-                            <Can page="/dashboard/company-list" action="delete">
-                              <div
-                                onClick={() => handleMoveToRecycled(card?._id)}
-                                className="editIconWrap cursor-pointer"
-                                style={{
-                                  background: "white",
-                                  border: "none",
-                                  padding: 5,
-                                  borderRadius: "9999px"
-                                }}
-                              >
-                                <FaTrashAlt className="deleteIcon text-red-500" />
-                              </div>
-                            </Can>
-
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </section>
-            </>
-          )}
-        </div>
-      )}
-      <div className="flex justify-center mt-4">
-        <Pagination
-          count={companyData?.data?.meta?.totalPages}
-          page={currentPage}
-          color="primary"
-          onChange={(_, page) => setCurrentPage(page)}
-        />
-      </div>
-    </div>
+    <Box sx={wrapBoxStyle}>
+      <Box display="flex" justifyContent="space-between" mb={2}>
+        <Breadcrumb items={breadcrumbItems} />
+        <Button
+          startIcon={<ArrowBack />}
+          onClick={() => navigate(-1)}
+          sx={{ ...purchaseBtn, height: "40px" }}
+        >
+          Back
+        </Button>
+      </Box>
+      <Table
+        title={title || "Company List"}
+        columns={columns}
+        data={companies}
+        actions={actions}
+        loading={companyLoading}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={(page) => setCurrentPage(page)}
+        onSearch={(value) => {
+          setFilterType(value);
+          setCurrentPage(1);
+        }}
+        searchPlaceholder="Search Company..."
+        getRowClass={() =>
+          "transition-all duration-300 hover:bg-gradient-to-r hover:from-blue-300 hover:to-blue-100 hover:text-black"
+        }
+      />
+    </Box>
   );
 };
 

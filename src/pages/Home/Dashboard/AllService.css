@@ -1,189 +1,132 @@
-/* AllService.css */
-.modern-card {
-  border-radius: 24px;
-  padding: 0;
+.invoice-card {
+  background: linear-gradient(to bottom, #4581f9, #80aafb);
+  border-radius: 15px;
+  padding: 15px;
   color: white;
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.12),
-    0 4px 8px rgba(0, 0, 0, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   position: relative;
   overflow: hidden;
-  height: 180px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(12px);
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  height: 170px;
 }
 
-.modern-card::before {
-  content: '';
+.icon-container {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0) 100%);
-  opacity: 0.7;
-  transition: opacity 0.3s ease;
-}
-
-.modern-card:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 
-    0 20px 40px rgba(0, 0, 0, 0.18),
-    0 8px 16px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
-}
-
-.modern-card:hover::before {
-  opacity: 1;
-}
-
-/* Color Variations */
-.blue-card {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-
-.green-card {
-  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-}
-
-.purple-card {
-  background: linear-gradient(135deg, #9d50bb 0%, #6e48aa 100%);
-}
-
-.pink-card {
-  background: linear-gradient(135deg, #ff6b6b 0%, #ffa8a8 100%);
-}
-
-.deep-blue-card {
-  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-}
-
-.red-card {
-  background: linear-gradient(135deg, #ff5858 0%, #f09819 100%);
-}
-
-.teal-card {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-}
-
-.orange-card {
-  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-}
-
-.icon-wrapper {
-  width: 70px;
-  height: 70px;
-  border-radius: 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  backdrop-filter: blur(16px);
-  border: 1.5px solid rgba(255, 255, 255, 0.3);
-  background: rgba(255, 255, 255, 0.15);
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  transition: all 0.4s ease;
-  position: relative;
-  z-index: 2;
-}
-
-.modern-card:hover .icon-wrapper {
-  transform: scale(1.1) rotate(5deg);
-  background: rgba(255, 255, 255, 0.25);
-  border-color: rgba(255, 255, 255, 0.4);
-  box-shadow: 
-    0 12px 40px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
-}
-
-.content-wrapper {
-  position: relative;
-  z-index: 2;
-}
-
-.floating-circle {
-  position: absolute;
-  bottom: -30px;
-  right: -30px;
-  width: 120px;
-  height: 120px;
-  background: rgba(255, 255, 255, 0.1);
+  top: 20px;
+  left: 20px;
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 8px;
   border-radius: 50%;
-  transition: all 0.6s ease;
-  backdrop-filter: blur(5px);
 }
 
-.modern-card:hover .floating-circle {
-  transform: scale(1.8);
-  background: rgba(255, 255, 255, 0.15);
+.icon {
+  font-size: 30px;
+  color: white;
 }
 
-/* Remove old styles */
-.invoice-card,
-.invoice-card2,
+.invoice-info {
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+/* .amount {
+  font-size: 32px;
+  font-weight: bold;
+} */
+
+.label {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.wave-background {
+  position: absolute;
+  bottom: 0px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.wave-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.invoice-card:nth-child(2) {
+  background: linear-gradient(to bottom, #00bc8a, #54d2b1);
+}
+
+.invoice-card:nth-child(3) {
+  background: linear-gradient(to bottom, #00bc8a, #4247ce);
+}
+
+.invoice-card:nth-child(4) {
+  background: linear-gradient(to bottom, #8d7cfc, #b8affe);
+}
+
+
+.dashboardCardIconWrap:nth-child(3) {
+  background: #05a182;
+}
+
+.invoice-card2 {
+  background: linear-gradient(to bottom, #9f11aa, #f7a90027);
+}
+
+.invoice-card2:nth-child(2) {
+  background: linear-gradient(to bottom, #05a905, #246c05);
+  
+}
+
+.invoice-card2:nth-child(3) {
+  
+  background: linear-gradient(to bottom, #17c6f1, #4247ce);
+}
+
+.invoice-card2:nth-child(4) {
+  background: linear-gradient(to bottom, red, #f7a90088);
+}
+
 .dashboardCardIconWrap,
 .dashboardCardIconWrap2,
 .dashboardCardIconWrap3,
 .dashboardCardIconWrap4,
 .dashboardCardIconWrap5,
 .dashboardCardIconWrap6,
-.dashboardCardIconWrap7,
-.wave-background,
-.wave-svg {
-  all: unset;
+.dashboardCardIconWrap7 {
+  background: #3d71d6;
+  border-radius: 100%;
+  padding: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50px;
+  height: 50px;
+  position: relative;
+  z-index: 1;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .modern-card {
-    height: 180px;
-    border-radius: 20px;
-  }
-  
-  .icon-wrapper {
-    width: 60px;
-    height: 60px;
-    border-radius: 16px;
-  }
-  
-  .floating-circle {
-    width: 80px;
-    height: 80px;
-    bottom: -20px;
-    right: -20px;
-  }
+.dashboardCardIconWrap2 {
+  background: #06a182;
 }
 
-/* Animation for card entrance */
-@keyframes cardEntrance {
-  from {
-    opacity: 0;
-    transform: translateY(30px) scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+.dashboardCardIconWrap3 {
+  background: #d09f0b;
 }
 
-.modern-card {
-  animation: cardEntrance 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-  opacity: 0;
+.dashboardCardIconWrap4 {
+  background: #776ee2;
 }
 
-.modern-card:nth-child(1) { animation-delay: 0.1s; }
-.modern-card:nth-child(2) { animation-delay: 0.2s; }
-.modern-card:nth-child(3) { animation-delay: 0.3s; }
-.modern-card:nth-child(4) { animation-delay: 0.4s; }
-
-/* Enhanced text shadows for better readability */
-.amount {
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+.dashboardCardIconWrap5 {
+  background: #c3d00b7e;
 }
 
-.label {
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+.dashboardCardIconWrap6 {
+  background: #ff7f17e0;
+}
+
+.dashboardCardIconWrap7 {
+  background: #BF5EB9;
 }

@@ -20,6 +20,8 @@ import Loading from "../../../components/Loading/Loading";
 import { tabsStyles, tabStyles } from "../../../utils/customStyle";
 import Message from "../../../shared/Message/Message";
 import CustomerNote from "./CustomerNote";
+import CustomerTab from "./CustomerTab";
+import { useCompanyProfileData } from "../../../hooks/useCompanyProfileData";
 
 const CustomerProfile = () => {
   const location = useLocation();
@@ -47,19 +49,8 @@ const CustomerProfile = () => {
     error: customerError,
   } = useGetSingleCustomerQuery({ id, tenantDomain });
 
-  const { data } = useGetCompanyProfileQuery({
-    tenantDomain,
-  });
+  const { companyProfileData } = useCompanyProfileData();
 
-  const companyProfileData = {
-    companyName: data?.data?.companyName,
-    address: data?.data?.address,
-    website: data?.data?.website,
-    phone: data?.data?.phone,
-    email: data?.data?.email,
-    logo: data?.data?.logo[0],
-    companyNameBN: data?.data?.companyNameBN,
-  };
   if (isLoading) {
     return <Loading />;
   }
@@ -121,7 +112,6 @@ const CustomerProfile = () => {
             </div>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 gap-x-36 md:gap-x-30 lg:gap-x-4 items-center relative customerSingleRightCard">
-
             <div className="bg-gradient-to-r from-[#528AFA] to-[#FEBF17] border h-16 w-32 rounded-md  relative   ">
               <div className="flex mt-2 flex-col items-center justify-center">
                 <p>Total Amount </p>
@@ -149,7 +139,6 @@ const CustomerProfile = () => {
                 <b>{totalDue} ৳</b>
               </div>
             </div>
-
           </div>
         </div>
       </div>
@@ -175,22 +164,22 @@ const CustomerProfile = () => {
           </Tabs>
         </Box>
 
-        <TabPanel value={value} index={0}>
+        <CustomerTab value={value} index={0}>
           <CustomerAccount
             tenantDomain={tenantDomain}
             profileData={profileData}
           />
-        </TabPanel>
+        </CustomerTab>
 
-        <TabPanel value={value} index={1}>
+        <CustomerTab value={value} index={1}>
           <VehicleDetails
             tenantDomain={tenantDomain}
             id={id}
             user_type={profileData?.data?.user_type}
           />
-        </TabPanel>
+        </CustomerTab>
 
-        <TabPanel value={value} index={2}>
+        <CustomerTab value={value} index={2}>
           <CustomerJobCardList
             companyProfileData={companyProfileData}
             tenantDomain={tenantDomain}
@@ -198,37 +187,37 @@ const CustomerProfile = () => {
             user_type={profileData?.data?.user_type}
             id={id}
           />
-        </TabPanel>
-        <TabPanel value={value} index={3}>
+        </CustomerTab>
+        <CustomerTab value={value} index={3}>
           <CustomerQoutationList
             companyProfileData={companyProfileData}
             tenantDomain={tenantDomain}
             id={id}
             user_type={profileData?.data?.user_type}
           />
-        </TabPanel>
-        <TabPanel value={value} index={4}>
+        </CustomerTab>
+        <CustomerTab value={value} index={4}>
           <CustomerInvoiceList
             companyProfileData={companyProfileData}
             tenantDomain={tenantDomain}
             id={id}
             user_type={profileData?.data?.user_type}
           />
-        </TabPanel>
-        <TabPanel value={value} index={5}>
+        </CustomerTab>
+        <CustomerTab value={value} index={5}>
           <CustomerMoneyList
             companyProfileData={companyProfileData}
             tenantDomain={tenantDomain}
             id={id}
             user_type={profileData?.data?.user_type}
           />
-        </TabPanel>
-        <TabPanel value={value} index={6}>
+        </CustomerTab>
+        <CustomerTab value={value} index={6}>
           <Message data={profileData?.data} />
-        </TabPanel>
-        <TabPanel value={value} index={7}>
+        </CustomerTab>
+        <CustomerTab value={value} index={7}>
           <CustomerNote tenantDomain={tenantDomain} id={id} />
-        </TabPanel>
+        </CustomerTab>
 
         <div>
           <p className="my-5 text-center">
@@ -241,23 +230,3 @@ const CustomerProfile = () => {
 };
 
 export default CustomerProfile;
-
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box sx={{ p: 3 }}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
-    </div>
-  );
-}

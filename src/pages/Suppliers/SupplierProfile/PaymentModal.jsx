@@ -45,7 +45,7 @@ const PaymentModal = ({ open, onClose, onSave, supplier }) => {
   const [note, setNote] = useState("");
   const [errors, setErrors] = useState({});
   const theme = useTheme();
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain } = useTenantDomain();
   const [recordPayment] = useRecordPaymentMutation();
 
   useEffect(() => {
@@ -67,7 +67,6 @@ const PaymentModal = ({ open, onClose, onSave, supplier }) => {
   }, [supplier, open]);
 
   const handleSubmit = async () => {
-    // Validate required fields
     if (!amount || !method) {
       setErrors({
         amount: !amount ? "Amount is required" : "",
@@ -75,8 +74,6 @@ const PaymentModal = ({ open, onClose, onSave, supplier }) => {
       });
       return;
     }
-
-    // Create payment data object
     const paymentData = {
       supplierId: supplier._id,
       amount: parseFloat(amount),

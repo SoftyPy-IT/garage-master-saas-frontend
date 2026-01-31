@@ -29,6 +29,7 @@ import { useGetCompanyProfileQuery } from "../../redux/api/companyProfile";
 import SubmitButton from "./SubmitButton";
 import { useAppOptions } from "../../hooks/useAppOptions";
 import Can from "../../components/Can";
+
 export const columns = [
   "SL No",
   "Employee",
@@ -48,7 +49,7 @@ const AddAttendance = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const limit = 9999;
-  const { tenantDomain, performActionWithPermission } = useAppOptions()
+  const { tenantDomain, performActionWithPermission } = useAppOptions();
   const {
     data: getAllEmployee,
     isLoading: employeesLoading,
@@ -76,21 +77,20 @@ const AddAttendance = () => {
   useEffect(() => {
     if (getAllEmployee?.data?.employees) {
       const employeeCount = getAllEmployee.data.employees.length;
+      // Initialize all states as empty/unselected
       setPresentState(new Array(employeeCount).fill(false));
       setAbsentState(new Array(employeeCount).fill(false));
-      setInTime(new Array(employeeCount).fill(null));
-      setOutTime(new Array(employeeCount).fill(null));
-      setOvertime(new Array(employeeCount).fill(null));
+      setInTime(new Array(employeeCount).fill(""));
+      setOutTime(new Array(employeeCount).fill(""));
+      setOvertime(new Array(employeeCount).fill(""));
       setLateStatus(new Array(employeeCount).fill(false));
-
-      // Initialize all dates to today
       setSelectedDates(new Array(employeeCount).fill(dayjs()));
     }
   }, [getAllEmployee]);
 
   // Handle date change for a specific employee
   const handleDateChange = (index, date) => {
-    setSelectedDates(prev => {
+    setSelectedDates((prev) => {
       const updated = [...prev];
       updated[index] = date;
       return updated;
@@ -105,7 +105,9 @@ const AddAttendance = () => {
     const newAbsentState = [...absentState];
 
     newPresentState[index] = !newPresentState[index];
-    if (newPresentState[index]) newAbsentState[index] = false;
+    if (newPresentState[index]) {
+      newAbsentState[index] = false;
+    }
 
     setPresentState(newPresentState);
     setAbsentState(newAbsentState);
@@ -116,7 +118,30 @@ const AddAttendance = () => {
     const newPresentState = [...presentState];
 
     newAbsentState[index] = !newAbsentState[index];
-    if (newAbsentState[index]) newPresentState[index] = false;
+    if (newAbsentState[index]) {
+      newPresentState[index] = false;
+      // Clear time fields when marked as absent
+      setInTime((prev) => {
+        const updated = [...prev];
+        updated[index] = "";
+        return updated;
+      });
+      setOutTime((prev) => {
+        const updated = [...prev];
+        updated[index] = "";
+        return updated;
+      });
+      setOvertime((prev) => {
+        const updated = [...prev];
+        updated[index] = "";
+        return updated;
+      });
+      setLateStatus((prev) => {
+        const updated = [...prev];
+        updated[index] = false;
+        return updated;
+      });
+    }
 
     setAbsentState(newAbsentState);
     setPresentState(newPresentState);
@@ -157,16 +182,21 @@ const AddAttendance = () => {
   };
 
   const handleSubmitAttendance = async () => {
-    performActionWithPermission('/dashboard/add-attendance', 'create',
+    performActionWithPermission(
+      "/dashboard/add-attendance",
+      "create",
       async () => {
-        const attendanceData = getAllEmployee.data.employees.map(
-          (employee, index) => ({
+        // Filter only employees who have been explicitly marked as present or absent
+        const attendanceData = getAllEmployee.data.employees
+          .map((employee, index) => ({
             employee: employee._id,
             full_name: employee.full_name,
             employeeId: employee.employeeId,
             status: employee.status,
             designation: employee.designation,
-            date: selectedDates[index] ? selectedDates[index].format("DD-MM-YYYY") : dayjs().format("DD-MM-YYYY"),
+            date: selectedDates[index]
+              ? selectedDates[index].format("DD-MM-YYYY")
+              : dayjs().format("DD-MM-YYYY"),
             office_time: profileData?.data?.officeTime || "10.00",
             present: presentState[index],
             absent: absentState[index],
@@ -174,8 +204,18 @@ const AddAttendance = () => {
             out_time: outTime[index],
             overtime: overtime[index],
             late_status: lateStatus[index],
-          })
-        );
+            hasAttendanceMarked: presentState[index] || absentState[index], // Add flag to identify marked employees
+          }))
+          .filter((attendance) => attendance.hasAttendanceMarked); // Only include marked employees
+
+        // Check if any attendance has been marked
+        if (attendanceData.length === 0) {
+          toast.error(
+            "Please mark attendance (Present or Absent) for at least one employee before submitting."
+          );
+          return;
+        }
+
         try {
           const response = await createAttendance({
             tenantDomain,
@@ -184,16 +224,25 @@ const AddAttendance = () => {
 
           if (response.success) {
             toast.success(response.message);
-            // navigate("/dashboard/attendance-list");
+            // Reset form after successful submission
+            const employeeCount = getAllEmployee.data.employees.length;
+            setPresentState(new Array(employeeCount).fill(false));
+            setAbsentState(new Array(employeeCount).fill(false));
+            setInTime(new Array(employeeCount).fill(""));
+            setOutTime(new Array(employeeCount).fill(""));
+            setOvertime(new Array(employeeCount).fill(""));
+            setLateStatus(new Array(employeeCount).fill(false));
+            setSelectedDates(new Array(employeeCount).fill(dayjs()));
           }
         } catch (error) {
           toast.error(error.message || "Something went wrong");
         }
-      }, "You don't have permission to create attendance."
-    )
+      },
+      "You don't have permission to create attendance."
+    );
   };
 
-  // Calculate statistics
+  // Calculate statistics - only count explicitly marked attendance
   const totalEmployees = getAllEmployee?.data?.employees?.length || 0;
   const presentCount = presentState.filter(Boolean).length;
   const absentCount = absentState.filter(Boolean).length;

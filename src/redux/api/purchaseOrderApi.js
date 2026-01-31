@@ -12,13 +12,14 @@ const purchaseOrderApi = baseApi.injectEndpoints({
     }),
 
     getAllPurchaseOrders: builder.query({
-      query: ({ tenantDomain, limit, page, searchTerm }) => ({
+      query: ({ tenantDomain, limit, page, searchTerm, status, paymentStatus, sort }) => ({
         url: "/purchase-orders",
         method: "GET",
-        params: { tenantDomain, limit, page, searchTerm },
+        params: { tenantDomain, limit, page, searchTerm, status, paymentStatus, sort },
       }),
       providesTags: ["purchaseOrder"],
     }),
+
 
     getSinglePurchaseOrder: builder.query({
       query: ({ tenantDomain, id }) => ({
@@ -36,7 +37,7 @@ const purchaseOrderApi = baseApi.injectEndpoints({
         url: `/purchase-orders/${id}`,
         method: "PUT",
         body: data,
-        params:{tenantDomain}
+        params: { tenantDomain }
       }),
       invalidatesTags: ["purchaseOrder"],
     }),

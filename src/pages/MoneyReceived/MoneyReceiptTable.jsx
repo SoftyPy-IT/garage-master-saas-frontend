@@ -1,236 +1,158 @@
-import { useEffect, useRef, useState } from "react";
+/* eslint-disable react/prop-types */
+import { useEffect, useState } from "react";
+import { Box, Button } from "@mui/material";
+import { ArrowBack } from "@mui/icons-material";
 import { FaTrashAlt, FaEdit, FaEye, FaDownload } from "react-icons/fa";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import swal from "sweetalert";
-import { Pagination } from "@mui/material";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useTenantDomain } from "../../hooks/useTenantDomain";
-import { usePermissions } from "../../context/PermissionContext";
-import { useGetCompanyProfileQuery } from "../../redux/api/companyProfile";
-import { useGetAllMoneyReceiptsQuery, useMoveRecycledMoneyReceiptMutation } from "../../redux/api/money-receipt";
+import { useGetAllMoneyReceiptsQuery } from "../../redux/api/money-receipt";
 import Loading from "../../components/Loading/Loading";
-import Can from "../../components/Can";
+import Breadcrumb from "../../components/Breadcrumb";
+import Table from "../../components/Table";
+import { purchaseBtn } from "../../utils/customStyle";
+import { useCompanyProfileData } from "../../hooks/useCompanyProfileData";
 
-const MoneyReceiptTable = () => {
+const MoneyReceiptTable = ({ handleDeleteAction, title, isRecycled }) => {
   const location = useLocation();
   const search = new URLSearchParams(location.search).get("search");
   const [currentPage, setCurrentPage] = useState(1);
   const [filterType, setFilterType] = useState("");
   const limit = 10;
   const navigate = useNavigate();
-  const textInputRef = useRef(null);
   const { tenantDomain } = useTenantDomain();
-  const { performActionWithPermission } = usePermissions();
 
   useEffect(() => {
-    if (search) {
-      setFilterType(search);
-    }
+    if (search) setFilterType(search);
   }, [search]);
-  const { data: CompanyInfoData } = useGetCompanyProfileQuery({
-    tenantDomain,
-  });
+  const { companyProfileData } = useCompanyProfileData();
 
-  const companyProfileData = {
-    companyName: CompanyInfoData?.data?.companyName,
-    address: CompanyInfoData?.data?.address,
-    website: CompanyInfoData?.data?.website,
-    phone: CompanyInfoData?.data?.phone,
-    email: CompanyInfoData?.data?.email,
-    logo: CompanyInfoData?.data?.logo[0],
-    companyNameBN: CompanyInfoData?.data?.companyNameBN,
-  };
   const { data: allMoneyReceipts, isLoading: moneyReceiptLoading } =
     useGetAllMoneyReceiptsQuery({
       tenantDomain,
       limit,
       page: currentPage,
       searchTerm: filterType,
-      isRecycled: false,
+      isRecycled,
     });
 
-  const [
-    moveRecycledMoneyReceipt,
-    { isLoading: deleteLoading, error: deleteError },
-  ] = useMoveRecycledMoneyReceiptMutation();
+  const breadcrumbItems = [
+    { label: "Home", href: "/" },
+    { label: "Money Receipt List", href: "/dashboard/money-receipt-list" },
+    { label: title },
+  ];
 
-  const handleIconPreview = async (e) => {
-    navigate(`/dashboard/money-receipt-view?id=${e}`);
+  const getRowClass = (card) => {
+    if (card.paymentColor === "#2dce89") return "bg-[#2dce89] text-white";
+    if (card.paymentColor === "#f5365c") return "bg-[#f5365c] text-white";
+    if (card.paymentColor === "#ffad46") return "bg-[#ffad46] text-black";
+    return "";
   };
 
-  const handleMoveRecycledbin = async (id) => {
-    performActionWithPermission('/dashboard/money-receive-list', 'delete',
-      async () => {
-        const willDelete = await swal({
-          title: "Are you sure?",
-          text: " You want to move  this Money Receipt Recycle Bin?",
-          icon: "warning",
-          dangerMode: true,
-        });
+  const columns = [
+    { key: "index", label: "SL No", type: "index" },
+    { key: "job_no", label: "Final B.A Bill" },
+    { key: "thanks_from", label: "R With Thanks " },
+    {
+      key: "vehicle.carReg_no",
+      label: "Car Reg No",
+      render: (row) => {
+        const vehicle = row?.vehicle;
+        if (!vehicle) return "—";
 
-        if (willDelete) {
-          try {
-            await moveRecycledMoneyReceipt({ tenantDomain, id }).unwrap();
-            swal(
-              "Move to Recycle bin!",
-              "Move to Recycle bin successful.",
-              "success"
-            );
-          } catch (error) {
-            swal("Error", "An error occurred while deleting the card.", "error");
-          }
+        const carRegNo = vehicle?.carReg_no?.trim() || "";
+        const carRegistrationNo = vehicle?.car_registration_no?.trim() || "";
+
+        if (carRegNo && carRegistrationNo) {
+          return `${carRegNo} ${carRegistrationNo}`;
         }
-      }, "You don't have permission to delete money receive !"
-    )
-  };
 
-  useEffect(() => {
-    if (search) {
-      setFilterType(search);
-    }
-  }, [search]);
+        return carRegNo || carRegistrationNo || "—";
+      },
+    },
 
-  if (moneyReceiptLoading) {
-    return <Loading />;
-  }
+    { key: "total_amount", label: "Total" },
+    {
+      key: "advance",
+      label: "Advance",
+      render: (row) => row.advance || 0,
+    },
+    { key: "remaining", label: "Due" },
+    {
+      key: "date",
+      label: "Date",
+      render: (row) =>
+        row.default_date !== "NaN-NaN-NaN" ? row.default_date : row.check_date,
+    },
+  ];
 
-  if (deleteError) {
-    toast.error(deleteError?.message);
-  }
+  const actions = [
+    {
+      key: "view",
+      icon: FaEye,
+      color: "#fff",
+      tooltip: "View",
+      onClick: (item) =>
+        navigate(`/dashboard/money-receipt-view?id=${item._id}`),
+    },
+    {
+      key: "download",
+      icon: FaDownload,
+      color: "#fff",
+      tooltip: "Download",
+      href: (item) =>
+        `${import.meta.env.VITE_API_URL}/money-receipts/money/${
+          item._id
+        }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
+          JSON.stringify(companyProfileData)
+        )}`,
+      target: "_blank",
+    },
+    {
+      key: "edit",
+      icon: FaEdit,
+      color: "#fff",
+      tooltip: "Edit",
+      link: (item) => `/dashboard/money-receipt-update?id=${item._id}`,
+    },
+    {
+      key: "delete",
+      icon: FaTrashAlt,
+      color: "#fff",
+      tooltip: "Delete",
+      onClick: (item) => handleDeleteAction(item._id),
+    },
+  ];
+
+  if (moneyReceiptLoading) return <Loading />;
 
   return (
     <div className="mt-5 overflow-x-auto">
-      <div className="flex-wrap flex items-center justify-between mb-5 bg-[#F1F3F6] py-5 px-3">
-        <h3 className="mb-3 text-xl font-bold md:text-3xl">
-          Money Receipt List:
-        </h3>
-        <div className="flex items-center searcList">
-          <div className="searchGroup">
-            <input
-              onChange={(e) => {
-                setFilterType(e.target.value);
-                setCurrentPage(1);
-              }}
-              autoComplete="off"
-              type="text"
-              ref={textInputRef}
-              placeholder="Write here..."
-            />
-          </div>
-          <button className="SearchBtn">Search</button>
-        </div>
-      </div>
+      <Box display="flex" justifyContent="space-between" mb={2}>
+        <Breadcrumb items={breadcrumbItems} />
+        <Button
+          variant="outlined"
+          startIcon={<ArrowBack />}
+          onClick={() => navigate(-1)}
+          sx={purchaseBtn}
+        >
+          Back
+        </Button>
+      </Box>
 
-      <section className="tableContainer overflow-x-auto">
-        <table className="customTable">
-          <thead>
-            <tr>
-              <th>SL No</th>
-              <th>Received with thanks from</th>
-              <th>Final Payment against bill no</th>
-              <th>Total Amount</th>
-              <th>Advance Service Bill</th>
-              <th>Due Service Bill</th>
-              <th>Date</th>
-              <th colSpan={4}>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {allMoneyReceipts?.data?.moneyReceipts?.map((card, index) => {
-              const serialNumber = (currentPage - 1) * limit + index + 1;
-
-              return (
-                <tr
-                  key={card._id}
-                  className={`${card.paymentColor === "#2dce89"
-                    ? "bg-[#2dce89] text-white"
-                    : card.paymentColor === "#f5365c"
-                      ? "bg-[#f5365c] text-white"
-                      : card.paymentColor === "#ffad46"
-                        ? "bg-[#ffad46] text-black"
-                        : ""
-                    } transition-all duration-300 hover:bg-gradient-to-r hover:from-blue-300 hover:to-blue-100 hover:text-black`}
-                >
-                  <td>{serialNumber}</td>
-                  <td>{card.thanks_from}</td>
-                  <td>{card.job_no}</td>
-                  <td>{card.total_amount}</td>
-                  <td>{card.advance || 0}</td>
-                  <td>{card.remaining}</td>
-                  <td>
-                    {card.default_date !== "NaN-NaN-NaN"
-                      ? card.default_date
-                      : card.check_date}
-                  </td>
-                  <td>
-                    <Can page='/dashboard/money-receipt-list' action='view'>
-                      <div
-                        onClick={() => handleIconPreview(card._id)}
-                        className="flex flex-col items-center edit2"
-                      >
-                        <FaEye className="editIcon" />
-                      </div>
-                    </Can>
-                  </td>
-                  <td>
-                    <a
-                      className="flex flex-col items-center edit2"
-                      href={`${import.meta.env.VITE_API_URL
-                        }/money-receipts/money/${card._id
-                        }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
-                          JSON.stringify(companyProfileData)
-                        )}`}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-
-                      <FaDownload className="editIcon text-yellow-300" />
-                    </a>
-                  </td>
-                  <td>
-
-                    <Can page='/dashboard/money-receipt-update' action='edit'>
-                      <div className="flex flex-col items-center edit">
-                        <Link
-                          to={`/dashboard/money-receipt-update?id=${card._id}`}
-                        >
-                          <FaEdit className="editIcon text-blue-500" />
-                        </Link>
-                      </div>
-                    </Can>
-                  </td>
-                  <td>
-                    <Can page='/dashboard/money-receipt-list' action='delete'>
-                      <button
-                        disabled={deleteLoading}
-                        onClick={() => handleMoveRecycledbin(card._id)}
-                        className="editIconWrap"
-                        style={{
-                          background: "white",
-                          border: "none",
-                          padding: 5,
-                          borderRadius: "9999px"
-                        }}
-                      >
-                        <FaTrashAlt className="deleteIcon text-red-500" />
-                      </button>
-                    </Can>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-
-        <div className="flex justify-center mt-4">
-          <Pagination
-            count={allMoneyReceipts?.data?.meta?.totalPages}
-            page={currentPage}
-            color="primary"
-            onChange={(_, page) => setCurrentPage(page)}
-          />
-        </div>
-      </section>
+      <Table
+        title={title}
+        columns={columns}
+        data={allMoneyReceipts?.data?.moneyReceipts || []}
+        loading={moneyReceiptLoading}
+        actions={actions}
+        currentPage={currentPage}
+        totalPages={allMoneyReceipts?.data?.meta?.totalPages || 1}
+        onPageChange={(page) => setCurrentPage(page)}
+        onSearch={(value) => setFilterType(value)}
+        searchPlaceholder="Search money receipts..."
+        emptyMessage="No matching money receipts found."
+        getRowClass={getRowClass}
+      />
     </div>
   );
 };

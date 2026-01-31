@@ -4,7 +4,7 @@
 /* eslint-disable no-unused-vars */
 
 import "./AddJobCard.css";
-import car from '../../../public//assets/car2.jpeg'
+import car from "../../../public//assets/car2.jpeg";
 import { useEffect, useRef, useState } from "react";
 import { Autocomplete, Box, Chip, Grid, TextField } from "@mui/material";
 // import "react-quill/dist/quill.snow.css";
@@ -21,7 +21,10 @@ import {
   vehicleName,
   vehicleTypes,
 } from "../../constant";
-import { useGetSingleJobCardQuery, useUpdateJobCardMutation } from "../../redux/api/jobCard";
+import {
+  useGetSingleJobCardQuery,
+  useUpdateJobCardMutation,
+} from "../../redux/api/jobCard";
 import TrustAutoAddress from "../../components/TrustAutoAddress/TrustAutoAddress";
 import Loading from "../../components/Loading/Loading";
 import { usePermissions } from "../../context/PermissionContext";
@@ -296,7 +299,9 @@ const UpdateJobCard = () => {
 
   // Replace the onSubmit function with this improved version that properly handles mileage history
   const onSubmit = async (data) => {
-    performActionWithPermission('/dashboard/update-jobcard', 'edit',
+    performActionWithPermission(
+      "/dashboard/update-jobcard",
+      "edit",
       async () => {
         const toastId = toast.loading("Updating Jobcard...");
         const customer = {
@@ -343,7 +348,8 @@ const UpdateJobCard = () => {
         data.vehicle_model = Number(data.vehicle_model);
         data.mileage = Number(data.mileage);
         // Get existing mileage history
-        const existingMileageHistory = getDataWithChassisNo?.mileageHistory || [];
+        const existingMileageHistory =
+          getDataWithChassisNo?.mileageHistory || [];
         const updatedMileageHistory = [...existingMileageHistory];
 
         // Only add current mileage to history if it has changed
@@ -415,10 +421,14 @@ const UpdateJobCard = () => {
               navigate(`/dashboard/preview?id=${res?.data?._id}`);
             }
             if (clickControl === "quotation") {
-              navigate(`/dashboard/create-quotation?order_no=${res?.data?.job_no}`);
+              navigate(
+                `/dashboard/create-quotation?order_no=${res?.data?.job_no}`
+              );
             }
             if (clickControl === "invoice") {
-              navigate(`/dashboard/create-invoice?order_no=${res?.data?.job_no}`);
+              navigate(
+                `/dashboard/create-invoice?order_no=${res?.data?.job_no}`
+              );
             }
             if (clickControl === null && !userTypeFromProfile) {
               navigate("/dashboard/jobcard-list");
@@ -439,8 +449,9 @@ const UpdateJobCard = () => {
         } finally {
           toast.dismiss(toastId);
         }
-      }, "You don't have permission to edit job card"
-    )
+      },
+      "You don't have permission to edit job card"
+    );
   };
 
   const sortedVehicleName = vehicleName.sort((a, b) => {
@@ -513,8 +524,8 @@ const UpdateJobCard = () => {
     const lastMileage =
       getDataWithChassisNo?.mileageHistory?.length > 0
         ? getDataWithChassisNo.mileageHistory[
-          getDataWithChassisNo.mileageHistory.length - 1
-        ].mileage
+            getDataWithChassisNo.mileageHistory.length - 1
+          ].mileage
         : singleCard?.mileage || "";
 
     setCurrentMileage(lastMileage);
@@ -524,7 +535,7 @@ const UpdateJobCard = () => {
     if (getDataWithChassisNo?.mileageHistory?.length > 0) {
       const last =
         getDataWithChassisNo.mileageHistory[
-        getDataWithChassisNo.mileageHistory.length - 1
+          getDataWithChassisNo.mileageHistory.length - 1
         ];
       return last.mileage;
     }
@@ -1133,7 +1144,7 @@ const UpdateJobCard = () => {
                     fullWidth
                     freeSolo
                     value={getDataWithChassisNo?.vehicle_brand || ""}
-                    onInputChange={(event, newValue) => { }}
+                    onInputChange={(event, newValue) => {}}
                     onChange={handleBrandChange}
                     options={carBrands.map((option) => option.label)}
                     renderInput={(params) => (
@@ -1469,7 +1480,6 @@ const UpdateJobCard = () => {
                 Update Job Card
               </button>
             </Can>
-
           </div>
         </div>
       </form>

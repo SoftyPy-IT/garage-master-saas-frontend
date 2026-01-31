@@ -9,7 +9,6 @@ import { useSelector } from "react-redux";
 import { selectCurrentUser } from "../redux/feature/authSlice";
 import { useGetUserPermissionQuery } from "../redux/api/userApi";
 import swal from "sweetalert";
-import { UserCircle2 } from "lucide-react";
 
 const PermissionContext = createContext();
 
@@ -54,9 +53,9 @@ export const PermissionProvider = ({ children }) => {
 
       const pathMatch = possiblePaths.includes(page.path) || possiblePaths.includes(page.route);
 
-      if (pathMatch) {
-        console.log(`Path match found for ${pagePath}:`, page.path, page.route);
-      }
+      // if (pathMatch) {
+      //   console.log(`Path match found for ${pagePath}:`, page.path, page.route);
+      // }
 
       return pathMatch;
     });

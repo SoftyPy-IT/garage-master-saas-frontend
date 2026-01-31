@@ -35,14 +35,19 @@ import {
 import { useTenantDomain } from "../../hooks/useTenantDomain";
 import { usePermissions } from "../../context/PermissionContext";
 import TrustAutoAddress from "../../components/TrustAutoAddress/TrustAutoAddress";
-import JobCardTable from "./JobcardTable";
+
 import { useGetCompanyProfileQuery } from "../../redux/api/companyProfile";
 import Loading from "../../components/Loading/Loading";
 import Can from "../../components/Can";
-import { useCreateJobCardMutation, useGetAllJobCardsQuery, useGetUserDetailsForJobCardQuery } from "../../redux/api/jobCard";
+import {
+  useCreateJobCardMutation,
+  useGetAllJobCardsQuery,
+  useGetUserDetailsForJobCardQuery,
+} from "../../redux/api/jobCard";
 import { useGetAllShowRoomsQuery } from "../../redux/api/showRoomApi";
 import { useGetAllCompaniesQuery } from "../../redux/api/companyApi";
 import { useGetAllCustomersQuery } from "../../redux/api/customerApi";
+import JobCardTable from "./JobCardTable";
 
 const AddJobCard = () => {
   const { tenantDomain } = useTenantDomain();
@@ -143,8 +148,8 @@ const AddJobCard = () => {
 
   const lastJobCard = allJobCards?.data?.jobCards
     ? [...allJobCards.data.jobCards].sort(
-      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-    )[0]
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      )[0]
     : null;
 
   const jobNumber =
@@ -307,7 +312,9 @@ const AddJobCard = () => {
   };
 
   const onSubmit = async (data) => {
-    performActionWithPermission('/dashboard/create-job-card', 'create',
+    performActionWithPermission(
+      "/dashboard/create-job-card",
+      "create",
       async () => {
         const toastId = toast.loading("Creating Jobcard...");
         if (!newId) {
@@ -367,7 +374,8 @@ const AddJobCard = () => {
         data.vehicle_model = Number(data.vehicle_model);
         data.mileage = Number(data.mileage);
 
-        const existingMileageHistory = getDataWithChassisNo?.mileageHistory || [];
+        const existingMileageHistory =
+          getDataWithChassisNo?.mileageHistory || [];
         const updatedMileageHistory = [...existingMileageHistory];
 
         // Only add current mileage to history if it has changed
@@ -435,10 +443,14 @@ const AddJobCard = () => {
               navigate(`/dashboard/preview?id=${res?.data?._id}`);
             }
             if (clickControl === "quotation") {
-              navigate(`/dashboard/create-quotation?order_no=${res?.data?.job_no}`);
+              navigate(
+                `/dashboard/create-quotation?order_no=${res?.data?.job_no}`
+              );
             }
             if (clickControl === "invoice") {
-              navigate(`/dashboard/create-invoice?order_no=${res?.data?.job_no}`);
+              navigate(
+                `/dashboard/create-invoice?order_no=${res?.data?.job_no}`
+              );
             }
             if (clickControl === null) {
               navigate("/dashboard/jobcard-list");
@@ -449,8 +461,9 @@ const AddJobCard = () => {
         } finally {
           toast.dismiss(toastId);
         }
-      }, "You don't have permission to create job card"
-    )
+      },
+      "You don't have permission to create job card"
+    );
   };
 
   const sortedVehicleName = vehicleName.sort((a, b) => {
@@ -518,7 +531,6 @@ const AddJobCard = () => {
     }
   };
 
-
   useEffect(() => {
     const parsedDate = new Date();
     const day = parsedDate.getDate()?.toString().padStart(2, "0");
@@ -550,8 +562,8 @@ const AddJobCard = () => {
     const defaultMileage =
       getDataWithChassisNo?.mileageHistory?.length > 0
         ? getDataWithChassisNo.mileageHistory[
-          getDataWithChassisNo.mileageHistory.length - 1
-        ].mileage
+            getDataWithChassisNo.mileageHistory.length - 1
+          ].mileage
         : getDataWithChassisNo?.mileage || "";
 
     setCurrentMileage(defaultMileage);
@@ -1193,8 +1205,8 @@ const AddJobCard = () => {
                       options={
                         userDetails?.data?.vehicles
                           ? userDetails?.data?.vehicles?.map(
-                            (option) => option?.chassis_no
-                          )
+                              (option) => option?.chassis_no
+                            )
                           : ""
                       }
                       renderInput={(params) => (
@@ -1314,7 +1326,7 @@ const AddJobCard = () => {
                   <Autocomplete
                     fullWidth
                     freeSolo
-                    onInputChange={(event, newValue) => { }}
+                    onInputChange={(event, newValue) => {}}
                     onChange={handleBrandChange}
                     value={getDataWithChassisNo?.vehicle_brand || ""}
                     options={carBrands.map((option) => option.label)}
@@ -1333,7 +1345,7 @@ const AddJobCard = () => {
                   <Autocomplete
                     fullWidth
                     freeSolo
-                    onInputChange={(event, newValue) => { }}
+                    onInputChange={(event, newValue) => {}}
                     value={getDataWithChassisNo?.vehicle_name || ""}
                     options={filteredVehicles.map((option) => option.value)}
                     renderInput={(params) => (
@@ -1478,25 +1490,11 @@ const AddJobCard = () => {
                     )}
                   />
                 </Grid>
-                {/* 
-                driver info here  */}
+
                 <Grid item lg={12} md={12} sm={12} xs={12}>
                   <TextField
                     fullWidth
-                    label={
-                      <>
-                        Driver Name (T)
-                        {/* <span
-                          style={{
-                            color: "red",
-                            fontSize: "25px",
-                          }}
-                        >
-                          {" "}
-                          *
-                        </span> */}
-                      </>
-                    }
+                    label={<>Driver Name (T)</>}
                     {...register("driver_name")}
                     focused={userDetails?.data?.driver_name || ""}
                   />
@@ -1561,7 +1559,6 @@ const AddJobCard = () => {
                     </Grid>
                   </Grid>
                 </Grid>
-
               </Grid>
             </Box>
           </div>
@@ -1635,8 +1632,9 @@ const AddJobCard = () => {
             </div>
             <div>
               <input
-                className={`border h-14 w-60 px-3 rounded-sm ${errors.technician_date ? "border-red-500" : ""
-                  }`}
+                className={`border h-14 w-60 px-3 rounded-sm ${
+                  errors.technician_date ? "border-red-500" : ""
+                }`}
                 type="date"
                 {...register("technician_date", {
                   required: "Technician date is required!",
@@ -1674,7 +1672,6 @@ const AddJobCard = () => {
                 Add To Job Card
               </Button>
             </Can>
-
           </div>
         </div>
       </form>

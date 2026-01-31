@@ -19,14 +19,14 @@ const RecentInvoice = ({ tenantDomain }) => {
   if (invoiceError) return <div>Something went wrong!</div>;
 
   return (
-    <div className="bg-white/90 backdrop-blur-xl rounded-2xl border border-white/30 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 overflow-hidden w-full">
+    <div className="bg-white/90 backdrop-blur-xl rounded-2xl border border-white/30 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 overflow-hidden w-full mt-5 md:mt-0">
       {/* Header */}
-      <div className="flex items-center justify-between p-6 pb-3">
+      <div className="flex items-center justify-between px-3 lg:px-4 p-6 pb-3">
         <h3 className="text-xl font-semibold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
           Recent Invoices
         </h3>
         <Link to="/dashboard/create-invoice-list">
-          <button className="flex items-center rounded-full px-4 py-2 bg-blue-50 border border-blue-200 hover:bg-blue-100 hover:border-blue-300 hover:translate-x-1 transition-all duration-300 backdrop-blur-sm">
+          <button className="flex items-center rounded-full px-3 lg:px-4 py-2 bg-blue-50 border border-blue-200 hover:bg-blue-100 hover:border-blue-300 hover:translate-x-1 transition-all duration-300 backdrop-blur-sm">
             <span className="text-sm font-medium text-blue-600">See More</span>
             <HiOutlineArrowNarrowRight size={15} className="ml-1 text-blue-600 transition-transform duration-300" />
           </button>

@@ -1,47 +1,52 @@
-/* eslint-disable no-unused-vars */
-import { ArrowBack, ArrowForwardIos } from "@mui/icons-material";
+import { useAppOptions } from "../../hooks/useAppOptions";
+import { useMoveRecycledInvoiceMutation } from "../../redux/api/invoice";
+import swal from "sweetalert";
 import InvoiceTable from "./InvoiceTable";
-import { useNavigate } from "react-router-dom";
-import { Button } from "@mui/material";
-import { backBtnStyle } from "../../utils/customStyle";
 
 const InvoiceList = () => {
-  const navigate = useNavigate();
-  const handleBack = () => {
-    navigate(-1);
+  const { tenantDomain, performActionWithPermission } = useAppOptions();
+  const [moveRecycledInvoice] = useMoveRecycledInvoiceMutation();
+  const isRecycled = false;
+
+  const handleMoveToRecycledBin = async (data) => {
+    performActionWithPermission(
+      "/dashboard/invoice-list",
+      "delete",
+      async () => {
+        const willDelete = await swal({
+          title: "Are you sure?",
+          text: "You want to move this invoice to the Recycle Bin?",
+          icon: "warning",
+          dangerMode: true,
+        });
+
+        if (willDelete) {
+          try {
+            await moveRecycledInvoice({ tenantDomain, id: data._id }).unwrap();
+            swal(
+              "Moved!",
+              "Invoice moved to Recycle Bin successfully.",
+              "success"
+            );
+          } catch (error) {
+            swal(
+              "Error",
+              "An error occurred while deleting the invoice.",
+              "error"
+            );
+          }
+        }
+      },
+      "You don't have permission to delete invoice!"
+    );
   };
+
   return (
-    <div className="md:mt-5 overflow-x-auto">
-      <div className="flex flex-wrap items-center justify-center gap-3 text-center md: md:justify-between mt-5 border rounded-md shadow-md px-2 py-5">
-        <div className="flex flex-wrap items-center justify-center">
-          <Button
-            onClick={handleBack}
-            startIcon={<ArrowBack />}
-            sx={backBtnStyle}
-          >
-            Back
-          </Button>
-        </div>
-
-        <div className="flex items-center justify-center ">
-          <div className="ml-2">
-            <h3 className="text-2xl font-bold"> Invoice </h3>
-            <span>
-              Invoice <ArrowForwardIos sx={{ fontSize: "15px" }} /> Manage
-              Invoice{" "}
-            </span>
-          </div>
-        </div>
-
-        <div className="productHome">
-          <span>Home / </span>
-          <span>Invoice / </span>
-          <span> Invoice List </span>
-        </div>
-      </div>
-
-      <InvoiceTable title="Invoice List" />
-    </div>
+    <InvoiceTable
+      title="Invoice List"
+      isRecycled={isRecycled}
+      handleDeleteAction={handleMoveToRecycledBin}
+    />
   );
 };
 
