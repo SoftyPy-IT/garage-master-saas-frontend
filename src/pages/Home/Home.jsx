@@ -1,23 +1,23 @@
 /* eslint-disable no-unused-vars */
+import { Visibility, VisibilityOff, CalendarToday } from "@mui/icons-material";
+import { Tooltip, Button } from "@mui/material";
 import { useState } from "react";
-import "./Home.css";
-import AllServices from "./Dashboard/AllServices";
-import ProfitOverView from "./Dashboard/ProfitOverView";
-import ProjectOverView from "./Dashboard/ProjectOverView";
-import RecentClient from "./Dashboard/RecentClient";
-import RecentProject from "./Dashboard/RecentProject";
-import RecentQuotation from "./Dashboard/RecentQuotation";
-import RecentInvoice from "./Dashboard/RecentInvoice";
-import EmployeeStatistics from "./Dashboard/EmployeeStatistics";
+import { Link, useNavigate } from "react-router-dom";
+import Loading from "../../components/Loading/Loading";
 import { useTenantDomain } from "../../hooks/useTenantDomain";
 import {
   useAccountSummaryQuery,
   useGetAllMetaQuery,
 } from "../../redux/api/meta.api";
+import AllServices from "./Dashboard/AllServices";
+import EmployeeStatistics from "./Dashboard/EmployeeStatistics";
 import DashboardSummary from "./Dashboard/IncomeCard";
-import Loading from "../../components/Loading/Loading";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { Tooltip } from "@mui/material";
+import ProjectOverView from "./Dashboard/ProjectOverView";
+import RecentClient from "./Dashboard/RecentClient";
+import RecentInvoice from "./Dashboard/RecentInvoice";
+import RecentProject from "./Dashboard/RecentProject";
+import RecentQuotation from "./Dashboard/RecentQuotation";
+import "./Home.css";
 
 const Home = () => {
   const [showSensitiveData, setShowSensitiveData] = useState(false);
@@ -31,31 +31,49 @@ const Home = () => {
 
   return (
     <div className="mt-5 xl:mt-10 ">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between ">
         <div>
           <h3 className="md:text-3xl font-bold">Welcome Admin !</h3>
           <span className="text-sm">Home / Dashboard</span>
         </div>
-        {/* Toggle Button */}
-        <button
-          onClick={() => setShowSensitiveData(!showSensitiveData)}
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded "
-        >
-          {showSensitiveData ? (
-            <>
-              <Tooltip title="Hide">
-                <VisibilityOff />
-              </Tooltip>
-            </>
-          ) : (
-            <>
-              <Tooltip title="Show">
-                {" "}
-                <Visibility />
-              </Tooltip>
-            </>
-          )}
-        </button>
+
+        {/* Button Group */}
+        <div className="flex items-center gap-3">
+          {/* Calendar Button - ADDED */}
+          <Button
+            component={Link}
+            to="/dashboard/calender"
+            variant="contained"
+            startIcon={<CalendarToday />}
+            sx={{
+              backgroundColor: "#4285F4",
+              color: "#fff",
+              "&:hover": { backgroundColor: "#3367D6" },
+            }}
+          >
+            Connect Google Calendar
+          </Button>
+
+          {/* Existing Toggle Button */}
+          <button
+            onClick={() => setShowSensitiveData(!showSensitiveData)}
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded "
+          >
+            {showSensitiveData ? (
+              <>
+                <Tooltip title="Hide">
+                  <VisibilityOff />
+                </Tooltip>
+              </>
+            ) : (
+              <>
+                <Tooltip title="Show">
+                  <Visibility />
+                </Tooltip>
+              </>
+            )}
+          </button>
+        </div>
       </div>
 
       {/* Conditionally render sensitive sections */}
@@ -71,7 +89,7 @@ const Home = () => {
           accountSummary={accountSummary}
         />
       )}
-      {/* {showSensitiveData && <ProfitOverView tenantDomain={tenantDomain} />} */}
+
       <ProjectOverView tenantDomain={tenantDomain} />
 
       <div className="recentCardWrap gap-5 grid grid-cols-1 xl:grid-cols-2 justify-between sectionMargin">

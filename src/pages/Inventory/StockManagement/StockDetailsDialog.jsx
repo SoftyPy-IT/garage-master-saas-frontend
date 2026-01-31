@@ -1,37 +1,38 @@
 /* eslint-disable react/prop-types */
-"use client"
+"use client";
 
 import {
-  DialogActions,
-  Button,
-  Grid,
-  Typography,
-  Box,
-  Divider,
-  Chip,
-  Paper,
-} from "@mui/material"
-import {
   CalendarMonth as CalendarMonthIcon,
-  Inventory as InventoryIcon,
-  MonetizationOn as MonetizationOnIcon,
-  Label as LabelIcon,
   Description as DescriptionIcon,
-  Category as CategoryIcon,
-  Business as BusinessIcon,
-} from "@mui/icons-material"
+  Inventory as InventoryIcon,
+  Label as LabelIcon,
+  MonetizationOn as MonetizationOnIcon
+} from "@mui/icons-material";
+import {
+  Box,
+  Button,
+  Chip,
+  DialogActions,
+  Divider,
+  Grid,
+  Paper,
+  Typography,
+} from "@mui/material";
 import GarageModal from "../../../components/Share/Modal/GarageModal";
 
 export function StockDetailsDialog({ open, onClose, product, setOpen }) {
+  console.log("Product details in dialog:", product);
 
   if (!product) {
     return null;
   }
 
+  // Extract data from the product object with proper fallbacks
   const {
     code = "N/A",
     name = "Unknown Product",
     category = "Uncategorized",
+    subCategory = "N/A",
     image,
     currentStock = 0,
     inQuantity = 0,
@@ -41,41 +42,41 @@ export function StockDetailsDialog({ open, onClose, product, setOpen }) {
     sellingPrice = 0,
     minimumSalePrice = 0,
     unit = "unit",
+    shortUnit = "unit",
     warehouse = "N/A",
-    warehouseCode = "N/A",
     status = "N/A",
     productDescription = "",
-    originalData = {},
-  } = product;
+    brand = "N/A",
+    productType = "N/A",
+    supplier = "N/A",
+    supplierCompany = "N/A",
+    batchNumber = "N/A",
+    expiryDate = "N/A",
+    manufacturingDate = "N/A",
+    storageLocation = "N/A",
+    specifications = "N/A",
+    tags = [],
+    tax = 0,
 
-  console.log('products details:', product)
+    productStatus = "active",
+    reorderLevel = 0,
+    initialStock = 0,
+    shelfLife = 0,
+    shelfLifeUnit = "Days",
 
-  // Extract data from originalData with fallbacks
-  const {
+    lastPurchaseDate = "N/A",
+    lastSoldDate = "N/A",
     totalPurchaseValue = 0,
     totalSellingValue = 0,
     avgPurchasePrice = 0,
-    avgSellingPrice = 0,
-    lastPurchasePrice = 0,
-    lastSellingPrice = 0,
-    manufacturingDate = "N/A",
-    expiryDate = "N/A",
-    warranty = "N/A",
-    lastPurchaseDate,
-    lastSoldDate,
-    suppliers = {},
-    specifications = "N/A",
-    storageLocation = "N/A",
-    product_type = {},
-    batchNumber = "N/A",
-    tags = [],
-  } = originalData;
+
+  } = product;
 
   // Calculate total value based on current stock and purchase price
   const totalValue = currentStock * purchasePrice;
 
   const formatDate = (dateString) => {
-    if (!dateString) return "N/A";
+    if (!dateString || dateString === "N/A") return "N/A";
     try {
       return new Date(dateString).toLocaleDateString();
     } catch (error) {
@@ -83,17 +84,17 @@ export function StockDetailsDialog({ open, onClose, product, setOpen }) {
     }
   };
 
-  const title = 'Product Details'
+  const formatCurrency = (amount) => {
+    if (typeof amount !== 'number') return '0 ৳';
+    return amount.toLocaleString("en-US") + " ৳";
+  };
+
+  const title = "Product Details";
 
   return (
-    <GarageModal
-      open={open}
-      setOpen={setOpen}
-      title={title}
-      maxWidth="md"
-    >
-
+    <GarageModal open={open} setOpen={setOpen} title={title} maxWidth="lg">
       <Grid container spacing={3}>
+        {/* Product Image and Basic Info */}
         <Grid item xs={12} md={4}>
           <Box
             sx={{
@@ -126,26 +127,79 @@ export function StockDetailsDialog({ open, onClose, product, setOpen }) {
               />
             </Paper>
 
-            <Chip label={code} color="primary" sx={{ fontWeight: "bold", mb: 1 }} />
-            <Typography variant="h6" sx={{ fontWeight: "bold", textAlign: "center" }}>
+            <Chip
+              label={code}
+              color="primary"
+              sx={{ fontWeight: "bold", mb: 1 }}
+            />
+            <Typography
+              variant="h6"
+              sx={{ fontWeight: "bold", textAlign: "center" }}
+            >
               {name}
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ textAlign: "center" }}>
-              {category}
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ textAlign: "center" }}
+            >
+              {category} {subCategory !== "N/A" ? `- ${subCategory}` : ""}
             </Typography>
-            <Chip
-              label={status}
-              color={
-                status === "low-stock" ? "error" :
-                  status === "in-stock" ? "success" : "default"
-              }
-              size="small"
-              sx={{ mt: 1 }}
-            />
+
+            <Box sx={{ mt: 1, display: 'flex', gap: 1, flexWrap: 'wrap', justifyContent: 'center' }}>
+              <Chip
+                label={status}
+                color={
+                  status === "low-stock"
+                    ? "warning"
+                    : status === "out-of-stock"
+                      ? "error"
+                      : "success"
+                }
+                size="small"
+              />
+              <Chip
+                label={productStatus}
+                color={productStatus === "active" ? "success" : "default"}
+                size="small"
+                variant="outlined"
+              />
+            </Box>
+          </Box>
+
+          {/* Basic Product Info */}
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="subtitle2" sx={{ fontWeight: "bold", mb: 1 }}>
+              Product Information
+            </Typography>
+            <Grid container spacing={1}>
+              <Grid item xs={6}>
+                <Typography variant="body2" color="text.secondary">
+                  Brand:
+                </Typography>
+                <Typography variant="body2">{brand}</Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="body2" color="text.secondary">
+                  Type:
+                </Typography>
+                <Typography variant="body2">{productType}</Typography>
+              </Grid>
+              <Grid item xs={12}>
+                <Typography variant="body2" color="text.secondary">
+                  Supplier:
+                </Typography>
+                <Typography variant="body2">
+                  {supplier} {supplierCompany && `(${supplierCompany})`}
+                </Typography>
+              </Grid>
+            </Grid>
           </Box>
         </Grid>
 
+        {/* Detailed Information */}
         <Grid item xs={12} md={8}>
+          {/* Stock Information */}
           <Box sx={{ mb: 3 }}>
             <Typography
               variant="subtitle1"
@@ -167,7 +221,7 @@ export function StockDetailsDialog({ open, onClose, product, setOpen }) {
                   Current Stock:
                 </Typography>
                 <Typography variant="body1" sx={{ fontWeight: "medium" }}>
-                  {currentStock} {unit}
+                  {currentStock} {shortUnit}
                 </Typography>
               </Grid>
               <Grid item xs={6} md={3}>
@@ -175,7 +229,7 @@ export function StockDetailsDialog({ open, onClose, product, setOpen }) {
                   Stock In:
                 </Typography>
                 <Typography variant="body1" color="success.main">
-                  +{inQuantity} {unit}
+                  +{inQuantity} {shortUnit}
                 </Typography>
               </Grid>
               <Grid item xs={6} md={3}>
@@ -183,15 +237,31 @@ export function StockDetailsDialog({ open, onClose, product, setOpen }) {
                   Stock Out:
                 </Typography>
                 <Typography variant="body1" color="error.main">
-                  -{outQuantity} {unit}
+                  -{outQuantity} {shortUnit}
                 </Typography>
               </Grid>
               <Grid item xs={6} md={3}>
                 <Typography variant="body2" color="text.secondary">
-                  Minimum Stock:
+                  Min Stock Alert:
                 </Typography>
                 <Typography variant="body1">
-                  {minimumStock} {unit}
+                  {minimumStock} {shortUnit}
+                </Typography>
+              </Grid>
+              <Grid item xs={6} md={3}>
+                <Typography variant="body2" color="text.secondary">
+                  Reorder Level:
+                </Typography>
+                <Typography variant="body1">
+                  {reorderLevel} {shortUnit}
+                </Typography>
+              </Grid>
+              <Grid item xs={6} md={3}>
+                <Typography variant="body2" color="text.secondary">
+                  Initial Stock:
+                </Typography>
+                <Typography variant="body1">
+                  {initialStock} {shortUnit}
                 </Typography>
               </Grid>
               <Grid item xs={6} md={3}>
@@ -202,25 +272,14 @@ export function StockDetailsDialog({ open, onClose, product, setOpen }) {
               </Grid>
               <Grid item xs={6} md={3}>
                 <Typography variant="body2" color="text.secondary">
-                  Warehouse Code:
+                  Unit:
                 </Typography>
-                <Typography variant="body1">{warehouseCode}</Typography>
-              </Grid>
-              <Grid item xs={6} md={3}>
-                <Typography variant="body2" color="text.secondary">
-                  Batch Number:
-                </Typography>
-                <Typography variant="body1">{batchNumber}</Typography>
-              </Grid>
-              <Grid item xs={6} md={3}>
-                <Typography variant="body2" color="text.secondary">
-                  Unit Type:
-                </Typography>
-                <Typography variant="body1">{unit}</Typography>
+                <Typography variant="body1">{unit} ({shortUnit})</Typography>
               </Grid>
             </Grid>
           </Box>
 
+          {/* Pricing Information */}
           <Box sx={{ mb: 3 }}>
             <Typography
               variant="subtitle1"
@@ -242,7 +301,7 @@ export function StockDetailsDialog({ open, onClose, product, setOpen }) {
                   Purchase Price:
                 </Typography>
                 <Typography variant="body1" sx={{ fontWeight: "medium" }}>
-                  ৳ {purchasePrice}
+                  {formatCurrency(purchasePrice)}
                 </Typography>
               </Grid>
               <Grid item xs={6} md={3}>
@@ -250,62 +309,49 @@ export function StockDetailsDialog({ open, onClose, product, setOpen }) {
                   Selling Price:
                 </Typography>
                 <Typography variant="body1" color="success.main">
-                  ৳ {sellingPrice}
+                  {formatCurrency(sellingPrice)}
                 </Typography>
               </Grid>
               <Grid item xs={6} md={3}>
                 <Typography variant="body2" color="text.secondary">
-                  Minimum Sale Price:
+                  Min Sale Price:
                 </Typography>
-                <Typography variant="body1">৳ {minimumSalePrice}</Typography>
+                <Typography variant="body1">{formatCurrency(minimumSalePrice)}</Typography>
               </Grid>
               <Grid item xs={6} md={3}>
                 <Typography variant="body2" color="text.secondary">
-                  Total Value:
+                  Current Value:
                 </Typography>
                 <Typography variant="body1" sx={{ fontWeight: "medium" }}>
-                  ৳ {totalValue.toLocaleString()}
+                  {formatCurrency(totalValue)}
                 </Typography>
-              </Grid>
-              <Grid item xs={6} md={3}>
-                <Typography variant="body2" color="text.secondary">
-                  Avg Purchase Price:
-                </Typography>
-                <Typography variant="body1">৳ {avgPurchasePrice}</Typography>
-              </Grid>
-              <Grid item xs={6} md={3}>
-                <Typography variant="body2" color="text.secondary">
-                  Avg Selling Price:
-                </Typography>
-                <Typography variant="body1"> ৳ {avgSellingPrice}</Typography>
-              </Grid>
-              <Grid item xs={6} md={3}>
-                <Typography variant="body2" color="text.secondary">
-                  Last Purchase Price:
-                </Typography>
-                <Typography variant="body1">৳ {lastPurchasePrice}</Typography>
-              </Grid>
-              <Grid item xs={6} md={3}>
-                <Typography variant="body2" color="text.secondary">
-                  Last Selling Price:
-                </Typography>
-                <Typography variant="body1">৳ {lastSellingPrice}</Typography>
               </Grid>
               <Grid item xs={6} md={4}>
                 <Typography variant="body2" color="text.secondary">
                   Total Purchase Value:
                 </Typography>
-                <Typography variant="body1">৳ {totalPurchaseValue.toLocaleString()}</Typography>
+                <Typography variant="body1">
+                  {formatCurrency(totalPurchaseValue)}
+                </Typography>
               </Grid>
               <Grid item xs={6} md={4}>
                 <Typography variant="body2" color="text.secondary">
                   Total Selling Value:
                 </Typography>
-                <Typography variant="body1">৳ {totalSellingValue.toLocaleString()}</Typography>
+                <Typography variant="body1">
+                  {formatCurrency(totalSellingValue)}
+                </Typography>
+              </Grid>
+              <Grid item xs={6} md={4}>
+                <Typography variant="body2" color="text.secondary">
+                  Avg Purchase Price:
+                </Typography>
+                <Typography variant="body1">{formatCurrency(avgPurchasePrice)}</Typography>
               </Grid>
             </Grid>
           </Box>
 
+          {/* Additional Information */}
           <Box sx={{ mb: 3 }}>
             <Typography
               variant="subtitle1"
@@ -316,90 +362,37 @@ export function StockDetailsDialog({ open, onClose, product, setOpen }) {
                 mb: 1,
               }}
             >
-              <CalendarMonthIcon sx={{ mr: 1, fontSize: 20 }} />
-              Dates & Timeline
-            </Typography>
-            <Divider sx={{ mb: 2 }} />
-
-            <Grid container spacing={2}>
-              <Grid item xs={6} md={4}>
-                <Typography variant="body2" color="text.secondary">
-                  Manufacturing Date:
-                </Typography>
-                <Typography variant="body1">{manufacturingDate}</Typography>
-              </Grid>
-              <Grid item xs={6} md={4}>
-                <Typography variant="body2" color="text.secondary">
-                  Expiry Date:
-                </Typography>
-                <Typography variant="body1">{expiryDate}</Typography>
-              </Grid>
-              <Grid item xs={6} md={4}>
-                <Typography variant="body2" color="text.secondary">
-                  Warranty:
-                </Typography>
-                <Typography variant="body1">{warranty}</Typography>
-              </Grid>
-              <Grid item xs={6} md={6}>
-                <Typography variant="body2" color="text.secondary">
-                  Last Purchase:
-                </Typography>
-                <Typography variant="body1">{formatDate(lastPurchaseDate)}</Typography>
-              </Grid>
-              <Grid item xs={6} md={6}>
-                <Typography variant="body2" color="text.secondary">
-                  Last Sold:
-                </Typography>
-                <Typography variant="body1">{formatDate(lastSoldDate)}</Typography>
-              </Grid>
-            </Grid>
-          </Box>
-
-          <Box>
-            <Typography
-              variant="subtitle1"
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                fontWeight: "bold",
-                mb: 1,
-              }}
-            >
               <DescriptionIcon sx={{ mr: 1, fontSize: 20 }} />
-              Product Details
+              Additional Information
             </Typography>
             <Divider sx={{ mb: 2 }} />
 
             <Grid container spacing={2}>
-              <Grid item xs={12} md={6}>
+              <Grid item xs={6} md={4}>
                 <Typography variant="body2" color="text.secondary">
-                  Supplier:
+                  Batch Number:
                 </Typography>
-                <Typography variant="body1" sx={{ display: "flex", alignItems: "center" }}>
-                  <BusinessIcon sx={{ mr: 0.5, fontSize: 16, color: "text.secondary" }} />
-                  {suppliers.shop_name || suppliers.full_name || "N/A"}
-                </Typography>
+                <Typography variant="body1">{batchNumber}</Typography>
               </Grid>
-              <Grid item xs={12} md={6}>
-                <Typography variant="body2" color="text.secondary">
-                  Product Type:
-                </Typography>
-                <Typography variant="body1" sx={{ display: "flex", alignItems: "center" }}>
-                  <CategoryIcon sx={{ mr: 0.5, fontSize: 16, color: "text.secondary" }} />
-                  {product_type.product_type || "N/A"}
-                </Typography>
-              </Grid>
-              <Grid item xs={12}>
+              <Grid item xs={6} md={4}>
                 <Typography variant="body2" color="text.secondary">
                   Storage Location:
                 </Typography>
                 <Typography variant="body1">{storageLocation}</Typography>
               </Grid>
+              <Grid item xs={6} md={4}>
+                <Typography variant="body2" color="text.secondary">
+                  Tax:
+                </Typography>
+                <Typography variant="body1">{tax}%</Typography>
+              </Grid>
               <Grid item xs={12}>
                 <Typography variant="body2" color="text.secondary">
                   Specifications:
                 </Typography>
-                <Typography variant="body1">{specifications}</Typography>
+                <Typography variant="body1">
+                  {specifications || "No specifications available"}
+                </Typography>
               </Grid>
               <Grid item xs={12}>
                 <Typography variant="body2" color="text.secondary">
@@ -433,9 +426,68 @@ export function StockDetailsDialog({ open, onClose, product, setOpen }) {
               </Grid>
             </Grid>
           </Box>
+
+          {/* Dates & Expiry Information */}
+          <Box sx={{ mb: 3 }}>
+            <Typography
+              variant="subtitle1"
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                fontWeight: "bold",
+                mb: 1,
+              }}
+            >
+              <CalendarMonthIcon sx={{ mr: 1, fontSize: 20 }} />
+              Dates & Expiry
+            </Typography>
+            <Divider sx={{ mb: 2 }} />
+
+            <Grid container spacing={2}>
+              <Grid item xs={6} md={4}>
+                <Typography variant="body2" color="text.secondary">
+                  Manufacturing Date:
+                </Typography>
+                <Typography variant="body1">{formatDate(manufacturingDate)}</Typography>
+              </Grid>
+              <Grid item xs={6} md={4}>
+                <Typography variant="body2" color="text.secondary">
+                  Expiry Date:
+                </Typography>
+                <Typography variant="body1">{formatDate(expiryDate)}</Typography>
+              </Grid>
+              <Grid item xs={6} md={4}>
+                <Typography variant="body2" color="text.secondary">
+                  Shelf Life:
+                </Typography>
+                <Typography variant="body1">
+                  {shelfLife} {shelfLifeUnit}
+                </Typography>
+              </Grid>
+              <Grid item xs={6} md={6}>
+                <Typography variant="body2" color="text.secondary">
+                  Last Purchase:
+                </Typography>
+                <Typography variant="body1">
+                  {formatDate(lastPurchaseDate)}
+                </Typography>
+              </Grid>
+              <Grid item xs={6} md={6}>
+                <Typography variant="body2" color="text.secondary">
+                  Last Sold:
+                </Typography>
+                <Typography variant="body1">
+                  {formatDate(lastSoldDate)}
+                </Typography>
+              </Grid>
+            </Grid>
+          </Box>
         </Grid>
       </Grid>
-      <DialogActions sx={{ px: 3, py: 2, borderTop: "1px solid rgba(0, 0, 0, 0.1)" }}>
+
+      <DialogActions
+        sx={{ px: 3, py: 2, borderTop: "1px solid rgba(0, 0, 0, 0.1)" }}
+      >
         <Button onClick={onClose} variant="outlined">
           Close
         </Button>
@@ -444,5 +496,5 @@ export function StockDetailsDialog({ open, onClose, product, setOpen }) {
         </Button>
       </DialogActions>
     </GarageModal>
-  )
+  );
 }

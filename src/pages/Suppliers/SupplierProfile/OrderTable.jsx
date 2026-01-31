@@ -1,44 +1,24 @@
 /* eslint-disable react/prop-types */
-/* eslint-disable no-unused-vars */
 "use client";
 
 import { useState } from "react";
 import Swal from "sweetalert2";
 import { toast } from "react-toastify";
 import {
-  Box,
-  Typography,
   Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  IconButton,
-  Menu,
-  MenuItem,
-  Checkbox,
-  FormControlLabel,
-  Divider,
-  TextField,
-  InputAdornment,
   Tooltip,
-  Chip,
-  Paper,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   useTheme,
   alpha,
+  Menu,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
 } from "@mui/material";
 import {
   LocalShipping,
   FilterList,
   Add,
-  MoreVert,
-  Search,
   CheckCircle,
   Cancel,
   Pending,
@@ -47,149 +27,67 @@ import {
   Timeline,
   ReceiptLong,
 } from "@mui/icons-material";
+
 import { GlassCard, StatusChip } from "./supplier";
-
 import PurchaseOrderModal from "../../Inventory/PurchaseOrder/PurchaseOrderModal";
-import { useTenantDomain } from "../../../hooks/useTenantDomain";
-import { useDeletePurchaseOrderMutation } from "../../../redux/api/purchaseOrderApi";
-import { AnimatedIconButton, StyledTableContainer } from "../../../utils/customStyle";
-import ActionMenu from "../../Inventory/PurchaseOrder/ActionMenu";
-import ReceiveDialog from "../../Inventory/PurchaseOrder/ReceiveDialog";
 import UpdatePurchaseOrderModal from "../../Inventory/UpdatePurchaseOrderModal";
+import ReceiveDialog from "../../Inventory/PurchaseOrder/ReceiveDialog";
+import { useTenantDomain } from "../../../hooks/useTenantDomain";
+import {
+  useDeletePurchaseOrderMutation,
+  useGetAllPurchaseOrdersQuery,
+} from "../../../redux/api/purchaseOrderApi";
+import Table from "../../../components/Table";
+import { DeleteIcon, EditIcon } from "lucide-react";
 
-const OrderTable = ({ orderData, refetch }) => {
+const OrderTable = ({ refetch: parentRefetch }) => {
   const theme = useTheme();
-  const tenantDomain = useTenantDomain();
+  const { tenantDomain } = useTenantDomain();
 
+  // UI State
   const [filterMenuAnchor, setFilterMenuAnchor] = useState(null);
-  const [setSortMenuAnchor] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [setOpenDialog] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState(null);
-  const [setDialogAction] = useState("");
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const [page, setPage] = useState(1);
+  const limit = 10;
 
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [selectedOrderForAction, setSelectedOrderForAction] = useState(null);
+  // Filter & sort state
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [selectedPaymentStatus, setSelectedPaymentStatus] = useState("");
+  const [sortOption, setSortOption] = useState(""); // e.g. "orderDate,-grandTotal"
 
-  // State for receive dialog
+  // Modals state
+  const [openCreate, setOpenCreate] = useState(false);
+  const [openUpdate, setOpenUpdate] = useState(false);
   const [openReceiveDialog, setOpenReceiveDialog] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
   const [receivingOrderId, setReceivingOrderId] = useState(null);
 
-  // State for update modal
-  const [openUpdateModal, setOpenUpdateModal] = useState(false);
-
-  // Delete mutation
   const [deletePurchase] = useDeletePurchaseOrderMutation();
 
-  const handleFilterMenuOpen = (event) => {
-    setFilterMenuAnchor(event.currentTarget);
-  };
+  // Fetch orders
+  const { data, isLoading, refetch } = useGetAllPurchaseOrdersQuery({
+    tenantDomain,
+    limit,
+    page,
+    searchTerm,
+    status: selectedStatus || undefined,
+    paymentStatus: selectedPaymentStatus || undefined,
+    sort: sortOption || undefined,
+  });
+  console.log(data)
 
-  const handleFilterMenuClose = () => {
-    setFilterMenuAnchor(null);
-  };
+  const orders = data?.data?.orders || [];
+  const meta = data?.meta || {};
 
-  const handleSortMenuOpen = (event) => {
-    setSortMenuAnchor(event.currentTarget);
-  };
-
-  const handleSortMenuClose = () => {
-    setSortMenuAnchor(null);
-  };
-
-  const handleSearch = (event) => {
-    setSearchTerm(event.target.value);
-  };
-
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
-    setSelectedOrder(null);
-  };
-
-  // Action menu handlers
-  const handleMenuOpen = (event, order) => {
-    setAnchorEl(event.currentTarget);
-    setSelectedOrderForAction(order);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleViewOrder = () => {
-    handleMenuClose();
-  };
-
-  const handleEditOrder = () => {
-    setSelectedOrder(selectedOrderForAction);
-    setOpenUpdateModal(true);
-    handleMenuClose();
-  };
-
-  const handleOpenReceiveDialog = () => {
-    setReceivingOrderId(selectedOrderForAction._id);
-    setOpenReceiveDialog(true);
-    handleMenuClose();
-  };
-
-  const handleCloseReceiveDialog = () => {
-    setOpenReceiveDialog(false);
-  };
-
-  const handleDeleteOrder = async () => {
-    if (!selectedOrderForAction) return;
-
-    Swal.fire({
-      title: "Are you sure?",
-      text: "This action cannot be undone.",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: "Yes, delete it!",
-      cancelButtonText: "Cancel",
-      reverseButtons: true,
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          const res = await deletePurchase({
-            tenantDomain,
-            id: selectedOrderForAction._id,
-          }).unwrap();
-
-          if (res.success) {
-            toast.success("Purchase order deleted successfully!");
-            refetch();
-
-            Swal.fire(
-              "Deleted!",
-              "The purchase order has been deleted.",
-              "success"
-            );
-          }
-        } catch (error) {
-          Swal.fire("Error", "Failed to delete purchase order", "error");
-          console.error(error);
-        }
-      }
-    });
-
-    handleMenuClose();
-  };
-
+  // --- UI helpers
   const getStatusColor = (status) => {
     switch (status) {
       case "Delivered":
+      case "Paid":
         return theme.palette.success.main;
       case "Pending":
         return theme.palette.warning.main;
       case "Cancelled":
-        return theme.palette.error.main;
-      case "Paid":
-        return theme.palette.success.main;
       case "Unpaid":
         return theme.palette.error.main;
       default:
@@ -212,244 +110,282 @@ const OrderTable = ({ orderData, refetch }) => {
     }
   };
 
-  // Format date to YYYY-MM-DD
-  const formatDate = (dateString) => {
-    return new Date(dateString).toISOString().split("T")[0];
+  const formatDate = (dateString) =>
+    dateString ? new Date(dateString).toISOString().split("T")[0] : "N/A";
+
+  const calculateTotalItems = (products = []) =>
+    products.reduce((total, p) => total + (p.quantity || 0), 0);
+
+  // --- Actions
+  const handleDeleteOrder = async (order) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "This action cannot be undone.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+      reverseButtons: true,
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const res = await deletePurchase({
+            tenantDomain,
+            id: order._id,
+          }).unwrap();
+          if (res.success) {
+            toast.success("Purchase order deleted successfully!");
+            refetch();
+            parentRefetch?.();
+          }
+        } catch (error) {
+          Swal.fire("Error", "Failed to delete purchase order", "error");
+        }
+      }
+    });
   };
 
-  // Calculate total items in order
-  const calculateTotalItems = (products) => {
-    return products.reduce((total, product) => total + product.quantity, 0);
+  const handleSearch = (value) => {
+    setSearchTerm(value);
+    setPage(1);
   };
 
-  // Filter orders based on search term
-  const filteredOrders = orderData?.filter(
-    (order) =>
-      order?.referenceNo
-        ?.toString()
-        ?.toLowerCase()
-        ?.includes(searchTerm?.toLowerCase()) ||
-      order?.status?.toLowerCase()?.includes(searchTerm?.toLowerCase()) ||
-      order?.paymentStatus?.toLowerCase()?.includes(searchTerm?.toLowerCase())
-  );
+  const applyFilters = () => {
+    setPage(1);
+    refetch();
+    setFilterMenuAnchor(null);
+  };
+
+  // --- Columns & actions
+  const columns = [
+    {
+      key: "referenceNo",
+      label: "Reference No",
+      render: (order) => (
+        <div className="flex items-center">
+          <ReceiptLong className="mr-2 text-primary" />{" "}
+          {order.referenceNo ?? "N/A"}
+        </div>
+      ),
+    },
+    {
+      key: "orderDate",
+      label: "Order Date",
+      render: (order) => (
+        <div className="flex items-center">
+          <CalendarToday className="mr-2 text-gray-500" />{" "}
+          {formatDate(order.orderDate)}
+        </div>
+      ),
+    },
+    {
+      key: "products",
+      label: "Items",
+      render: (order) => (
+        <div className="flex items-center">
+          <Inventory className="mr-2 text-blue-500" />{" "}
+          {calculateTotalItems(order.products)}
+        </div>
+      ),
+    },
+    {
+      key: "grandTotal",
+      label: "Amount",
+      render: (order) => <>৳{order.grandTotal?.toLocaleString()}</>,
+    },
+    {
+      key: "expectedDeliveryDate",
+      label: "Delivery Date",
+      render: (order) => (
+        <div className="flex items-center">
+          <Timeline className="mr-2 text-purple-500" />{" "}
+          {formatDate(order.expectedDeliveryDate)}
+        </div>
+      ),
+    },
+    {
+      key: "status",
+      label: "Status",
+      render: (order) => (
+        <StatusChip
+          icon={getStatusIcon(order.status)}
+          label={order.status}
+          size="small"
+          statuscolor={getStatusColor(order.status)}
+        />
+      ),
+    },
+    {
+      key: "paymentStatus",
+      label: "Payment",
+      render: (order) => (
+        <StatusChip
+          icon={getStatusIcon(order.paymentStatus)}
+          label={order.paymentStatus}
+          size="small"
+          statuscolor={getStatusColor(order.paymentStatus)}
+        />
+      ),
+    },
+  ];
+
+  const actions = [
+    {
+      key: "edit",
+      label: "Edit",
+      icon: EditIcon,
+      tooltip: "Edit Order",
+      onClick: (order) => {
+        setSelectedOrder(order);
+        setOpenUpdate(true);
+      },
+    },
+    {
+      key: "receive",
+      label: "Receive",
+      icon: LocalShipping,
+      tooltip: "Receive Items",
+      onClick: (order) => {
+        setReceivingOrderId(order._id);
+        setOpenReceiveDialog(true);
+      },
+    },
+    {
+      key: "delete",
+      label: "Delete",
+      icon: DeleteIcon,
+      tooltip: "Delete Order",
+      onClick: (order) => handleDeleteOrder(order),
+    },
+  ];
 
   return (
     <GlassCard>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          mb: 3,
-        }}
-      >
-        <Typography
-          variant="h5"
-          fontWeight="bold"
-          sx={{ display: "flex", alignItems: "center" }}
-        >
-          <LocalShipping sx={{ mr: 1, color: theme.palette.primary.main }} />
-          Purchase Orders
-        </Typography>
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          <TextField
-            size="small"
-            placeholder="Search orders..."
-            value={searchTerm}
-            onChange={handleSearch}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Search color="action" />
-                </InputAdornment>
-              ),
-            }}
-            sx={{ mr: 2, width: 200 }}
-          />
-          <Tooltip title="Filter orders">
-            <Button
-              variant="outlined"
-              startIcon={<FilterList />}
-              sx={{ mr: 1, borderRadius: 20 }}
-              onClick={handleFilterMenuOpen}
-            >
-              Filter
-            </Button>
-          </Tooltip>
-          <Menu
-            anchorEl={filterMenuAnchor}
-            open={Boolean(filterMenuAnchor)}
-            onClose={handleFilterMenuClose}
-          >
-            <MenuItem>
-              <FormControlLabel
-                control={<Checkbox defaultChecked />}
-                label="Delivered"
-              />
-            </MenuItem>
-            <MenuItem>
-              <FormControlLabel
-                control={<Checkbox defaultChecked />}
-                label="Pending"
-              />
-            </MenuItem>
-            <MenuItem>
-              <FormControlLabel
-                control={<Checkbox defaultChecked />}
-                label="Cancelled"
-              />
-            </MenuItem>
-            <Divider />
-            <MenuItem onClick={handleFilterMenuClose}>Apply Filters</MenuItem>
-          </Menu>
-
-
+      <div className="flex items-center space-x-3 mb-3">
+        <Tooltip title="Filter orders">
           <Button
-            variant="contained"
-            startIcon={<Add />}
-            sx={{
-              borderRadius: 20,
-              background: `linear-gradient(45deg, ${theme.palette.primary.main} 30%, ${theme.palette.primary.light} 90%)`,
-              boxShadow: `0 3px 5px 2px ${alpha(
-                theme.palette.primary.main,
-                0.3
-              )}`,
-            }}
-            onClick={handleOpen}
+            variant="outlined"
+            startIcon={<FilterList />}
+            onClick={(e) => setFilterMenuAnchor(e.currentTarget)}
+            sx={{ borderRadius: 20 }}
           >
-            Create Order
+            Filter
           </Button>
-        </Box>
-      </Box>
+        </Tooltip>
 
-      <StyledTableContainer sx={{
-        width: "100%",
-        overflowX: "auto",
-        borderRadius: 2,
-        "&::-webkit-scrollbar": {
-          height: 6,
-        },
-        "&::-webkit-scrollbar-thumb": {
-          backgroundColor: "#ccc",
-          borderRadius: 3,
-        },
-        "&::-webkit-scrollbar-thumb:hover": {
-          backgroundColor: "#999",
-        },
-      }}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Reference No</TableCell>
-              <TableCell>Order Date</TableCell>
-              <TableCell>Items</TableCell>
-              <TableCell>Amount</TableCell>
-              <TableCell>Delivery Date</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Payment</TableCell>
-              <TableCell align="right">Action</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredOrders?.map((order) => (
-              <TableRow key={order._id}>
-                <TableCell sx={{ fontWeight: "medium" }}>
-                  <Box sx={{ display: "flex", alignItems: "center" }}>
-                    <ReceiptLong
-                      sx={{ mr: 1, color: theme.palette.primary.main }}
-                    />
-                    {order.referenceNo}
-                  </Box>
-                </TableCell>
-                <TableCell>
-                  <Box sx={{ display: "flex", alignItems: "center" }}>
-                    <CalendarToday
-                      sx={{ mr: 1, color: theme.palette.text.secondary }}
-                    />
-                    {formatDate(order.orderDate)}
-                  </Box>
-                </TableCell>
-                <TableCell>
-                  <Box sx={{ display: "flex", alignItems: "center" }}>
-                    <Inventory sx={{ mr: 1, color: theme.palette.info.main }} />
-                    {calculateTotalItems(order.products)}
-                  </Box>
-                </TableCell>
-                <TableCell>
-                  <Box sx={{ display: "flex", alignItems: "center" }}>
-                    ৳{order.grandTotal.toLocaleString()}
-                  </Box>
-                </TableCell>
-                <TableCell>
-                  <Box sx={{ display: "flex", alignItems: "center" }}>
-                    <Timeline
-                      sx={{ mr: 1, color: theme.palette.secondary.main }}
-                    />
-                    {formatDate(order.expectedDeliveryDate)}
-                  </Box>
-                </TableCell>
-                <TableCell>
-                  <StatusChip
-                    icon={getStatusIcon(order.status)}
-                    label={order.status}
-                    size="small"
-                    statuscolor={getStatusColor(order.status)}
-                  />
-                </TableCell>
-                <TableCell>
-                  <StatusChip
-                    icon={getStatusIcon(order.paymentStatus)}
-                    label={order.paymentStatus}
-                    size="small"
-                    statuscolor={getStatusColor(order.paymentStatus)}
-                  />
-                </TableCell>
-                <TableCell align="right">
-                  <Tooltip title="More Options">
-                    <AnimatedIconButton
-                      size="small"
-                      onClick={(e) => handleMenuOpen(e, order)}
-                    >
-                      <MoreVert fontSize="small" />
-                    </AnimatedIconButton>
-                  </Tooltip>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </StyledTableContainer>
-      <ActionMenu
-        anchorEl={anchorEl}
-        selectedOrder={selectedOrderForAction}
-        onMenuClose={handleMenuClose}
-        onViewOrder={handleViewOrder}
-        onEditOrder={handleEditOrder}
-        onOpenReceiveDialog={handleOpenReceiveDialog}
-        onDeleteOrder={handleDeleteOrder}
+        <Button
+          variant="contained"
+          startIcon={<Add />}
+          sx={{
+            borderRadius: 20,
+            background: `linear-gradient(45deg, ${theme.palette.primary.main} 30%, ${theme.palette.primary.light} 90%)`,
+            boxShadow: `0 3px 5px 2px ${alpha(theme.palette.primary.main, 0.3)}`,
+          }}
+          onClick={() => setOpenCreate(true)}
+        >
+          Create Order
+        </Button>
+      </div>
+
+      {/* Filter Menu */}
+      <Menu
+        anchorEl={filterMenuAnchor}
+        open={Boolean(filterMenuAnchor)}
+        onClose={() => setFilterMenuAnchor(null)}
+      >
+        <MenuItem>
+          <FormControl fullWidth>
+            <InputLabel>Status</InputLabel>
+            <Select
+              value={selectedStatus}
+              onChange={(e) => setSelectedStatus(e.target.value)}
+              label="Status"
+            >
+              <MenuItem value="">All</MenuItem>
+              <MenuItem value="Pending">Pending</MenuItem>
+              <MenuItem value="Delivered">Delivered</MenuItem>
+              <MenuItem value="Cancelled">Cancelled</MenuItem>
+            </Select>
+          </FormControl>
+        </MenuItem>
+
+        <MenuItem>
+          <FormControl fullWidth>
+            <InputLabel>Payment Status</InputLabel>
+            <Select
+              value={selectedPaymentStatus}
+              onChange={(e) => setSelectedPaymentStatus(e.target.value)}
+              label="Payment Status"
+            >
+              <MenuItem value="">All</MenuItem>
+              <MenuItem value="Paid">Paid</MenuItem>
+              <MenuItem value="Unpaid">Unpaid</MenuItem>
+            </Select>
+          </FormControl>
+        </MenuItem>
+
+        <MenuItem>
+          <FormControl fullWidth>
+            <InputLabel>Sort By</InputLabel>
+            <Select
+              value={sortOption}
+              onChange={(e) => setSortOption(e.target.value)}
+              label="Sort By"
+            >
+              <MenuItem value="">Default</MenuItem>
+              <MenuItem value="orderDate">Order Date ↑</MenuItem>
+              <MenuItem value="-orderDate">Order Date ↓</MenuItem>
+              <MenuItem value="grandTotal">Amount ↑</MenuItem>
+              <MenuItem value="-grandTotal">Amount ↓</MenuItem>
+            </Select>
+          </FormControl>
+        </MenuItem>
+
+        <MenuItem>
+          <Button variant="contained" fullWidth onClick={applyFilters}>
+            Apply
+          </Button>
+        </MenuItem>
+      </Menu>
+
+      <Table
+        title="Purchase Orders"
+        columns={columns}
+        data={orders}
+        actions={actions}
+        loading={isLoading}
+        onSearch={handleSearch}
+        searchPlaceholder="Search by reference no, status, payment..."
+        currentPage={page}
+        totalPages={meta?.totalPage || 1}
+        onPageChange={setPage}
+        emptyMessage="No purchase orders found"
       />
-      <ReceiveDialog
-        open={openReceiveDialog}
-        purchaseId={receivingOrderId}
-        onClose={handleCloseReceiveDialog}
-      />
-      {openUpdateModal && selectedOrder && (
+
+      {openCreate && (
+        <PurchaseOrderModal
+          tenantDomain={tenantDomain}
+          onClose={() => setOpenCreate(false)}
+          open={openCreate}
+        />
+      )}
+      {openUpdate && selectedOrder && (
         <UpdatePurchaseOrderModal
           tenantDomain={tenantDomain}
-          onClose={() => setOpenUpdateModal(false)}
-          open={openUpdateModal}
+          onClose={() => setOpenUpdate(false)}
+          open={openUpdate}
           orderId={selectedOrder._id}
         />
       )}
-      {open && (
-        <PurchaseOrderModal
-          tenantDomain={tenantDomain}
-          onClose={handleClose}
-          open={handleOpen}
+      {openReceiveDialog && (
+        <ReceiveDialog
+          open={openReceiveDialog}
+          purchaseId={receivingOrderId}
+          onClose={() => setOpenReceiveDialog(false)}
         />
       )}
-
-
     </GlassCard>
   );
 };

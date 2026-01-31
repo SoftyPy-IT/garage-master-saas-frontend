@@ -8,10 +8,7 @@ import DashboardLeave from "./DashboardLeave";
 import "react-circular-progressbar/dist/styles.css";
 
 const EmployeeStatistics = ({ tenantDomain }) => {
-  const {
-    data: employeeData,
-    isLoading,
-  } = useGetAllEmployeesQuery({
+  const { data: employeeData, isLoading } = useGetAllEmployeesQuery({
     tenantDomain,
     limit: 10,
     page: 1,
@@ -118,22 +115,24 @@ const EmployeeStatistics = ({ tenantDomain }) => {
                     styles={{
                       path: {
                         stroke: `#10b981`,
-                        strokeLinecap: 'round',
+                        strokeLinecap: "round",
                       },
                       text: {
-                        fill: '#10b981',
-                        fontSize: '24px',
-                        fontWeight: 'bold',
+                        fill: "#10b981",
+                        fontSize: "24px",
+                        fontWeight: "bold",
                       },
                       trail: {
-                        stroke: '#d1fae5',
+                        stroke: "#d1fae5",
                       },
                     }}
                   />
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-600">Active</p>
-                  <p className="text-lg font-bold text-gray-900">{activeEmployeeCount}/{totalEmployee}</p>
+                  <p className="text-lg font-bold text-gray-900">
+                    {activeEmployeeCount}/{totalEmployee}
+                  </p>
                 </div>
               </div>
             </div>
@@ -150,22 +149,26 @@ const EmployeeStatistics = ({ tenantDomain }) => {
                     styles={{
                       path: {
                         stroke: `#f97316`,
-                        strokeLinecap: 'round',
+                        strokeLinecap: "round",
                       },
                       text: {
-                        fill: '#f97316',
-                        fontSize: '24px',
-                        fontWeight: 'bold',
+                        fill: "#f97316",
+                        fontSize: "24px",
+                        fontWeight: "bold",
                       },
                       trail: {
-                        stroke: '#ffedd5',
+                        stroke: "#ffedd5",
                       },
                     }}
                   />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Today Leave</p>
-                  <p className="text-lg font-bold text-gray-900">{AbsentEmployeeCount}/{totalEmployee}</p>
+                  <p className="text-sm font-medium text-gray-600">
+                    Today Leave
+                  </p>
+                  <p className="text-lg font-bold text-gray-900">
+                    {AbsentEmployeeCount}/{totalEmployee}
+                  </p>
                 </div>
               </div>
             </div>
@@ -182,22 +185,26 @@ const EmployeeStatistics = ({ tenantDomain }) => {
                     styles={{
                       path: {
                         stroke: `#ef4444`,
-                        strokeLinecap: 'round',
+                        strokeLinecap: "round",
                       },
                       text: {
-                        fill: '#ef4444',
-                        fontSize: '24px',
-                        fontWeight: 'bold',
+                        fill: "#ef4444",
+                        fontSize: "24px",
+                        fontWeight: "bold",
                       },
                       trail: {
-                        stroke: '#fee2e2',
+                        stroke: "#fee2e2",
                       },
                     }}
                   />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Today Late</p>
-                  <p className="text-lg font-bold text-gray-900">{lateEmployeeCount}/{totalEmployee}</p>
+                  <p className="text-sm font-medium text-gray-600">
+                    Today Late
+                  </p>
+                  <p className="text-lg font-bold text-gray-900">
+                    {lateEmployeeCount}/{totalEmployee}
+                  </p>
                 </div>
               </div>
             </div>
@@ -214,22 +221,26 @@ const EmployeeStatistics = ({ tenantDomain }) => {
                     styles={{
                       path: {
                         stroke: `#3b82f6`,
-                        strokeLinecap: 'round',
+                        strokeLinecap: "round",
                       },
                       text: {
-                        fill: '#3b82f6',
-                        fontSize: '24px',
-                        fontWeight: 'bold',
+                        fill: "#3b82f6",
+                        fontSize: "24px",
+                        fontWeight: "bold",
                       },
                       trail: {
-                        stroke: '#dbeafe',
+                        stroke: "#dbeafe",
                       },
                     }}
                   />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Advance Salary</p>
-                  <p className="text-lg font-bold text-gray-900">৳{advanceSalary}</p>
+                  <p className="text-sm font-medium text-gray-600">
+                    Advance Salary
+                  </p>
+                  <p className="text-lg font-bold text-gray-900">
+                    ৳{advanceSalary}
+                  </p>
                 </div>
               </div>
             </div>
@@ -246,22 +257,26 @@ const EmployeeStatistics = ({ tenantDomain }) => {
                     styles={{
                       path: {
                         stroke: `#8b5cf6`,
-                        strokeLinecap: 'round',
+                        strokeLinecap: "round",
                       },
                       text: {
-                        fill: '#8b5cf6',
-                        fontSize: '24px',
-                        fontWeight: 'bold',
+                        fill: "#8b5cf6",
+                        fontSize: "24px",
+                        fontWeight: "bold",
                       },
                       trail: {
-                        stroke: '#f3e8ff',
+                        stroke: "#f3e8ff",
                       },
                     }}
                   />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Due Salary</p>
-                  <p className="text-lg font-bold text-gray-900">৳{dueSalary}</p>
+                  <p className="text-sm font-medium text-gray-600">
+                    Due Salary
+                  </p>
+                  <p className="text-lg font-bold text-gray-900">
+                    ৳{dueSalary}
+                  </p>
                 </div>
               </div>
             </div>
@@ -278,79 +293,27 @@ const EmployeeStatistics = ({ tenantDomain }) => {
                     styles={{
                       path: {
                         stroke: `#06b6d4`,
-                        strokeLinecap: 'round',
+                        strokeLinecap: "round",
                       },
                       text: {
-                        fill: '#06b6d4',
-                        fontSize: '24px',
-                        fontWeight: 'bold',
+                        fill: "#06b6d4",
+                        fontSize: "24px",
+                        fontWeight: "bold",
                       },
                       trail: {
-                        stroke: '#cffafe',
+                        stroke: "#cffafe",
                       },
                     }}
                   />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Total Holiday</p>
+                  <p className="text-sm font-medium text-gray-600">
+                    Total Holiday
+                  </p>
                   <p className="text-lg font-bold text-gray-900">5/30</p>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Task Statistics */}
-      <div className="bg-white/90 backdrop-blur-xl rounded-2xl border border-white/30 shadow-xl p-6">
-        <h3 className="text-xl font-semibold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-6">
-          Task Statistics
-        </h3>
-        
-        {/* Total Tasks Overview */}
-        <div className="grid grid-cols-2 gap-4 mb-6">
-          <div className="bg-gradient-to-br from-indigo-50 to-indigo-100/50 rounded-xl p-4 border border-indigo-200/50 text-center">
-            <p className="text-sm font-medium text-gray-600 mb-1">Total Tasks</p>
-            <p className="text-2xl font-bold text-indigo-600">350</p>
-          </div>
-          <div className="bg-gradient-to-br from-rose-50 to-rose-100/50 rounded-xl p-4 border border-rose-200/50 text-center">
-            <p className="text-sm font-medium text-gray-600 mb-1">Overdue Tasks</p>
-            <p className="text-2xl font-bold text-rose-600">350</p>
-          </div>
-        </div>
-
-        {/* Task Breakdown */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between p-3 bg-green-50 rounded-xl border border-green-200/50 hover:shadow-md transition-all duration-300">
-            <div className="flex items-center space-x-3">
-              <HiOutlineCheckCircle className="text-green-500 text-xl" />
-              <span className="font-semibold text-gray-700">Complete Task</span>
-            </div>
-            <span className="text-lg font-bold text-green-600">455</span>
-          </div>
-
-          <div className="flex items-center justify-between p-3 bg-amber-50 rounded-xl border border-amber-200/50 hover:shadow-md transition-all duration-300">
-            <div className="flex items-center space-x-3">
-              <HiOutlineCheckCircle className="text-amber-500 text-xl" />
-              <span className="font-semibold text-gray-700">Inprogress Task</span>
-            </div>
-            <span className="text-lg font-bold text-amber-600">25</span>
-          </div>
-
-          <div className="flex items-center justify-between p-3 bg-red-50 rounded-xl border border-red-200/50 hover:shadow-md transition-all duration-300">
-            <div className="flex items-center space-x-3">
-              <HiOutlineCheckCircle className="text-red-500 text-xl" />
-              <span className="font-semibold text-gray-700">Pending Task</span>
-            </div>
-            <span className="text-lg font-bold text-red-600">25</span>
-          </div>
-
-          <div className="flex items-center justify-between p-3 bg-blue-50 rounded-xl border border-blue-200/50 hover:shadow-md transition-all duration-300">
-            <div className="flex items-center space-x-3">
-              <HiOutlineCheckCircle className="text-blue-500 text-xl" />
-              <span className="font-semibold text-gray-700">Review Task</span>
-            </div>
-            <span className="text-lg font-bold text-blue-600">25</span>
           </div>
         </div>
       </div>

@@ -1,11 +1,14 @@
-import { Box, Grid, Typography } from "@mui/material";
-import { alpha, useTheme } from "@mui/material/styles";
+/* eslint-disable react/prop-types */
+import { Box, alpha } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 
 import { BreadcrumbNavigation } from "./BreadcrumbNavigation";
 import { PageHeader } from "./PageHeader";
-import { WarrantyCard } from "./WarrantyCard";
 import { useWarranties } from "../../../hooks/useWarranties";
 import WarrantyModal from "./WarrantyModal";
+import { ProductTooltip } from "./ProductTooltip";
+import Table from "../../../components/Table";
+import { DeleteIcon, EditIcon } from "lucide-react";
 
 export default function WarrantiesPage() {
   const theme = useTheme();
@@ -14,7 +17,7 @@ export default function WarrantiesPage() {
     editingWarranty,
     warranties,
     isLoading,
-    searchTerm,
+
     setSearchTerm,
     handleOpenModal,
     handleCloseModal,
@@ -24,20 +27,44 @@ export default function WarrantiesPage() {
     tenantDomain,
   } = useWarranties();
 
-  if (isLoading) {
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          minHeight: "100vh",
-        }}
-      >
-        <Typography variant="h6">Loading warranties...</Typography>
-      </Box>
-    );
-  }
+  const columns = [
+    { key: "name", label: "Name", render: (w) => w.name },
+    { key: "description", label: "Description", render: (w) => w.description },
+    {
+      key: "duration",
+      label: "Duration",
+      render: (w) => `${w.duration} ${w.durationType}`,
+    },
+    {
+      key: "products",
+      label: "Products",
+      render: (w) => (
+        <ProductTooltip products={w.products}>
+          {w.totalProducts} product{w.totalProducts !== 1 ? "s" : ""}
+        </ProductTooltip>
+      ),
+    },
+    { key: "terms", label: "Terms", render: (w) => w.terms },
+  ];
+
+  const actions = [
+    {
+      key: "edit",
+      icon: EditIcon,
+      onClick: handleEditWarranty,
+      tooltip: "Edit Warranty",
+    },
+    {
+      key: "delete",
+      icon: DeleteIcon,
+      onClick: (warranty) => handleDeleteWarranty(warranty._id),
+      requirePermission: true,
+      permissionPage: "/dashboard/warranties",
+      permissionAction: "delete",
+      tooltip: "Delete Warranty",
+      color: "#d32f2f",
+    },
+  ];
 
   return (
     <Box
@@ -51,22 +78,22 @@ export default function WarrantiesPage() {
       }}
     >
       <BreadcrumbNavigation />
-      <PageHeader
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-        handleOpenModal={handleOpenModal}
-      />
+      <PageHeader handleOpenModal={handleOpenModal} />
 
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        {warranties.data?.map((warranty) => (
-          <WarrantyCard
-            key={warranty._id}
-            warranty={warranty}
-            onEdit={handleEditWarranty}
-            onDelete={handleDeleteWarranty}
-          />
-        ))}
-      </Grid>
+      <Table
+        title="Warranties"
+        columns={columns}
+        data={warranties.data || []}
+        actions={actions}
+        loading={isLoading}
+        onSearch={setSearchTerm}
+        currentPage={warranties.meta?.page || 1}
+        totalPages={
+          warranties.meta
+            ? Math.ceil(warranties.meta.total / warranties.meta.limit)
+            : 1
+        }
+      />
 
       <WarrantyModal
         open={openModal}

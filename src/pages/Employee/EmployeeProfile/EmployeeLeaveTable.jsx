@@ -1,39 +1,13 @@
 /* eslint-disable react/prop-types */
-/* eslint-disable no-unused-vars */
-import { useState } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Chip,
-  Typography,
-  TextField,
-  InputAdornment,
-  Pagination,
-  Box,
-} from "@mui/material";
-import { Search as SearchIcon } from "@mui/icons-material";
-
-import Swal from "sweetalert2";
-import LeaveRequestForm from "./LeaveRequestForm";
-
 import { Pencil, Trash2 } from "lucide-react";
-import { useTenantDomain } from "../../../hooks/useTenantDomain";
+import Table from "../../../components/Table";
+import { Chip } from "@mui/material";
+import { format } from "date-fns";
+import LeaveRequestForm from "./LeaveRequestForm";
+import { useState } from "react";
+import Swal from "sweetalert2";
 import { useDeleteLeaveRequestMutation } from "../../../redux/api/leaveRequestApi";
-import Loading from "../../../components/Loading/Loading";
-import {
-  deleteIconStyle,
-  editIconStyle,
-  tableCellStyle,
-  tableContainerStyle,
-  tableHeaderStyle,
-  tableStyle,
-} from "../../../style/tableStyle";
-
+import { useTenantDomain } from "../../../hooks/useTenantDomain";
 
 const getStatusColor = (status) => {
   switch (status) {
@@ -49,27 +23,28 @@ const getStatusColor = (status) => {
 };
 
 export default function EmployeeLeaveTable({
-  setCurrentPage,
-  SetSearch,
   data,
   isLoading,
   currentPage,
-  performActionWithPermission
+  setCurrentPage,
+  setSearch,
+  performActionWithPermission,
 }) {
+  const { tenantDomain } = useTenantDomain();
   const [open, setOpen] = useState(false);
   const [leaveRequestId, setLeaveRequestId] = useState(null);
-  const { tenantDomain } = useTenantDomain();
+
+  const [deleteLeaveRequest] = useDeleteLeaveRequestMutation();
 
   const handleOpen = (id) => {
     setLeaveRequestId(id);
     setOpen(true);
   };
+
   const handleClose = () => {
     setOpen(false);
     setLeaveRequestId(null);
   };
-
-  const [deleteLeaveRequest] = useDeleteLeaveRequestMutation();
 
   const handleDelete = async (id) => {
     Swal.fire({
@@ -90,156 +65,82 @@ export default function EmployeeLeaveTable({
             "success"
           );
         } catch (error) {
-          Swal.fire(
-            "Error!",
-            "An error occurred while deleting the leave request.",
-            "error"
-          );
+          Swal.fire("Error!", "An error occurred while deleting.", "error");
         }
       }
     });
   };
 
-  const handleSearch = (e) => {
-    const value = e.target.value;
-    SetSearch(value);
-  };
+  const leaveRequests = data?.data?.leaveRequests || [];
+  const totalPages = data?.data?.meta?.totalPage || 1;
 
-  const handlePageChange = (event, page) => {
-    setCurrentPage(page);
-  };
+  const columns = [
+    { key: "employee.full_name", label: "Employee Name" },
+    { key: "leaveType", label: "Leave Type" },
+    {
+      key: "fromDate",
+      label: "From",
+      render: (row) => format(new Date(row.fromDate), "yyyy-MM-dd"),
+    },
+    {
+      key: "toDate",
+      label: "To",
+      render: (row) => format(new Date(row.toDate), "yyyy-MM-dd"),
+    },
+    {
+      key: "noOfDays",
+      label: "No of Days",
+      render: (row) => <Chip label={`${row.noOfDays} days`} size="small" />,
+    },
+    { key: "reason", label: "Reason" },
+    {
+      key: "status",
+      label: "Status",
+      render: (row) => (
+        <Chip
+          label={row.status}
+          color={getStatusColor(row.status)}
+          size="small"
+        />
+      ),
+    },
+  ];
 
-  const { meta, leaveRequests } = data?.data || { meta: {}, leaveRequests: [] };
-  const { totalPage = 1 } = meta || {};
-
-  const [columns, setColumns] = useState([
-    "Employee Name",
-    "Leave Type",
-    "From",
-    "To",
-    "No of Days",
-    "Reason",
-    "Status",
-    "Actions",
-  ]);
-  if (isLoading) {
-    return <Loading />;
-  }
+  const actions = [
+    {
+      key: "edit",
+      icon: Pencil,
+      tooltip: "Edit Leave Request",
+      onClick: (row) => handleOpen(row._id),
+      requirePermission: true,
+      permissionPage: "/dashboard/leave-request",
+      permissionAction: "edit",
+    },
+    {
+      key: "delete",
+      icon: Trash2,
+      tooltip: "Delete Leave Request",
+      onClick: (row) => handleDelete(row._id),
+      requirePermission: true,
+      permissionPage: "/dashboard/leave-request",
+      permissionAction: "delete",
+    },
+  ];
 
   return (
-    <Paper sx={{ width: "100%", overflow: "hidden", p: { xs: 1.5, md: 3 } }}>
-      <Typography
-        variant="h4"
-        component="h1"
-        gutterBottom
-        fontWeight="bold"
-        sx={{
-          fontSize: {
-            xs: "24px",
-            sm: "28px",
-            md: "32px",
-          },
-          fontWeight: "bold",
-        }}
-      >
-        Employee Leave Requests
-      </Typography>
-
-      <TextField
-        fullWidth
-        variant="outlined"
-        placeholder="Search leave requests..."
-        onChange={handleSearch}
-        sx={{ mb: 3 }}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <SearchIcon />
-            </InputAdornment>
-          ),
-        }}
-      />
-      <TableContainer sx={tableContainerStyle}>
-        <section className="tableContainer overflow-x-auto">
-          <Table
-            className="customTable"
-            sx={tableStyle}
-            aria-label="employee leave table"
-          >
-            <TableHead>
-              <TableRow sx={tableHeaderStyle}>
-                {columns.map((column, index) => (
-                  <TableCell sx={tableCellStyle} key={index}>
-                    {column}
-                  </TableCell>
-                ))}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {leaveRequests.map((row) => {
-                return (
-                  <TableRow
-                    key={row._id}
-                    sx={{
-                      "&:nth-of-type(odd)": { backgroundColor: "white" },
-                      "&:nth-of-type(even)": { backgroundColor: "#F8F8F8" },
-                    }}
-                  >
-                    <TableCell component="th" scope="row">
-                      {row?.employee?.full_name}
-                    </TableCell>
-                    <TableCell>{row.leaveType}</TableCell>
-                    <TableCell>
-                      {new Date(row.fromDate).toLocaleDateString()}
-                    </TableCell>
-                    <TableCell>
-                      {new Date(row.toDate).toLocaleDateString()}
-                    </TableCell>
-                    <TableCell>
-                      <Chip
-                        color="primary"
-                        label={`${row.noOfDays} days`}
-                        variant="outlined"
-                      ></Chip>
-                    </TableCell>
-                    <TableCell>{row.reason}</TableCell>
-                    <TableCell>
-                      <Chip
-                        label={row.status}
-                        color={getStatusColor(row.status)}
-                        size="small"
-                      />
-                    </TableCell>
-
-                    <TableCell align="center">
-                      <Box
-                        component="span"
-                        sx={editIconStyle}
-                        onClick={() => handleOpen(row._id)}
-                      >
-                        <Pencil size={18} />
-                      </Box>
-                      <Box
-                        component="span"
-                        sx={deleteIconStyle}
-                        onClick={() => handleDelete(row._id)}
-                      >
-                        <Trash2 size={18} />
-                      </Box>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </section>
-      </TableContainer>
-      <Pagination
-        count={totalPage}
-        page={currentPage}
-        onChange={handlePageChange}
-        color="primary"
-        sx={{ mt: 2, display: "flex", justifyContent: "center" }}
+    <>
+      <Table
+        title="Employee Leave Requests"
+        columns={columns}
+        data={leaveRequests}
+        actions={actions}
+        loading={isLoading}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+        onSearch={setSearch}
+        searchPlaceholder="Search leave requests..."
+        emptyMessage="No leave requests found."
       />
 
       {open && (
@@ -252,6 +153,6 @@ export default function EmployeeLeaveTable({
           tenantDomain={tenantDomain}
         />
       )}
-    </Paper>
+    </>
   );
 }

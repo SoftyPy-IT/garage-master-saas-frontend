@@ -1335,7 +1335,18 @@ export const inputStyle = {
     color: "#ffffff",
   },
 };
-
+export const searchInput = {
+  minWidth: { xs: "100%", sm: "300px" },
+  "& .MuiOutlinedInput-root": {
+    borderRadius: "8px",
+    backgroundColor: "#fff",
+    boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05)",
+    "&:hover": {
+      boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+    },
+  },
+}
+export const wrapBoxStyle = { p: 1, borderRadius: 2, mt: 2 }
 export const buttonStyle = {
   background: "linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)",
   py: 3,
@@ -1459,7 +1470,7 @@ export const cardStyle = {
   position: "relative",
   overflow: "visible",
   "&:hover": {
-    transform: "translateY(-5px)", 
+    transform: "translateY(-5px)",
   },
 }
 
@@ -1470,4 +1481,4 @@ export const purchaseBtn = {
   boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
 }
 
-export const buttonBox = { mt: '15px', display: 'flex', gap: '5px', justifyContent: 'end' }
+export const buttonBox = { mt: '15px', display: 'flex', gap: '5px', justifyContent: 'end', padding: 1 }

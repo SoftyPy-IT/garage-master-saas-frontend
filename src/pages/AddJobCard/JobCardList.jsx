@@ -1,32 +1,38 @@
-import { FaFileInvoice } from "react-icons/fa";
-import { ArrowForwardIos } from "@mui/icons-material";
-import JobCardTable from "./JobcardTable";
+import { useMovetoRecycleBinJobCardMutation } from "../../redux/api/jobCard";
+import JobCardTable from "./JobCardTable";
+import swal from "sweetalert";
+import { useTenantDomain } from "../../hooks/useTenantDomain";
 
 const JobCardList = () => {
-  return (
-    <>
-     <div className="flex flex-row items-center justify-between my-3 mb-8 space-y-4 md:space-y-0">
-          <div className="flex md:items-center justify-center">
-            <FaFileInvoice className="text-3xl text-blue-500" />
-            <div className="ml-2">
-              <h3 className="text-lg font-bold md:text-2xl">Job Card</h3>
-              <span className="text-xs md:text-sm text-gray-600">
-                Job Card <ArrowForwardIos sx={{ fontSize: {xs:"10px", md:"15px"} }} /> Manage
-                Job Card
-              </span>
-            </div>
-          </div>
+  const { tenantDomain } = useTenantDomain();
+  const [movetoRecycleBinJobCard, { isLoading: movedLoading }] =
+    useMovetoRecycleBinJobCardMutation();
 
-          <div className="text-center md:text-right">
-            <span className="text-xs md:text-sm text-gray-500">Home /</span>
-            <span className="text-xs md:text-sm text-gray-800 font-semibold">
-              {" "}
-              Job Card List
-            </span>
-          </div>
-        </div>
-      <JobCardTable />
-    </>
+  const handleMoveToRecycled = async (id) => {
+    const willDelete = await swal({
+      title: "Are you sure?",
+      text: "You want to move this jobcard to Recycle bin?",
+      icon: "warning",
+      dangerMode: true,
+    });
+
+    if (willDelete) {
+      try {
+        await movetoRecycleBinJobCard({ tenantDomain, id }).unwrap();
+        swal("Moved!", "Job card moved to Recycle bin.", "success");
+      } catch (error) {
+        swal("Error", "An error occurred while moving the job card.", "error");
+      }
+    }
+  };
+
+  return (
+    <JobCardTable
+      movedLoading={movedLoading}
+      title="Job Card List"
+      handleMoveToRecycled={handleMoveToRecycled}
+      isRecycled={false}
+    />
   );
 };
 

@@ -43,7 +43,6 @@ const PurchaseOrdersTable = ({
     return colors[charCode % colors.length];
   };
 
-  // Calculate total quantity for an order
   const calculateTotalQuantity = (products) => {
     if (!products || !Array.isArray(products)) return 0;
     return products.reduce(

@@ -30,20 +30,17 @@ import {
   MenuItem,
 } from "@mui/material";
 import {
-  Add as AddIcon,
   Edit as EditIcon,
-  Delete as DeleteIcon,
   Payment as PaymentIcon,
   AttachMoney as MoneyIcon,
   CreditCard as CreditCardIcon,
   AccountBalance as BankIcon,
   Smartphone as MobileIcon
 } from "@mui/icons-material";
-import { format } from "date-fns";
+import { formatDate } from "../../../utils/formateDate";
 
 const PaymentHistoryModal = ({ open, onClose, supplier, onUpdatePayment, onDeletePayment, onAddPayment }) => {
   const [editModalOpen, setEditModalOpen] = useState(false);
-  const [addModalOpen, setAddModalOpen] = useState(false);
   const [currentPayment, setCurrentPayment] = useState(null);
   const [editFormData, setEditFormData] = useState({
     amount: "",
@@ -53,28 +50,8 @@ const PaymentHistoryModal = ({ open, onClose, supplier, onUpdatePayment, onDelet
     note: "",
     date: "",
   });
-  const [newPayment, setNewPayment] = useState({
-    amount: "",
-    method: "Cash",
-    transactionId: "",
-    accountNumber: "",
-    note: "",
-    date: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
-  });
-  const theme = useTheme();
 
-  const handleEditClick = (payment) => {
-    setCurrentPayment(payment);
-    setEditFormData({
-      amount: payment.amount.toString(),
-      method: payment.method,
-      transactionId: payment.transactionId || "",
-      accountNumber: payment.accountNumber || "",
-      note: payment.note || "",
-      date: format(new Date(payment.date), "yyyy-MM-dd'T'HH:mm"),
-    });
-    setEditModalOpen(true);
-  };
+  const theme = useTheme();
 
   const handleEditSubmit = () => {
     onUpdatePayment(supplier._id, currentPayment._id, {
@@ -85,32 +62,6 @@ const PaymentHistoryModal = ({ open, onClose, supplier, onUpdatePayment, onDelet
     setEditModalOpen(false);
   };
 
-  const handleAddPaymentSubmit = () => {
-    onAddPayment(supplier._id, {
-      ...newPayment,
-      amount: parseFloat(newPayment.amount),
-      date: new Date(newPayment.date).toISOString(),
-    });
-    setAddModalOpen(false);
-    setNewPayment({
-      amount: "",
-      method: "Cash",
-      transactionId: "",
-      accountNumber: "",
-      note: "",
-      date: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
-    });
-  };
-
-  const handleDeleteClick = (paymentId) => {
-    if (window.confirm("Are you sure you want to delete this payment?")) {
-      onDeletePayment(supplier._id, paymentId);
-    }
-  };
-
-  const formatDate = (dateString) => {
-    return format(new Date(dateString), "PPpp");
-  };
 
   const getMethodIcon = (method) => {
     const icons = {
@@ -140,7 +91,7 @@ const PaymentHistoryModal = ({ open, onClose, supplier, onUpdatePayment, onDelet
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
-      <DialogTitle sx={{ 
+      <DialogTitle sx={{
         background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`,
         color: 'white',
         display: 'flex',
@@ -151,9 +102,9 @@ const PaymentHistoryModal = ({ open, onClose, supplier, onUpdatePayment, onDelet
           <PaymentIcon sx={{ mr: 1 }} />
           Payment History - {supplier?.name}
         </Box>
-       
+
       </DialogTitle>
-      
+
       <DialogContent sx={{ mt: 2 }}>
         <Box sx={{ mt: 2 }}>
           {(!supplier?.payments || supplier.payments.length === 0) ? (
@@ -190,20 +141,7 @@ const PaymentHistoryModal = ({ open, onClose, supplier, onUpdatePayment, onDelet
                       <TableCell>{payment.transactionId || "-"}</TableCell>
                       <TableCell>{payment.accountNumber || "-"}</TableCell>
                       <TableCell>{payment.note || "-"}</TableCell>
-                      {/* <TableCell>
-                        <IconButton
-                          size="small"
-                          onClick={() => handleEditClick(payment)}
-                        >
-                          <EditIcon />
-                        </IconButton>
-                        <IconButton
-                          size="small"
-                          onClick={() => handleDeleteClick(payment._id)}
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      </TableCell> */}
+
                     </TableRow>
                   ))}
                 </TableBody>
@@ -217,9 +155,8 @@ const PaymentHistoryModal = ({ open, onClose, supplier, onUpdatePayment, onDelet
         <Button onClick={onClose} variant="outlined">Close</Button>
       </DialogActions>
 
-      {/* Edit Payment Dialog */}
       <Dialog open={editModalOpen} onClose={() => setEditModalOpen(false)} maxWidth="sm" fullWidth>
-        <DialogTitle sx={{ 
+        <DialogTitle sx={{
           background: `linear-gradient(45deg, ${theme.palette.secondary.main}, ${theme.palette.secondary.dark})`,
           color: 'white',
           display: 'flex',
@@ -305,7 +242,7 @@ const PaymentHistoryModal = ({ open, onClose, supplier, onUpdatePayment, onDelet
         </DialogActions>
       </Dialog>
 
-     
+
     </Dialog>
   );
 };

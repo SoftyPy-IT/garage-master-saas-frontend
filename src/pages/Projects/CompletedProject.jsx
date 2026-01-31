@@ -13,6 +13,7 @@ const CompletedProject = () => {
   const handleBack = () => {
     navigate(-1);
   };
+  const status = 'completed'
   return (
     <div className="mt-5 overflow-x-auto">
       <div className="flex items-center justify-center flex-wrap gap-3  md:justify-between my-3 ">
@@ -32,7 +33,7 @@ const CompletedProject = () => {
         </div>
       </div>
 
-      <InvoiceTable title="Completed Projects" />
+      <InvoiceTable status={status} title="Completed Projects" />
     </div>
   );
 };

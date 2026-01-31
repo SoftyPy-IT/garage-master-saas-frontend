@@ -1,42 +1,55 @@
 /* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 
+import swal from "sweetalert";
 import { useNavigate } from "react-router-dom";
-import { ArrowBack, ArrowForwardIos } from "@mui/icons-material";
-import { Button } from "@mui/material";
 import CustomerListTable from "./CustomerListTable";
-const CustomerList = () => {
-  const navigate = useNavigate();
+import { useMoveRecycledCustomerMutation } from "../../redux/api/customerApi";
+import { useTenantDomain } from "../../hooks/useTenantDomain";
+import { usePermissions } from "../../context/PermissionContext";
 
-  const handleBack = () => {
-    navigate(-1);
+const CustomerList = () => {
+  const isRecycled = false;
+  const { tenantDomain } = useTenantDomain();
+  const { performActionWithPermission } = usePermissions();
+  const [moveRecycledCustomer] = useMoveRecycledCustomerMutation();
+
+  const handleMoveToRecycledBin = async (id) => {
+    performActionWithPermission(
+      "/dashboard/customer-list",
+      "delete",
+      async () => {
+        const willDelete = await swal({
+          title: "Are you sure?",
+          text: "You want to move this Customer to the Recycle Bin?",
+          icon: "warning",
+          dangerMode: true,
+          buttons: ["Cancel", "Yes, Move"],
+        });
+
+        if (willDelete) {
+          try {
+            await moveRecycledCustomer({ tenantDomain, id }).unwrap();
+            swal(
+              "Moved!",
+              "Customer moved to Recycle Bin successfully.",
+              "success"
+            );
+          } catch (error) {
+            swal("Error", "Failed to move Customer to Recycle Bin.", "error");
+          }
+        }
+      },
+      "You don't have permission to delete customers."
+    );
   };
 
   return (
-    <div className="w-full mt-5 mb-24">
-      <div className="flex flex-wrap items-center justify-center  md:justify-between my-3 mb-8">
-        <div className="flex items-center px-3">
-          <Button
-            onClick={handleBack}
-            startIcon={<ArrowBack />}
-            sx={backBtnStyle}
-          >
-            Back
-          </Button>
-        </div>
-        <div className="flex items-center justify-center ">
-
-          <div className="mt-2 md:mt-0">
-            <span>
-              Customer <ArrowForwardIos sx={{ fontSize: "15px" }} /> Manage
-              Customer{" "}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <CustomerListTable />
-    </div>
+    <CustomerListTable
+      title="Customer List"
+      handleDeleteAction={handleMoveToRecycledBin}
+      isRecycled={isRecycled}
+    />
   );
 };
 

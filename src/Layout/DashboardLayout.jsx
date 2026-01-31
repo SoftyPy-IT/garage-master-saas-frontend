@@ -5,11 +5,10 @@ import { FaAngleDoubleUp } from "react-icons/fa";
 import { useEffect, useRef, useState } from "react";
 import "./Layout.css";
 import { animateScroll as scroll } from "react-scroll";
-import Appbar from "./Appbar";
 import Sidebar from "./Sidebar";
+import AppBar from "./AppBar";
 
 const DashboardLayout = () => {
-  const [expanded, setExpanded] = useState(false);
   const navRef = useRef();
   const [toggle, setToggle] = useState(false);
   const toggleSideBar = () => {
@@ -41,8 +40,9 @@ const DashboardLayout = () => {
 
   return (
     <main>
-      <Appbar toggle={toggle} navRef={navRef} toggleSideBar={toggleSideBar} />
+      <AppBar toggle={toggle} navRef={navRef} toggleSideBar={toggleSideBar} />
       <div>
+
         <div
           ref={containerRef}
           onClick={handleToggleCloseBtn}

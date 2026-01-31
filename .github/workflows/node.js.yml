@@ -17,28 +17,14 @@ jobs:
           port: ${{ secrets.PORT }}
           script: |
 
-            # Go to the client (admin) directory
             cd /var/www/html/saas/admin
-
-            # Fetch the latest changes from the Git repository
             git fetch --all
             git reset --hard origin/main
 
-            # Setup environment and dependencies
             if [ ! -f .env ]; then
               cp .env.example .env
             fi
             npm install
-
-            # Build the React application for production
             npm run build
-
-            # Copy the build files to the Nginx public directory
-            # rm -rf /var/www/html/admin/*  # Clear previous build files
             cp -r build/* /var/www/html/admin/
-
-            # If you want to restart Nginx to reflect changes (optional)
             sudo systemctl restart nginx
-
-            # Optionally, restart PM2 or ensure the app is running in PM2
-            # pm2 restart trust-auto-server  # If necessary for PM2 processes

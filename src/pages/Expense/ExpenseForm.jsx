@@ -42,14 +42,14 @@ import ExpenseAutoComplete from "./ExpenseAutoComplete";
 import Loading from "../../components/Loading/Loading";
 import TASSelect from "../../components/form/Select";
 import { paymentMethods } from "../../constant";
-import { expenseInputStyle } from "../../utils/customStyle";
+import { expenseInputStyle, purchaseBtn } from "../../utils/customStyle";
 import { useAppOptions } from "../../hooks/useAppOptions";
 import Can from "../../components/Can";
 
 const ExpenseForm = ({ id }) => {
   const navigate = useNavigate();
-  const { tenantDomain, performActionWithPermission, invoiceOption } = useAppOptions()
-
+  const { tenantDomain, performActionWithPermission, invoiceOption } =
+    useAppOptions();
 
   const { data: singleExpense, isLoading } = useGetSingleExpenseQuery({
     tenantDomain,
@@ -125,7 +125,9 @@ const ExpenseForm = ({ id }) => {
   }, [defaultValues, reset, isDirty]);
 
   const handleFormSubmit = async (data) => {
-    performActionWithPermission('/dashboard/add-expense', id ? 'edit' : 'create',
+    performActionWithPermission(
+      "/dashboard/add-expense",
+      id ? "edit" : "create",
       async () => {
         const cleanedExpenseItems = data.items.map((item) => ({
           name: item.name,
@@ -147,8 +149,7 @@ const ExpenseForm = ({ id }) => {
           transactionNumber: data.transactionNumber || "",
           note: data.note || "",
         };
-
-
+        console.log(expenseData);
         const toastId = toast.loading(
           id ? "Updating Expense..." : "Creating Expense..."
         );
@@ -170,7 +171,8 @@ const ExpenseForm = ({ id }) => {
 
           toast.update(toastId, {
             render:
-              res.message || `Expense ${id ? "updated" : "created"} successfully!`,
+              res.message ||
+              `Expense ${id ? "updated" : "created"} successfully!`,
             type: "success",
             isLoading: false,
             autoClose: 3000,
@@ -179,14 +181,16 @@ const ExpenseForm = ({ id }) => {
           navigate("/dashboard/expense-list");
         } catch (error) {
           toast.update(toastId, {
-            render: (error?.data?.message || error?.message || "Something went wrong!"),
+            render:
+              error?.data?.message || error?.message || "Something went wrong!",
             type: "error",
             isLoading: false,
             autoClose: 3000,
           });
         }
-      }, `You don't have permission to ${id ? 'edit' : 'create'} an expense.`
-    )
+      },
+      `You don't have permission to ${id ? "edit" : "create"} an expense.`
+    );
   };
 
   if (isLoading) {
@@ -198,10 +202,9 @@ const ExpenseForm = ({ id }) => {
       sx={{
         maxWidth: "1200px",
         mx: "auto",
-        p: { xs: 0, md: 4 },
-        paddingY: { xs: 1, md: 0 },
+
+        paddingY: { xs: 1, md: 5 },
         backgroundColor: "#f8fafc",
-        minHeight: "100vh",
       }}
     >
       <Paper
@@ -257,7 +260,6 @@ const ExpenseForm = ({ id }) => {
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(handleFormSubmit)}>
           <Grid container spacing={4}>
-            {/* Invoice & Date Section */}
             <Grid item xs={12}>
               <Card
                 sx={{
@@ -267,7 +269,7 @@ const ExpenseForm = ({ id }) => {
                   backgroundColor: "white",
                 }}
               >
-                <CardContent sx={{ p: { xs: 1.5, md: 4 }, }}>
+                <CardContent sx={{ p: { xs: 1.5, md: 4 } }}>
                   <Stack direction="row" spacing={2} alignItems="center" mb={3}>
                     <DateRange sx={{ color: "#3b82f6", fontSize: 24 }} />
                     <Typography variant="h6" fontWeight="600" color="#1e293b">
@@ -302,9 +304,7 @@ const ExpenseForm = ({ id }) => {
                         type="number"
                         InputProps={{
                           startAdornment: (
-                            <InputAdornment position="start">
-                              ৳
-                            </InputAdornment>
+                            <InputAdornment position="start">৳</InputAdornment>
                           ),
                         }}
                         sx={expenseInputStyle}
@@ -381,7 +381,6 @@ const ExpenseForm = ({ id }) => {
                               fullWidth
                               label="Amount"
                               name={`items[${index}].amount`}
-
                               InputProps={{
                                 startAdornment: (
                                   <InputAdornment position="start">
@@ -461,33 +460,33 @@ const ExpenseForm = ({ id }) => {
                       "Other",
                       "Bank Transfer",
                     ].includes(methods.watch("payment_method")) && (
-                        <>
-                          <Grid item xs={12} md={3}>
-                            <TASInput
-                              fullWidth
-                              name="accountNumber"
-                              label="Account Number"
-                              sx={expenseInputStyle}
-                            />
-                          </Grid>
-                          <Grid item xs={12} md={3}>
-                            <TASInput
-                              fullWidth
-                              name="transactionNumber"
-                              label="Transaction ID"
-                              sx={expenseInputStyle}
-                            />
-                          </Grid>
-                        </>
-                      )}
+                      <>
+                        <Grid item xs={12} md={3}>
+                          <TASInput
+                            fullWidth
+                            name="accountNumber"
+                            label="Account Number"
+                            sx={expenseInputStyle}
+                          />
+                        </Grid>
+                        <Grid item xs={12} md={3}>
+                          <TASInput
+                            fullWidth
+                            name="transactionNumber"
+                            label="Transaction ID"
+                            sx={expenseInputStyle}
+                          />
+                        </Grid>
+                      </>
+                    )}
 
                     {["Cash"].includes(methods.watch("payment_method")) && (
                       <>
                         <Grid item xs={12} md={3}>
                           <TASInput
                             fullWidth
-                            name="referanceNo"
-                            label="Referance Number"
+                            name="referenceNo"
+                            label="Reference Number"
                             sx={expenseInputStyle}
                           />
                         </Grid>
@@ -511,12 +510,12 @@ const ExpenseForm = ({ id }) => {
 
           {/* Submit Button */}
           <Box display="flex" justifyContent="center" mt={4}>
-            <Can page='/dashboard/add-expense' action={id ? 'edit' : 'create'}>
+            <Can page="/dashboard/add-expense" action={id ? "edit" : "create"}>
               <Button
                 variant="contained"
                 type="submit"
                 size="large"
-                sx={expenseInputStyle}
+                sx={purchaseBtn}
               >
                 {id ? "Update Expense" : "Create Expense"}
               </Button>

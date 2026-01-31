@@ -11,9 +11,6 @@ export default function SupplierPurchaseModal({ open, setOpen }) {
       title="Create New Product"
       maxWidth="xl"
       fullWidth
-      sx={{
-        "& .MuiDialog-paper": { padding: "20px" },
-      }}
     >
       <PurChaseForm />
     </GarageModal>

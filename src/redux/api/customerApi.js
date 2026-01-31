@@ -7,7 +7,7 @@ const customerApi = baseApi.injectEndpoints({
         url: "/customers",
         method: "POST",
         body: customerInfo,
-        params: { tenantDomain }
+        params: { tenantDomain },
       }),
       invalidatesTags: ["customer"],
     }),
@@ -44,7 +44,7 @@ const customerApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["customer"],
     }),
-    permanantlyDeleteCustomer: builder.mutation({
+    permanentlyDeleteCustomer: builder.mutation({
       query: ({ tenantDomain, id }) => ({
         url: `/customers/delete-permanantly/${id}`,
         method: "DELETE",
@@ -98,6 +98,6 @@ export const {
   useDeleteCustomerMutation,
   useMoveRecycledCustomerMutation,
   useRestoreFromRecycledCustomerMutation,
-  usePermanantlyDeleteCustomerMutation,
+  usePermanentlyDeleteCustomerMutation,
   useGetAllTypeCustomersQuery,
 } = customerApi;

@@ -12,6 +12,8 @@ import { usePermissions } from "../../context/PermissionContext";
 import { carBrands, cmDmOptions, countries, fuelType, vehicleModels, vehicleName, vehicleTypes } from "../../constant";
 import { useTenantDomain } from "../../hooks/useTenantDomain";
 import { useCreateShowRoomMutation } from "../../redux/api/showRoomApi";
+import Can from "../../components/Can";
+import ShowRoomListTable from "./ShowRoomListTable";
 
 const AddShowRoom = () => {
   const [registrationError, setRegistrationError] = useState("");

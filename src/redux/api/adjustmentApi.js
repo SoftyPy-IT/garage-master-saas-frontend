@@ -3,37 +3,24 @@ import { baseApi } from "./baseApi";
 const adjustmentApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     createAdjustment: builder.mutation({
-      query: (incomeInfo) => ({
+      query: ({ tenantDomain, data }) => ({
         url: "/adjustment",
         method: "POST",
-        body: incomeInfo,
+        body: data,
+        params: { tenantDomain }
       }),
       invalidatesTags: ["adjustment"],
     }),
-
     getAllIAdjustment: builder.query({
-      query: (args) => {
-        const params = new URLSearchParams();
-
-        if (args) {
-          args.forEach((item) => {
-            params.append(item.name, item.value);
-          });
-        }
-
-        return {
-          url: "/adjustment",
-          method: "GET",
-          params: params,
-        };
-      },
-      transformResponse: (response) => {
-        return {
-          data: response.data,
-        };
-      },
+      query: ({ tenantDomain, limit, page }) => ({
+        url: `/adjustment`,
+        method: "GET",
+        params: { tenantDomain, limit, page },
+      }),
       providesTags: ["adjustment"],
     }),
+
+
 
     getSingleAdjustment: builder.query({
       query: (id) => ({
@@ -43,18 +30,20 @@ const adjustmentApi = baseApi.injectEndpoints({
       providesTags: ["adjustment"],
     }),
     updateAdjustment: builder.mutation({
-      query: ({ id, ...data }) => ({
+      query: ({ id, tenantDomain, ...data }) => ({
         url: `/adjustment/${id}`,
         method: "PATCH",
         body: data,
+        params: { tenantDomain }
       }),
       invalidatesTags: ["adjustment"],
     }),
 
     deleteAdjustment: builder.mutation({
-      query: (id) => ({
+      query: ({ tenantDomain, id }) => ({
         url: `/adjustment/${id}`,
         method: "DELETE",
+        params: { tenantDomain }
       }),
       invalidatesTags: ["adjustment"],
     }),
