@@ -22,7 +22,6 @@ export default function BarcodeTable() {
 
   const [deleteCategory] = useDeleteBarcodeMutation();
   const { data } = useGetAllIBarcodeQuery({ tenantDomain });
-  console.log('barcode check', data)
   const barcodes = data?.data?.barcodes || [];
 
   const [printCount, setPrintCount] = useState(1);
@@ -118,7 +117,7 @@ export default function BarcodeTable() {
           Swal.fire(
             "Error!",
             "An error occurred while deleting the barcode.",
-            "error"
+            "error",
           );
         }
       }

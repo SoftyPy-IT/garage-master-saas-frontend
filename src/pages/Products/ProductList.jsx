@@ -33,7 +33,6 @@ export default function ProductList() {
   };
 
   const { data, isLoading, refetch } = useGetAllIProductQuery(queryParams);
-  console.log('total product show this ', data)
   const [deleteProduct] = useDeleteProductMutation();
 
   const handleDelete = async (productId) => {
@@ -57,7 +56,7 @@ export default function ProductList() {
               return true;
             } catch (error) {
               Swal.showValidationMessage(
-                `Delete failed: ${error?.data?.message || "Unknown error"}`
+                `Delete failed: ${error?.data?.message || "Unknown error"}`,
               );
               return false;
             }
@@ -76,7 +75,7 @@ export default function ProductList() {
           refetch();
         }
       },
-      "You don't have permission to delete product"
+      "You don't have permission to delete product",
     );
   };
 

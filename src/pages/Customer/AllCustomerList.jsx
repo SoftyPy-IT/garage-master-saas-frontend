@@ -154,7 +154,6 @@ const AllCustomerList = () => {
               </thead>
               <tbody>
                 {allCustomerData?.data?.data?.map((customer, index) => {
-                  console.log("customer this ", customer);
                   const lastVehicle = customer?.vehicles
                     ? [...customer.vehicles].sort(
                         (a, b) => new Date(b.createdAt) - new Date(a.createdAt),

@@ -1026,10 +1026,6 @@
 
 //       // In a real app, you would send this through your backend
 //       // For demo purposes, we'll simulate sending
-//       console.log("Sending email:", {
-//         to: item.customerEmail,
-//         ...emailData,
-//       });
 
 //       showNotification("Email notification sent", "success");
 //     } catch (error) {
@@ -1045,8 +1041,6 @@
 //     try {
 //       // Simulate email sending
 //       await new Promise((resolve) => setTimeout(resolve, 1000));
-
-//       console.log("Email sent:", { to, subject, body });
 //       showNotification("Email sent successfully", "success");
 //       setEmailDialogOpen(false);
 //     } catch (error) {
@@ -1060,7 +1054,6 @@
 //   const login = useGoogleLogin({
 //     scope: CONFIG.scopes,
 //     onSuccess: async (response) => {
-//       console.log("✅ Login successful");
 //       setLoading(true);
 //       setErrorDetails(null);
 //       const token = response.access_token;

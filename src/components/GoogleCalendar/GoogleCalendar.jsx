@@ -570,7 +570,7 @@ const fixDateTimeFormat = (dateTimeString, isEndTime = false) => {
 const formatForDateTimeLocal = (date) => {
   const pad = (num) => num.toString().padStart(2, "0");
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
-    date.getDate()
+    date.getDate(),
   )}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 };
 
@@ -588,11 +588,11 @@ const EmailTemplates = {
       <p><strong>Event:</strong> ${event.summary}</p>
       <p><strong>Date:</strong> ${format(
         new Date(event.start.dateTime),
-        "PPPP"
+        "PPPP",
       )}</p>
       <p><strong>Time:</strong> ${format(
         new Date(event.start.dateTime),
-        "p"
+        "p",
       )} - ${format(new Date(event.end.dateTime), "p")}</p>
       <p><strong>Location:</strong> ${event.location || "Not specified"}</p>
       <p><strong>Description:</strong> ${
@@ -610,11 +610,11 @@ const EmailTemplates = {
       <p><strong>Event:</strong> ${event.summary}</p>
       <p><strong>Date:</strong> ${format(
         new Date(event.start.dateTime),
-        "PPPP"
+        "PPPP",
       )}</p>
       <p><strong>Time:</strong> ${format(
         new Date(event.start.dateTime),
-        "p"
+        "p",
       )} - ${format(new Date(event.end.dateTime), "p")}</p>
       <p><strong>Location:</strong> ${event.location || "Not specified"}</p>
       <p><strong>Status:</strong> ${event.status}</p>
@@ -632,7 +632,7 @@ const EmailTemplates = {
       <p><strong>Event:</strong> ${event.summary}</p>
       <p><strong>Starts:</strong> ${format(
         new Date(event.start.dateTime),
-        "PPPPp"
+        "PPPPp",
       )}</p>
       <p><strong>Location:</strong> ${event.location || "Not specified"}</p>
       <p><strong>Description:</strong> ${
@@ -663,7 +663,7 @@ const EmailTemplates = {
       <p><strong>Service:</strong> ${appointment.summary}</p>
       <p><strong>Date & Time:</strong> ${format(
         new Date(appointment.start.dateTime),
-        "PPPPp"
+        "PPPPp",
       )}</p>
       <p><strong>Location:</strong> ${
         appointment.location || "Not specified"
@@ -695,10 +695,10 @@ const EnhancedGoogleCalendar = () => {
     severity: "success",
   });
   const [accessToken, setAccessToken] = useState(
-    localStorage.getItem("google_access_token") || null
+    localStorage.getItem("google_access_token") || null,
   );
   const [userProfile, setUserProfile] = useState(
-    JSON.parse(localStorage.getItem("google_user_profile") || "null")
+    JSON.parse(localStorage.getItem("google_user_profile") || "null"),
   );
   const [loading, setLoading] = useState(false);
   const [errorDetails, setErrorDetails] = useState(null);
@@ -727,7 +727,7 @@ const EnhancedGoogleCalendar = () => {
   const [dragDropEnabled, setDragDropEnabled] = useState(true);
   const [selectedCalendar, setSelectedCalendar] = useState("primary");
   const [themeMode, setThemeMode] = useState(
-    localStorage.getItem("calendar_theme") || "light"
+    localStorage.getItem("calendar_theme") || "light",
   );
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [notifications, setNotifications] = useState([]);
@@ -998,7 +998,7 @@ const EnhancedGoogleCalendar = () => {
       if (!item.start?.dateTime && !item.dueDate && !item.reminderTime) return;
 
       const eventTime = new Date(
-        item.start?.dateTime || item.dueDate || item.reminderTime
+        item.start?.dateTime || item.dueDate || item.reminderTime,
       );
       const timeDiff = differenceInMinutes(eventTime, now);
 
@@ -1035,7 +1035,7 @@ const EnhancedGoogleCalendar = () => {
       } Reminder`,
       message: `${item.summary} - ${format(
         new Date(item.start?.dateTime || item.dueDate || item.reminderTime),
-        "h:mm a"
+        "h:mm a",
       )}`,
       data: item,
       timestamp: new Date(),
@@ -1068,9 +1068,9 @@ const EnhancedGoogleCalendar = () => {
     showNotification(
       `Reminder: ${item.summary} at ${format(
         new Date(item.start?.dateTime || item.dueDate || item.reminderTime),
-        "h:mm a"
+        "h:mm a",
       )}`,
-      "info"
+      "info",
     );
   };
 
@@ -1114,13 +1114,6 @@ const EnhancedGoogleCalendar = () => {
           };
       }
 
-      // In a real app, you would send this through your backend
-      // For demo purposes, we'll simulate sending
-      console.log("Sending email:", {
-        to: item.customerEmail,
-        ...emailData,
-      });
-
       showNotification("Email notification sent", "success");
     } catch (error) {
       console.error("Failed to send email:", error);
@@ -1133,10 +1126,7 @@ const EnhancedGoogleCalendar = () => {
   const sendCustomEmail = async (to, subject, body) => {
     setIsSendingEmail(true);
     try {
-      // Simulate email sending
       await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      console.log("Email sent:", { to, subject, body });
       showNotification("Email sent successfully", "success");
       setEmailDialogOpen(false);
     } catch (error) {
@@ -1146,11 +1136,9 @@ const EnhancedGoogleCalendar = () => {
     }
   };
 
-  // ========== GOOGLE AUTHENTICATION ==========
   const login = useGoogleLogin({
     scope: CONFIG.scopes,
     onSuccess: async (response) => {
-      console.log("✅ Login successful");
       setLoading(true);
       setErrorDetails(null);
       const token = response.access_token;
@@ -1194,7 +1182,7 @@ const EnhancedGoogleCalendar = () => {
         {
           headers: { Authorization: `Bearer ${token}` },
           params: { alt: "json" },
-        }
+        },
       );
       setUserProfile(data);
       localStorage.setItem("google_user_profile", JSON.stringify(data));
@@ -1225,7 +1213,7 @@ const EnhancedGoogleCalendar = () => {
             maxResults: 250,
             showDeleted: false,
           },
-        }
+        },
       );
 
       const formattedEvents = (data.items || []).map((event) => ({
@@ -1257,10 +1245,10 @@ const EnhancedGoogleCalendar = () => {
       const eventsList = formattedEvents.filter((e) => e.type === "event");
       const tasksList = formattedEvents.filter((e) => e.type === "task");
       const remindersList = formattedEvents.filter(
-        (e) => e.type === "reminder"
+        (e) => e.type === "reminder",
       );
       const appointmentsList = formattedEvents.filter(
-        (e) => e.type === "appointment"
+        (e) => e.type === "appointment",
       );
 
       setEvents(eventsList);
@@ -1307,7 +1295,7 @@ const EnhancedGoogleCalendar = () => {
   const extractServiceType = (description) => {
     if (!description) return "General";
     const service = SERVICE_TYPES.find((service) =>
-      description.toLowerCase().includes(service.name.toLowerCase())
+      description.toLowerCase().includes(service.name.toLowerCase()),
     );
     return service?.name || "General";
   };
@@ -1347,7 +1335,7 @@ const EnhancedGoogleCalendar = () => {
       const endDateTime = formData.endTime
         ? fixDateTimeFormat(formData.endTime, true)
         : new Date(
-            new Date(startDateTime).getTime() + 60 * 60000
+            new Date(startDateTime).getTime() + 60 * 60000,
           ).toISOString();
 
       // Validate time range
@@ -1447,7 +1435,7 @@ const EnhancedGoogleCalendar = () => {
               Authorization: `Bearer ${accessToken}`,
               "Content-Type": "application/json",
             },
-          }
+          },
         );
       } else {
         // Create local event
@@ -1503,7 +1491,7 @@ const EnhancedGoogleCalendar = () => {
       const allEvents = [...events, ...tasks, ...reminders, ...appointments];
       localStorage.setItem(
         "calendar_events",
-        JSON.stringify([newEvent, ...allEvents])
+        JSON.stringify([newEvent, ...allEvents]),
       );
 
       // Send notifications
@@ -1537,7 +1525,7 @@ const EnhancedGoogleCalendar = () => {
       const endDateTime = formData.endTime
         ? fixDateTimeFormat(formData.endTime, true)
         : new Date(
-            new Date(startDateTime).getTime() + 60 * 60000
+            new Date(startDateTime).getTime() + 60 * 60000,
           ).toISOString();
 
       const eventUpdate = {
@@ -1567,17 +1555,17 @@ const EnhancedGoogleCalendar = () => {
               Authorization: `Bearer ${accessToken}`,
               "Content-Type": "application/json",
             },
-          }
+          },
         );
         await fetchCalendarEvents(
           accessToken,
-          selectedEvent.calendarId || "primary"
+          selectedEvent.calendarId || "primary",
         );
       } else {
         // Update locally
         const updateState = (state, setState) => {
           const updated = state.map((item) =>
-            item.id === selectedEvent.id ? { ...item, ...eventUpdate } : item
+            item.id === selectedEvent.id ? { ...item, ...eventUpdate } : item,
           );
           setState(updated);
           return updated;
@@ -1621,7 +1609,7 @@ const EnhancedGoogleCalendar = () => {
           `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events/${eventId}`,
           {
             headers: { Authorization: `Bearer ${accessToken}` },
-          }
+          },
         );
       }
 
@@ -1638,7 +1626,7 @@ const EnhancedGoogleCalendar = () => {
       const allEvents = [...events, ...tasks, ...reminders, ...appointments];
       localStorage.setItem(
         "calendar_events",
-        JSON.stringify(allEvents.filter((e) => e.id !== eventId))
+        JSON.stringify(allEvents.filter((e) => e.id !== eventId)),
       );
 
       // Send cancellation email if enabled
@@ -1716,17 +1704,17 @@ const EnhancedGoogleCalendar = () => {
               Authorization: `Bearer ${accessToken}`,
               "Content-Type": "application/json",
             },
-          }
+          },
         );
         await fetchCalendarEvents(
           accessToken,
-          eventToUpdate.calendarId || "primary"
+          eventToUpdate.calendarId || "primary",
         );
       } else {
         // Update locally
         const updateState = (state, setState) => {
           const updated = state.map((item) =>
-            item.id === eventToUpdate.id ? { ...item, ...updatedEvent } : item
+            item.id === eventToUpdate.id ? { ...item, ...updatedEvent } : item,
           );
           setState(updated);
         };
@@ -1760,7 +1748,7 @@ const EnhancedGoogleCalendar = () => {
     eventsList,
     tasksList,
     remindersList,
-    appointmentsList
+    appointmentsList,
   ) => {
     const now = new Date();
     const today = format(now, "yyyy-MM-dd");
@@ -1784,7 +1772,7 @@ const EnhancedGoogleCalendar = () => {
     });
 
     const completedTasks = tasksList.filter(
-      (task) => task.taskStatus === "completed"
+      (task) => task.taskStatus === "completed",
     );
     const overdueTasks = tasksList.filter((task) => {
       if (task.taskStatus === "completed") return false;
@@ -1804,12 +1792,12 @@ const EnhancedGoogleCalendar = () => {
         (e) =>
           e.type === "meeting" &&
           e.start?.dateTime &&
-          format(new Date(e.start.dateTime), "yyyy-MM-dd") === today
+          format(new Date(e.start.dateTime), "yyyy-MM-dd") === today,
       ).length,
       appointmentsToday: appointmentsList.filter(
         (a) =>
           a.start?.dateTime &&
-          format(new Date(a.start.dateTime), "yyyy-MM-dd") === today
+          format(new Date(a.start.dateTime), "yyyy-MM-dd") === today,
       ).length,
     });
   };
@@ -1906,7 +1894,7 @@ const EnhancedGoogleCalendar = () => {
       const rows = csvData.map((row) =>
         Object.values(row)
           .map((val) => `"${val}"`)
-          .join(",")
+          .join(","),
       );
 
       exportContent = [headers, ...rows].join("\n");
@@ -2006,7 +1994,7 @@ const EnhancedGoogleCalendar = () => {
                     <td>${item.location || "N/A"}</td>
                     <td>${item.status || item.taskStatus || "scheduled"}</td>
                   </tr>
-                `
+                `,
                 )
                 .join("")}
             </tbody>
@@ -2259,7 +2247,7 @@ const EnhancedGoogleCalendar = () => {
       if (!item.start?.dateTime && !item.dueDate && !item.reminderTime)
         return false;
       const itemDate = new Date(
-        item.start?.dateTime || item.dueDate || item.reminderTime
+        item.start?.dateTime || item.dueDate || item.reminderTime,
       );
       return isSameDay(itemDate, day);
     });
@@ -2285,7 +2273,7 @@ const EnhancedGoogleCalendar = () => {
           (item.description || "").toLowerCase().includes(query) ||
           (item.location || "").toLowerCase().includes(query) ||
           (item.customerInfo?.name || "").toLowerCase().includes(query) ||
-          (item.serviceType || "").toLowerCase().includes(query)
+          (item.serviceType || "").toLowerCase().includes(query),
       );
     }
 
@@ -2311,7 +2299,8 @@ const EnhancedGoogleCalendar = () => {
     // Apply status filters
     if (!filterSettings.showCompleted) {
       filtered = filtered.filter(
-        (item) => item.status !== "completed" && item.taskStatus !== "completed"
+        (item) =>
+          item.status !== "completed" && item.taskStatus !== "completed",
       );
     }
 
@@ -2323,7 +2312,7 @@ const EnhancedGoogleCalendar = () => {
       const now = new Date();
       filtered = filtered.filter((item) => {
         const itemDate = new Date(
-          item.start?.dateTime || item.dueDate || item.reminderTime
+          item.start?.dateTime || item.dueDate || item.reminderTime,
         );
         return isAfter(itemDate, now) || isSameDay(itemDate, now);
       });
@@ -2345,7 +2334,7 @@ const EnhancedGoogleCalendar = () => {
 
   const markNotificationAsRead = (id) => {
     setNotifications((prev) =>
-      prev.map((notif) => (notif.id === id ? { ...notif, read: true } : notif))
+      prev.map((notif) => (notif.id === id ? { ...notif, read: true } : notif)),
     );
   };
 
@@ -2369,16 +2358,16 @@ const EnhancedGoogleCalendar = () => {
         if (!item.start?.dateTime && !item.dueDate && !item.reminderTime)
           return false;
         const itemTime = new Date(
-          item.start?.dateTime || item.dueDate || item.reminderTime
+          item.start?.dateTime || item.dueDate || item.reminderTime,
         );
         return itemTime > now && differenceInHours(itemTime, now) <= 24;
       })
       .sort((a, b) => {
         const aTime = new Date(
-          a.start?.dateTime || a.dueDate || a.reminderTime
+          a.start?.dateTime || a.dueDate || a.reminderTime,
         );
         const bTime = new Date(
-          b.start?.dateTime || b.dueDate || b.reminderTime
+          b.start?.dateTime || b.dueDate || b.reminderTime,
         );
         return aTime - bTime;
       })
@@ -2634,9 +2623,9 @@ const EnhancedGoogleCalendar = () => {
                                   new Date(
                                     event.start?.dateTime ||
                                       event.dueDate ||
-                                      event.reminderTime
+                                      event.reminderTime,
                                   ),
-                                  "h:mm a"
+                                  "h:mm a",
                                 )}
                               </Typography>
                             </Box>
@@ -2715,8 +2704,8 @@ const EnhancedGoogleCalendar = () => {
                       bgcolor: isSameDay(day, new Date())
                         ? "primary.50"
                         : !isSameMonth(day, currentDate)
-                        ? "grey.50"
-                        : "white",
+                          ? "grey.50"
+                          : "white",
                       cursor: "pointer",
                       "&:hover": {
                         bgcolor: "action.hover",
@@ -2736,8 +2725,8 @@ const EnhancedGoogleCalendar = () => {
                           color: isSameDay(day, new Date())
                             ? "primary.main"
                             : !isSameMonth(day, currentDate)
-                            ? "grey.400"
-                            : "inherit",
+                              ? "grey.400"
+                              : "inherit",
                         }}
                       >
                         {format(day, "d")}
@@ -2766,9 +2755,9 @@ const EnhancedGoogleCalendar = () => {
                             new Date(
                               event.start?.dateTime ||
                                 event.dueDate ||
-                                event.reminderTime
+                                event.reminderTime,
                             ),
-                            "h:mm"
+                            "h:mm",
                           )}{" "}
                           - {event.summary.substring(0, 15)}
                           {event.summary.length > 15 ? "..." : ""}
@@ -2797,10 +2786,10 @@ const EnhancedGoogleCalendar = () => {
       const date = event.start?.dateTime
         ? format(new Date(event.start.dateTime), "yyyy-MM-dd")
         : event.dueDate
-        ? format(new Date(event.dueDate), "yyyy-MM-dd")
-        : event.reminderTime
-        ? format(new Date(event.reminderTime), "yyyy-MM-dd")
-        : "unscheduled";
+          ? format(new Date(event.dueDate), "yyyy-MM-dd")
+          : event.reminderTime
+            ? format(new Date(event.reminderTime), "yyyy-MM-dd")
+            : "unscheduled";
       if (!groupedEvents[date]) groupedEvents[date] = [];
       groupedEvents[date].push(event);
     });
@@ -2864,19 +2853,19 @@ const EnhancedGoogleCalendar = () => {
                               {event.start?.dateTime
                                 ? format(
                                     new Date(event.start.dateTime),
-                                    "h:mm a"
+                                    "h:mm a",
                                   )
                                 : event.dueDate
-                                ? `Due: ${format(
-                                    new Date(event.dueDate),
-                                    "h:mm a"
-                                  )}`
-                                : event.reminderTime
-                                ? `Reminder: ${format(
-                                    new Date(event.reminderTime),
-                                    "h:mm a"
-                                  )}`
-                                : "No time specified"}{" "}
+                                  ? `Due: ${format(
+                                      new Date(event.dueDate),
+                                      "h:mm a",
+                                    )}`
+                                  : event.reminderTime
+                                    ? `Reminder: ${format(
+                                        new Date(event.reminderTime),
+                                        "h:mm a",
+                                      )}`
+                                    : "No time specified"}{" "}
                               • {event.location || "No location"}
                             </Typography>
                             {event.description && (
@@ -2912,16 +2901,16 @@ const EnhancedGoogleCalendar = () => {
     const upcomingEvents = filteredEvents
       .filter((item) => {
         const itemDate = new Date(
-          item.start?.dateTime || item.dueDate || item.reminderTime
+          item.start?.dateTime || item.dueDate || item.reminderTime,
         );
         return itemDate && itemDate >= now;
       })
       .sort((a, b) => {
         const aTime = new Date(
-          a.start?.dateTime || a.dueDate || a.reminderTime
+          a.start?.dateTime || a.dueDate || a.reminderTime,
         );
         const bTime = new Date(
-          b.start?.dateTime || b.dueDate || b.reminderTime
+          b.start?.dateTime || b.dueDate || b.reminderTime,
         );
         return aTime - bTime;
       });
@@ -2934,7 +2923,7 @@ const EnhancedGoogleCalendar = () => {
         <List>
           {upcomingEvents.slice(0, 20).map((event) => {
             const eventDate = new Date(
-              event.start?.dateTime || event.dueDate || event.reminderTime
+              event.start?.dateTime || event.dueDate || event.reminderTime,
             );
             const timeUntil = formatDistanceToNow(eventDate, {
               addSuffix: true,
@@ -3219,8 +3208,8 @@ const EnhancedGoogleCalendar = () => {
                           calendars.map((c) =>
                             c.id === calendar.id
                               ? { ...c, visible: !c.visible }
-                              : c
-                          )
+                              : c,
+                          ),
                         );
                       }}
                     />
@@ -3287,7 +3276,7 @@ const EnhancedGoogleCalendar = () => {
             sendCustomEmail(
               emailContent.to,
               emailContent.subject,
-              emailContent.body
+              emailContent.body,
             )
           }
           variant="contained"
@@ -3498,7 +3487,7 @@ const EnhancedGoogleCalendar = () => {
           if (selectedEventForMenu?.customerInfo?.phone) {
             window.open(
               `tel:${selectedEventForMenu.customerInfo.phone}`,
-              "_blank"
+              "_blank",
             );
           }
           setEventMenuAnchor(null);
@@ -3511,7 +3500,7 @@ const EnhancedGoogleCalendar = () => {
           if (selectedEventForMenu) {
             deleteEvent(
               selectedEventForMenu.id,
-              selectedEventForMenu.calendarId
+              selectedEventForMenu.calendarId,
             );
             setEventMenuAnchor(null);
           }
@@ -3755,8 +3744,8 @@ const EnhancedGoogleCalendar = () => {
                                 calendars.map((c) =>
                                   c.id === calendar.id
                                     ? { ...c, visible: !c.visible }
-                                    : c
-                                )
+                                    : c,
+                                ),
                               );
                             }}
                           />
@@ -3803,9 +3792,9 @@ const EnhancedGoogleCalendar = () => {
                             new Date(
                               event.start?.dateTime ||
                                 event.dueDate ||
-                                event.reminderTime
+                                event.reminderTime,
                             ),
-                            "MMM d, h:mm a"
+                            "MMM d, h:mm a",
                           )}
                         />
                       </ListItem>
@@ -4066,7 +4055,7 @@ const EnhancedGoogleCalendar = () => {
                           !formData.endTime ||
                           new Date(newStartTime) >= new Date(formData.endTime)
                             ? formatForDateTimeLocal(
-                                addHours(new Date(newStartTime), 1)
+                                addHours(new Date(newStartTime), 1),
                               )
                             : formData.endTime,
                       });
@@ -4098,9 +4087,9 @@ const EnhancedGoogleCalendar = () => {
                       !formData.endTime
                         ? "End time is required"
                         : new Date(formData.endTime) <=
-                          new Date(formData.startTime)
-                        ? "End time must be after start time"
-                        : ""
+                            new Date(formData.startTime)
+                          ? "End time must be after start time"
+                          : ""
                     }
                   />
                 </Grid>
@@ -4257,7 +4246,7 @@ const EnhancedGoogleCalendar = () => {
                             }}
                             onDelete={(idx) => {
                               const newChecklist = formData.checklist.filter(
-                                (_, i) => i !== idx
+                                (_, i) => i !== idx,
                               );
                               setFormData({
                                 ...formData,
@@ -4547,7 +4536,7 @@ const EnhancedGoogleCalendar = () => {
                         onClick={() => {
                           const current = formData.notifications;
                           const exists = current.some(
-                            (n) => n.type === type.id
+                            (n) => n.type === type.id,
                           );
                           const newTypes = exists
                             ? current.filter((n) => n.type !== type.id)
@@ -4593,7 +4582,7 @@ const EnhancedGoogleCalendar = () => {
                             <Typography variant="body2" sx={{ minWidth: 80 }}>
                               {
                                 NOTIFICATION_TYPES.find(
-                                  (t) => t.id === notif.type
+                                  (t) => t.id === notif.type,
                                 )?.name
                               }
                             </Typography>

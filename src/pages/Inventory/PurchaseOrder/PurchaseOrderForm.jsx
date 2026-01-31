@@ -48,7 +48,11 @@ import {
 } from "@mui/icons-material";
 
 import toast from "react-hot-toast";
-import { useCreatePurchaseOrderMutation, useGetSinglePurchaseOrderQuery, useUpdatePurchaseOrderMutation } from "../../../redux/api/purchaseOrderApi";
+import {
+  useCreatePurchaseOrderMutation,
+  useGetSinglePurchaseOrderQuery,
+  useUpdatePurchaseOrderMutation,
+} from "../../../redux/api/purchaseOrderApi";
 import { useAppOptions } from "../../../hooks/useAppOptions";
 import FormDatePicker from "../../../components/form/Datepicker";
 import {
@@ -96,32 +100,30 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
     id: orderId,
   });
 
-  console.log(singlePurchase);
-
   useEffect(() => {
     const newTotalAmount = productFields.reduce(
       (acc, item) =>
         acc + (item.unit_price || 0) * (item.product_quantity || 0),
-      0
+      0,
     );
 
     const newTotalDiscount = productFields.reduce(
       (acc, item) => acc + item.discount,
-      0
+      0,
     );
 
     const newTotalTax = productFields.reduce(
       (acc, item) =>
         acc +
         (((item.unit_price || 0) * (item.tax || 0)) / 100) *
-        (item.product_quantity || 0),
-      0
+          (item.product_quantity || 0),
+      0,
     );
 
     // Calculate total shipping from products
     const totalProductShipping = productFields.reduce(
       (acc, item) => acc + (item.shipping || 0),
-      0
+      0,
     );
 
     // Total shipping is product shipping plus additional shipping cost
@@ -133,7 +135,7 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
     setTotalDiscount(newTotalDiscount);
     setTotalTax(newTotalTax);
     setGrandTotal(
-      newTotalAmount + newTotalTax + totalShipping - newTotalDiscount
+      newTotalAmount + newTotalTax + totalShipping - newTotalDiscount,
     );
   }, [productFields, shippingCost, totalShipping]);
 
@@ -152,7 +154,7 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
     if (!product) return;
 
     const existingProductIndex = productFields.findIndex(
-      (field) => field.productId === product.product._id
+      (field) => field.productId === product.product._id,
     );
 
     if (existingProductIndex !== -1) {
@@ -211,7 +213,7 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
     const updatedFields = [...productFields];
     const newQuantity = Math.max(
       1,
-      updatedFields[index].product_quantity + change
+      updatedFields[index].product_quantity + change,
     );
     updatedFields[index].product_quantity = newQuantity;
 
@@ -290,7 +292,7 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
         subtotal:
           product.subtotal ||
           (product.unit_price || product.productPrice) *
-          (product.product_quantity || product.quantity),
+            (product.product_quantity || product.quantity),
       })) || [],
   };
 
@@ -311,8 +313,8 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
           subtotal:
             product.subtotal ||
             (product.unit_price || product.productPrice) *
-            (product.product_quantity || product.quantity),
-        }))
+              (product.product_quantity || product.quantity),
+        })),
       );
     }
   }, [singlePurchase]);
@@ -350,23 +352,23 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
           })),
           suppliers:
             data.suppliers &&
-              data.suppliers[0] &&
-              supplierOptions.find((cat) => cat.label === data.suppliers[0])
-                ?.value
+            data.suppliers[0] &&
+            supplierOptions.find((cat) => cat.label === data.suppliers[0])
+              ?.value
               ? [
-                supplierOptions.find((cat) => cat.label === data.suppliers[0])
-                  .value,
-              ]
+                  supplierOptions.find((cat) => cat.label === data.suppliers[0])
+                    .value,
+                ]
               : [],
           warehouse:
             data.warehouse &&
-              data.warehouse[0] &&
-              warehouseOptions.find(
-                (warehouse) => warehouse.label === data.warehouse[0]
-              )?.value
+            data.warehouse[0] &&
+            warehouseOptions.find(
+              (warehouse) => warehouse.label === data.warehouse[0],
+            )?.value
               ? warehouseOptions.find(
-                (warehouse) => warehouse.label === data.warehouse[0]
-              ).value
+                  (warehouse) => warehouse.label === data.warehouse[0],
+                ).value
               : "",
           referenceNo: Number(data.referenceNo),
           totalAmount,
@@ -403,8 +405,9 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
           toast.error(`Failed to ${orderId ? "update" : "create"} purchase`);
         }
       },
-      `You don't have permission to ${orderId ? "update" : "create"
-      } purchase order`
+      `You don't have permission to ${
+        orderId ? "update" : "create"
+      } purchase order`,
     );
   };
 
@@ -429,7 +432,6 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
                   {/* Left Column - Document Upload */}
                   <Grid item xs={12} md={3}>
                     <Card
-
                       sx={{
                         borderRadius: "20px",
                         border: "1px solid rgba(226, 232, 240, 0.8)",
@@ -877,8 +879,9 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
                       </Box>
                       {productFields.length > 0 && (
                         <Chip
-                          label={`${productFields.length} ${productFields.length === 1 ? "item" : "items"
-                            }`}
+                          label={`${productFields.length} ${
+                            productFields.length === 1 ? "item" : "items"
+                          }`}
                           size="small"
                           sx={{
                             color: "white",
@@ -1014,7 +1017,6 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
                             </tr>
                           </thead>
                           <tbody>
-
                             {productFields.length === 0 ? (
                               <tr>
                                 <td
@@ -1033,16 +1035,14 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
                                       gap: 2,
                                     }}
                                   >
-                                    <div
-
-                                    >
+                                    <div>
                                       <Avatar
                                         sx={{
                                           width: 80,
                                           height: 80,
                                           backgroundColor: alpha(
                                             "#8b5cf6",
-                                            0.1
+                                            0.1,
                                           ),
                                           color: "#8b5cf6",
                                           border: "2px dashed",
@@ -1066,8 +1066,8 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
                                       color="#64748b"
                                       sx={{ maxWidth: "400px" }}
                                     >
-                                      Search for products above and add them
-                                      to your purchase order
+                                      Search for products above and add them to
+                                      your purchase order
                                     </Typography>
                                   </Box>
                                 </td>
@@ -1161,7 +1161,7 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
                                       onChange={(e) =>
                                         handleUnitPriceChange(
                                           index,
-                                          e.target.value
+                                          e.target.value,
                                         )
                                       }
                                       InputProps={{
@@ -1174,18 +1174,18 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
                                           borderRadius: "8px",
                                           width: "120px",
                                           "& .MuiOutlinedInput-notchedOutline":
-                                          {
-                                            borderColor: "#e2e8f0",
-                                          },
+                                            {
+                                              borderColor: "#e2e8f0",
+                                            },
                                           "&:hover .MuiOutlinedInput-notchedOutline":
-                                          {
-                                            borderColor: "#cbd5e1",
-                                          },
+                                            {
+                                              borderColor: "#cbd5e1",
+                                            },
                                           "&.Mui-focused .MuiOutlinedInput-notchedOutline":
-                                          {
-                                            borderColor: "#8b5cf6",
-                                            borderWidth: "2px",
-                                          },
+                                            {
+                                              borderColor: "#8b5cf6",
+                                              borderWidth: "2px",
+                                            },
                                         },
                                       }}
                                     />
@@ -1271,10 +1271,7 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
                                       type="number"
                                       value={field.productPrice || ""}
                                       onChange={(e) =>
-                                        handlePriceChange(
-                                          index,
-                                          e.target.value
-                                        )
+                                        handlePriceChange(index, e.target.value)
                                       }
                                       InputProps={{
                                         startAdornment: (
@@ -1286,18 +1283,18 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
                                           borderRadius: "8px",
                                           width: "120px",
                                           "& .MuiOutlinedInput-notchedOutline":
-                                          {
-                                            borderColor: "#e2e8f0",
-                                          },
+                                            {
+                                              borderColor: "#e2e8f0",
+                                            },
                                           "&:hover .MuiOutlinedInput-notchedOutline":
-                                          {
-                                            borderColor: "#cbd5e1",
-                                          },
+                                            {
+                                              borderColor: "#cbd5e1",
+                                            },
                                           "&.Mui-focused .MuiOutlinedInput-notchedOutline":
-                                          {
-                                            borderColor: "#8b5cf6",
-                                            borderWidth: "2px",
-                                          },
+                                            {
+                                              borderColor: "#8b5cf6",
+                                              borderWidth: "2px",
+                                            },
                                         },
                                       }}
                                     />
@@ -1325,18 +1322,18 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
                                           borderRadius: "8px",
                                           width: "100px",
                                           "& .MuiOutlinedInput-notchedOutline":
-                                          {
-                                            borderColor: "#e2e8f0",
-                                          },
+                                            {
+                                              borderColor: "#e2e8f0",
+                                            },
                                           "&:hover .MuiOutlinedInput-notchedOutline":
-                                          {
-                                            borderColor: "#cbd5e1",
-                                          },
+                                            {
+                                              borderColor: "#cbd5e1",
+                                            },
                                           "&.Mui-focused .MuiOutlinedInput-notchedOutline":
-                                          {
-                                            borderColor: "#8b5cf6",
-                                            borderWidth: "2px",
-                                          },
+                                            {
+                                              borderColor: "#8b5cf6",
+                                              borderWidth: "2px",
+                                            },
                                         },
                                       }}
                                     />
@@ -1354,7 +1351,7 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
                                       onChange={(e) =>
                                         handleDiscountChange(
                                           index,
-                                          e.target.value
+                                          e.target.value,
                                         )
                                       }
                                       InputProps={{
@@ -1367,18 +1364,18 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
                                           borderRadius: "8px",
                                           width: "120px",
                                           "& .MuiOutlinedInput-notchedOutline":
-                                          {
-                                            borderColor: "#e2e8f0",
-                                          },
+                                            {
+                                              borderColor: "#e2e8f0",
+                                            },
                                           "&:hover .MuiOutlinedInput-notchedOutline":
-                                          {
-                                            borderColor: "#cbd5e1",
-                                          },
+                                            {
+                                              borderColor: "#cbd5e1",
+                                            },
                                           "&.Mui-focused .MuiOutlinedInput-notchedOutline":
-                                          {
-                                            borderColor: "#8b5cf6",
-                                            borderWidth: "2px",
-                                          },
+                                            {
+                                              borderColor: "#8b5cf6",
+                                              borderWidth: "2px",
+                                            },
                                         },
                                       }}
                                     />
@@ -1403,9 +1400,9 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
                                     >
                                       {formatCurrency(
                                         field.subtotal ||
-                                        (field.unit_price ||
-                                          field.productPrice) *
-                                        field.product_quantity
+                                          (field.unit_price ||
+                                            field.productPrice) *
+                                            field.product_quantity,
                                       )}
                                     </Box>
                                   </td>
@@ -1428,7 +1425,7 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
                                           "&:hover": {
                                             backgroundColor: alpha(
                                               "#ef4444",
-                                              0.2
+                                              0.2,
                                             ),
                                           },
                                         }}
@@ -1440,7 +1437,6 @@ const PurchaseOrderForm = ({ tenantDomain, onClose, orderId }) => {
                                 </tr>
                               ))
                             )}
-
                           </tbody>
                         </table>
                       </Box>

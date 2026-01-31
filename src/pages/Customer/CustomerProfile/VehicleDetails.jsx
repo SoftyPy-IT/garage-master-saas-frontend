@@ -43,8 +43,6 @@ const VehicleDetails = ({
     searchTerm: filterType,
     isRecycled: false,
   });
-  console.log("vehicle mileage this ", allVehicle);
-
   const [deleteVehicle, { isLoading: deleteLoading, error: deleteError }] =
     useDeleteVehicleMutation();
 
@@ -121,11 +119,11 @@ const VehicleDetails = ({
         if (mileageHistory.length > 0) {
           // Get the most recent
           const sortedHistory = [...mileageHistory].sort(
-            (a, b) => new Date(b.date) - new Date(a.date)
+            (a, b) => new Date(b.date) - new Date(a.date),
           );
           const latestMileage = sortedHistory[0];
           const formattedDate = new Date(
-            latestMileage.date
+            latestMileage.date,
           ).toLocaleDateString();
 
           return (

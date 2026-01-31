@@ -50,10 +50,7 @@ const AllTenantList = () => {
   const [renewSubscription, { isLoading: renewLoading }] =
     useRenewSubscriptionMutation();
   const [deleteTenant] = useDeleteTenantMutation();
-
   const tenants = tenantData?.data?.tenants || [];
-  console.log("tenant check this ", tenants);
-
   useEffect(() => {
     const filtered = tenants.filter((tenant) => {
       const matchesSearch =
@@ -122,14 +119,14 @@ const AllTenantList = () => {
       }).unwrap();
 
       toast.success(
-        `Tenant ${isCurrentlyActive ? "blocked" : "unblocked"} successfully!`
+        `Tenant ${isCurrentlyActive ? "blocked" : "unblocked"} successfully!`,
       );
       refetch();
     } catch (error) {
       toast.error(
         `Failed to ${
           isCurrentlyActive ? "block" : "unblock"
-        } tenant. Please try again.`
+        } tenant. Please try again.`,
       );
     }
   };
@@ -330,7 +327,7 @@ const AllTenantList = () => {
         columns={tenantColumns}
         data={filteredTenants.slice(
           page * rowsPerPage,
-          page * rowsPerPage + rowsPerPage
+          page * rowsPerPage + rowsPerPage,
         )}
         actions={tenantActions}
         loading={isLoading}

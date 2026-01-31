@@ -83,15 +83,13 @@ const AttendanceListPage = () => {
     error,
     refetch,
   } = useGetAllEmployeeAttendancesQuery(buildQueryParams());
-
-  console.log("attendance data", attendanceData);
   const handleDeleteAttendance = async (id, date) => {
     performActionWithPermission(
       "/dashboard/attendance-list",
       "delete",
       async () => {
         const formattedDate = dayjs(date, ["DD-MM-YYYY", "DD-MM-YY"]).format(
-          "YYYY-MM-DD"
+          "YYYY-MM-DD",
         );
         const willDelete = await swal({
           title: "Are you sure?",
@@ -113,14 +111,14 @@ const AttendanceListPage = () => {
               swal(
                 "Deleted!",
                 `Attendance record has been deleted successfully.`,
-                "success"
+                "success",
               );
               refetch();
             } else {
               swal(
                 "Error",
                 response.message || "Failed to delete attendance",
-                "error"
+                "error",
               );
             }
           } catch (error) {
@@ -128,12 +126,12 @@ const AttendanceListPage = () => {
             swal(
               "Error",
               error.message || "Failed to delete attendance",
-              "error"
+              "error",
             );
           }
         }
       },
-      "You don't have permission to delete attendance records."
+      "You don't have permission to delete attendance records.",
     );
   };
 

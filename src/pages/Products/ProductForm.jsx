@@ -173,21 +173,21 @@ export default function ProductForm({ id }) {
       category: singleProduct.data.category
         ? [
             categoryOptions.find(
-              (cat) => cat.value === singleProduct.data.category._id
+              (cat) => cat.value === singleProduct.data.category._id,
             )?.label || "",
           ]
         : [],
       brand: singleProduct.data.brand
         ? [
             brandOptions.find(
-              (brand) => brand.value === singleProduct.data.brand._id
+              (brand) => brand.value === singleProduct.data.brand._id,
             )?.label || "",
           ]
         : [],
       unit: singleProduct.data.unit
         ? [
             unitOptions.find(
-              (unit) => unit.value === singleProduct.data.unit._id
+              (unit) => unit.value === singleProduct.data.unit._id,
             )?.label || "",
           ]
         : [],
@@ -195,28 +195,28 @@ export default function ProductForm({ id }) {
         ? [
             warehouseOptions.find(
               (warehouse) =>
-                warehouse.value === singleProduct.data.warehouse._id
+                warehouse.value === singleProduct.data.warehouse._id,
             )?.label || "",
           ]
         : [],
       product_type: singleProduct.data.product_type
         ? [
             productTypeOptions.find(
-              (type) => type.value === singleProduct.data.product_type._id
+              (type) => type.value === singleProduct.data.product_type._id,
             )?.label || "",
           ]
         : [],
       suppliers: singleProduct.data.suppliers
         ? [
             supplierOptions.find(
-              (supplier) => supplier.value === singleProduct.data.suppliers._id
+              (supplier) => supplier.value === singleProduct.data.suppliers._id,
             )?.label || "",
           ]
         : [],
       warranties: singleProduct.data.warranties
         ? [
             warrantyOptions.find(
-              (war) => war.value === singleProduct.data.warranties._id
+              (war) => war.value === singleProduct.data.warranties._id,
             )?.label || "",
           ]
         : [],
@@ -284,7 +284,7 @@ export default function ProductForm({ id }) {
     ];
 
     const missingField = requiredFields.find(
-      (field) => !data[field.key]?.length
+      (field) => !data[field.key]?.length,
     );
 
     if (missingField) {
@@ -310,7 +310,7 @@ export default function ProductForm({ id }) {
                 ?.value
                 ? [
                     supplierOptions.find(
-                      (cat) => cat.label === data.suppliers[0]
+                      (cat) => cat.label === data.suppliers[0],
                     ).value,
                   ]
                 : [],
@@ -320,7 +320,7 @@ export default function ProductForm({ id }) {
                 ?.value
                 ? [
                     categoryOptions.find(
-                      (cat) => cat.label === data.category[0]
+                      (cat) => cat.label === data.category[0],
                     ).value,
                   ]
                 : [],
@@ -330,7 +330,7 @@ export default function ProductForm({ id }) {
                 ?.value
                 ? [
                     warehouseOptions.find(
-                      (cat) => cat.label === data.warehouse[0]
+                      (cat) => cat.label === data.warehouse[0],
                     ).value,
                   ]
                 : [],
@@ -340,7 +340,7 @@ export default function ProductForm({ id }) {
                 ?.value
                 ? [
                     warrantyOptions.find(
-                      (cat) => cat.label === data.warranties[0]
+                      (cat) => cat.label === data.warranties[0],
                     ).value,
                   ]
                 : [],
@@ -363,11 +363,11 @@ export default function ProductForm({ id }) {
             product_type:
               data.product_type?.[0] &&
               productTypeOptions.find(
-                (type) => type.label === data.product_type[0]
+                (type) => type.label === data.product_type[0],
               )?.value
                 ? [
                     productTypeOptions.find(
-                      (type) => type.label === data.product_type[0]
+                      (type) => type.label === data.product_type[0],
                     ).value,
                   ]
                 : [],
@@ -399,9 +399,6 @@ export default function ProductForm({ id }) {
             lastSoldDate: data.lastSoldDate,
             isDeleted: data.isDeleted || false,
           };
-
-          console.log("modify value this ", modifyValues);
-
           if (id) {
             res = await updateProduct({
               tenantDomain,
@@ -435,7 +432,7 @@ export default function ProductForm({ id }) {
           }
         }
       },
-      `You don't have permission to ${id ? "update" : "create"} product!`
+      `You don't have permission to ${id ? "update" : "create"} product!`,
     );
   };
 

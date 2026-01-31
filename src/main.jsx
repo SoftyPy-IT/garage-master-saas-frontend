@@ -24,19 +24,11 @@ import PrintProvider from "./context/PrintProvider.jsx";
 import { PermissionProvider } from "./context/PermissionContext.jsx";
 
 const queryClient = new QueryClient();
-
-// আপনার Client ID
 const clientId =
   "731493911262-b4vutijvnt9bgdvgu6m1ai7g0nsno7vl.apps.googleusercontent.com";
 
 localStorage.removeItem("google_access_token");
 localStorage.removeItem("google_user_profile");
-
-console.log("🚀 Google Calendar Integration Ready");
-console.log("Client ID:", clientId);
-console.log("Project: 731493911262");
-console.log("Test Users: ibrahimsikder5033@gmail.com, softypyit@gmail.com");
-
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <ErrorBoundary>
@@ -61,5 +53,5 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         </PersistGate>
       </Provider>
     </ErrorBoundary>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

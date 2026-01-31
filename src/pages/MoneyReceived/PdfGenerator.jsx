@@ -15,12 +15,8 @@ import { formatDate } from "../../utils/formateDate";
 const PdfGenerator = () => {
   const location = useLocation();
   const id = new URLSearchParams(location.search).get("id");
-
   const { tenantDomain } = useTenantDomain();
-
   const { companyProfileData } = useCompanyProfileData();
-  console.log(companyProfileData);
-
   const componentRef = useRef();
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
@@ -30,7 +26,7 @@ const PdfGenerator = () => {
     {
       tenantDomain,
       id,
-    }
+    },
   );
 
   if (isLoading) {
@@ -92,7 +88,8 @@ const PdfGenerator = () => {
 
             <div className="flex justify-between ">
               <small>
-                Money Receipt ID : {singleMoneyReceipt?.data?.moneyReceiptId}{" "}
+                Money Receipt ID :{" "}
+                {singleMoneyReceipt?.data?.moneyReceiptId}{" "}
               </small>
               <small>
                 Date : {formatDate(singleMoneyReceipt?.data?.default_date)}{" "}
@@ -141,19 +138,22 @@ const PdfGenerator = () => {
                     {singleMoneyReceipt?.data?.payment_method === "Bkash"
                       ? "Bkash"
                       : singleMoneyReceipt?.data?.payment_method === "Nagad"
-                      ? "Nagad"
-                      : singleMoneyReceipt?.data?.payment_method === "Rocket"
-                      ? "Rocket"
-                      : singleMoneyReceipt?.data?.payment_method ===
-                        "Bank Transfer"
-                      ? "Bank Transfer"
-                      : singleMoneyReceipt?.data?.payment_method === "Check"
-                      ? "Cheque"
-                      : singleMoneyReceipt?.data?.payment_method === "Other"
-                      ? "Other"
-                      : singleMoneyReceipt?.data?.payment_method === "Cash"
-                      ? "Cash"
-                      : ""}
+                        ? "Nagad"
+                        : singleMoneyReceipt?.data?.payment_method === "Rocket"
+                          ? "Rocket"
+                          : singleMoneyReceipt?.data?.payment_method ===
+                              "Bank Transfer"
+                            ? "Bank Transfer"
+                            : singleMoneyReceipt?.data?.payment_method ===
+                                "Check"
+                              ? "Cheque"
+                              : singleMoneyReceipt?.data?.payment_method ===
+                                  "Other"
+                                ? "Other"
+                                : singleMoneyReceipt?.data?.payment_method ===
+                                    "Cash"
+                                  ? "Cash"
+                                  : ""}
                   </span>
                 </div>
               </div>
@@ -356,7 +356,7 @@ const PdfGenerator = () => {
             href={`${import.meta.env.VITE_API_URL}/money-receipts/money/${
               singleMoneyReceipt.data._id
             }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
-              JSON.stringify(companyProfileData)
+              JSON.stringify(companyProfileData),
             )}`}
             target="_blank"
             rel="noreferrer"

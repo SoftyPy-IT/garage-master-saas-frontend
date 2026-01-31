@@ -33,8 +33,6 @@ const CustomerJobCardList = ({
     searchTerm: filterType,
     isRecycled: false,
   });
-  console.log("job data this ", jobCards);
-
   const [movetoRecycleBinJobCard, { isLoading: deleteLoading }] =
     useMovetoRecycleBinJobCardMutation();
 
