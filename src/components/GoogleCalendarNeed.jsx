@@ -6,6 +6,7 @@
 // /* eslint-disable no-unused-vars */
 // import {
 //   Add as AddIcon,
+//   Alarm,
 //   Badge,
 //   Build,
 //   CalendarToday,
@@ -15,11 +16,12 @@
 //   ChevronLeft,
 //   ChevronRight,
 //   Close,
-//   Code,
+//   Cloud,
+//   CloudOff,
+//   Computer,
 //   DarkMode,
 //   Delete as DeleteIcon,
 //   DirectionsCar,
-//   Download,
 //   DragIndicator,
 //   Edit as EditIcon,
 //   Email,
@@ -33,9 +35,9 @@
 //   Print,
 //   Refresh as RefreshIcon,
 //   Save,
-//   Search,
+//   Send,
 //   Settings,
-//   Share,
+//   Smartphone,
 //   TaskAlt,
 //   Timelapse,
 //   Today as TodayIcon,
@@ -44,24 +46,6 @@
 //   ViewDay,
 //   ViewWeek,
 //   Warning as WarningIcon,
-//   AccessTime,
-//   Alarm,
-//   Check,
-//   CheckBox,
-//   EventRepeat,
-//   Note,
-//   PriorityHigh,
-//   Public,
-//   Visibility,
-//   VisibilityOff,
-//   Send,
-//   Cloud,
-//   CloudOff,
-//   Sync,
-//   SyncDisabled,
-//   Computer,
-//   Smartphone,
-//   Timer,
 // } from "@mui/icons-material";
 // import {
 //   Alert,
@@ -72,6 +56,7 @@
 //   Button,
 //   Card,
 //   CardContent,
+//   Checkbox,
 //   Chip,
 //   CircularProgress,
 //   Dialog,
@@ -84,7 +69,6 @@
 //   FormControlLabel,
 //   Grid,
 //   IconButton,
-//   InputAdornment,
 //   InputLabel,
 //   List,
 //   ListItem,
@@ -98,9 +82,6 @@
 //   Popover,
 //   Select,
 //   Snackbar,
-//   Step,
-//   StepLabel,
-//   Stepper,
 //   Switch,
 //   Tab,
 //   Tabs,
@@ -109,14 +90,6 @@
 //   ToggleButtonGroup,
 //   Tooltip,
 //   Typography,
-//   Checkbox,
-//   Radio,
-//   RadioGroup,
-//   FormLabel,
-//   Slider,
-//   Input,
-//   Stack,
-//   Badge as MuiBadge,
 // } from "@mui/material";
 // import { googleLogout, useGoogleLogin } from "@react-oauth/google";
 // import axios from "axios";
@@ -125,7 +98,6 @@
 //   addHours,
 //   addMonths,
 //   addWeeks,
-//   addMinutes,
 //   differenceInHours,
 //   differenceInMinutes,
 //   eachDayOfInterval,
@@ -135,6 +107,7 @@
 //   formatDistanceToNow,
 //   getHours,
 //   getMinutes,
+//   isAfter,
 //   isSameDay,
 //   isSameMonth,
 //   startOfMonth,
@@ -142,16 +115,6 @@
 //   subDays,
 //   subMonths,
 //   subWeeks,
-//   isAfter,
-//   isBefore,
-//   parseISO,
-//   isValid,
-//   setHours,
-//   setMinutes,
-//   startOfDay,
-//   endOfDay,
-//   isWithinInterval,
-//   compareAsc,
 // } from "date-fns";
 // import { useEffect, useMemo, useRef, useState } from "react";
 // import { DndProvider, useDrag, useDrop } from "react-dnd";
@@ -387,72 +350,6 @@
 //   { id: "accepted", label: "Accepted", color: "#0F9D58" },
 // ];
 
-// // ========== DRAGGABLE EVENT COMPONENT ==========
-// const DraggableEvent = ({ event, onDragStart, onDragEnd }) => {
-//   const [{ isDragging }, drag] = useDrag(() => ({
-//     type: getEventDragType(event.type),
-//     item: { type: event.type, id: event.id, event },
-//     collect: (monitor) => ({
-//       isDragging: !!monitor.isDragging(),
-//     }),
-//     end: (item, monitor) => {
-//       if (onDragEnd && monitor.didDrop()) {
-//         onDragEnd(item, monitor);
-//       }
-//     },
-//   }));
-
-//   const getEventDragType = (eventType) => {
-//     switch (eventType) {
-//       case "task":
-//         return ItemTypes.TASK;
-//       case "appointment":
-//         return ItemTypes.APPOINTMENT;
-//       case "reminder":
-//         return ItemTypes.REMINDER;
-//       default:
-//         return ItemTypes.EVENT;
-//     }
-//   };
-
-//   const getEventIcon = () => {
-//     const eventType = EVENT_TYPES.find((t) => t.id === event.type);
-//     return eventType ? eventType.icon : <EventIcon />;
-//   };
-
-//   return (
-//     <div
-//       ref={drag}
-//       style={{
-//         opacity: isDragging ? 0.5 : 1,
-//         cursor: "move",
-//         padding: "6px 8px",
-//         margin: "2px 0",
-//         borderRadius: "6px",
-//         backgroundColor: event.color || event.colorHex || "#4285F4",
-//         color: "white",
-//         fontSize: "12px",
-//         overflow: "hidden",
-//         textOverflow: "ellipsis",
-//         whiteSpace: "nowrap",
-//         border: `2px solid ${event.color || event.colorHex || "#4285F4"}`,
-//         boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-//         display: "flex",
-//         alignItems: "center",
-//         gap: "4px",
-//         position: "relative",
-//       }}
-//     >
-//       <DragIndicator sx={{ fontSize: 14, opacity: 0.7 }} />
-//       {getEventIcon()}
-//       <span style={{ flex: 1, fontWeight: 500 }}>{event.summary}</span>
-//       {event.priority === "high" && (
-//         <span style={{ fontSize: "10px" }}>⚠️</span>
-//       )}
-//     </div>
-//   );
-// };
-
 // // ========== DROPPABLE CALENDAR SLOT ==========
 // const DroppableCalendarSlot = ({ date, time, onDrop, children }) => {
 //   const [{ isOver }, drop] = useDrop(() => ({
@@ -548,25 +445,6 @@
 //   );
 // };
 
-// // ========== NOTIFICATION SOUND PLAYER ==========
-// const NotificationSoundPlayer = () => {
-//   const audioRef = useRef(null);
-
-//   const playSound = () => {
-//     if (audioRef.current) {
-//       audioRef.current.currentTime = 0;
-//       audioRef.current.play().catch(console.error);
-//     }
-//   };
-
-//   return (
-//     <audio ref={audioRef} preload="auto">
-//       <source src="/notification-sound.mp3" type="audio/mpeg" />
-//       <source src="/notification-sound.ogg" type="audio/ogg" />
-//     </audio>
-//   );
-// };
-
 // // ========== UTILITY FUNCTIONS ==========
 // const fixDateTimeFormat = (dateTimeString, isEndTime = false) => {
 //   try {
@@ -609,11 +487,6 @@
 //   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
 //     date.getDate()
 //   )}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
-// };
-
-// const getRandomColor = () => {
-//   const colors = CALENDAR_COLORS.map((c) => c.hex);
-//   return colors[Math.floor(Math.random() * colors.length)];
 // };
 
 // // ========== EMAIL TEMPLATES ==========
@@ -716,7 +589,7 @@
 // };
 
 // // ========== MAIN CALENDAR COMPONENT ==========
-// const EnhancedGoogleCalendar = () => {
+// const GoogleCalendar = () => {
 //   // ========== STATE MANAGEMENT ==========
 //   const [events, setEvents] = useState([]);
 //   const [tasks, setTasks] = useState([]);
@@ -3594,7 +3467,7 @@
 //                 gutterBottom
 //                 sx={{ display: "flex", alignItems: "center", gap: 1 }}
 //               >
-//                 <EventIcon /> Enhanced Google Calendar
+//                 <EventIcon /> Google Calendar
 //               </Typography>
 //               <Typography variant="body2" color="textSecondary">
 //                 Complete calendar solution with events, tasks, meetings,
@@ -3605,20 +3478,6 @@
 
 //           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
 //             {/* Search Bar */}
-//             <TextField
-//               size="small"
-//               placeholder="Search events..."
-//               value={searchQuery}
-//               onChange={(e) => setSearchQuery(e.target.value)}
-//               InputProps={{
-//                 startAdornment: (
-//                   <InputAdornment position="start">
-//                     <Search />
-//                   </InputAdornment>
-//                 ),
-//               }}
-//               sx={{ width: 200 }}
-//             />
 
 //             {/* Notification Bell */}
 //             <IconButton
@@ -4697,7 +4556,6 @@
 //                   />
 //                 </Grid>
 
-//                 {/* Error Alert for Time Range */}
 //                 {formData.endTime &&
 //                   new Date(formData.endTime) <=
 //                     new Date(formData.startTime) && (
@@ -4751,25 +4609,17 @@
 //           </DialogActions>
 //         </Dialog>
 
-//         {/* Event Menu */}
 //         <EventMenu />
-
-//         {/* Configuration Help Dialog */}
 //         <ConfigHelpDialog />
 
-//         {/* Settings Dialog */}
 //         <SettingsDialog />
 
-//         {/* Email Dialog */}
 //         <EmailDialog />
 
-//         {/* Quick Add Dialog */}
 //         <QuickAddDialog />
 
-//         {/* Notifications Panel */}
 //         <NotificationsPanel />
 
-//         {/* Notification Snackbar */}
 //         <Snackbar
 //           open={notification.open}
 //           autoHideDuration={4000}
@@ -4785,7 +4635,6 @@
 //           </Alert>
 //         </Snackbar>
 
-//         {/* Loading Backdrop */}
 //         <Backdrop
 //           sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
 //           open={loading}
@@ -4793,7 +4642,6 @@
 //           <CircularProgress color="inherit" />
 //         </Backdrop>
 
-//         {/* Notification Sound */}
 //         <audio ref={notificationSoundRef} preload="auto">
 //           <source src="/notification.mp3" type="audio/mpeg" />
 //         </audio>
@@ -4802,4 +4650,4 @@
 //   );
 // };
 
-// export default EnhancedGoogleCalendar;
+// export default GoogleCalendar;

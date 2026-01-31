@@ -15,6 +15,7 @@ import { useCompanyProfileData } from "../../../hooks/useCompanyProfileData";
 import { formatDate } from "../../../utils/formateDate";
 const PreviewJobCard = () => {
   const { componentRef } = useContext(PrintContext);
+  
   const [, setVehicleInterior] = useState("");
   const [, setReportedDefect] = useState("");
   const [, setReportedAction] = useState("");

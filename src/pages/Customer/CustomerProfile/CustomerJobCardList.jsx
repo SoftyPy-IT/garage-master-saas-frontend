@@ -33,6 +33,7 @@ const CustomerJobCardList = ({
     searchTerm: filterType,
     isRecycled: false,
   });
+  console.log("job data this ", jobCards);
 
   const [movetoRecycleBinJobCard, { isLoading: deleteLoading }] =
     useMovetoRecycleBinJobCardMutation();
@@ -51,13 +52,13 @@ const CustomerJobCardList = ({
         swal(
           "Moved to Recycle bin!",
           "Move to Recycle bin successful.",
-          "success"
+          "success",
         );
       } catch (error) {
         swal(
           "Error",
           "An error occurred while deleting the job card.",
-          "error"
+          "error",
         );
       }
     }
@@ -75,7 +76,7 @@ const CustomerJobCardList = ({
           case "company":
             return item?.company?.company_name || "—";
           case "showRoom":
-            return item?.showRoom?.showroom_name || "—";
+            return item?.showRoom?.showRoom_name || "—";
           default:
             return "—";
         }
@@ -134,7 +135,7 @@ const CustomerJobCardList = ({
         `${import.meta.env.VITE_API_URL}/jobCards/jobcard/${
           item._id
         }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
-          JSON.stringify(companyProfileData)
+          JSON.stringify(companyProfileData),
         )}`,
       target: "_blank",
       color: "",

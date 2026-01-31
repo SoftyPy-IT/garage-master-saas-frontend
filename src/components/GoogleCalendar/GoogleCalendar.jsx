@@ -6,6 +6,7 @@
 /* eslint-disable no-unused-vars */
 import {
   Add as AddIcon,
+  Alarm,
   Badge,
   Build,
   CalendarToday,
@@ -15,11 +16,12 @@ import {
   ChevronLeft,
   ChevronRight,
   Close,
-  Code,
+  Cloud,
+  CloudOff,
+  Computer,
   DarkMode,
   Delete as DeleteIcon,
   DirectionsCar,
-  Download,
   DragIndicator,
   Edit as EditIcon,
   Email,
@@ -33,9 +35,9 @@ import {
   Print,
   Refresh as RefreshIcon,
   Save,
-  Search,
+  Send,
   Settings,
-  Share,
+  Smartphone,
   TaskAlt,
   Timelapse,
   Today as TodayIcon,
@@ -44,24 +46,6 @@ import {
   ViewDay,
   ViewWeek,
   Warning as WarningIcon,
-  AccessTime,
-  Alarm,
-  Check,
-  CheckBox,
-  EventRepeat,
-  Note,
-  PriorityHigh,
-  Public,
-  Visibility,
-  VisibilityOff,
-  Send,
-  Cloud,
-  CloudOff,
-  Sync,
-  SyncDisabled,
-  Computer,
-  Smartphone,
-  Timer,
 } from "@mui/icons-material";
 import {
   Alert,
@@ -72,6 +56,7 @@ import {
   Button,
   Card,
   CardContent,
+  Checkbox,
   Chip,
   CircularProgress,
   Dialog,
@@ -84,7 +69,6 @@ import {
   FormControlLabel,
   Grid,
   IconButton,
-  InputAdornment,
   InputLabel,
   List,
   ListItem,
@@ -98,9 +82,6 @@ import {
   Popover,
   Select,
   Snackbar,
-  Step,
-  StepLabel,
-  Stepper,
   Switch,
   Tab,
   Tabs,
@@ -109,14 +90,6 @@ import {
   ToggleButtonGroup,
   Tooltip,
   Typography,
-  Checkbox,
-  Radio,
-  RadioGroup,
-  FormLabel,
-  Slider,
-  Input,
-  Stack,
-  Badge as MuiBadge,
 } from "@mui/material";
 import { googleLogout, useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
@@ -125,7 +98,6 @@ import {
   addHours,
   addMonths,
   addWeeks,
-  addMinutes,
   differenceInHours,
   differenceInMinutes,
   eachDayOfInterval,
@@ -135,6 +107,7 @@ import {
   formatDistanceToNow,
   getHours,
   getMinutes,
+  isAfter,
   isSameDay,
   isSameMonth,
   startOfMonth,
@@ -142,16 +115,6 @@ import {
   subDays,
   subMonths,
   subWeeks,
-  isAfter,
-  isBefore,
-  parseISO,
-  isValid,
-  setHours,
-  setMinutes,
-  startOfDay,
-  endOfDay,
-  isWithinInterval,
-  compareAsc,
 } from "date-fns";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
@@ -4771,7 +4734,6 @@ const EnhancedGoogleCalendar = () => {
           </Alert>
         </Snackbar>
 
-        {/* Loading Backdrop */}
         <Backdrop
           sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
           open={loading}
@@ -4779,7 +4741,6 @@ const EnhancedGoogleCalendar = () => {
           <CircularProgress color="inherit" />
         </Backdrop>
 
-        {/* Notification Sound */}
         <audio ref={notificationSoundRef} preload="auto">
           <source src="/notification.mp3" type="audio/mpeg" />
         </audio>

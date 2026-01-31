@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 "use client";
 
@@ -74,7 +75,7 @@ const QuotationTable = ({
             swal(
               "Error",
               err?.data?.message || "Failed to cancel quotation",
-              "error"
+              "error",
             );
           });
       }
@@ -153,7 +154,7 @@ const QuotationTable = ({
         `${import.meta.env.VITE_API_URL}/quotations/quotation/${
           d._id
         }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
-          JSON.stringify(companyProfileData)
+          JSON.stringify(companyProfileData),
         )}`,
     },
     {
@@ -171,22 +172,22 @@ const QuotationTable = ({
       link: (d) => `/dashboard/update-quotation?id=${d._id}`,
     },
 
-    ...(status === "running"
-      ? [
-          {
-            key: "cancel",
-            icon: FaTimes,
-            color: "#fff",
-            label: "Cancel Quotation",
-            onClick: (d) => handleCancel(d._id),
-            disabled: (d) => cancelLoading || d.invoiced || d.is_invoiced,
-            tooltip: (d) =>
-              d.invoiced || d.is_invoiced
-                ? "Already Invoiced"
-                : "Cancel Quotation",
-          },
-        ]
-      : []),
+    // ...(status === "running"
+    //   ? [
+    //       {
+    //         key: "cancel",
+    //         icon: FaTimes,
+    //         color: "#fff",
+    //         label: "Cancel Quotation",
+    //         onClick: (d) => handleCancel(d._id),
+    //         disabled: (d) => cancelLoading || d.invoiced || d.is_invoiced,
+    //         tooltip: (d) =>
+    //           d.invoiced || d.is_invoiced
+    //             ? "Already Invoiced"
+    //             : "Cancel Quotation",
+    //       },
+    //     ]
+    //   : []),
 
     {
       key: "delete",

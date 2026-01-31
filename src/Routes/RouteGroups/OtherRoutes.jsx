@@ -1,4 +1,4 @@
-import GoogleCalendar from "../../components/GoogleCalendar";
+import GoogleCalendar from "../../components/GoogleCalendar/GoogleCalendar";
 import Backup from "../../pages/Backup/Backup";
 import RestoreDatabase from "../../pages/Backup/RestoreDatabase";
 import CompanyBrand from "../../pages/CompanyBrand/CompanyBrand";
