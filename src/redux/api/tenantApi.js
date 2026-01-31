@@ -2,7 +2,7 @@ import { baseApi } from "./baseApi";
 
 const tenantApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-   createTenant: builder.mutation({
+    createTenant: builder.mutation({
       query: ({ payload, plan }) => ({
         url: "/tenants",
         method: "POST",
@@ -16,18 +16,18 @@ const tenantApi = baseApi.injectEndpoints({
     getAllTenant: builder.query({
       query: () => ({
         url: `/tenants`,
-        method: "GET"
+        method: "GET",
       }),
       providesTags: ["tenant"],
     }),
     getSingleTenant: builder.query({
       query: ({ id }) => ({
         url: `/tenants/${id}`,
-        method: "GET"
+        method: "GET",
       }),
       providesTags: ["supplier"],
     }),
-      updateTenant: builder.mutation({
+    updateTenant: builder.mutation({
       query: ({ id, data }) => ({
         url: `/tenants/${id}`,
         method: "PUT",
@@ -38,11 +38,11 @@ const tenantApi = baseApi.injectEndpoints({
     deleteTenant: builder.mutation({
       query: ({ id }) => ({
         url: `/tenants/${id}`,
-        method: "DELETE"
+        method: "DELETE",
       }),
       invalidatesTags: ["tenant"],
     }),
-     renewSubscription: builder.mutation({
+    renewSubscription: builder.mutation({
       query: ({ id, plan }) => ({
         url: `/tenants/renew-subscription/${id}`,
         method: "PATCH",
@@ -50,9 +50,14 @@ const tenantApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["tenant"],
     }),
-
   }),
 });
 
-
-export const { useCreateTenantMutation, useGetAllTenantQuery, useUpdateTenantMutation,useGetSingleTenantQuery, useDeleteTenantMutation, useRenewSubscriptionMutation  } = tenantApi;
+export const {
+  useCreateTenantMutation,
+  useGetAllTenantQuery,
+  useUpdateTenantMutation,
+  useGetSingleTenantQuery,
+  useDeleteTenantMutation,
+  useRenewSubscriptionMutation,
+} = tenantApi;

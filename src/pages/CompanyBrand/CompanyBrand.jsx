@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import {
   Box,
   Button,
@@ -18,26 +18,12 @@ import {
 } from "../../redux/api/companyBrandApi";
 import swal from "sweetalert";
 import uploadFile from "../../helpers/uploadFile";
-
-// Safe tenant resolver for localhost + subdomains
-const getTenantDomain = () => {
-  if (typeof window === "undefined") return "";
-  const host = window.location.hostname; // e.g. trustautosolution.com or garage.worldautosolution.com
-  const parts = host.split(".");
-  // if localhost or IP, just return host
-  if (host.includes("localhost") || /^\d{1,3}(\.\d{1,3}){3}$/.test(host)) {
-    return host;
-  }
-  // subdomain.domain.tld → take first part as tenant
-  if (parts.length > 2) return parts[0];
-  // bare domain → use full host as tenant (adjust to your backend logic if needed)
-  return host;
-};
+import { useTenantDomain } from "../../hooks/useTenantDomain";
 
 const CompanyBrand = () => {
   const [preview, setPreview] = useState(null);
 
-  const tenantDomain = useMemo(() => getTenantDomain(), []);
+  const { tenantDomain } = useTenantDomain();
   const {
     register,
     handleSubmit,
@@ -45,7 +31,6 @@ const CompanyBrand = () => {
     formState: { isSubmitting, errors },
   } = useForm();
   const { data, isLoading } = useGetAllCompanyBrandsQuery({});
-
 
   const [createCompanyBrand] = useCreateCompanyBrandMutation();
   const [deleteCompanyBrand] = useDeleteCompanyBrandMutation();
@@ -68,8 +53,6 @@ const CompanyBrand = () => {
         swal("Error", "Please select a logo!", "error");
         return;
       }
-
-      // 1) Upload to Cloudinary
       const uploaded = await uploadFile(file);
       if (!uploaded?.secure_url) {
         throw new Error("Cloudinary upload failed");
@@ -82,7 +65,6 @@ const CompanyBrand = () => {
       reset();
       setPreview(null);
     } catch (error) {
-      console.error("Upload error:", error);
       swal("Error", error?.message || "Failed to upload logo", "error");
     }
   };
@@ -101,7 +83,6 @@ const CompanyBrand = () => {
     try {
       await deleteCompanyBrand({ tenantDomain, id }).unwrap();
       swal("Deleted!", "Logo deleted successfully", "success");
-      // Invalidates tag → list updates automatically
     } catch (error) {
       console.error("Delete error:", error);
       swal("Error", "Failed to delete logo", "error");
@@ -110,7 +91,6 @@ const CompanyBrand = () => {
 
   return (
     <Box p={4} sx={{ maxWidth: 700, mx: "auto" }}>
-      {/* Header */}
       <Typography
         variant="h4"
         fontWeight={700}
@@ -119,8 +99,6 @@ const CompanyBrand = () => {
       >
         Company Brand Logo Management
       </Typography>
-
-      {/* Upload Section */}
       <Paper
         elevation={4}
         sx={{

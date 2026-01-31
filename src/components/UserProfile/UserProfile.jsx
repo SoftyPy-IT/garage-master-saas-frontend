@@ -65,13 +65,13 @@ const UserProfile = ({ tenantDomain }) => {
     <div className="relative" ref={dropdownRef}>
       {/* Profile button */}
       <div
-        className="flex items-center gap-2 cursor-pointer select-none p-2 md:p-[6px] rounded-xl bg-white/20 backdrop-blur-sm border border-white/30 shadow-lg hover:bg-white/30 transition-all duration-300"
+        className="flex items-center gap-2 cursor-pointer select-none p-2 md:p-[6px] lg:p-1 rounded-xl bg-white/20 backdrop-blur-sm border border-white/30 shadow-lg hover:bg-white/30 transition-all duration-300"
         onClick={toggleDropdown}
       >
         <img
           src={data?.data[0]?.image || "/images/user.jpg"}
           alt="User"
-          className="w-8 h-8 rounded-full border-2 border-white shadow-sm"
+          className="w-5 xl:w-8 h-5 xl:h-8 rounded-full border-2 border-white shadow-sm"
         />
         <div className="text-white font-medium hidden md:flex items-center">
           <span>Admin</span>

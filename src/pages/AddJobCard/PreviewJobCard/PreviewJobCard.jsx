@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useContext, useEffect, useState } from "react";
 import "./PreviewJobCard.css";
 import car from "../../../../public/assets/car3.jpeg";
@@ -7,16 +6,19 @@ import { useReactToPrint } from "react-to-print";
 import { Button, Link } from "@mui/material";
 import { WhatsApp } from "@mui/icons-material";
 import { WhatsappShareButton } from "react-share";
-import { PrintContext } from "../../context/PrintProvider";
 import { useGetSingleJobCardQuery } from "../../../redux/api/jobCard";
 import { useGetCompanyProfileQuery } from "../../../redux/api/companyProfile";
 import Loading from "../../../components/Loading/Loading";
 import { useTenantDomain } from "../../../hooks/useTenantDomain";
+import { PrintContext } from "../../../context/PrintProvider";
+import { useCompanyProfileData } from "../../../hooks/useCompanyProfileData";
+import { formatDate } from "../../../utils/formateDate";
 const PreviewJobCard = () => {
-  const { componentRef, targetRef } = useContext(PrintContext);
-  const [vehicleInterior, setVehicleInterior] = useState("");
-  const [reportedDefect, setReportedDefect] = useState("");
-  const [reportedAction, setReportedAction] = useState("");
+  const { componentRef } = useContext(PrintContext);
+  
+  const [, setVehicleInterior] = useState("");
+  const [, setReportedDefect] = useState("");
+  const [, setReportedAction] = useState("");
   const { tenantDomain } = useTenantDomain();
 
   const location = useLocation();
@@ -28,16 +30,7 @@ const PreviewJobCard = () => {
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
   });
-
-  const companyProfileData = {
-    companyName: CompanyInfoData?.data?.companyName,
-    address: CompanyInfoData?.data?.address,
-    website: CompanyInfoData?.data?.website,
-    phone: CompanyInfoData?.data?.phone,
-    email: CompanyInfoData?.data?.email,
-    logo: CompanyInfoData?.data?.logo[0],
-    companyNameBN: CompanyInfoData?.data?.companyNameBN,
-  };
+  const { companyProfileData } = useCompanyProfileData();
 
   const previewData = data?.data;
 
@@ -78,16 +71,7 @@ const PreviewJobCard = () => {
     previewData?.showRoom?.driver_country_code +
     previewData?.showRoom?.driver_contact;
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    const day = date.getDate().toString().padStart(2, "0");
-    const month = (date.getMonth() + 1).toString().padStart(2, "0");
-    const year = date.getFullYear();
-    return `${day}-${month}-${year}`;
-  };
-
   const urlToShare = window.location.href;
-  const title = "Check this out!";
 
   return (
     <main className="jobCardViewWrap">
@@ -104,12 +88,17 @@ const PreviewJobCard = () => {
                   />
 
                   <div className="flex-1 text-center">
-                    <h2 className="trustAutoTitle">
-                      {CompanyInfoData?.data?.companyNameBN}
-                    </h2>
-                    <h3 className="text-lg md:text-xl english-font mt-1 text-[#4671A1]">
-                      ({CompanyInfoData?.data?.companyName})
-                    </h3>
+                    {CompanyInfoData?.data?.companyNameBN && (
+                      <h2 className="trustAutoTitle">
+                        {CompanyInfoData.data.companyNameBN}
+                      </h2>
+                    )}
+
+                    {CompanyInfoData?.data?.companyName && (
+                      <h3 className="text-lg md:text-xl english-font mt-1 text-[#4671A1] font-bold">
+                        {CompanyInfoData.data.companyName}
+                      </h3>
+                    )}
                   </div>
 
                   {/* Spacer for flex alignment */}
@@ -117,14 +106,12 @@ const PreviewJobCard = () => {
                 </div>
               </div>
             </div>
+
             <div>
               <div className="md:hidden flex justify-center items-center my-3">
-                  <div className="vehicleCard previwCard2">
-                    Vehicle Job Card{" "}
-                  </div>
-                </div>
+                <div className="vehicleCard previwCard2">Vehicle Job Card </div>
+              </div>
               <div className=" flex text-[12px] justify-between items-center my-2">
-                
                 <div>
                   <b>
                     Job No: <span>{previewData?.job_no}</span>
@@ -145,7 +132,7 @@ const PreviewJobCard = () => {
                 </div>
               </div>
 
-              <div className="flex flex-col  justify-between">
+              <div className="flex flex-col md:flex-row  justify-between">
                 <div className="inputGroup">
                   <h6 className="mb-2 font-bold">Vehicle Information </h6>
                   <div className="grid grid-cols-2 md:grid-cols-3">
@@ -165,9 +152,11 @@ const PreviewJobCard = () => {
                         <label className="block">Car Registration No</label>
                         <input
                           type="text"
-                          defaultValue={`${previewData?.vehicle?.carReg_no || "N/A"
-                            } ${previewData?.vehicle?.car_registration_no || "N/A"
-                            }`}
+                          defaultValue={`${
+                            previewData?.vehicle?.carReg_no || "N/A"
+                          } ${
+                            previewData?.vehicle?.car_registration_no || "N/A"
+                          }`}
                           disabled
                         />
                       </div>
@@ -359,7 +348,7 @@ const PreviewJobCard = () => {
                 </div>
               </div>
               <div className="fullTextArea mt-2">
-                <label>                  
+                <label>
                   Vehicle Interior Parts, Papers, Tools, Meter Light & Others
                 </label>
                 <textarea
@@ -369,7 +358,7 @@ const PreviewJobCard = () => {
               </div>
               <div className="flex flex-col md:flex-row justify-between ">
                 <div className="leftSide">
-                  <div >
+                  <div>
                     <label>Reported Defect</label>
                     <textarea
                       defaultValue={previewData?.reported_defect || "N/A"}
@@ -414,14 +403,14 @@ const PreviewJobCard = () => {
               </div>
             </div>
 
-            <div className="flex flex-col md:flex-row md:items-center  justify-between inputGroup2">
+            <div className="flex flex-col md:flex-row md:items-center justify-between inputGroup2">
               <div>
                 <label className="block ">Technician Name</label>
                 <input
                   defaultValue={previewData?.technician_name || "N/A"}
                   disabled
                   type="text"
-                // placeholder="Technician Name"
+                  // placeholder="Technician Name"
                 />
               </div>
               <div>
@@ -430,7 +419,7 @@ const PreviewJobCard = () => {
                   // defaultValue={previewData.technician_signature}
                   disabled
                   type="text"
-                // placeholder="Technician Signature"
+                  // placeholder="Technician Signature"
                 />
               </div>
               <div>
@@ -455,10 +444,7 @@ const PreviewJobCard = () => {
             </div>
           </div>
 
-          <div >
-            <div className="px-[8px]">
-              <hr className=" border border-[#4671A1]" />
-            </div>
+          <div>
             <div className="text-center  mt-3">
               <p className="text-xs">
                 <b>Office: </b>
@@ -474,7 +460,7 @@ const PreviewJobCard = () => {
           </div>
         </div>
       </div>
-      <div className="printBtnGroup md:ml-[500px] mt-5 space-y-3 ">
+      <div className="printBtnGroup md:ml-[500px] mt-5 space-y-3 md:space-y-0 ">
         <Button
           sx={{ color: "white", borderRadius: "20px", padding: "7px 20px" }}
           onClick={handlePrint}
@@ -483,10 +469,11 @@ const PreviewJobCard = () => {
         </Button>
         <a
           className="bg-[#42A0D9] text-white px-3 py-2  rounded-full mx-2 "
-          href={`${import.meta.env.VITE_API_URL}/jobCards/jobcard/${previewData?._id
-            }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
-              JSON.stringify(companyProfileData)
-            )}`}
+          href={`${import.meta.env.VITE_API_URL}/jobCards/jobcard/${
+            previewData?._id
+          }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
+            JSON.stringify(companyProfileData)
+          )}`}
           target="_blank"
           rel="noreferrer"
         >

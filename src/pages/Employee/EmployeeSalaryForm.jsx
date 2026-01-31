@@ -59,7 +59,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Loading from "../../components/Loading/Loading";
 import Can from "../../components/Can";
 
-// Constants
 const years = [{ value: "Select Year", label: "Select Year" }];
 for (let year = 2024; year <= 2030; year++) {
   years.push({ value: String(year), label: String(year) });
@@ -73,13 +72,11 @@ const EmployeeSalaryForm = ({ id, performActionWithPermission, tenantDomain }) =
   const month = new URLSearchParams(location.search).get("month");
 
   const theme = useTheme();
-  const [currentPage, setCurrentPage] = useState(1);
-  const [filterType, setFilterType] = useState(initialSelectedOption);
+  const [currentPage] = useState(1);
   const limit = 100;
 
   const navigate = useNavigate();
   const isEditMode = Boolean(id);
-  // New state for employee filtering
   const [selectedEmployees, setSelectedEmployees] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -91,14 +88,13 @@ const EmployeeSalaryForm = ({ id, performActionWithPermission, tenantDomain }) =
       searchTerm: searchTerm,
     });
 
-  console.log('all employe', getAllEmployee);
 
   const { data: singleSalary, isLoading: singleSalaryLoading } =
     useGetSalaryByMonthQuery({ tenantDomain, month });
 
-  const [createSalary, { isLoading: createLoading, error: createError }] =
+  const [createSalary, { isLoading: createLoading, }] =
     useCreateSalaryMutation();
-  const [updateSalary, { isLoading: updateLoading, error: updateError }] = useUpdateSalaryMutation();
+  const [updateSalary, { isLoading: updateLoading, }] = useUpdateSalaryMutation();
   const [selectedOption, setSelectedOption] = useState([]);
   const [selectedYear, setSelectedYear] = useState([]);
   const [bonus, setBonus] = useState([]);
@@ -170,7 +166,6 @@ const EmployeeSalaryForm = ({ id, performActionWithPermission, tenantDomain }) =
     setPaid(new Array(employeeCount).fill(false));
   };
 
-  // Initialize with ALL salary data for edit mode
   const initializeWithAllSalaryData = (employeeCount) => {
     try {
       const salariesArray = singleSalary.data;
@@ -184,8 +179,6 @@ const EmployeeSalaryForm = ({ id, performActionWithPermission, tenantDomain }) =
         return;
       }
       const employees = getAllEmployee.data.employees;
-
-      // Initialize arrays with default values
       const monthArray = new Array(employeeCount).fill(initialSelectedOption);
       const yearArray = new Array(employeeCount).fill(currentYear);
       const bonusArray = new Array(employeeCount).fill(0);
@@ -279,17 +272,14 @@ const EmployeeSalaryForm = ({ id, performActionWithPermission, tenantDomain }) =
     setDataInitialized(false);
   }, [id]);
 
-  // Handle employee filter selection
   const handleEmployeeFilterChange = (event, newValue) => {
     setSelectedEmployees(newValue);
   };
 
-  // Clear employee filter
   const clearEmployeeFilter = () => {
     setSelectedEmployees([]);
   };
 
-  // Get the actual index of an employee in the original array
   const getOriginalEmployeeIndex = (employee) => {
     return (
       getAllEmployee?.data?.employees?.findIndex(

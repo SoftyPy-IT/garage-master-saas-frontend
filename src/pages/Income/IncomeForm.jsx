@@ -2,8 +2,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 "use client";
-import { useState, useEffect, useMemo, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useMemo } from "react";
 import { toast } from "react-toastify";
 import {
   Box,
@@ -41,10 +40,11 @@ import { paymentMethods } from "../../constant";
 import { expenseInputStyle } from "../../utils/customStyle";
 import { useAppOptions } from "../../hooks/useAppOptions";
 import Can from "../../components/Can";
+import { useNavigate } from "react-router-dom";
 
 const ExpenseForm = ({ id }) => {
-  const { tenantDomain, performActionWithPermission, invoiceOption, allInvoices, navigate } = useAppOptions()
-
+  const { tenantDomain, performActionWithPermission, allInvoices } = useAppOptions()
+  const navigate = useNavigate()
 
   const { data: singleIncome, isLoading } = useGetSingleIncomeQuery({
     tenantDomain,
@@ -112,19 +112,12 @@ const ExpenseForm = ({ id }) => {
     control,
     name: "income_items",
   });
-
-
-  const incomeItems = watch("income_items");
   const selectedInvoiceId = watch("invoice_id");
-
-  // Helper function to parse amount string and remove commas
   const parseAmount = (amountString) => {
     if (!amountString) return 0;
     const cleanAmount = amountString.toString().replace(/,/g, "");
     return Number(cleanAmount) || 0;
   };
-
-  // Auto-fill service and parts income when invoice is selected
   useEffect(() => {
     if (selectedInvoiceId && allInvoices?.data?.invoices) {
       const selectedInvoice = allInvoices.data.invoices.find(
@@ -146,8 +139,6 @@ const ExpenseForm = ({ id }) => {
       reset(defaultValues);
     }
   }, [defaultValues, reset, isDirty]);
-
-  // Calculate total for other income items
 
   const handleFormSubmit = async (data) => {
     performActionWithPermission('/dashboard/add-income',

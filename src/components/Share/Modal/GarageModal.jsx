@@ -16,14 +16,14 @@ export default function GarageModal({
       onClose={() => setOpen(false)}
       maxWidth={maxWidth}
       fullWidth
-      PaperProps={{ sx: { borderRadius: 3, overflow: "hidden" } }}
+      PaperProps={{ sx: { borderRadius: 3, overflow: "hidden", } }}
     >
       {/* Header */}
       <Box
         sx={{
           background: "linear-gradient(135deg, #499ccc 0%, #499ccc 100%)",
           paddingY: 2,
-          paddingX: 3,
+          paddingX: 1.5,
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
@@ -51,7 +51,7 @@ export default function GarageModal({
       </Box>
 
       {/* Body */}
-      <DialogContent sx={{ p: 0 }}>
+      <DialogContent sx={{ p: {xs:1, sm:0} }}>
         <Box sx={{ p: 3 }}>{children}</Box>
       </DialogContent>
     </Dialog>

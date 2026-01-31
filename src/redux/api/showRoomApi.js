@@ -11,10 +11,10 @@ const showRoomApi = baseApi.injectEndpoints({
       invalidatesTags: ["showroom"],
     }),
     getAllShowRooms: builder.query({
-      query: ({ tenantDomain, limit, page, searchTerm,isRecycled }) => ({
+      query: ({ tenantDomain, limit, page, searchTerm, isRecycled }) => ({
         url: `/showrooms`,
         method: "GET",
-        params: {tenantDomain,  limit, page, searchTerm,isRecycled },
+        params: { tenantDomain, limit, page, searchTerm, isRecycled },
       }),
       providesTags: ["showroom", "jobCard", "invoice", "quotation", "vehicle"],
     }),
@@ -23,7 +23,7 @@ const showRoomApi = baseApi.injectEndpoints({
       query: ({ tenantDomain, id }) => ({
         url: `/showrooms/${id}`,
         method: "GET",
-            params: { tenantDomain },
+        params: { tenantDomain },
       }),
       providesTags: ["showroom", "jobCard", "invoice", "quotation", "vehicle"],
     }),
@@ -45,11 +45,11 @@ const showRoomApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["showroom"],
     }),
-    permanantlyDeleteShowRoom: builder.mutation({
+    permanentlyDeleteShowRoom: builder.mutation({
       query: ({ tenantDomain, id }) => ({
-        url: `/showrooms/delete-permanantly/${id}`,
+        url: `/showrooms/delete-permanently/${id}`,
         method: "DELETE",
-          params: {
+        params: {
           tenantDomain,
         },
       }),
@@ -59,7 +59,7 @@ const showRoomApi = baseApi.injectEndpoints({
       query: ({ tenantDomain, id }) => ({
         url: `/showrooms/recycle/${id}`,
         method: "PATCH",
-         params: {
+        params: {
           tenantDomain,
         },
       }),
@@ -69,7 +69,7 @@ const showRoomApi = baseApi.injectEndpoints({
       query: ({ tenantDomain, id }) => ({
         url: `/showrooms/restore/${id}`,
         method: "PATCH",
-         params: {
+        params: {
           tenantDomain,
         },
       }),
@@ -86,5 +86,5 @@ export const {
   useDeleteShowRoomMutation,
   useMoveRecycledShowRoomMutation,
   useRestoreFromRecycledShowRoomMutation,
-  usePermanantlyDeleteShowRoomMutation,
+  usePermanentlyDeleteShowRoomMutation,
 } = showRoomApi;

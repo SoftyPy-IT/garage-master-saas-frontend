@@ -38,15 +38,18 @@ const UpdateEmployee = () => {
   const [guardianCountryCode, setGuardianCountryCode] = useState(countries[0]);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [guardianPhoneNumber, setGuardianPhoneNumber] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState(null);
+  const [joinDate, setJoinDate] = useState(null);
   const location = useLocation();
   const id = new URLSearchParams(location.search).get("id");
-  const { tenantDomain, performActionWithPermission } = useAppOptions()
+  const { tenantDomain, performActionWithPermission } = useAppOptions();
   const navigate = useNavigate();
 
   const {
     register,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm();
   const {
@@ -63,6 +66,17 @@ const UpdateEmployee = () => {
 
   useEffect(() => {
     if (singleEmployee?.data) {
+      // Set date values
+      const dob = singleEmployee.data.date_of_birth
+        ? dayjs(singleEmployee.data.date_of_birth)
+        : null;
+      const join = singleEmployee.data.join_date
+        ? dayjs(singleEmployee.data.join_date)
+        : null;
+
+      setDateOfBirth(dob);
+      setJoinDate(join);
+
       reset({
         employeeId: singleEmployee.data.employeeId,
         full_name: singleEmployee?.data?.full_name,
@@ -94,16 +108,45 @@ const UpdateEmployee = () => {
         present_address: singleEmployee?.data?.present_address,
         permanent_address: singleEmployee?.data?.permanent_address,
       });
+
+      // Set phone numbers
+      setPhoneNumber(singleEmployee?.data?.phone_number || "");
+      setGuardianPhoneNumber(singleEmployee?.data?.guardian_contact || "");
+
+      // Set country codes
+      if (singleEmployee?.data?.country_code) {
+        const foundCountry = countries.find(
+          (country) => country.code === singleEmployee.data.country_code
+        );
+        if (foundCountry) setCountryCode(foundCountry);
+      }
+      if (singleEmployee?.data?.guardian_country_code) {
+        const foundGuardianCountry = countries.find(
+          (country) =>
+            country.code === singleEmployee.data.guardian_country_code
+        );
+        if (foundGuardianCountry) setGuardianCountryCode(foundGuardianCountry);
+      }
     }
   }, [reset, singleEmployee?.data]);
 
   const onSubmit = async (data) => {
-    performActionWithPermission('/dashboard/update-employee', 'edit',
+    performActionWithPermission(
+      "/dashboard/update-employee",
+      "edit",
       async () => {
         data.country_code = countryCode.code;
         data.guardian_country_code = guardianCountryCode.code;
         data.image = url;
         data.nid_number = Number(data.nid_number);
+
+        // Format dates properly before sending
+        if (dateOfBirth) {
+          data.date_of_birth = dateOfBirth.format("YYYY-MM-DD");
+        }
+        if (joinDate) {
+          data.join_date = joinDate.format("YYYY-MM-DD");
+        }
 
         const res = await updateEmployee({
           id: singleEmployee.data._id,
@@ -117,9 +160,9 @@ const UpdateEmployee = () => {
           toast.success(res.message);
           navigate("/dashboard/employee-list");
         }
-
-      }, "You don't have permission to update employee."
-    )
+      },
+      "You don't have permission to update employee."
+    );
   };
 
   const handlePhoneNumberChange = (e) => {
@@ -132,8 +175,10 @@ const UpdateEmployee = () => {
         newPhoneNumber.length > 1)
     ) {
       setPhoneNumber(newPhoneNumber);
+      setValue("phone_number", newPhoneNumber);
     }
   };
+
   const handleGuardianPhoneNumberChange = (e) => {
     const newPhoneNumber = e.target.value;
     if (
@@ -143,7 +188,26 @@ const UpdateEmployee = () => {
         !newPhoneNumber.startsWith("0") ||
         newPhoneNumber.length > 1)
     ) {
-      setPhoneNumber(newPhoneNumber);
+      setGuardianPhoneNumber(newPhoneNumber);
+      setValue("guardian_contact", newPhoneNumber);
+    }
+  };
+
+  const handleDateOfBirthChange = (newValue) => {
+    setDateOfBirth(newValue);
+    if (newValue) {
+      setValue("date_of_birth", newValue.format("YYYY-MM-DD"));
+    } else {
+      setValue("date_of_birth", "");
+    }
+  };
+
+  const handleJoinDateChange = (newValue) => {
+    setJoinDate(newValue);
+    if (newValue) {
+      setValue("join_date", newValue.format("YYYY-MM-DD"));
+    } else {
+      setValue("join_date", "");
     }
   };
 
@@ -214,11 +278,8 @@ const UpdateEmployee = () => {
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DatePicker
                         label="Date Of Birth "
-                        defaultValue={dayjs("2022-04-17")}
-                        {...register("date_of_birth", {
-                          required: "Date of birth is required",
-                        })}
-                        focused={singleEmployee?.data?.date_of_birth || ""}
+                        value={dateOfBirth}
+                        onChange={handleDateOfBirthChange}
                         slotProps={{
                           textField: {
                             fullWidth: true,
@@ -292,22 +353,19 @@ const UpdateEmployee = () => {
                           freeSolo
                           options={countries}
                           getOptionLabel={(option) => option.code}
-                          value={
-                            countryCode
-                              ? countryCode
-                              : singleEmployee?.data?.country_code
-                          }
+                          value={countryCode}
                           onChange={(event, newValue) => {
                             setCountryCode(newValue);
                             setPhoneNumber("");
+                            if (newValue) {
+                              setValue("country_code", newValue.code);
+                            }
                           }}
                           renderInput={(params) => (
                             <TextField
                               {...params}
-                              {...register("country_code")}
                               label="Select Country Code"
                               variant="outlined"
-                              focused={singleEmployee?.data?.country_code || ""}
                             />
                           )}
                         />
@@ -320,13 +378,8 @@ const UpdateEmployee = () => {
                           variant="outlined"
                           fullWidth
                           type="tel"
-                          value={
-                            phoneNumber
-                              ? phoneNumber
-                              : singleEmployee?.data?.phone_number
-                          }
+                          value={phoneNumber}
                           onChange={handlePhoneNumberChange}
-                          focused={singleEmployee?.data?.phone_number || ""}
                         />
                       </Grid>
                     </Grid>
@@ -352,8 +405,9 @@ const UpdateEmployee = () => {
                         id="grouped-native-select"
                         label="Gender"
                         {...register("gender")}
+                        defaultValue={singleEmployee?.data?.gender || ""}
                       >
-                        <option>Select</option>
+                        <option value="">Select</option>
                         <option value="Male">Male</option>
                         <option value="Female">Female</option>
                       </Select>
@@ -370,11 +424,8 @@ const UpdateEmployee = () => {
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DatePicker
                         label="Join Date"
-                        defaultValue={dayjs("2022-04-17")}
-                        {...register("join_date", {
-                          required: "Join date is required!",
-                        })}
-                        focused={singleEmployee?.data?.join_date || ""}
+                        value={joinDate}
+                        onChange={handleJoinDateChange}
                         slotProps={{
                           textField: {
                             fullWidth: true,
@@ -405,8 +456,9 @@ const UpdateEmployee = () => {
                         id="grouped-native-select"
                         label="Select Status "
                         {...register("status")}
+                        defaultValue={singleEmployee?.data?.status || ""}
                       >
-                        <option>Select</option>
+                        <option value="">Select</option>
                         <option value="Active">Active</option>
                         <option value="Inactive">Inactive</option>
                       </Select>
@@ -453,25 +505,19 @@ const UpdateEmployee = () => {
                           freeSolo
                           options={countries}
                           getOptionLabel={(option) => option.code}
-                          value={
-                            guardianCountryCode
-                              ? guardianCountryCode
-                              : singleEmployee?.data?.guardian_country_code
-                          }
+                          value={guardianCountryCode}
                           onChange={(event, newValue) => {
                             setGuardianCountryCode(newValue);
                             setGuardianPhoneNumber("");
+                            if (newValue) {
+                              setValue("guardian_country_code", newValue.code);
+                            }
                           }}
                           renderInput={(params) => (
                             <TextField
                               {...params}
-                              {...register("guardian_country_code")}
                               label="Select Country Code"
                               variant="outlined"
-                              focused={
-                                singleEmployee?.data?.guardian_country_code ||
-                                ""
-                              }
                             />
                           )}
                         />
@@ -484,13 +530,8 @@ const UpdateEmployee = () => {
                           variant="outlined"
                           fullWidth
                           type="tel"
-                          value={
-                            guardianPhoneNumber
-                              ? guardianPhoneNumber
-                              : singleEmployee?.data?.guardian_contact
-                          }
+                          value={guardianPhoneNumber}
                           onChange={handleGuardianPhoneNumberChange}
-                          focused={singleEmployee?.data?.guardian_contact || ""}
                         />
                       </Grid>
                     </Grid>

@@ -86,7 +86,14 @@ const PurChaseForm = () => {
   const [expandedSummary, setExpandedSummary] = useState(true);
   const productSearchRef = useRef(null);
   const [updatePurchase] = useUpdatePurchaseMutation();
-  const { performActionWithPermission, supplierOptions, warehouseOptions, productOptions, setSearchTerm, tenantDomain } = useAppOptions()
+  const {
+    performActionWithPermission,
+    supplierOptions,
+    warehouseOptions,
+    productOptions,
+    setSearchTerm,
+    tenantDomain,
+  } = useAppOptions();
 
   const id = new URLSearchParams(location.search).get("id");
 
@@ -228,9 +235,13 @@ const PurChaseForm = () => {
     paymentMethod: singlePurchase?.data?.paymentMethod || "",
     attachDocument: singlePurchase?.data?.attachDocument || "",
     // FIXED: Map supplier array to array of names
-    suppliers: singlePurchase?.data?.suppliers?.map(supplier => supplier.full_name) || [],
+    suppliers:
+      singlePurchase?.data?.suppliers?.map((supplier) => supplier.full_name) ||
+      [],
     // FIXED: Map warehouse object to array with name
-    warehouse: singlePurchase?.data?.warehouse ? [singlePurchase.data.warehouse.name] : [],
+    warehouse: singlePurchase?.data?.warehouse
+      ? [singlePurchase.data.warehouse.name]
+      : [],
     note: singlePurchase?.data?.note || "",
     products:
       singlePurchase?.data?.products?.map((product) => ({
@@ -264,7 +275,9 @@ const PurChaseForm = () => {
 
   // Handle form submission
   const handleSubmit = async (data) => {
-    performActionWithPermission("/dashboard/add-purchase", id ? 'edit' : 'create',
+    performActionWithPermission(
+      "/dashboard/add-purchase",
+      id ? "edit" : "create",
       async () => {
         if (productFields.length === 0) {
           toast.error("Please add at least one product", {
@@ -290,21 +303,24 @@ const PurChaseForm = () => {
           })),
           suppliers:
             data.suppliers &&
-              data.suppliers[0] &&
-              supplierOptions.find((cat) => cat.label === data.suppliers[0])?.value
+            data.suppliers[0] &&
+            supplierOptions.find((cat) => cat.label === data.suppliers[0])
+              ?.value
               ? [
-                supplierOptions.find((cat) => cat.label === data.suppliers[0])
-                  .value,
-              ]
+                  supplierOptions.find((cat) => cat.label === data.suppliers[0])
+                    .value,
+                ]
               : [],
           warehouse:
             data.warehouse &&
-              data.warehouse[0] &&
-              warehouseOptions.find((cat) => cat.label === data.warehouse[0])?.value
+            data.warehouse[0] &&
+            warehouseOptions.find((cat) => cat.label === data.warehouse[0])
+              ?.value
               ? [
-                warehouseOptions.find((cat) => cat.label === data.warehouse[0])
-                  .value,
-              ]
+                  warehouseOptions.find(
+                    (cat) => cat.label === data.warehouse[0]
+                  ).value,
+                ]
               : [],
           totalAmount,
           totalDiscount,
@@ -361,9 +377,9 @@ const PurChaseForm = () => {
             },
           });
         }
-
-      }, `You don't have permission to ${id ? 'edit' : 'create'} purchase`
-    )
+      },
+      `You don't have permission to ${id ? "edit" : "create"} purchase`
+    );
   };
 
   return (
@@ -528,7 +544,7 @@ const PurChaseForm = () => {
 
                 {/* Right Column - Purchase Details */}
                 <Grid item xs={12} md={9}>
-                  <MotionCard
+                  <Card
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.5, delay: 0.3 }}
@@ -699,7 +715,6 @@ const PurChaseForm = () => {
                                 <span
                                   style={{ color: "red", fontSize: "25px" }}
                                 >
-                                  {" "}
                                   *
                                 </span>
                               </>
@@ -733,7 +748,7 @@ const PurChaseForm = () => {
                         </Grid>
                       </Grid>
                     </CardContent>
-                  </MotionCard>
+                  </Card>
                 </Grid>
               </Grid>
 
@@ -777,60 +792,64 @@ const PurChaseForm = () => {
                         inputRef={productSearchRef}
                       />
                     )}
-                    renderOption={(props, option) => (
-                      <li {...props}>
-                        <Box
-                          sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            width: "100%",
-                          }}
-                        >
-                          <Avatar
-                            src={option.product.image}
-                            alt={option.label}
-                            variant="rounded"
+                    renderOption={(props, option) => {
+                      return (
+                        <li {...props}>
+                          <Box
                             sx={{
-                              width: 50,
-                              height: 50,
-                              mr: 2,
-                              backgroundColor: alpha("#8b5cf6", 0.1),
-                              borderRadius: "12px",
-                              border: "1px solid",
-                              borderColor: alpha("#8b5cf6", 0.2),
+                              display: "flex",
+                              alignItems: "center",
+                              width: "100%",
                             }}
                           >
-                            <InventoryIcon sx={{ color: "#8b5cf6" }} />
-                          </Avatar>
-                          <Box sx={{ flex: 1 }}>
-                            <Typography variant="body1" fontWeight="600">
-                              {option.label}
-                            </Typography>
-                            <Typography variant="body2" color="#64748b">
-                              Price: ৳ {option.product.purchasePrice} | Stock:{" "}
-                              {option.product.stock || "N/A"}
-                            </Typography>
+                            <Avatar
+                              src={option.product.image}
+                              alt={option.label}
+                              variant="rounded"
+                              sx={{
+                                width: 50,
+                                height: 50,
+                                mr: 2,
+                                backgroundColor: alpha("#8b5cf6", 0.1),
+                                borderRadius: "12px",
+                                border: "1px solid",
+                                borderColor: alpha("#8b5cf6", 0.2),
+                              }}
+                            >
+                              <InventoryIcon sx={{ color: "#8b5cf6" }} />
+                            </Avatar>
+                            <Box sx={{ flex: 1 }}>
+                              <Typography variant="body1" fontWeight="600">
+                                {option.label}{" "}
+                                <Typography component="span">
+                                  ({option.product.product_code})
+                                </Typography>
+                              </Typography>
+                              <Typography variant="body2" color="#64748b">
+                                Price: ৳ {option.product.purchasePrice} | Stock:{" "}
+                                {option.product.stock || "N/A"}
+                              </Typography>
+                            </Box>
+                            <Chip
+                              label="Add"
+                              size="small"
+                              color="primary"
+                              sx={{
+                                borderRadius: "8px",
+                                fontWeight: 600,
+                                background:
+                                  "linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)",
+                                boxShadow: "0 2px 5px rgba(139, 92, 246, 0.3)",
+                              }}
+                            />
                           </Box>
-                          <Chip
-                            label="Add"
-                            size="small"
-                            color="primary"
-                            sx={{
-                              borderRadius: "8px",
-                              fontWeight: 600,
-                              background:
-                                "linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)",
-                              boxShadow: "0 2px 5px rgba(139, 92, 246, 0.3)",
-                            }}
-                          />
-                        </Box>
-                      </li>
-                    )}
+                        </li>
+                      );
+                    }}
                   />
                 </CardContent>
               </Card>
 
-              {/* Product Table */}
               <Card
                 sx={{
                   borderRadius: "20px",
@@ -862,8 +881,9 @@ const PurChaseForm = () => {
                   </Box>
                   {productFields.length > 0 && (
                     <Chip
-                      label={`${productFields.length} ${productFields.length === 1 ? "item" : "items"
-                        }`}
+                      label={`${productFields.length} ${
+                        productFields.length === 1 ? "item" : "items"
+                      }`}
                       size="small"
                       sx={{
                         color: "white",
@@ -1256,14 +1276,14 @@ const PurChaseForm = () => {
                                           borderColor: "#e2e8f0",
                                         },
                                         "&:hover .MuiOutlinedInput-notchedOutline":
-                                        {
-                                          borderColor: "#cbd5e1",
-                                        },
+                                          {
+                                            borderColor: "#cbd5e1",
+                                          },
                                         "&.Mui-focused .MuiOutlinedInput-notchedOutline":
-                                        {
-                                          borderColor: "#8b5cf6",
-                                          borderWidth: "2px",
-                                        },
+                                          {
+                                            borderColor: "#8b5cf6",
+                                            borderWidth: "2px",
+                                          },
                                       },
                                     }}
                                   />
@@ -1327,10 +1347,9 @@ const PurChaseForm = () => {
                 </Box>
               </Card>
 
-              {/* Summary and Notes */}
               <Grid container spacing={4} sx={{ mt: 1 }}>
                 <Grid item xs={12} md={7}>
-                  <MotionCard
+                  <Card
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.6 }}
@@ -1380,11 +1399,11 @@ const PurChaseForm = () => {
                         sx={textInuptStyle}
                       />
                     </CardContent>
-                  </MotionCard>
+                  </Card>
                 </Grid>
 
                 <Grid item xs={12} md={5}>
-                  <MotionCard
+                  <Card
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.7 }}
@@ -1599,7 +1618,7 @@ const PurChaseForm = () => {
                                     "linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%)",
                                   borderRadius: "12px",
                                   px: 2,
-                                  textAlign: "center"
+                                  textAlign: "center",
                                 }}
                               >
                                 <Box
@@ -1648,14 +1667,16 @@ const PurChaseForm = () => {
                         </Box>
                       </CardContent>
                     </Collapse>
-                  </MotionCard>
+                  </Card>
                 </Grid>
               </Grid>
 
               {/* Submit Button */}
               <Box sx={{ mt: 4, display: "flex", justifyContent: "flex-end" }}>
-                <Can action={id ? 'edit' : 'create'}
-                  page="/dashboard/add-purchase">
+                <Can
+                  action={id ? "edit" : "create"}
+                  page="/dashboard/add-purchase"
+                >
                   <Button
                     type="submit"
                     variant="contained"

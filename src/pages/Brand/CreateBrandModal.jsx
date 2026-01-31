@@ -30,7 +30,6 @@ export const CreateBrandModal = ({ open, setOpen, brandId }) => {
     { tenantDomain, id: brandId },
     { skip: !brandId }
   );
-  console.log('single brand', data)
   const handleSubmit = async (data) => {
     performActionWithPermission('/dashboard/brand', brandId ? 'edit' : 'create',
       async () => {

@@ -1,111 +1,56 @@
 /* eslint-disable react/prop-types */
-import {
-  Box,
-  Typography,
-  Grid,
-  Card,
-  CardContent,
-  Avatar,
-  alpha,
-  useTheme,
-} from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import {
   Dashboard as DashboardIcon,
   ToggleOn as ActiveIcon,
   ToggleOff as InactiveIcon,
 } from "@mui/icons-material";
+import { Typography, Box } from "@mui/material";
+import SummaryCards from "../../components/SummaryCard";
 
 const PageHeader = ({ pageData }) => {
   const theme = useTheme();
-  const activePages = pageData?.data?.filter(page => page.status === "active")?.length || 0;
-  const inactivePages = pageData?.data?.filter(page => page.status === "inactive")?.length || 0;
+  const totalPages = pageData?.data?.length || 0;
+  const activePages =
+    pageData?.data?.filter((page) => page.status === "active")?.length || 0;
+  const inactivePages =
+    pageData?.data?.filter((page) => page.status === "inactive")?.length || 0;
+
+  const cards = [
+    {
+      title: "Total Pages",
+      value: totalPages,
+      icon: <DashboardIcon />,
+      color: theme.palette.primary.main,
+      bgColor: theme.palette.primary.main,
+    },
+    {
+      title: "Active Pages",
+      value: activePages,
+      icon: <ActiveIcon />,
+      color: theme.palette.success.main,
+      bgColor: theme.palette.success.main,
+    },
+    {
+      title: "Inactive Pages",
+      value: inactivePages,
+      icon: <InactiveIcon />,
+      color: theme.palette.error.main,
+      bgColor: theme.palette.error.main,
+    },
+  ];
 
   return (
-    <>
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h3" fontWeight="bold" color="primary" gutterBottom>
-          Page Management
-        </Typography>
-        <Typography variant="subtitle1" color="text.secondary">
-          Manage and configure pages for your garage management system
-        </Typography>
-      </Box>
+    <Box sx={{ mb: 4 }}>
+      <Typography variant="h5" fontWeight="bold" color="primary" gutterBottom>
+        Page Management
+      </Typography>
+      <Typography variant="subtitle1" color="text.secondary" sx={{ mb: 3 }}>
+        Manage and configure pages for your garage management system
+      </Typography>
 
-      {/* Stats Cards */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card
-            sx={{
-              borderRadius: 3,
-              boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-              bgcolor: alpha(theme.palette.primary.main, 0.05),
-            }}
-          >
-            <CardContent sx={{ display: "flex", alignItems: "center" }}>
-              <Avatar sx={{ bgcolor: theme.palette.primary.main, mr: 2 }}>
-                <DashboardIcon />
-              </Avatar>
-              <Box>
-                <Typography variant="h4" fontWeight="bold">
-                  {pageData?.data?.length || 0}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Total Pages
-                </Typography>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={3}>
-          <Card
-            sx={{
-              borderRadius: 3,
-              boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-              bgcolor: alpha(theme.palette.success.main, 0.05),
-            }}
-          >
-            <CardContent sx={{ display: "flex", alignItems: "center" }}>
-              <Avatar sx={{ bgcolor: theme.palette.success.main, mr: 2 }}>
-                <ActiveIcon />
-              </Avatar>
-              <Box>
-                <Typography variant="h4" fontWeight="bold">
-                  {activePages}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Active Pages
-                </Typography>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={3}>
-          <Card
-            sx={{
-              borderRadius: 3,
-              boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-              bgcolor: alpha(theme.palette.error.main, 0.05),
-            }}
-          >
-            <CardContent sx={{ display: "flex", alignItems: "center" }}>
-              <Avatar sx={{ bgcolor: theme.palette.error.main, mr: 2 }}>
-                <InactiveIcon />
-              </Avatar>
-              <Box>
-                <Typography variant="h4" fontWeight="bold">
-                  {inactivePages}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Inactive Pages
-                </Typography>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
-    </>
+      <SummaryCards cards={cards} singleRow />
+    </Box>
   );
 };
 

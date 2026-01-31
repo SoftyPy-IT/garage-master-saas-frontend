@@ -4,7 +4,7 @@ import {
   Box,
   Button,
   Divider,
-  Grid,
+  // Grid,
   IconButton,
   TextField,
   Typography,
@@ -20,10 +20,14 @@ import {
 } from "@mui/icons-material";
 import { format } from "date-fns";
 import swal from "sweetalert";
-import { StyledCard } from "../../../utils";
-import { NoteDate, NoteHeader } from "../../../utils/customStyle";
+// import { StyledCard } from "../../../utils";
+// import { NoteDate, NoteHeader } from "../../../utils/customStyle";
 import CreateNoteModal from "./CreateNoteModal";
-import { useDeleteNoteMutation, useGetAllNotesQuery } from "../../../redux/api/noteApi";
+import {
+  useDeleteNoteMutation,
+  useGetAllNotesQuery,
+} from "../../../redux/api/noteApi";
+// import { Masonry } from "@mui/lab";
 
 const CustomerNote = ({ id, tenantDomain, companyId, showRoomId }) => {
   const [openModal, setOpenModal] = useState(false);
@@ -104,7 +108,7 @@ const CustomerNote = ({ id, tenantDomain, companyId, showRoomId }) => {
   }
 
   return (
-    <Box sx={{ p: 3, maxWidth: 1200, margin: "0 auto" }}>
+    <Box sx={{ p: { xs: 1, sm: 3 }, maxWidth: 1200, margin: "0 auto" }}>
       {/* Header */}
       <Box
         sx={{
@@ -116,15 +120,22 @@ const CustomerNote = ({ id, tenantDomain, companyId, showRoomId }) => {
           gap: 2,
         }}
       >
-        <Typography
-          variant="h4"
-          component="h1"
-          sx={{ fontWeight: 700, color: "primary.main" }}
-        >
-          Customer Notes ({totalNotes})
-        </Typography>
+       
 
-        <Box sx={{ display: "flex", gap: 2 }}>
+        <Typography
+  variant="h4"
+  component="h1"
+  sx={{
+    color: "primary.main",
+    fontSize: { xs: "1.5rem", sm: "2rem", md: "2.5rem" }, // responsive sizes
+    fontWeight: { xs: 400, sm: 700 },
+  }}
+>
+  Customer Notes ({totalNotes})
+</Typography>
+
+
+        <Box sx={{ display: { sm: "flex" }, gap: 2 }}>
           <TextField
             variant="outlined"
             placeholder="Search notes..."
@@ -134,28 +145,29 @@ const CustomerNote = ({ id, tenantDomain, companyId, showRoomId }) => {
               startAdornment: <SearchIcon color="action" />,
               sx: { borderRadius: "12px" },
             }}
-            sx={{ width: 300 }}
+            sx={{ width: { xs: 280, sm: 300 } }}
           />
-
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<AddIcon />}
-            onClick={handleCreateNote}
-            sx={{
-              borderRadius: "12px",
-              textTransform: "none",
-              px: 3,
-              py: 1.5,
-              fontWeight: 600,
-              boxShadow: "0 4px 12px rgba(63, 81, 181, 0.3)",
-              "&:hover": {
-                boxShadow: "0 6px 16px rgba(63, 81, 181, 0.4)",
-              },
-            }}
-          >
-            Create Note
-          </Button>
+          <div className="flex justify-end mt-2">
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<AddIcon />}
+              onClick={handleCreateNote}
+              sx={{
+                borderRadius: "12px",
+                textTransform: "none",
+                px: 3,
+                py: 1.5,
+                fontWeight: 600,
+                boxShadow: "0 4px 12px rgba(63, 81, 181, 0.3)",
+                "&:hover": {
+                  boxShadow: "0 6px 16px rgba(63, 81, 181, 0.4)",
+                },
+              }}
+            >
+              Create Note
+            </Button>
+          </div>
         </Box>
       </Box>
 
@@ -191,72 +203,115 @@ const CustomerNote = ({ id, tenantDomain, companyId, showRoomId }) => {
         </Box>
       ) : (
         <>
-          <Grid container spacing={3}>
+          <Box
+            sx={{
+              width: "100%",
+              maxWidth: "900px",
+              mx: "auto",
+              px: { xs: 0, sm: 3, md: 4 },
+              py: 3,
+              display: "flex",
+              flexDirection: "column",
+              gap: 3,
+            }}
+          >
             {notes.map((note) => (
-              <Grid item xs={12} md={6} lg={4} key={note._id}>
-                <StyledCard>
-                  <Box sx={{ p: 2.5 }}>
-                    <NoteHeader variant="h6">
-                      <NoteIcon fontSize="small" />
-                      {note.title || "Untitled Note"}
-                    </NoteHeader>
+              <Box
+                key={note._id}
+                sx={{
+                  width: "100%",
+                  borderRadius: "16px",
+                  backgroundColor: "#fff",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
+                  borderLeft: "5px solid",
+                  borderColor: "primary.main",
+                  p: { xs: 1, sm: 3 },
+                  display: "flex",
+                  flexDirection: "column",
+                  transition: "all 0.25s ease",
+                  "&:hover": {
+                    transform: "translateY(-3px)",
+                    boxShadow: "0 8px 20px rgba(0,0,0,0.1)",
+                  },
+                }}
+              >
+                {/* Header */}
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "flex-start",
+                    mb: 1.5,
+                  }}
+                >
+                  {/* Title Section */}
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      fontWeight: 600,
+                      display: "flex",
+                      alignItems: "center",
+                      color: "text.primary",
+                      fontSize: "1.05rem",
+                    }}
+                  >
+                    <NoteIcon
+                      sx={{ color: "primary.main", mr: 1, opacity: 0.8 }}
+                    />
+                    {note.title || "Untitled Note"}
+                  </Typography>
 
+                  {/* Top Right: Date + Actions */}
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                     <Typography
-                      variant="body1"
+                      variant="caption"
                       sx={{
-                        whiteSpace: "pre-wrap",
-                        minHeight: "80px",
-                        mb: 1.5,
-                        mt: 1,
+                        color: "text.disabled",
+                        fontStyle: "italic",
+                        mr: 0.5,
+                        whiteSpace: "nowrap",
                       }}
                     >
-                      {note.content}
+                      {format(new Date(note.createdAt), "MMM dd, yyyy")}
                     </Typography>
-
-                    <Box
-                      sx={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        mt: 2,
-                      }}
-                    >
-                      <Box sx={{ display: "flex", alignItems: "center" }}>
-                        <NoteDate variant="body2">
-                          Created:{" "}
-                          {format(
-                            new Date(note.createdAt),
-                            "MMM dd, yyyy - h:mm a"
-                          )}
-                        </NoteDate>
-                      </Box>
-
-                      <Box>
-                        <Tooltip title="Edit">
-                          <IconButton
-                            onClick={() => handleEditNote(note)}
-                            size="small"
-                            color="primary"
-                          >
-                            <EditIcon fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Delete">
-                          <IconButton
-                            onClick={() => handleDeleteNote(note._id)}
-                            size="small"
-                            color="error"
-                          >
-                            <DeleteIcon fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
-                      </Box>
-                    </Box>
+                    <Tooltip title="Edit">
+                      <IconButton
+                        size="small"
+                        color="primary"
+                        onClick={() => handleEditNote(note)}
+                        sx={{ p: 0.5 }}
+                      >
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Delete">
+                      <IconButton
+                        size="small"
+                        color="error"
+                        onClick={() => handleDeleteNote(note._id)}
+                        sx={{ p: 0.5 }}
+                      >
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
                   </Box>
-                </StyledCard>
-              </Grid>
+                </Box>
+
+                {/* Content */}
+                <Typography
+                  variant="body1"
+                  sx={{
+                    color: "text.secondary",
+                    whiteSpace: "pre-wrap",
+                    lineHeight: 1.6,
+                    fontSize: "0.95rem",
+                  }}
+                >
+                  {note.content}
+                </Typography>
+              </Box>
             ))}
-          </Grid>
+          </Box>
 
           {/* Pagination */}
           {totalPages > 1 && (

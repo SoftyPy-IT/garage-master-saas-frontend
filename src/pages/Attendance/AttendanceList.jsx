@@ -22,7 +22,7 @@ const AttendanceList = () => {
   const tenantDomain = useTenantDomain();
 
   const currentPage = 1;
-  const allAttendanceLimit = 31;
+  const allAttendanceLimit = 500;
 
   const {
     data: allAttendance,
@@ -62,60 +62,6 @@ const AttendanceList = () => {
       });
     }
   }, [allAttendance, allAttendanceError]);
-
-  const handleDateSearch = (e) => {
-    const parsedDate = new Date(e.$d);
-    const day = parsedDate.getDate().toString().padStart(2, "0");
-    const month = (parsedDate.getMonth() + 1).toString().padStart(2, "0");
-    const year = parsedDate.getFullYear();
-    const date = `${day}-${month}-${year}`;
-    setFilterType(date);
-  };
-
-  const handleDeleteFilter = async (date) => {
-    const formattedDate = dayjs(date, ["DD-MM-YYYY", "DD-MM-YY"]).format(
-      "DD-MM-YYYY"
-    );
-
-    // Show confirmation dialog
-    const willDelete = await swal({
-      title: "Are you sure?",
-      text: `You want to delete attendance for ${formattedDate}?`,
-      icon: "warning",
-      dangerMode: true,
-      buttons: ["Cancel", "Yes, Delete"],
-    });
-
-    if (willDelete) {
-      try {
-        const response = await deleteAttendance({
-          tenantDomain,
-          date: formattedDate, // send directly
-        }).unwrap();
-
-        if (response.success) {
-          swal(
-            "Deleted!",
-            `Attendance for ${formattedDate} has been deleted.`,
-            "success"
-          );
-          refetch();
-        } else {
-          swal(
-            "Error",
-            response.message || "Failed to delete attendance",
-            "error"
-          );
-        }
-      } catch (error) {
-        swal("Error", error.message || "Failed to delete attendance", "error");
-      }
-    }
-  };
-
-  const handleAllAttendance = () => {
-    setFilterType("");
-  };
 
   if (allAttendanceLoading) {
     return <Loading />;

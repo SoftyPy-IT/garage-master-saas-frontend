@@ -32,15 +32,16 @@ const monthNames = [
 
 export default function StackBars() {
   const { tenantDomain } = useTenantDomain();
-  const { data: expenseData, isLoading: expenseLoading } = useGetAllExpensesQuery({
-    tenantDomain,
-    limit: 100,  // Increased limit to get more data
-    page: 1,
-  });
+  const { data: expenseData, isLoading: expenseLoading } =
+    useGetAllExpensesQuery({
+      tenantDomain,
+      limit: 100,
+      page: 1,
+    });
 
   const { data: incomeData, isLoading: incomeLoading } = useGetAllIncomesQuery({
     tenantDomain,
-    limit: 100,  // Increased limit to get more data
+    limit: 100,
     page: 1,
   });
 
@@ -61,26 +62,25 @@ export default function StackBars() {
     );
   }
 
-  // Aggregate data by month
   const aggregateData = () => {
     const currentDate = new Date();
     const dataMap = new Map();
-
-    // Initialize last 5 months with empty data
     for (let i = 4; i >= 0; i--) {
-      const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
+      const date = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth() - i,
+        1
+      );
       const key = `${date.getFullYear()}-${date.getMonth()}`;
       dataMap.set(key, {
         monthLabel: `${monthNames[date.getMonth()]} ${date.getFullYear()}`,
         Earnings: 0,
         Expense: 0,
         Profit: 0,
-        sortKey: date.getTime()
+        sortKey: date.getTime(),
       });
     }
-
-    // Process income data
-    incomeList.forEach(income => {
+    incomeList.forEach((income) => {
       const dateStr = income.date || income.createdAt;
       if (!dateStr) return;
 
@@ -88,7 +88,7 @@ export default function StackBars() {
       if (isNaN(date)) return;
 
       const key = `${date.getFullYear()}-${date.getMonth()}`;
-      if (!dataMap.has(key)) return;  // Only consider last 5 months
+      if (!dataMap.has(key)) return;
 
       const current = dataMap.get(key);
       current.Earnings += income.totalAmount || 0;
@@ -96,8 +96,7 @@ export default function StackBars() {
       dataMap.set(key, current);
     });
 
-    // Process expense data
-    expenseList.forEach(expense => {
+    expenseList.forEach((expense) => {
       const dateStr = expense.date || expense.createdAt;
       if (!dateStr) return;
 
@@ -105,15 +104,13 @@ export default function StackBars() {
       if (isNaN(date)) return;
 
       const key = `${date.getFullYear()}-${date.getMonth()}`;
-      if (!dataMap.has(key)) return;  // Only consider last 5 months
+      if (!dataMap.has(key)) return;
 
       const current = dataMap.get(key);
       current.Expense += expense.totalAmount || 0;
       current.Profit = current.Earnings - current.Expense;
       dataMap.set(key, current);
     });
-
-    // Convert to array and sort chronologically
     return Array.from(dataMap.values()).sort((a, b) => a.sortKey - b.sortKey);
   };
 

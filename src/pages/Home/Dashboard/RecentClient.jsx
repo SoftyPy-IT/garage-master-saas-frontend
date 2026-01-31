@@ -21,12 +21,12 @@ const RecentClient = ({ tenantDomain }) => {
   return (
     <div className="bg-white/90 backdrop-blur-xl rounded-2xl border border-white/30 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between p-6 pb-3">
+      <div className="flex items-center justify-between p-2 md:p-6 pb-3">
         <h3 className="text-xl font-semibold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
           Recent Clients
         </h3>
         <Link to="/dashboard/customer-list">
-          <button className="flex items-center rounded-full px-4 py-2 bg-blue-50 border border-blue-200 hover:bg-blue-100 hover:border-blue-300 hover:translate-x-1 transition-all duration-300 backdrop-blur-sm">
+          <button className="flex items-center rounded-full px-3 lg:px-4 py-2 bg-blue-50 border border-blue-200 hover:bg-blue-100 hover:border-blue-300 hover:translate-x-1 transition-all duration-300 backdrop-blur-sm">
             <span className="text-sm font-medium text-blue-600">See More</span>
             <HiOutlineArrowNarrowRight size={15} className="ml-1 text-blue-600 transition-transform duration-300" />
           </button>

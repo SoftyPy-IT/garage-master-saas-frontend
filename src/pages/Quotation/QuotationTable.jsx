@@ -1,73 +1,46 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 "use client";
 
-/* eslint-disable no-unused-vars */
-import { useEffect, useRef, useState } from "react";
-import {
-  FaTrashAlt,
-  FaEdit,
-  FaEye,
-  FaDownload,
-  FaFileInvoice,
-} from "react-icons/fa";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { FaEye, FaDownload, FaFileInvoice, FaTimes } from "react-icons/fa";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Box, Button } from "@mui/material";
+import { ArrowBack } from "@mui/icons-material";
+import { DeleteIcon, EditIcon } from "lucide-react";
 import swal from "sweetalert";
 
-import {
-  IconButton,
-  Pagination,
-  Paper,
-  TextField,
-  Tooltip,
-} from "@mui/material";
+import Table from "../../components/Table";
+import Breadcrumb from "../../components/Breadcrumb";
+import { wrapBoxStyle } from "../../utils/customStyle";
+import { useTenantDomain } from "../../hooks/useTenantDomain";
 import {
   useGetAllQuotationsQuery,
   useMoveRecycledQuotationMutation,
+  useCancelQuotationMutation,
 } from "../../redux/api/quotation";
-import { Search } from "lucide-react";
-import { useTenantDomain } from "../../hooks/useTenantDomain";
-import { useGetCompanyProfileQuery } from "../../redux/api/companyProfile";
-import { usePermissions } from "../../context/PermissionContext";
-import Can from "../../components/Can";
-import Loading from "../../components/Loading/Loading";
+import { useCompanyProfileData } from "../../hooks/useCompanyProfileData";
 
-const QuotationTable = ({ title }) => {
+const QuotationTable = ({
+  isRecycled,
+  title = "Quotations",
+  status,
+  handleMoveAction,
+}) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const search = new URLSearchParams(location.search).get("search");
-  const { performActionWithPermission } = usePermissions();
 
   const [filterType, setFilterType] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-
-  const textInputRef = useRef(null);
-  const navigate = useNavigate();
   const limit = 10;
   const { tenantDomain } = useTenantDomain();
 
-  const handleIconPreview = async (e) => {
-    performActionWithPermission('/dashboard/quotation-view', 'view',
-      async () => {
-        navigate(`/dashboard/quotation-view?id=${e}`);
-      }, "You don't have permission to view quotation"
-    )
-  };
-  const { data: profileData } = useGetCompanyProfileQuery({
-    tenantDomain,
-  });
-
-  const companyProfileData = {
-    companyName: profileData?.data?.companyName,
-    address: profileData?.data?.address,
-    website: profileData?.data?.website,
-    phone: profileData?.data?.phone,
-    email: profileData?.data?.email,
-    logo: profileData?.data?.logo[0],
-    companyNameBN: profileData?.data?.companyNameBN,
-  };
-  const [
-    moveRecycledQuotation,
-    { idLoading: deleteLoading, error: deleteError },
-  ] = useMoveRecycledQuotationMutation();
+  const { companyProfileData } = useCompanyProfileData();
+  const [moveRecycledQuotation, { isLoading: deleteLoading }] =
+    useMoveRecycledQuotationMutation();
+  const [cancelQuotation, { isLoading: cancelLoading }] =
+    useCancelQuotationMutation();
 
   const { data: allQuotations, isLoading: quotationLoading } =
     useGetAllQuotationsQuery({
@@ -75,290 +48,209 @@ const QuotationTable = ({ title }) => {
       limit,
       page: currentPage,
       searchTerm: filterType,
-      isRecycled: false,
+      isRecycled,
+      status,
     });
-  const handleMoveToRecycled = async (id) => {
-    performActionWithPermission('/dashboard/quotation-list', 'delete',
-      async () => {
-        const willDelete = await swal({
-          title: "Are you sure?",
-          text: " You want to move this quotation to Recycle Bin?",
-          icon: "warning",
-          dangerMode: true,
-        });
 
-        if (willDelete) {
-          try {
-            await moveRecycledQuotation({ tenantDomain, id }).unwrap();
-            swal(
-              "Move to Recycle bin!",
-              "Move to Recycle bin successful.",
-              "success"
-            );
-          } catch (error) {
-            swal("Error", "An error occurred while deleting the card.", "error");
-          }
-        }
-      }, "You don't have permission to delete this quotation"
-    )
+  // const handleCancel = (id) => {
+  //   swal({
+  //     title: "Are you sure?",
+  //     text: "Do you want to cancel this quotation? This action cannot be undone.",
+  //     icon: "warning",
+  //     buttons: true,
+  //     dangerMode: true,
+  //   }).then((willCancel) => {
+  //     if (willCancel) {
+  //       cancelQuotation({ id, tenantDomain })
+  //         .unwrap()
+  //         .then(() => {
+  //           swal("Cancelled!", "The quotation has been cancelled.", "success");
+  //         })
+  //         .catch((err) => {
+  //           swal(
+  //             "Error",
+  //             err?.data?.message || "Failed to cancel quotation",
+  //             "error",
+  //           );
+  //         });
+  //     }
+  //   });
+  // };
+
+  const quotationColumns = [
+    { key: "slNo", label: "SL No", type: "index" },
+    { key: "job_no", label: "Quotation No." },
+
+    {
+      key: "name",
+      label: "Customer Name",
+      render: (data) =>
+        data?.customer?.customer_name ||
+        data?.company?.company_name ||
+        data?.showRoom?.showRoom_name ||
+        "N/A",
+    },
+
+    {
+      key: "vehicle_name",
+      label: "Vehicle Name",
+      render: (d) =>
+        Array.isArray(d?.vehicle)
+          ? d.vehicle.map((v) => v.vehicle_name || "—").join(", ")
+          : d.vehicle?.vehicle_name || "N/A",
+    },
+
+    {
+      key: "car_no",
+      label: "Vehicle Reg No ",
+      render: (d) => {
+        if (!d?.vehicle) return "N/A";
+        const vehicles = Array.isArray(d.vehicle) ? d.vehicle : [d.vehicle];
+
+        return vehicles
+          .map((v) => {
+            const carRegNo = v?.carReg_no?.trim() || "";
+            const carRegistrationNo = v?.car_registration_no?.trim() || "";
+            if (carRegNo && carRegistrationNo)
+              return `${carRegNo}-${carRegistrationNo}`;
+            return carRegNo || carRegistrationNo || "—";
+          })
+          .join(", ");
+      },
+    },
+
+    {
+      key: "mobile_no",
+      label: "Mobile No.",
+      render: (d) =>
+        d?.customer?.fullCustomerNum ||
+        d?.company?.fullCompanyNum ||
+        d?.showRoom?.fullCompanyNum ||
+        "N/A",
+    },
+
+    { key: "date", label: "Date" },
+  ];
+
+  const quotationActions = [
+    {
+      key: "invoice",
+      color: "#fff",
+      icon: FaFileInvoice,
+      label: "View Invoice",
+      href: (d) => `/dashboard/create-invoice?order_no=${d.job_no}&id=${d._id}`,
+    },
+    {
+      key: "download",
+      icon: FaDownload,
+      color: "#fff",
+      label: "Download Quotation",
+      href: (d) =>
+        `${import.meta.env.VITE_API_URL}/quotations/quotation/${
+          d._id
+        }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
+          JSON.stringify(companyProfileData),
+        )}`,
+    },
+    {
+      key: "preview",
+      icon: FaEye,
+      color: "#fff",
+      label: "Preview",
+      onClick: (d) => navigate(`/dashboard/quotation-view?id=${d._id}`),
+    },
+    {
+      key: "edit",
+      icon: EditIcon,
+      color: "#fff",
+      label: "Edit Quotation",
+      link: (d) => `/dashboard/update-quotation?id=${d._id}`,
+    },
+
+    // ...(status === "running"
+    //   ? [
+    //       {
+    //         key: "cancel",
+    //         icon: FaTimes,
+    //         color: "#fff",
+    //         label: "Cancel Quotation",
+    //         onClick: (d) => handleCancel(d._id),
+    //         disabled: (d) => cancelLoading || d.invoiced || d.is_invoiced,
+    //         tooltip: (d) =>
+    //           d.invoiced || d.is_invoiced
+    //             ? "Already Invoiced"
+    //             : "Cancel Quotation",
+    //       },
+    //     ]
+    //   : []),
+
+    {
+      key: "delete",
+      icon: DeleteIcon,
+      color: "#fff",
+      label: isRecycled ? "Delete / Restore" : "Move to Recycled",
+      onClick: (d) => handleMoveAction?.(d._id),
+      disabled: () => deleteLoading,
+    },
+  ];
+
+  const getQuotationRowClass = (data) => {
+    if (data.status === "running") return "bg-red-500 text-white";
+    if (data.status === "completed") return "bg-green-500 text-white";
+    return "";
   };
 
   useEffect(() => {
-    if (search) {
-      setFilterType(search);
-    }
+    if (search) setFilterType(search);
   }, [search]);
 
+  const breadcrumbItems = [
+    { label: "Home", href: "/" },
+    { label: "Quotation", href: "/dashboard/quotation-list" },
+    { label: title },
+  ];
+
+  const handleBack = () => navigate(-1);
+
+  const externalHooks = {
+    tenantDomain,
+    deleteLoading,
+    cancelLoading,
+    moveRecycledQuotation,
+    cancelQuotation,
+    swal,
+  };
+
   return (
-    <Paper
-      elevation={2}
-      sx={{ px: { xs: 1, md: 2 }, py: 1, mt: { xs: 1, md: 2 } }}
-    >
-      <div className="md:mt-5">
-        <div className="w-full mt-3 md:mt-5 ">
-          <div className="mb-6 block md:flex justify-between items-center gap-0 md:gap-1">
-            <h2 className="text-xl md:text-2xl font-semibold text-center mb-2">
-              {title}
-            </h2>
-            <div className="flex items-center">
-              <TextField
-                size="small"
-                placeholder="Search quotations"
-                variant="outlined"
-                inputRef={textInputRef}
-                onChange={(e) => {
-                  setFilterType(e.target.value);
-                  setCurrentPage(1);
-                }}
-                InputProps={{
-                  endAdornment: (
-                    <IconButton size="small">
-                      <Search />
-                    </IconButton>
-                  ),
-                }}
-              />
-            </div>
-          </div>
+    <Box sx={wrapBoxStyle}>
+      <Box display="flex" justifyContent="space-between">
+        <Breadcrumb items={breadcrumbItems} />
+        <Button
+          variant="outlined"
+          startIcon={<ArrowBack />}
+          onClick={handleBack}
+          sx={{ borderRadius: 5 }}
+        >
+          Back
+        </Button>
+      </Box>
 
-          {quotationLoading ? (
-            <div className="flex items-center justify-center text-xl">
-              <Loading />
-            </div>
-          ) : (
-            <div>
-              {allQuotations?.data?.quotations?.length === 0 ? (
-                <div className="flex items-center justify-center h-full text-xl text-center">
-                  No matching card found.
-                </div>
-              ) : (
-                <section className="tableContainer overflow-x-auto ">
-                  <table className="customTable">
-                    <thead>
-                      <tr>
-                        <th>SL No </th>
-                        <th>Quotation ID </th>
-                        <th>Order No. </th>
-                        <th>Name</th>
-                        <th>Vehicle Name</th>
-                        <th>Vehicle Brand</th>
-                        <th>Car No. </th>
-                        <th>Mobile No.</th>
-                        {/* <th>Mileage History</th> */}
-                        <th>Date</th>
-                        <th colSpan={5}>Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {allQuotations?.data?.quotations?.map((card, index) => {
-                        const globalIndex =
-                          (allQuotations?.data?.meta?.currentPage - 1) * limit +
-                          (index + 1);
-
-                        let rowClass = "";
-                        if (card.status === "running") {
-                          rowClass = "bg-[#f5365c] text-white";
-                        } else {
-                          rowClass = "bg-[#2dce89] text-white";
-                        }
-                        return (
-                          <tr
-                            key={card._id}
-                            className={`${rowClass} transition-all duration-300 hover:bg-gradient-to-r hover:from-blue-300 hover:to-blue-100 hover:text-black`}
-                          >
-                            <td>{globalIndex}</td>
-                            <td>{card.quotation_no}</td>
-                            <td>{card.job_no}</td>
-                            {card?.customer?.customer_name ||
-                              card?.company?.company_name ||
-                              card?.showRoom?.showRoom_name ? (
-                              <>
-                                {card?.customer && (
-                                  <td>{card?.customer?.customer_name}</td>
-                                )}
-                                {card?.company && (
-                                  <td>{card?.company?.company_name}</td>
-                                )}
-                                {card?.showRoom && (
-                                  <td>{card?.showRoom?.showRoom_name}</td>
-                                )}
-                              </>
-                            ) : (
-                              <td></td>
-                            )}
-                            <td>
-                              <span>{card.vehicle?.vehicle_name}</span>
-                            </td>
-
-                            <td>
-                              <span>{card.vehicle?.vehicle_brand}</span>
-                            </td>
-                            <td>
-                              {card?.vehicle?.carReg_no}{" "}
-                              {card?.vehicle?.car_registration_no}
-                            </td>
-                            {card?.customer?.fullCustomerNum ||
-                              card?.company?.fullCompanyNum ||
-                              card?.showRoom?.fullCompanyNum ? (
-                              <>
-                                {card?.customer && (
-                                  <td>{card?.customer?.fullCustomerNum}</td>
-                                )}
-                                {card?.company && (
-                                  <td>{card?.company?.fullCompanyNum}</td>
-                                )}
-                                {card?.showRoom && (
-                                  <td>{card?.showRoom?.fullCompanyNum}</td>
-                                )}
-                              </>
-                            ) : (
-                              <td></td>
-                            )}
-                            <td>{card.date}</td>
-
-                            <td>
-                              <Tooltip
-                                title="View Invoice"
-                                arrow
-                                placement="top"
-                              >
-                                <a
-                                  className="flex justify-center edit2"
-                                  href={`/dashboard/create-invoice?order_no=${card?.job_no}&id=${card._id}`}
-                                  rel="noreferrer"
-                                >
-                                  <FaFileInvoice className="editIcon text-purple-600" />
-                                </a>
-                              </Tooltip>
-                            </td>
-
-                            <td>
-                              <Tooltip
-                                title="Download Quotation"
-                                arrow
-                                placement="top"
-                              >
-                                <a
-                                  className="flex flex-col items-center edit2"
-                                  href={`${import.meta.env.VITE_API_URL
-                                    }/quotations/quotation/${card._id
-                                    }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
-                                      JSON.stringify(companyProfileData)
-                                    )}`}
-                                  target="_blank"
-                                  rel="noreferrer"
-                                >
-                                  <FaDownload className="editIcon text-yellow-300" />
-                                </a>
-                              </Tooltip>
-                            </td>
-
-                            <td>
-                              <Tooltip title="Preview" arrow placement="top">
-                                <Can page='/dashboard/quotation-view' action='view'>
-                                  <div
-                                    onClick={() => handleIconPreview(card._id)}
-                                    className="flex flex-col items-center edit2"
-                                    style={{ cursor: "pointer" }}
-                                  >
-                                    <FaEye className="editIcon" />
-                                  </div>
-                                </Can>
-                              </Tooltip>
-                            </td>
-
-                            <td>
-                              <Tooltip
-                                title="Edit Quotation"
-                                arrow
-                                placement="top"
-                              >
-                                <Can page='/dashboard/update-quotation' action='edit'>
-                                  <div className="flex flex-col items-center edit">
-                                    <Link
-                                      to={`/dashboard/update-quotation?id=${card._id}`}
-                                    >
-                                      <FaEdit className="editIcon text-blue-500" />
-                                    </Link>
-                                  </div>
-                                </Can>
-                              </Tooltip>
-                            </td>
-
-                            <td>
-                              <Tooltip
-                                title={
-                                  deleteLoading
-                                    ? "Deleting..."
-                                    : "Move to Recycled"
-                                }
-                                arrow
-                                placement="top"
-                              >
-                                <Can page="/dashboard/company-list" action='delete'>
-                                  <span>
-                                    <button
-                                      disabled={deleteLoading}
-                                      onClick={() =>
-                                        handleMoveToRecycled(card._id)
-                                      }
-                                      className="editIconWrap rounded-full"
-                                      style={{
-                                        cursor: deleteLoading
-                                          ? "not-allowed"
-                                          : "pointer",
-                                        background: "white",
-                                        border: "none",
-                                        padding: 5,
-                                        borderRadius: "9999px"
-                                      }}
-                                    >
-                                      <FaTrashAlt className="deleteIcon text-red-500" />
-                                    </button>
-                                  </span>
-                                </Can>
-                              </Tooltip>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </section>
-              )}
-            </div>
-          )}
-          <div className="flex justify-center mt-4">
-            <Pagination
-              count={allQuotations?.data?.meta?.totalPages}
-              page={currentPage}
-              color="primary"
-              onChange={(_, page) => setCurrentPage(page)}
-            />
-          </div>
-        </div>
-      </div>
-    </Paper>
+      <Table
+        title={title}
+        columns={quotationColumns}
+        data={allQuotations?.data?.quotations || []}
+        actions={quotationActions}
+        loading={quotationLoading}
+        currentPage={currentPage}
+        totalPages={allQuotations?.data?.meta?.totalPages || 1}
+        onPageChange={setCurrentPage}
+        onSearch={setFilterType}
+        searchPlaceholder="Search quotations..."
+        externalHooks={externalHooks}
+        emptyMessage="No matching quotation found."
+        getRowClass={getQuotationRowClass}
+      />
+    </Box>
   );
 };
 

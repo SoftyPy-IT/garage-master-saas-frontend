@@ -19,10 +19,10 @@ const userApi = baseApi.injectEndpoints({
       invalidatesTags: ["user"],
     }),
     getAllUser: builder.query({
-      query: ({ tenantDomain, limit, page, searchTerm }) => ({
+      query: ({ tenantDomain, limit, page, searchTerm, isRecycled }) => ({
         url: `/user`,
         method: "GET",
-        params: { tenantDomain, limit, page, searchTerm },
+        params: { tenantDomain, limit, page, searchTerm, isRecycled },
       }),
       providesTags: ["user"],
     }),
@@ -58,6 +58,33 @@ const userApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["contact"],
     }),
+    moveUserToRecycleBin: builder.mutation({
+      query: ({ tenantDomain, id }) => ({
+        url: `/user/recycle/${id}`,
+        method: "PATCH",
+        params: { tenantDomain },
+      }),
+      invalidatesTags: ["user"],
+    }),
+
+    restoreUser: builder.mutation({
+      query: ({ tenantDomain, id }) => ({
+        url: `/user/restore/${id}`,
+        method: "PATCH",
+        params: { tenantDomain },
+      }),
+      invalidatesTags: ["user"],
+    }),
+
+    permanentlyDeleteUser: builder.mutation({
+      query: ({ tenantDomain, id }) => ({
+        url: `/user/permanent/${id}`,
+        method: "DELETE",
+        params: { tenantDomain },
+      }),
+      invalidatesTags: ["user"],
+    }),
+
   }),
 });
 
@@ -68,5 +95,8 @@ export const {
   useGetAllContactUserQuery,
   useDeleteContactUserMutation,
   useUpdateUserMutation,
-  useGetUserPermissionQuery
+  useGetUserPermissionQuery,
+  useMoveUserToRecycleBinMutation,
+  useRestoreUserMutation,
+  usePermanentlyDeleteUserMutation
 } = userApi;

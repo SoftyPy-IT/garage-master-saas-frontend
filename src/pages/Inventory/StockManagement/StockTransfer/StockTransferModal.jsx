@@ -5,15 +5,9 @@
 "use client";
 import { useCallback } from "react";
 import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Divider,
+  Box,
   Button,
   LinearProgress,
-  Typography,
-  Box,
 } from "@mui/material";
 import { alpha, useTheme } from "@mui/material/styles";
 import { useGetAllStocksQuery } from "../../../../redux/api/stocksApi";
@@ -28,7 +22,6 @@ function StockTransferModal({
   open,
   onClose,
   onSubmit,
-  employees,
   tenantDomain,
   performActionWithPermission,
 }) {
@@ -65,13 +58,10 @@ function StockTransferModal({
     getWarehouseName,
     resetForm,
   } = useStockTransfer({
-    employees,
     stockData,
     warehouseResponse,
     tenantDomain,
   });
-
-  // Safe close function to prevent errors
   const handleSafeClose = useCallback(() => {
     resetForm();
     if (onClose && typeof onClose === "function") {
@@ -110,7 +100,7 @@ function StockTransferModal({
   const isLoading = stockLoading || warehouseLoading || formSubmitting;
   const title = "Stock Transfer ";
   return (
-    
+
     <GarageModal open={open} setOpen={onClose} title={title} maxWidth="md">
       {isLoading ? (
         <LinearProgress sx={{ my: 4 }} />
@@ -136,22 +126,8 @@ function StockTransferModal({
       )}
       {formSubmitting && <LinearProgress sx={{ mt: 3 }} />}
 
-      <div className="flex flex-col md:flex-row justify-between items-center mt-[5px] space-y-3">
-        <Button
-          onClick={handleSafeClose}
-          variant="outlined"
-          sx={{
-            borderRadius: 2,
-            py: 1,
-            px: 3,
-            borderWidth: 2,
-            "&:hover": {
-              borderWidth: 2,
-            },
-          }}
-        >
-          Cancel
-        </Button>
+      <Box display='flex' justifyContent='end'>
+
         <Button
           onClick={handleFormSubmit}
           variant="contained"
@@ -179,7 +155,7 @@ function StockTransferModal({
         >
           Complete Transfer
         </Button>
-      </div>
+      </Box>
     </GarageModal>
   );
 }
