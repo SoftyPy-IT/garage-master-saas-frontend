@@ -17,7 +17,6 @@ import { useTenantDomain } from "../../hooks/useTenantDomain";
 import {
   useGetAllQuotationsQuery,
   useMoveRecycledQuotationMutation,
-  // Make sure to add this mutation to your API slice if it doesn't exist
   useCancelQuotationMutation,
 } from "../../redux/api/quotation";
 import { useCompanyProfileData } from "../../hooks/useCompanyProfileData";
@@ -38,12 +37,8 @@ const QuotationTable = ({
   const { tenantDomain } = useTenantDomain();
 
   const { companyProfileData } = useCompanyProfileData();
-
-  // Mutations
   const [moveRecycledQuotation, { isLoading: deleteLoading }] =
     useMoveRecycledQuotationMutation();
-
-  // Initialize the cancel mutation hook
   const [cancelQuotation, { isLoading: cancelLoading }] =
     useCancelQuotationMutation();
 
@@ -57,30 +52,30 @@ const QuotationTable = ({
       status,
     });
 
-  const handleCancel = (id) => {
-    swal({
-      title: "Are you sure?",
-      text: "Do you want to cancel this quotation? This action cannot be undone.",
-      icon: "warning",
-      buttons: true,
-      dangerMode: true,
-    }).then((willCancel) => {
-      if (willCancel) {
-        cancelQuotation({ id, tenantDomain })
-          .unwrap()
-          .then(() => {
-            swal("Cancelled!", "The quotation has been cancelled.", "success");
-          })
-          .catch((err) => {
-            swal(
-              "Error",
-              err?.data?.message || "Failed to cancel quotation",
-              "error",
-            );
-          });
-      }
-    });
-  };
+  // const handleCancel = (id) => {
+  //   swal({
+  //     title: "Are you sure?",
+  //     text: "Do you want to cancel this quotation? This action cannot be undone.",
+  //     icon: "warning",
+  //     buttons: true,
+  //     dangerMode: true,
+  //   }).then((willCancel) => {
+  //     if (willCancel) {
+  //       cancelQuotation({ id, tenantDomain })
+  //         .unwrap()
+  //         .then(() => {
+  //           swal("Cancelled!", "The quotation has been cancelled.", "success");
+  //         })
+  //         .catch((err) => {
+  //           swal(
+  //             "Error",
+  //             err?.data?.message || "Failed to cancel quotation",
+  //             "error",
+  //           );
+  //         });
+  //     }
+  //   });
+  // };
 
   const quotationColumns = [
     { key: "slNo", label: "SL No", type: "index" },
