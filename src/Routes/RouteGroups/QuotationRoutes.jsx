@@ -3,6 +3,7 @@ import QuotationView from "../../pages/Quotation/QuotationView";
 import QuotationList from "../../pages/Quotation/QuotationList";
 import UpdateQuotation from "../../pages/Quotation/UpdateQuotation";
 import RecycledQuotationList from "../../pages/Recyclebin/RecycledQuotationList";
+import PendingQuotation from "../../pages/Quotation/PendingQuotation";
 
 export const quotationRoutes = [
   {
@@ -22,6 +23,10 @@ export const quotationRoutes = [
   {
     path: "quotation-list",
     element: <QuotationList />,
+  },
+  {
+    path: "pending-quotation",
+    element: <PendingQuotation />,
   },
   {
     path: "recycle-bin-quotation-list",

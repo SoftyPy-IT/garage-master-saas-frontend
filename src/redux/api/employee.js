@@ -11,10 +11,26 @@ const employeeApi = baseApi.injectEndpoints({
       invalidatesTags: ["employee"],
     }),
     getAllEmployees: builder.query({
-      query: ({ tenantDomain, id, limit, page, searchTerm, isRecycled }) => ({
+      query: ({
+        tenantDomain,
+        id,
+        limit,
+        page,
+        searchTerm,
+        isRecycled,
+        status,
+      }) => ({
         url: `/employees`,
         method: "GET",
-        params: { tenantDomain, id, limit, page, searchTerm, isRecycled },
+        params: {
+          tenantDomain,
+          id,
+          limit,
+          page,
+          searchTerm,
+          isRecycled,
+          status,
+        },
       }),
 
       providesTags: ["employee", "attendance"],

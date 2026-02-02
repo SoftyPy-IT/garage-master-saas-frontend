@@ -3,21 +3,14 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Box,
-  Typography,
-  Tabs,
-  Tab,
-} from "@mui/material";
+import { Box, Typography, Tabs, Tab } from "@mui/material";
 import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import EmployeeAccount from "./EmployeeAccount";
 import SingleEmployeeLeaveList from "./SingleEmployeeLeaveList";
 import EmployeeSalary from "./EmployeeSalary";
-import EmployeeOvertime from "./EmployeeOvertime";
 import EmployeeAttendance from "./EmployeeAttendance";
 import "../Employee.css";
-
 import EmployeeProfileHeader from "./EmployeeProfileHeader";
 import EmployeeHeaderStyle from "./EmployeeHeaderStyle";
 import { useGetSingleEmployeeQuery } from "../../../redux/api/employee";
@@ -25,6 +18,7 @@ import Loading from "../../../components/Loading/Loading";
 import { tabsStyles, tabStyles } from "../../../utils/customStyle";
 import { StyledPaper } from "../../../utils";
 import { useAppOptions } from "../../../hooks/useAppOptions";
+import { getMonthName } from "../../../utils/getMonth";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -45,12 +39,11 @@ const EmployeeProfile = () => {
   const [value, setValue] = useState(0);
   const location = useLocation();
   const id = new URLSearchParams(location.search).get("id");
-  const { tenantDomain, performActionWithPermission } = useAppOptions()
+  const { tenantDomain, performActionWithPermission } = useAppOptions();
   const { data, isLoading, error } = useGetSingleEmployeeQuery({
     tenantDomain,
     id,
   });
-
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -62,12 +55,6 @@ const EmployeeProfile = () => {
   if (error) {
     toast.error(error?.status);
   }
-
-  const getMonthName = (monthNumber) => {
-    const date = new Date();
-    date.setMonth(monthNumber - 1);
-    return date.toLocaleString("default", { month: "long" });
-  };
 
   const currentDate = new Date();
   const currentMonth = currentDate.getMonth() + 1;
@@ -100,7 +87,7 @@ const EmployeeProfile = () => {
     }).length || 0;
 
   const attendancePercentage = Math.round(
-    (attendanceCount / daysInMonth) * 100
+    (attendanceCount / daysInMonth) * 100,
   );
 
   return (
@@ -113,7 +100,6 @@ const EmployeeProfile = () => {
       <StyledPaper
         elevation={24}
         sx={{
-
           borderRadius: "24px",
           border: "1px solid rgba(255, 255, 255, 0.3)",
           overflow: "hidden",
@@ -164,7 +150,6 @@ const EmployeeProfile = () => {
               <Tab label="Attendance" />
               <Tab label="Leave" />
               <Tab label="Salary" />
-              <Tab label="Overtime" />
             </Tabs>
           </Box>
 
@@ -178,17 +163,14 @@ const EmployeeProfile = () => {
             />
           </TabPanel>
           <TabPanel value={value} index={2}>
-            <SingleEmployeeLeaveList tenantDomain={tenantDomain} id={id} performActionWithPermission={performActionWithPermission} />
+            <SingleEmployeeLeaveList
+              tenantDomain={tenantDomain}
+              id={id}
+              performActionWithPermission={performActionWithPermission}
+            />
           </TabPanel>
           <TabPanel value={value} index={3}>
             <EmployeeSalary tenantDomain={tenantDomain} id={id} />
-          </TabPanel>
-          <TabPanel value={value} index={4}>
-            <EmployeeOvertime
-              accountInfo={data?.data}
-              tenantDomain={tenantDomain}
-              id={id}
-            />
           </TabPanel>
 
           <Box

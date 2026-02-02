@@ -1,5 +1,5 @@
 import { ArrowBack } from "@mui/icons-material";
-import { Box, Button } from "@mui/material";
+import { Box, Button, Tabs, Tab } from "@mui/material"; // Imported Tabs and Tab
 import { DeleteIcon, EditIcon, Eye } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -18,10 +18,11 @@ import Loading from "../../components/Loading/Loading";
 
 export default function EmployeeList() {
   const [filterType, setFilterType] = useState("");
+  const [statusFilter, setStatusFilter] = useState("Active");
   const [currentPage, setCurrentPage] = useState(1);
   const { tenantDomain, performActionWithPermission } = useAppOptions();
   const navigate = useNavigate();
-  const limit = 10; // Changed from 20 to 10 as requested
+  const limit = 10;
 
   const {
     data: employeeData,
@@ -32,6 +33,7 @@ export default function EmployeeList() {
     limit,
     page: currentPage,
     searchTerm: filterType,
+    status: statusFilter,
   });
 
   const [moveRecycledEmployee] = useMoveRecycledEmployeeMutation();
@@ -61,8 +63,14 @@ export default function EmployeeList() {
           }
         }
       },
-      "You don't have permission to delete employee."
+      "You don't have permission to delete employee.",
     );
+  };
+
+  // Handle Tab Change
+  const handleStatusChange = (event, newValue) => {
+    setStatusFilter(newValue);
+    setCurrentPage(1);
   };
 
   if (error) toast.error(error?.data?.message);
@@ -127,7 +135,7 @@ export default function EmployeeList() {
   }
 
   return (
-    <Box sx={wrapBoxStyle}>
+    <Box sx={{ ...wrapBoxStyle, marginBottom: "50px" }}>
       <Box display="flex" justifyContent="space-between" mb={2}>
         <Breadcrumb items={breadcrumbItems} />
         <Button
@@ -138,6 +146,20 @@ export default function EmployeeList() {
           Back
         </Button>
       </Box>
+
+      {/* Status Filter Tabs */}
+      <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 3 }}>
+        <Tabs
+          value={statusFilter}
+          onChange={handleStatusChange}
+          aria-label="employee status tabs"
+        >
+          <Tab label="All" value="" />
+          <Tab label="Active" value="Active" />
+          <Tab label="Inactive" value="Inactive" />
+        </Tabs>
+      </Box>
+
       <Table
         title="Employees"
         columns={columns}

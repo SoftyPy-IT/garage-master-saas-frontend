@@ -3,32 +3,31 @@
 /* eslint-disable react-refresh/only-export-components */
 "use client";
 
-import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
-import dayjs from "dayjs";
-import { AlertTriangle } from "lucide-react";
 import {
+  Paper,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
-  CircularProgress,
 } from "@mui/material";
-import HeaderSection from "./HeaderSection";
-import StatsCards from "./StatsCards";
-import SearchFilter from "./SearchFilter";
+import dayjs from "dayjs";
+import { AlertTriangle } from "lucide-react";
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import EmployeeRow from "./EmployeeRow";
-
-// API Hooks
-import { useGetAllEmployeesQuery } from "../../redux/api/employee";
+import HeaderSection from "./HeaderSection";
+import SearchFilter from "./SearchFilter";
+import StatsCards from "./StatsCards";
+import Can from "../../components/Can";
+import Loading from "../../components/Loading/Loading";
+import { useAppOptions } from "../../hooks/useAppOptions";
 import { useCreateAttendanceMutation } from "../../redux/api/attendance";
 import { useGetCompanyProfileQuery } from "../../redux/api/companyProfile";
+import { useGetAllEmployeesQuery } from "../../redux/api/employee";
+import { formatTime } from "../../utils/formateTime";
 import SubmitButton from "./SubmitButton";
-import { useAppOptions } from "../../hooks/useAppOptions";
-import Can from "../../components/Can";
 
 export const columns = [
   "SL No",
@@ -48,6 +47,7 @@ export const columns = [
 const AddAttendance = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("Active");
   const limit = 9999;
   const { tenantDomain, performActionWithPermission } = useAppOptions();
   const {
@@ -58,13 +58,12 @@ const AddAttendance = () => {
     tenantDomain,
     limit,
     page: currentPage,
+    status: statusFilter,
   });
 
   const { data: profileData } = useGetCompanyProfileQuery({ tenantDomain });
   const [createAttendance, { isLoading: createLoading }] =
     useCreateAttendanceMutation();
-
-  // State Management
   const [presentState, setPresentState] = useState([]);
   const [absentState, setAbsentState] = useState([]);
   const [inTime, setInTime] = useState([]);
@@ -72,12 +71,9 @@ const AddAttendance = () => {
   const [overtime, setOvertime] = useState([]);
   const [lateStatus, setLateStatus] = useState([]);
   const [selectedDates, setSelectedDates] = useState([]);
-
-  // Initialize states when employees data is available
   useEffect(() => {
     if (getAllEmployee?.data?.employees) {
       const employeeCount = getAllEmployee.data.employees.length;
-      // Initialize all states as empty/unselected
       setPresentState(new Array(employeeCount).fill(false));
       setAbsentState(new Array(employeeCount).fill(false));
       setInTime(new Array(employeeCount).fill(""));
@@ -88,7 +84,6 @@ const AddAttendance = () => {
     }
   }, [getAllEmployee]);
 
-  // Handle date change for a specific employee
   const handleDateChange = (index, date) => {
     setSelectedDates((prev) => {
       const updated = [...prev];
@@ -96,9 +91,6 @@ const AddAttendance = () => {
       return updated;
     });
   };
-
-  // Helper Functions
-  const formatTime = (time) => (time ? dayjs(time).format("h:mmA") : "");
 
   const handlePresent = (index) => {
     const newPresentState = [...presentState];
@@ -120,7 +112,6 @@ const AddAttendance = () => {
     newAbsentState[index] = !newAbsentState[index];
     if (newAbsentState[index]) {
       newPresentState[index] = false;
-      // Clear time fields when marked as absent
       setInTime((prev) => {
         const updated = [...prev];
         updated[index] = "";
@@ -186,7 +177,6 @@ const AddAttendance = () => {
       "/dashboard/add-attendance",
       "create",
       async () => {
-        // Filter only employees who have been explicitly marked as present or absent
         const attendanceData = getAllEmployee.data.employees
           .map((employee, index) => ({
             employee: employee._id,
@@ -204,14 +194,12 @@ const AddAttendance = () => {
             out_time: outTime[index],
             overtime: overtime[index],
             late_status: lateStatus[index],
-            hasAttendanceMarked: presentState[index] || absentState[index], // Add flag to identify marked employees
+            hasAttendanceMarked: presentState[index] || absentState[index],
           }))
-          .filter((attendance) => attendance.hasAttendanceMarked); // Only include marked employees
-
-        // Check if any attendance has been marked
+          .filter((attendance) => attendance.hasAttendanceMarked);
         if (attendanceData.length === 0) {
           toast.error(
-            "Please mark attendance (Present or Absent) for at least one employee before submitting."
+            "Please mark attendance (Present or Absent) for at least one employee before submitting.",
           );
           return;
         }
@@ -224,7 +212,6 @@ const AddAttendance = () => {
 
           if (response.success) {
             toast.success(response.message);
-            // Reset form after successful submission
             const employeeCount = getAllEmployee.data.employees.length;
             setPresentState(new Array(employeeCount).fill(false));
             setAbsentState(new Array(employeeCount).fill(false));
@@ -238,11 +225,11 @@ const AddAttendance = () => {
           toast.error(error.message || "Something went wrong");
         }
       },
-      "You don't have permission to create attendance."
+      "You don't have permission to create attendance.",
     );
   };
 
-  // Calculate statistics - only count explicitly marked attendance
+  // Calculate statistics
   const totalEmployees = getAllEmployee?.data?.employees?.length || 0;
   const presentCount = presentState.filter(Boolean).length;
   const absentCount = absentState.filter(Boolean).length;
@@ -253,17 +240,11 @@ const AddAttendance = () => {
     (employee) =>
       employee.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       employee.employeeId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      employee.designation.toLowerCase().includes(searchTerm.toLowerCase())
+      employee.designation.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
-  // Loading and Error States
   if (employeesLoading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <CircularProgress color="primary" />
-        <span className="ml-2 text-gray-600">Loading employee data...</span>
-      </div>
-    );
+    return <Loading />;
   }
 
   if (employeesError) {
