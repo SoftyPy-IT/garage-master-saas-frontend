@@ -117,11 +117,11 @@ const EmployeeSalary = ({ id, tenantDomain }) => {
     handleCloseModal();
   };
 
-  // Columns definition for the reusable Table
+  // Columns definition using the 'render' prop to keep the original design style
   const columns = [
     { key: "employeeId", label: "Employee ID" },
     {
-      key: "month_of_salary",
+      key: "month_year",
       label: "Month of Salary",
       render: (item) => `${item.month_of_salary} ${item.year_of_salary}`,
     },
@@ -132,7 +132,7 @@ const EmployeeSalary = ({ id, tenantDomain }) => {
     { key: "paid_amount", label: "Paid Amount" },
     { key: "due_amount", label: "Due Amount" },
     {
-      key: "last_payment_date",
+      key: "payment_date",
       label: "Payment Date",
       render: (item) => {
         const history = item.payment_history || [];
@@ -142,7 +142,7 @@ const EmployeeSalary = ({ id, tenantDomain }) => {
       },
     },
     {
-      key: "payment_progress",
+      key: "progress",
       label: "Payment Progress",
       render: (item) => {
         const percent =
@@ -152,23 +152,43 @@ const EmployeeSalary = ({ id, tenantDomain }) => {
         return (
           <Box sx={{ width: "100%", display: "flex", alignItems: "center" }}>
             <Box sx={{ width: "100%", mr: 1 }}>
-              <LinearProgress variant="determinate" value={percent} />
+              <LinearProgress
+                variant="determinate"
+                value={percent}
+                sx={{
+                  height: 10,
+                  borderRadius: 5,
+                  backgroundColor: "rgba(0,0,0,0.1)",
+                  "& .MuiLinearProgress-bar": {
+                    borderRadius: 5,
+                    backgroundColor:
+                      percent === 100 ? "#4caf50" : theme.palette.primary.main,
+                  },
+                }}
+              />
             </Box>
             <Box sx={{ minWidth: 35 }}>
-              <Typography variant="body2" color="text.secondary">{`${Math.round(
-                percent,
-              )}%`}</Typography>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                fontWeight="bold"
+              >{`${Math.round(percent)}%`}</Typography>
             </Box>
           </Box>
         );
       },
     },
     {
-      key: "payment_status",
+      key: "status",
       label: "Status",
       render: (item) => (
         <Chip
           label={item.payment_status}
+          sx={{
+            fontWeight: "bold",
+            textTransform: "uppercase",
+            fontSize: "0.75rem",
+          }}
           color={
             item.payment_status === "Paid"
               ? "success"
@@ -176,27 +196,27 @@ const EmployeeSalary = ({ id, tenantDomain }) => {
                 ? "warning"
                 : "default"
           }
-          size="small"
+          variant="outlined"
         />
       ),
     },
   ];
 
-  // Actions definition for the reusable Table
+  // Actions definition
   const actions = [
     {
       key: "pay",
       icon: Payments,
       tooltip: "Pay Salary",
       onClick: handleOpenPaymentModal,
-      color: "#4caf50", // Green for Pay
+      color: "#2e7d32", // Custom green matching design
     },
     {
       key: "history",
       icon: History,
       tooltip: "Payment History",
       onClick: handleOpenPaymentHistory,
-      color: "#2196f3", // Blue for History
+      color: "#1565c0", // Custom blue matching design
     },
   ];
 
@@ -254,7 +274,7 @@ const EmployeeSalary = ({ id, tenantDomain }) => {
           currentPage={currentPage}
           totalPages={data?.data?.meta?.totalPages || 1}
           onPageChange={setCurrentPage}
-          onSearch={() => {}} // Placeholder: search not implemented on backend for this specific list
+          onSearch={() => {}} // Search not applicable for backend list
           searchPlaceholder="Search..."
           emptyMessage="No salary records found for the selected filters."
         />
