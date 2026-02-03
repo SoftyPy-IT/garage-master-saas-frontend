@@ -681,57 +681,57 @@ const EmailTemplates = {
 // ========== TOKEN MANAGEMENT FUNCTIONS ==========
 const saveAuthSession = (accessToken, userProfile) => {
   try {
-    localStorage.setItem('google_access_token', accessToken);
-    localStorage.setItem('google_user_profile', JSON.stringify(userProfile));
-    localStorage.setItem('auth_timestamp', Date.now().toString());
-    
+    localStorage.setItem("google_access_token", accessToken);
+    localStorage.setItem("google_user_profile", JSON.stringify(userProfile));
+    localStorage.setItem("auth_timestamp", Date.now().toString());
+
     // Also save to sessionStorage for additional persistence
-    sessionStorage.setItem('google_access_token', accessToken);
-    sessionStorage.setItem('google_user_profile', JSON.stringify(userProfile));
-    
-    console.log('Auth session saved successfully');
+    sessionStorage.setItem("google_access_token", accessToken);
+    sessionStorage.setItem("google_user_profile", JSON.stringify(userProfile));
+
+    console.log("Auth session saved successfully");
   } catch (error) {
-    console.error('Error saving auth session:', error);
+    console.error("Error saving auth session:", error);
   }
 };
 
 const clearAuthSession = () => {
   try {
-    localStorage.removeItem('google_access_token');
-    localStorage.removeItem('google_user_profile');
-    localStorage.removeItem('auth_timestamp');
-    localStorage.removeItem('calendar_events');
-    
-    sessionStorage.removeItem('google_access_token');
-    sessionStorage.removeItem('google_user_profile');
-    
-    console.log('Auth session cleared');
+    localStorage.removeItem("google_access_token");
+    localStorage.removeItem("google_user_profile");
+    localStorage.removeItem("auth_timestamp");
+    localStorage.removeItem("calendar_events");
+
+    sessionStorage.removeItem("google_access_token");
+    sessionStorage.removeItem("google_user_profile");
+
+    console.log("Auth session cleared");
   } catch (error) {
-    console.error('Error clearing auth session:', error);
+    console.error("Error clearing auth session:", error);
   }
 };
 
 const loadAuthSession = () => {
   try {
     // Try to load from localStorage first
-    let token = localStorage.getItem('google_access_token');
-    let profile = localStorage.getItem('google_user_profile');
-    
+    let token = localStorage.getItem("google_access_token");
+    let profile = localStorage.getItem("google_user_profile");
+
     // If not found in localStorage, try sessionStorage
     if (!token || !profile) {
-      token = sessionStorage.getItem('google_access_token');
-      profile = sessionStorage.getItem('google_user_profile');
+      token = sessionStorage.getItem("google_access_token");
+      profile = sessionStorage.getItem("google_user_profile");
     }
-    
+
     if (token && profile) {
       const parsedProfile = JSON.parse(profile);
-      
+
       // Check if token is recent (within 1 hour)
-      const authTimestamp = localStorage.getItem('auth_timestamp');
+      const authTimestamp = localStorage.getItem("auth_timestamp");
       const currentTime = Date.now();
       const oneHour = 60 * 60 * 1000;
-      
-      if (authTimestamp && (currentTime - parseInt(authTimestamp)) < oneHour) {
+
+      if (authTimestamp && currentTime - parseInt(authTimestamp) < oneHour) {
         return { token, profile: parsedProfile };
       } else {
         // Token is too old, clear it
@@ -739,10 +739,10 @@ const loadAuthSession = () => {
         return null;
       }
     }
-    
+
     return null;
   } catch (error) {
-    console.error('Error loading auth session:', error);
+    console.error("Error loading auth session:", error);
     clearAuthSession();
     return null;
   }
@@ -752,20 +752,20 @@ const verifyTokenValidity = async (token) => {
   try {
     // Simple token validation by making a lightweight API call
     const response = await axios.get(
-      'https://www.googleapis.com/oauth2/v1/tokeninfo',
+      "https://www.googleapis.com/oauth2/v1/tokeninfo",
       {
         params: { access_token: token },
         timeout: 5000,
-      }
+      },
     );
-    
+
     // Check if token is valid and has calendar scope
     if (response.data.expires_in > 0) {
       return true;
     }
     return false;
   } catch (error) {
-    console.error('Token validation failed:', error);
+    console.error("Token validation failed:", error);
     return false;
   }
 };
@@ -786,13 +786,13 @@ const EnhancedGoogleCalendar = () => {
     message: "",
     severity: "success",
   });
-  
+
   // Auth states - initialized from saved session
   const savedSession = useMemo(() => loadAuthSession(), []);
   const [accessToken, setAccessToken] = useState(savedSession?.token || null);
   const [userProfile, setUserProfile] = useState(savedSession?.profile || null);
   const [isTokenValidated, setIsTokenValidated] = useState(false);
-  
+
   const [loading, setLoading] = useState(false);
   const [errorDetails, setErrorDetails] = useState(null);
   const [viewMode, setViewMode] = useState("week");
@@ -995,6 +995,235 @@ const EnhancedGoogleCalendar = () => {
     ].join(" "),
   };
 
+  // ========== MODIFIED LOGIN FUNCTION ==========
+  const login = useGoogleLogin({
+    scope: CONFIG.scopes,
+    onSuccess: async (response) => {
+      console.log("Login successful, processing...");
+      setLoading(true);
+      setErrorDetails(null);
+      const token = response.access_token;
+
+      try {
+        // Fetch user profile
+        const profile = await fetchUserProfile(token);
+
+        // Test calendar API access to verify scopes
+        await testCalendarAccess(token);
+
+        // Save session
+        saveAuthSession(token, profile);
+
+        // Update state
+        setAccessToken(token);
+        setUserProfile(profile);
+        setIsTokenValidated(true);
+
+        // Fetch calendar events
+        await fetchCalendarEvents(token);
+
+        showNotification("✅ Connected to Google Calendar!", "success");
+      } catch (error) {
+        console.error("Login error:", error);
+
+        // Handle scope/permission errors
+        if (
+          error.response?.status === 403 &&
+          error.response?.data?.error?.message?.includes(
+            "insufficient authentication scopes",
+          )
+        ) {
+          setErrorDetails({
+            type: "scope_error",
+            message: "Insufficient Permissions",
+            details: [
+              "The app requires additional permissions to access Google Calendar.",
+              "Please ensure you grant all requested permissions during login.",
+              "Try logging out and logging in again.",
+            ],
+          });
+
+          showNotification("Please grant all requested permissions", "error");
+        } else {
+          handleGoogleError(error);
+        }
+
+        // Clear any partial session on error
+        clearAuthSession();
+      } finally {
+        setLoading(false);
+      }
+    },
+    onError: (error) => {
+      console.error("Login error:", error);
+      handleGoogleError(error);
+    },
+    flow: "implicit",
+  });
+
+  // ========== ADD TEST CALENDAR ACCESS FUNCTION ==========
+  const testCalendarAccess = async (token) => {
+    try {
+      // Test with a simple calendar API call to verify permissions
+      const response = await axios.get(
+        "https://www.googleapis.com/calendar/v3/users/me/calendarList",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          params: { maxResults: 1 },
+        },
+      );
+      console.log("Calendar access verified:", response.data.items?.length > 0);
+      return true;
+    } catch (error) {
+      console.error("Calendar access test failed:", error);
+      throw error;
+    }
+  };
+
+  // ========== MODIFIED INITIALIZATION ==========
+  useEffect(() => {
+    const initializeApp = async () => {
+      try {
+        console.log("Initializing app...");
+
+        // Set default calendars
+        const defaultCalendars = [
+          {
+            id: "primary",
+            name: "Primary Calendar",
+            color: CALENDAR_COLORS[0].id,
+            selected: true,
+            visible: true,
+            type: "personal",
+          },
+          {
+            id: "work",
+            name: "Work Calendar",
+            color: CALENDAR_COLORS[1].id,
+            selected: false,
+            visible: true,
+            type: "work",
+          },
+          {
+            id: "personal",
+            name: "Personal Calendar",
+            color: CALENDAR_COLORS[2].id,
+            selected: false,
+            visible: true,
+            type: "personal",
+          },
+          {
+            id: "tasks",
+            name: "Tasks",
+            color: CALENDAR_COLORS[3].id,
+            selected: false,
+            visible: true,
+            type: "task",
+          },
+          {
+            id: "reminders",
+            name: "Reminders",
+            color: CALENDAR_COLORS[4].id,
+            selected: false,
+            visible: true,
+            type: "reminder",
+          },
+        ];
+        setCalendars(defaultCalendars);
+
+        // Load offline events
+        const savedEvents = localStorage.getItem("calendar_events");
+        if (savedEvents) {
+          try {
+            const parsedEvents = JSON.parse(savedEvents);
+            setEvents(
+              parsedEvents.filter((e) => e.type === "event" || !e.type),
+            );
+            setTasks(parsedEvents.filter((e) => e.type === "task"));
+            setReminders(parsedEvents.filter((e) => e.type === "reminder"));
+            setAppointments(
+              parsedEvents.filter((e) => e.type === "appointment"),
+            );
+            console.log(
+              "Loaded events from localStorage:",
+              parsedEvents.length,
+            );
+          } catch (e) {
+            console.error("Error parsing saved events:", e);
+          }
+        }
+
+        // If we have a saved token, validate it
+        if (accessToken && userProfile) {
+          console.log("Found saved session, validating token...");
+          setLoading(true);
+
+          try {
+            // Test if token has calendar access
+            await testCalendarAccess(accessToken);
+
+            console.log("Token has calendar access, fetching events...");
+            // Fetch fresh calendar data
+            await fetchCalendarEvents(accessToken);
+            setIsTokenValidated(true);
+            showNotification("Welcome back!", "success");
+          } catch (error) {
+            console.error("Token validation failed:", error);
+
+            // Check if it's a scope/permission error
+            if (
+              error.response?.status === 403 &&
+              error.response?.data?.error?.message?.includes(
+                "insufficient authentication scopes",
+              )
+            ) {
+              setErrorDetails({
+                type: "scope_error",
+                message: "Session Expired - Permissions Changed",
+                details: [
+                  "Your previous session doesn't have the required permissions.",
+                  "Please login again to grant all necessary permissions.",
+                ],
+              });
+
+              // Clear invalid session
+              handleLogout();
+              showNotification(
+                "Please login again with all permissions",
+                "warning",
+              );
+            } else if (error.response?.status === 401) {
+              console.log("Token expired, clearing session...");
+              handleLogout();
+              showNotification("Session expired. Please login again.", "info");
+            } else {
+              // For other errors, keep the session but show warning
+              setIsTokenValidated(true);
+              showNotification(
+                "Restored session with limited access",
+                "warning",
+              );
+            }
+          } finally {
+            setLoading(false);
+          }
+        } else {
+          setIsTokenValidated(true);
+        }
+
+        // Check for notifications
+        checkForScheduledNotifications();
+
+        console.log("App initialization complete");
+      } catch (error) {
+        console.error("Error during app initialization:", error);
+        showNotification("Error initializing app", "error");
+      }
+    };
+
+    initializeApp();
+  }, []);
+
   // ========== INITIALIZATION ==========
   useEffect(() => {
     initializeApp();
@@ -1002,8 +1231,8 @@ const EnhancedGoogleCalendar = () => {
 
   const initializeApp = async () => {
     try {
-      console.log('Initializing app...');
-      
+      console.log("Initializing app...");
+
       // Set default calendars
       const defaultCalendars = [
         {
@@ -1054,41 +1283,41 @@ const EnhancedGoogleCalendar = () => {
       if (savedEvents) {
         try {
           const parsedEvents = JSON.parse(savedEvents);
-          setEvents(parsedEvents.filter(e => e.type === 'event' || !e.type));
-          setTasks(parsedEvents.filter(e => e.type === 'task'));
-          setReminders(parsedEvents.filter(e => e.type === 'reminder'));
-          setAppointments(parsedEvents.filter(e => e.type === 'appointment'));
-          console.log('Loaded events from localStorage:', parsedEvents.length);
+          setEvents(parsedEvents.filter((e) => e.type === "event" || !e.type));
+          setTasks(parsedEvents.filter((e) => e.type === "task"));
+          setReminders(parsedEvents.filter((e) => e.type === "reminder"));
+          setAppointments(parsedEvents.filter((e) => e.type === "appointment"));
+          console.log("Loaded events from localStorage:", parsedEvents.length);
         } catch (e) {
-          console.error('Error parsing saved events:', e);
+          console.error("Error parsing saved events:", e);
         }
       }
 
       // If we have a saved token, validate it
       if (accessToken && userProfile) {
-        console.log('Found saved session, validating token...');
+        console.log("Found saved session, validating token...");
         setLoading(true);
-        
+
         try {
           const isValid = await verifyTokenValidity(accessToken);
-          
+
           if (isValid) {
-            console.log('Token is valid, fetching calendar events...');
+            console.log("Token is valid, fetching calendar events...");
             // Fetch fresh calendar data
             await fetchCalendarEvents(accessToken);
             setIsTokenValidated(true);
-            showNotification('Welcome back!', 'success');
+            showNotification("Welcome back!", "success");
           } else {
-            console.log('Token is invalid, clearing session...');
+            console.log("Token is invalid, clearing session...");
             // Token is invalid, clear session
             handleLogout();
-            showNotification('Session expired. Please login again.', 'info');
+            showNotification("Session expired. Please login again.", "info");
           }
         } catch (error) {
-          console.error('Error validating token:', error);
+          console.error("Error validating token:", error);
           // If validation fails, still keep the session but show warning
           setIsTokenValidated(true);
-          showNotification('Restored previous session', 'info');
+          showNotification("Restored previous session", "info");
         } finally {
           setLoading(false);
         }
@@ -1098,11 +1327,11 @@ const EnhancedGoogleCalendar = () => {
 
       // Check for notifications
       checkForScheduledNotifications();
-      
-      console.log('App initialization complete');
+
+      console.log("App initialization complete");
     } catch (error) {
-      console.error('Error during app initialization:', error);
-      showNotification('Error initializing app', 'error');
+      console.error("Error during app initialization:", error);
+      showNotification("Error initializing app", "error");
     }
   };
 
@@ -1280,65 +1509,29 @@ const EnhancedGoogleCalendar = () => {
     }
   };
 
-  // ========== AUTHENTICATION FUNCTIONS ==========
-  const login = useGoogleLogin({
-    scope: CONFIG.scopes,
-    onSuccess: async (response) => {
-      console.log('Login successful, processing...');
-      setLoading(true);
-      setErrorDetails(null);
-      const token = response.access_token;
-      
-      try {
-        // Fetch user profile
-        const profile = await fetchUserProfile(token);
-        
-        // Save session
-        saveAuthSession(token, profile);
-        
-        // Update state
-        setAccessToken(token);
-        setUserProfile(profile);
-        setIsTokenValidated(true);
-        
-        // Fetch calendar events
-        await fetchCalendarEvents(token);
-        
-        showNotification("✅ Connected to Google Calendar!", "success");
-      } catch (error) {
-        console.error('Login error:', error);
-        handleGoogleError(error);
-        // Clear any partial session on error
-        clearAuthSession();
-      } finally {
-        setLoading(false);
-      }
-    },
-    onError: (error) => {
-      console.error('Login error:', error);
-      handleGoogleError(error);
-    },
-    flow: "implicit",
-  });
-
   const handleLogout = async () => {
     try {
       // Try to revoke token on Google's end
       if (accessToken) {
-        await axios.post('https://oauth2.googleapis.com/revoke', null, {
-          params: { token: accessToken },
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        }).catch(error => {
-          console.warn('Error revoking token (may already be expired):', error);
-        });
+        await axios
+          .post("https://oauth2.googleapis.com/revoke", null, {
+            params: { token: accessToken },
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          })
+          .catch((error) => {
+            console.warn(
+              "Error revoking token (may already be expired):",
+              error,
+            );
+          });
       }
     } catch (error) {
-      console.warn('Error during logout:', error);
+      console.warn("Error during logout:", error);
     } finally {
       // Clear local session
       clearAuthSession();
       googleLogout();
-      
+
       // Clear all state
       setAccessToken(null);
       setUserProfile(null);
@@ -1348,7 +1541,7 @@ const EnhancedGoogleCalendar = () => {
       setReminders([]);
       setAppointments([]);
       setErrorDetails(null);
-      
+
       showNotification("Logged out successfully", "info");
     }
   };
@@ -1362,7 +1555,7 @@ const EnhancedGoogleCalendar = () => {
           params: { alt: "json" },
         },
       );
-      console.log('Fetched user profile:', data.email);
+      console.log("Fetched user profile:", data.email);
       return data;
     } catch (error) {
       console.error("Profile fetch error:", error);
@@ -1434,22 +1627,27 @@ const EnhancedGoogleCalendar = () => {
       setAppointments(appointmentsList);
 
       // Save to localStorage for offline access
-      const allEvents = [...eventsList, ...tasksList, ...remindersList, ...appointmentsList];
+      const allEvents = [
+        ...eventsList,
+        ...tasksList,
+        ...remindersList,
+        ...appointmentsList,
+      ];
       localStorage.setItem("calendar_events", JSON.stringify(allEvents));
 
       updateStats(eventsList, tasksList, remindersList, appointmentsList);
-      console.log('Fetched calendar events:', allEvents.length);
+      console.log("Fetched calendar events:", allEvents.length);
       return formattedEvents;
     } catch (error) {
       console.error("Events fetch error:", error);
-      
+
       // If unauthorized, clear session
       if (error.response?.status === 401) {
-        console.log('Unauthorized, clearing session...');
+        console.log("Unauthorized, clearing session...");
         handleLogout();
-        showNotification('Session expired. Please login again.', 'warning');
+        showNotification("Session expired. Please login again.", "warning");
       }
-      
+
       handleGoogleError(error);
       throw error;
     } finally {
@@ -3703,10 +3901,10 @@ const EnhancedGoogleCalendar = () => {
   const renderAuthButton = () => {
     if (accessToken && userProfile) {
       return (
-        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+        <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
           <Chip
             avatar={<Avatar src={userProfile?.picture} />}
-            label={userProfile?.name || userProfile?.email || 'User'}
+            label={userProfile?.name || userProfile?.email || "User"}
             variant="outlined"
             color="primary"
           />
