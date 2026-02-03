@@ -6,45 +6,28 @@
 /* eslint-disable no-unused-vars */
 import {
   Add as AddIcon,
-  Alarm,
   Badge,
-  Build,
-  CalendarToday,
   Call,
-  CarRepair,
   CheckCircle,
   ChevronLeft,
   ChevronRight,
   Close,
   Cloud,
   CloudOff,
-  Computer,
   DarkMode,
   Delete as DeleteIcon,
-  DirectionsCar,
   DragIndicator,
   Edit as EditIcon,
   Email,
   Event as EventIcon,
   LightMode,
-  LocalGasStation,
   MoreVert as MoreVertIcon,
   Notifications,
-  Person,
-  Phone,
-  Print,
   Refresh as RefreshIcon,
   Save,
   Send,
   Settings,
-  Smartphone,
-  TaskAlt,
-  Timelapse,
   Today as TodayIcon,
-  VideoCall,
-  ViewAgenda,
-  ViewDay,
-  ViewWeek,
   Warning as WarningIcon,
 } from "@mui/icons-material";
 import {
@@ -56,7 +39,6 @@ import {
   Button,
   Card,
   CardContent,
-  Checkbox,
   Chip,
   CircularProgress,
   Dialog,
@@ -64,7 +46,6 @@ import {
   DialogContent,
   DialogTitle,
   Divider,
-  Fab,
   FormControl,
   FormControlLabel,
   Grid,
@@ -117,658 +98,36 @@ import {
   subWeeks,
 } from "date-fns";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { DndProvider, useDrag, useDrop } from "react-dnd";
+import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { v4 as uuidv4 } from "uuid";
-
-// ========== SERVICE TYPES ==========
-const SERVICE_TYPES = [
-  {
-    id: 1,
-    name: "Oil Change",
-    icon: <LocalGasStation />,
-    duration: 60,
-    color: "#4CAF50",
-    category: "maintenance",
-    price: "$50-$80",
-  },
-  {
-    id: 2,
-    name: "Brake Service",
-    icon: <DirectionsCar />,
-    duration: 120,
-    color: "#FF9800",
-    category: "safety",
-    price: "$100-$300",
-  },
-  {
-    id: 3,
-    name: "Engine Repair",
-    icon: <Build />,
-    duration: 240,
-    color: "#F44336",
-    category: "repair",
-    price: "$500-$2000",
-  },
-  {
-    id: 4,
-    name: "Tire Replacement",
-    icon: <DirectionsCar />,
-    duration: 120,
-    color: "#2196F3",
-    category: "maintenance",
-    price: "$80-$200",
-  },
-  {
-    id: 5,
-    name: "AC Service",
-    icon: <Build />,
-    duration: 180,
-    color: "#9C27B0",
-    category: "comfort",
-    price: "$150-$400",
-  },
-  {
-    id: 6,
-    name: "Battery Check",
-    icon: <Build />,
-    duration: 60,
-    color: "#FFEB3B",
-    category: "electrical",
-    price: "$20-$50",
-  },
-  {
-    id: 7,
-    name: "Wheel Alignment",
-    icon: <DirectionsCar />,
-    duration: 120,
-    color: "#795548",
-    category: "maintenance",
-    price: "$80-$120",
-  },
-  {
-    id: 8,
-    name: "Full Service",
-    icon: <CarRepair />,
-    duration: 360,
-    color: "#607D8B",
-    category: "comprehensive",
-    price: "$300-$600",
-  },
-];
-
-// ========== EVENT TYPES ==========
-const EVENT_TYPES = [
-  {
-    id: "event",
-    name: "Event",
-    icon: <EventIcon />,
-    color: "#4285F4",
-    defaultDuration: 60,
-    description: "General event",
-  },
-  {
-    id: "task",
-    name: "Task",
-    icon: <TaskAlt />,
-    color: "#0F9D58",
-    defaultDuration: 0,
-    description: "Task with checklist",
-  },
-  {
-    id: "meeting",
-    name: "Meeting",
-    icon: <VideoCall />,
-    color: "#DB4437",
-    defaultDuration: 30,
-    description: "Meeting with agenda",
-  },
-  {
-    id: "appointment",
-    name: "Appointment",
-    icon: <Person />,
-    color: "#F4B400",
-    defaultDuration: 45,
-    description: "Appointment with clients",
-  },
-  {
-    id: "reminder",
-    name: "Reminder",
-    icon: <Alarm />,
-    color: "#AB47BC",
-    defaultDuration: 0,
-    description: "Time-based reminder",
-  },
-];
-
-// ========== CALENDAR VIEWS ==========
-const CALENDAR_VIEWS = [
-  { id: "day", name: "Day", icon: <ViewDay /> },
-  { id: "week", name: "Week", icon: <ViewWeek /> },
-  { id: "month", name: "Month", icon: <CalendarToday /> },
-  { id: "agenda", name: "Agenda", icon: <ViewAgenda /> },
-  { id: "schedule", name: "Schedule", icon: <Timelapse /> },
-];
-
-// ========== NOTIFICATION TYPES ==========
-const NOTIFICATION_TYPES = [
-  { id: "email", name: "Email", icon: <Email /> },
-  { id: "popup", name: "Browser", icon: <Notifications /> },
-  { id: "push", name: "Push", icon: <Smartphone /> },
-  { id: "sms", name: "SMS", icon: <Phone /> },
-  { id: "desktop", name: "Desktop", icon: <Computer /> },
-];
-
-// ========== CALENDAR COLORS ==========
-const CALENDAR_COLORS = [
-  { id: "1", name: "Lavender", hex: "#7986CB" },
-  { id: "2", name: "Sage", hex: "#33B679" },
-  { id: "3", name: "Grape", hex: "#8E24AA" },
-  { id: "4", name: "Flamingo", hex: "#E67C73" },
-  { id: "5", name: "Banana", hex: "#F6BF26" },
-  { id: "6", name: "Tangerine", hex: "#F4511E" },
-  { id: "7", name: "Peacock", hex: "#039BE5" },
-  { id: "8", name: "Graphite", hex: "#616161" },
-  { id: "9", name: "Blueberry", hex: "#3F51B5" },
-  { id: "10", name: "Basil", hex: "#0B8043" },
-  { id: "11", name: "Tomato", hex: "#D50000" },
-];
-
-// ========== TIME SLOTS ==========
-const TIME_SLOTS = Array.from({ length: 48 }, (_, i) => {
-  const hour = Math.floor(i / 2);
-  const minute = i % 2 === 0 ? "00" : "30";
-  return `${hour.toString().padStart(2, "0")}:${minute}`;
-});
-
-// ========== DRAG AND DROP TYPES ==========
-const ItemTypes = {
-  EVENT: "event",
-  TASK: "task",
-  APPOINTMENT: "appointment",
-  REMINDER: "reminder",
-};
-
-// ========== NOTIFICATION TIMING OPTIONS ==========
-const REMINDER_TIMINGS = [
-  { value: 0, label: "At time of event" },
-  { value: 5, label: "5 minutes before" },
-  { value: 10, label: "10 minutes before" },
-  { value: 15, label: "15 minutes before" },
-  { value: 30, label: "30 minutes before" },
-  { value: 60, label: "1 hour before" },
-  { value: 120, label: "2 hours before" },
-  { value: 1440, label: "1 day before" },
-  { value: 2880, label: "2 days before" },
-  { value: 10080, label: "1 week before" },
-];
-
-// ========== RECURRENCE PATTERNS ==========
-const RECURRENCE_PATTERNS = [
-  { id: "none", label: "Does not repeat" },
-  { id: "daily", label: "Daily" },
-  { id: "weekly", label: "Weekly" },
-  { id: "monthly", label: "Monthly" },
-  { id: "yearly", label: "Yearly" },
-  { id: "weekdays", label: "Every weekday (Mon-Fri)" },
-  { id: "custom", label: "Custom..." },
-];
-
-// ========== PRIORITY LEVELS ==========
-const PRIORITY_LEVELS = [
-  { id: "low", label: "Low", color: "#4CAF50", icon: "⬇️" },
-  { id: "medium", label: "Medium", color: "#FF9800", icon: "➡️" },
-  { id: "high", label: "High", color: "#F44336", icon: "⬆️" },
-  { id: "urgent", label: "Urgent", color: "#9C27B0", icon: "🚨" },
-];
-
-// ========== EVENT STATUSES ==========
-const EVENT_STATUSES = [
-  { id: "scheduled", label: "Scheduled", color: "#4285F4" },
-  { id: "confirmed", label: "Confirmed", color: "#0F9D58" },
-  { id: "tentative", label: "Tentative", color: "#F4B400" },
-  { id: "cancelled", label: "Cancelled", color: "#757575" },
-  { id: "completed", label: "Completed", color: "#33B679" },
-  { id: "in_progress", label: "In Progress", color: "#FF9800" },
-  { id: "postponed", label: "Postponed", color: "#9C27B0" },
-];
-
-// ========== TASK STATUSES ==========
-const TASK_STATUSES = [
-  { id: "not_started", label: "Not Started", color: "#757575" },
-  { id: "in_progress", label: "In Progress", color: "#FF9800" },
-  { id: "completed", label: "Completed", color: "#0F9D58" },
-  { id: "blocked", label: "Blocked", color: "#F44336" },
-  { id: "deferred", label: "Deferred", color: "#9C27B0" },
-];
-
-// ========== ATTENDEE STATUSES ==========
-const ATTENDEE_STATUSES = [
-  { id: "needsAction", label: "No response", color: "#757575" },
-  { id: "declined", label: "Declined", color: "#F44336" },
-  { id: "tentative", label: "Maybe", color: "#FF9800" },
-  { id: "accepted", label: "Accepted", color: "#0F9D58" },
-];
-
-// ========== DRAGGABLE EVENT COMPONENT ==========
-const DraggableEvent = ({ event, onDragStart, onDragEnd }) => {
-  const [{ isDragging }, drag] = useDrag(() => ({
-    type: getEventDragType(event.type),
-    item: { type: event.type, id: event.id, event },
-    collect: (monitor) => ({
-      isDragging: !!monitor.isDragging(),
-    }),
-    end: (item, monitor) => {
-      if (onDragEnd && monitor.didDrop()) {
-        onDragEnd(item, monitor);
-      }
-    },
-  }));
-
-  const getEventDragType = (eventType) => {
-    switch (eventType) {
-      case "task":
-        return ItemTypes.TASK;
-      case "appointment":
-        return ItemTypes.APPOINTMENT;
-      case "reminder":
-        return ItemTypes.REMINDER;
-      default:
-        return ItemTypes.EVENT;
-    }
-  };
-
-  const getEventIcon = () => {
-    const eventType = EVENT_TYPES.find((t) => t.id === event.type);
-    return eventType ? eventType.icon : <EventIcon />;
-  };
-
-  return (
-    <div
-      ref={drag}
-      style={{
-        opacity: isDragging ? 0.5 : 1,
-        cursor: "move",
-        padding: "6px 8px",
-        margin: "2px 0",
-        borderRadius: "6px",
-        backgroundColor: event.color || event.colorHex || "#4285F4",
-        color: "white",
-        fontSize: "12px",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-        whiteSpace: "nowrap",
-        border: `2px solid ${event.color || event.colorHex || "#4285F4"}`,
-        boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-        display: "flex",
-        alignItems: "center",
-        gap: "4px",
-        position: "relative",
-      }}
-    >
-      <DragIndicator sx={{ fontSize: 14, opacity: 0.7 }} />
-      {getEventIcon()}
-      <span style={{ flex: 1, fontWeight: 500 }}>{event.summary}</span>
-      {event.priority === "high" && (
-        <span style={{ fontSize: "10px" }}>⚠️</span>
-      )}
-    </div>
-  );
-};
-
-// ========== DROPPABLE CALENDAR SLOT ==========
-const DroppableCalendarSlot = ({ date, time, onDrop, children }) => {
-  const [{ isOver }, drop] = useDrop(() => ({
-    accept: [
-      ItemTypes.EVENT,
-      ItemTypes.TASK,
-      ItemTypes.APPOINTMENT,
-      ItemTypes.REMINDER,
-    ],
-    drop: (item, monitor) => {
-      if (onDrop && monitor.didDrop()) {
-        onDrop(item, { date, time });
-      }
-      return { date, time };
-    },
-    collect: (monitor) => ({
-      isOver: !!monitor.isOver(),
-    }),
-  }));
-
-  return (
-    <div
-      ref={drop}
-      style={{
-        backgroundColor: isOver ? "#e3f2fd" : "transparent",
-        height: "100%",
-        width: "100%",
-        border: isOver ? "2px dashed #1976d2" : "1px solid #e0e0e0",
-        position: "relative",
-        transition: "all 0.2s ease",
-      }}
-    >
-      {children}
-    </div>
-  );
-};
-
-// ========== TASK CHECKLIST ITEM ==========
-const TaskChecklistItem = ({ item, index, onToggle, onEdit, onDelete }) => {
-  const [editing, setEditing] = useState(false);
-  const [editText, setEditText] = useState(item.text);
-
-  const handleSave = () => {
-    if (editText.trim()) {
-      onEdit(index, { ...item, text: editText.trim() });
-      setEditing(false);
-    }
-  };
-
-  return (
-    <Box
-      sx={{
-        display: "flex",
-        alignItems: "center",
-        gap: 1,
-        p: 1,
-        borderRadius: 1,
-        "&:hover": { bgcolor: "action.hover" },
-      }}
-    >
-      <Checkbox
-        checked={item.completed}
-        onChange={() => onToggle(index)}
-        size="small"
-      />
-      {editing ? (
-        <TextField
-          value={editText}
-          onChange={(e) => setEditText(e.target.value)}
-          onBlur={handleSave}
-          onKeyPress={(e) => e.key === "Enter" && handleSave()}
-          size="small"
-          autoFocus
-          fullWidth
-        />
-      ) : (
-        <Typography
-          sx={{
-            flex: 1,
-            textDecoration: item.completed ? "line-through" : "none",
-            color: item.completed ? "text.disabled" : "text.primary",
-            cursor: "pointer",
-          }}
-          onClick={() => setEditing(true)}
-        >
-          {item.text}
-        </Typography>
-      )}
-      <IconButton size="small" onClick={() => onDelete(index)}>
-        <DeleteIcon fontSize="small" />
-      </IconButton>
-    </Box>
-  );
-};
-
-// ========== NOTIFICATION SOUND PLAYER ==========
-const NotificationSoundPlayer = () => {
-  const audioRef = useRef(null);
-
-  const playSound = () => {
-    if (audioRef.current) {
-      audioRef.current.currentTime = 0;
-      audioRef.current.play().catch(console.error);
-    }
-  };
-
-  return (
-    <audio ref={audioRef} preload="auto">
-      <source src="/notification-sound.mp3" type="audio/mpeg" />
-      <source src="/notification-sound.ogg" type="audio/ogg" />
-    </audio>
-  );
-};
-
-// ========== UTILITY FUNCTIONS ==========
-const fixDateTimeFormat = (dateTimeString, isEndTime = false) => {
-  try {
-    if (!dateTimeString) return new Date().toISOString();
-
-    if (dateTimeString.includes("Z")) {
-      return dateTimeString;
-    }
-
-    if (dateTimeString.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/)) {
-      return dateTimeString + ":00.000Z";
-    }
-
-    if (dateTimeString.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/)) {
-      return dateTimeString + ".000Z";
-    }
-
-    const date = new Date(dateTimeString);
-    if (isNaN(date.getTime())) {
-      throw new Error("Invalid date");
-    }
-
-    if (isEndTime) {
-      return new Date(date.getTime() + 30 * 60000).toISOString();
-    }
-
-    return date.toISOString();
-  } catch (error) {
-    console.error("Date format error:", error);
-    const now = new Date();
-    if (isEndTime) {
-      return new Date(now.getTime() + 60 * 60000).toISOString();
-    }
-    return now.toISOString();
-  }
-};
-
-const formatForDateTimeLocal = (date) => {
-  const pad = (num) => num.toString().padStart(2, "0");
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
-    date.getDate(),
-  )}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
-};
-
-const getRandomColor = () => {
-  const colors = CALENDAR_COLORS.map((c) => c.hex);
-  return colors[Math.floor(Math.random() * colors.length)];
-};
-
-// ========== EMAIL TEMPLATES ==========
-const EmailTemplates = {
-  eventCreated: (event, user) => ({
-    subject: `New Event: ${event.summary}`,
-    body: `
-      <h2>New Event Created</h2>
-      <p><strong>Event:</strong> ${event.summary}</p>
-      <p><strong>Date:</strong> ${format(
-        new Date(event.start.dateTime),
-        "PPPP",
-      )}</p>
-      <p><strong>Time:</strong> ${format(
-        new Date(event.start.dateTime),
-        "p",
-      )} - ${format(new Date(event.end.dateTime), "p")}</p>
-      <p><strong>Location:</strong> ${event.location || "Not specified"}</p>
-      <p><strong>Description:</strong> ${
-        event.description || "No description"
-      }</p>
-      <br>
-      <p>This event was created by ${user?.name || "System"}.</p>
-    `,
-  }),
-
-  eventUpdated: (event, user) => ({
-    subject: `Event Updated: ${event.summary}`,
-    body: `
-      <h2>Event Updated</h2>
-      <p><strong>Event:</strong> ${event.summary}</p>
-      <p><strong>Date:</strong> ${format(
-        new Date(event.start.dateTime),
-        "PPPP",
-      )}</p>
-      <p><strong>Time:</strong> ${format(
-        new Date(event.start.dateTime),
-        "p",
-      )} - ${format(new Date(event.end.dateTime), "p")}</p>
-      <p><strong>Location:</strong> ${event.location || "Not specified"}</p>
-      <p><strong>Status:</strong> ${event.status}</p>
-      <br>
-      <p>This event was updated by ${user?.name || "System"}.</p>
-    `,
-  }),
-
-  eventReminder: (event, minutes) => ({
-    subject: `Reminder: ${event.summary} starts ${
-      minutes === 0 ? "now" : `in ${minutes} minutes`
-    }`,
-    body: `
-      <h2>Event Reminder</h2>
-      <p><strong>Event:</strong> ${event.summary}</p>
-      <p><strong>Starts:</strong> ${format(
-        new Date(event.start.dateTime),
-        "PPPPp",
-      )}</p>
-      <p><strong>Location:</strong> ${event.location || "Not specified"}</p>
-      <p><strong>Description:</strong> ${
-        event.description || "No description"
-      }</p>
-    `,
-  }),
-
-  taskAssigned: (task, assignee) => ({
-    subject: `New Task Assigned: ${task.summary}`,
-    body: `
-      <h2>Task Assigned</h2>
-      <p><strong>Task:</strong> ${task.summary}</p>
-      <p><strong>Due:</strong> ${format(new Date(task.dueDate), "PPPP")}</p>
-      <p><strong>Priority:</strong> ${task.priority}</p>
-      <p><strong>Description:</strong> ${
-        task.description || "No description"
-      }</p>
-      <br>
-      <p>This task has been assigned to you.</p>
-    `,
-  }),
-
-  appointmentConfirmed: (appointment, customer) => ({
-    subject: `Appointment Confirmed: ${appointment.summary}`,
-    body: `
-      <h2>Appointment Confirmation</h2>
-      <p><strong>Service:</strong> ${appointment.summary}</p>
-      <p><strong>Date & Time:</strong> ${format(
-        new Date(appointment.start.dateTime),
-        "PPPPp",
-      )}</p>
-      <p><strong>Location:</strong> ${
-        appointment.location || "Not specified"
-      }</p>
-      <p><strong>Service Provider:</strong> ${
-        appointment.organizer?.displayName || "Trust Auto Solution"
-      }</p>
-      <br>
-      <p>Dear ${customer?.name || "Customer"},</p>
-      <p>Your appointment has been confirmed. We look forward to seeing you!</p>
-    `,
-  }),
-};
-
-// ========== TOKEN MANAGEMENT FUNCTIONS ==========
-const saveAuthSession = (accessToken, userProfile) => {
-  try {
-    localStorage.setItem("google_access_token", accessToken);
-    localStorage.setItem("google_user_profile", JSON.stringify(userProfile));
-    localStorage.setItem("auth_timestamp", Date.now().toString());
-
-    // Also save to sessionStorage for additional persistence
-    sessionStorage.setItem("google_access_token", accessToken);
-    sessionStorage.setItem("google_user_profile", JSON.stringify(userProfile));
-
-    console.log("Auth session saved successfully");
-  } catch (error) {
-    console.error("Error saving auth session:", error);
-  }
-};
-
-const clearAuthSession = () => {
-  try {
-    localStorage.removeItem("google_access_token");
-    localStorage.removeItem("google_user_profile");
-    localStorage.removeItem("auth_timestamp");
-    localStorage.removeItem("calendar_events");
-
-    sessionStorage.removeItem("google_access_token");
-    sessionStorage.removeItem("google_user_profile");
-
-    console.log("Auth session cleared");
-  } catch (error) {
-    console.error("Error clearing auth session:", error);
-  }
-};
-
-const loadAuthSession = () => {
-  try {
-    // Try to load from localStorage first
-    let token = localStorage.getItem("google_access_token");
-    let profile = localStorage.getItem("google_user_profile");
-
-    // If not found in localStorage, try sessionStorage
-    if (!token || !profile) {
-      token = sessionStorage.getItem("google_access_token");
-      profile = sessionStorage.getItem("google_user_profile");
-    }
-
-    if (token && profile) {
-      const parsedProfile = JSON.parse(profile);
-
-      // Check if token is recent (within 1 hour)
-      const authTimestamp = localStorage.getItem("auth_timestamp");
-      const currentTime = Date.now();
-      const oneHour = 60 * 60 * 1000;
-
-      if (authTimestamp && currentTime - parseInt(authTimestamp) < oneHour) {
-        return { token, profile: parsedProfile };
-      } else {
-        // Token is too old, clear it
-        clearAuthSession();
-        return null;
-      }
-    }
-
-    return null;
-  } catch (error) {
-    console.error("Error loading auth session:", error);
-    clearAuthSession();
-    return null;
-  }
-};
-
-const verifyTokenValidity = async (token) => {
-  try {
-    // Simple token validation by making a lightweight API call
-    const response = await axios.get(
-      "https://www.googleapis.com/oauth2/v1/tokeninfo",
-      {
-        params: { access_token: token },
-        timeout: 5000,
-      },
-    );
-
-    // Check if token is valid and has calendar scope
-    if (response.data.expires_in > 0) {
-      return true;
-    }
-    return false;
-  } catch (error) {
-    console.error("Token validation failed:", error);
-    return false;
-  }
-};
+import { CONFIG } from "../../config/calendar";
+import {
+  CALENDAR_COLORS,
+  CALENDAR_VIEWS,
+  EVENT_STATUSES,
+  EVENT_TYPES,
+  NOTIFICATION_TYPES,
+  PRIORITY_LEVELS,
+  RECURRENCE_PATTERNS,
+  REMINDER_TIMINGS,
+  SERVICE_TYPES,
+  TASK_STATUSES,
+  TIME_SLOTS,
+} from "../../constant/calendar";
+import {
+  clearAuthSession,
+  loadAuthSession,
+  saveAuthSession,
+  verifyTokenValidity,
+} from "../../utils/auth";
+import {
+  fixDateTimeFormat,
+  formatForDateTimeLocal,
+  TaskChecklistItem,
+} from "../../utils/date";
+import { EmailTemplates } from "../../utils/email";
+import { DroppableCalendarSlot } from "./DroppableCalendarSlot";
 
 // ========== MAIN CALENDAR COMPONENT ==========
 const EnhancedGoogleCalendar = () => {
@@ -969,31 +328,8 @@ const EnhancedGoogleCalendar = () => {
       return baseData;
     })(),
   });
-
-  // ========== REFS ==========
-  const calendarRef = useRef(null);
   const searchRef = useRef(null);
-  const notificationRef = useRef(null);
   const notificationSoundRef = useRef(null);
-
-  // ========== CONFIGURATION ==========
-  const CONFIG = {
-    projectId: "731493911262",
-    clientId:
-      "731493911262-b4vutijvnt9bgdvgu6m1ai7g0nsno7vl.apps.googleusercontent.com",
-    adminEmail: "softypyit@gmail.com",
-    userEmail: "ibrahimsikder5033@gmail.com",
-    scopes: [
-      "https://www.googleapis.com/auth/calendar",
-      "https://www.googleapis.com/auth/calendar.events",
-      "https://www.googleapis.com/auth/calendar.readonly",
-      "https://www.googleapis.com/auth/calendar.settings.readonly",
-      "https://www.googleapis.com/auth/gmail.send",
-      "openid",
-      "https://www.googleapis.com/auth/userinfo.email",
-      "https://www.googleapis.com/auth/userinfo.profile",
-    ].join(" "),
-  };
 
   // ========== MODIFIED LOGIN FUNCTION ==========
   const login = useGoogleLogin({
@@ -2244,156 +1580,6 @@ const EnhancedGoogleCalendar = () => {
 
     setFormData((prev) => ({ ...prev, ...template }));
     setOpenDialog(true);
-  };
-
-  // ========== EXPORT AND PRINT ==========
-  const exportData = (format = "csv") => {
-    const allData = [...events, ...tasks, ...reminders, ...appointments];
-
-    if (allData.length === 0) {
-      showNotification("No data to export", "warning");
-      return;
-    }
-
-    let exportContent;
-    let fileName;
-    let mimeType;
-
-    if (format === "csv") {
-      const csvData = allData.map((item) => ({
-        Type: item.type || "event",
-        Title: item.summary || "No Title",
-        Date: item.start?.dateTime
-          ? format(new Date(item.start.dateTime), "yyyy-MM-dd HH:mm")
-          : "N/A",
-        End: item.end?.dateTime
-          ? format(new Date(item.end.dateTime), "yyyy-MM-dd HH:mm")
-          : "N/A",
-        Location: item.location || "N/A",
-        Description: item.description || "N/A",
-        Status: item.status || "N/A",
-        Priority: item.priority || "N/A",
-      }));
-
-      const headers = Object.keys(csvData[0]).join(",");
-      const rows = csvData.map((row) =>
-        Object.values(row)
-          .map((val) => `"${val}"`)
-          .join(","),
-      );
-
-      exportContent = [headers, ...rows].join("\n");
-      fileName = `calendar-export-${format(new Date(), "yyyy-MM-dd")}.csv`;
-      mimeType = "text/csv";
-    }
-
-    const blob = new Blob([exportContent], { type: mimeType });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = fileName;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
-
-    showNotification(`Exported ${allData.length} items`, "success");
-  };
-
-  const printSchedule = () => {
-    const printWindow = window.open("", "_blank");
-    const now = new Date();
-    const allData = [...events, ...tasks, ...reminders, ...appointments];
-
-    printWindow.document.write(`
-      <html>
-        <head>
-          <title>Calendar Schedule - ${format(now, "PPPP")}</title>
-          <style>
-            body { font-family: Arial, sans-serif; margin: 20px; }
-            h1 { color: #333; border-bottom: 2px solid #4285F4; padding-bottom: 10px; }
-            .header { display: flex; justify-content: space-between; margin-bottom: 30px; }
-            .stats { background: #f8f9fa; padding: 15px; border-radius: 8px; display: flex; gap: 20px; }
-            .stat-item { text-align: center; }
-            .stat-value { font-size: 24px; font-weight: bold; color: #4285F4; }
-            .stat-label { font-size: 12px; color: #666; }
-            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-            th { background-color: #4285F4; color: white; padding: 12px; text-align: left; }
-            td { border: 1px solid #ddd; padding: 10px; }
-            tr:nth-child(even) { background-color: #f9f9f9; }
-            .event-type { display: inline-block; padding: 2px 8px; border-radius: 4px; color: white; font-size: 12px; }
-            .event-event { background: #4285F4; }
-            .event-task { background: #0F9D58; }
-            .event-meeting { background: #DB4437; }
-            .event-appointment { background: #F4B400; }
-            .event-reminder { background: #AB47BC; }
-            .footer { margin-top: 30px; text-align: center; color: #666; font-size: 12px; }
-          </style>
-        </head>
-        <body>
-          <div class="header">
-            <h1>Enhanced Calendar - Schedule Report</h1>
-            <div class="stats">
-              <div class="stat-item">
-                <div class="stat-value">${stats.totalEvents}</div>
-                <div class="stat-label">Total Items</div>
-              </div>
-              <div class="stat-item">
-                <div class="stat-value">${stats.todayEvents}</div>
-                <div class="stat-label">Today</div>
-              </div>
-              <div class="stat-item">
-                <div class="stat-value">${stats.upcomingEvents}</div>
-                <div class="stat-label">Upcoming</div>
-              </div>
-            </div>
-          </div>
-          <p><strong>Generated:</strong> ${format(now, "PPPPpppp")}</p>
-          <table>
-            <thead>
-              <tr>
-                <th>Type</th>
-                <th>Title</th>
-                <th>Date & Time</th>
-                <th>Location</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${allData
-                .slice(0, 50)
-                .map(
-                  (item) => `
-                  <tr>
-                    <td>
-                      <span class="event-type event-${item.type || "event"}">
-                        ${(item.type || "event").toUpperCase()}
-                      </span>
-                    </td>
-                    <td>${item.summary || "No Title"}</td>
-                    <td>${
-                      item.start?.dateTime
-                        ? format(new Date(item.start.dateTime), "PPpp")
-                        : "N/A"
-                    }</td>
-                    <td>${item.location || "N/A"}</td>
-                    <td>${item.status || item.taskStatus || "scheduled"}</td>
-                  </tr>
-                `,
-                )
-                .join("")}
-            </tbody>
-          </table>
-          <div class="footer">
-            <p>Generated by Enhanced Calendar App</p>
-            <p>Total items: ${allData.length}</p>
-          </div>
-        </body>
-      </html>
-    `);
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
   };
 
   // ========== FORM MANAGEMENT ==========
@@ -4327,47 +3513,6 @@ const EnhancedGoogleCalendar = () => {
             </Paper>
           </Box>
         )}
-
-        {/* Quick Actions Bar */}
-        {accessToken && (
-          <Box
-            sx={{
-              position: "fixed",
-              bottom: 20,
-              right: 20,
-              display: "flex",
-              flexDirection: "column",
-              gap: 1,
-              zIndex: 1000,
-            }}
-          >
-            <Fab
-              color="primary"
-              onClick={() => setQuickAddOpen(true)}
-              sx={{ boxShadow: 3 }}
-            >
-              <AddIcon />
-            </Fab>
-            <Fab
-              color="secondary"
-              onClick={() => setSettingsOpen(true)}
-              size="small"
-              sx={{ boxShadow: 2 }}
-            >
-              <Settings />
-            </Fab>
-            <Fab
-              color="default"
-              onClick={printSchedule}
-              size="small"
-              sx={{ boxShadow: 2 }}
-            >
-              <Print />
-            </Fab>
-          </Box>
-        )}
-
-        {/* Event Creation/Edit Dialog */}
         <Dialog
           open={openDialog}
           onClose={() => setOpenDialog(false)}
