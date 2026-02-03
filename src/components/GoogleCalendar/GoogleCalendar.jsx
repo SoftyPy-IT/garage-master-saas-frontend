@@ -678,6 +678,98 @@ const EmailTemplates = {
   }),
 };
 
+// ========== TOKEN MANAGEMENT FUNCTIONS ==========
+const saveAuthSession = (accessToken, userProfile) => {
+  try {
+    localStorage.setItem('google_access_token', accessToken);
+    localStorage.setItem('google_user_profile', JSON.stringify(userProfile));
+    localStorage.setItem('auth_timestamp', Date.now().toString());
+    
+    // Also save to sessionStorage for additional persistence
+    sessionStorage.setItem('google_access_token', accessToken);
+    sessionStorage.setItem('google_user_profile', JSON.stringify(userProfile));
+    
+    console.log('Auth session saved successfully');
+  } catch (error) {
+    console.error('Error saving auth session:', error);
+  }
+};
+
+const clearAuthSession = () => {
+  try {
+    localStorage.removeItem('google_access_token');
+    localStorage.removeItem('google_user_profile');
+    localStorage.removeItem('auth_timestamp');
+    localStorage.removeItem('calendar_events');
+    
+    sessionStorage.removeItem('google_access_token');
+    sessionStorage.removeItem('google_user_profile');
+    
+    console.log('Auth session cleared');
+  } catch (error) {
+    console.error('Error clearing auth session:', error);
+  }
+};
+
+const loadAuthSession = () => {
+  try {
+    // Try to load from localStorage first
+    let token = localStorage.getItem('google_access_token');
+    let profile = localStorage.getItem('google_user_profile');
+    
+    // If not found in localStorage, try sessionStorage
+    if (!token || !profile) {
+      token = sessionStorage.getItem('google_access_token');
+      profile = sessionStorage.getItem('google_user_profile');
+    }
+    
+    if (token && profile) {
+      const parsedProfile = JSON.parse(profile);
+      
+      // Check if token is recent (within 1 hour)
+      const authTimestamp = localStorage.getItem('auth_timestamp');
+      const currentTime = Date.now();
+      const oneHour = 60 * 60 * 1000;
+      
+      if (authTimestamp && (currentTime - parseInt(authTimestamp)) < oneHour) {
+        return { token, profile: parsedProfile };
+      } else {
+        // Token is too old, clear it
+        clearAuthSession();
+        return null;
+      }
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('Error loading auth session:', error);
+    clearAuthSession();
+    return null;
+  }
+};
+
+const verifyTokenValidity = async (token) => {
+  try {
+    // Simple token validation by making a lightweight API call
+    const response = await axios.get(
+      'https://www.googleapis.com/oauth2/v1/tokeninfo',
+      {
+        params: { access_token: token },
+        timeout: 5000,
+      }
+    );
+    
+    // Check if token is valid and has calendar scope
+    if (response.data.expires_in > 0) {
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error('Token validation failed:', error);
+    return false;
+  }
+};
+
 // ========== MAIN CALENDAR COMPONENT ==========
 const EnhancedGoogleCalendar = () => {
   // ========== STATE MANAGEMENT ==========
@@ -694,12 +786,13 @@ const EnhancedGoogleCalendar = () => {
     message: "",
     severity: "success",
   });
-  const [accessToken, setAccessToken] = useState(
-    localStorage.getItem("google_access_token") || null,
-  );
-  const [userProfile, setUserProfile] = useState(
-    JSON.parse(localStorage.getItem("google_user_profile") || "null"),
-  );
+  
+  // Auth states - initialized from saved session
+  const savedSession = useMemo(() => loadAuthSession(), []);
+  const [accessToken, setAccessToken] = useState(savedSession?.token || null);
+  const [userProfile, setUserProfile] = useState(savedSession?.profile || null);
+  const [isTokenValidated, setIsTokenValidated] = useState(false);
+  
   const [loading, setLoading] = useState(false);
   const [errorDetails, setErrorDetails] = useState(null);
   const [viewMode, setViewMode] = useState("week");
@@ -907,66 +1000,117 @@ const EnhancedGoogleCalendar = () => {
     initializeApp();
   }, []);
 
-  const initializeApp = () => {
-    const defaultCalendars = [
-      {
-        id: "primary",
-        name: "Primary Calendar",
-        color: CALENDAR_COLORS[0].id,
-        selected: true,
-        visible: true,
-        type: "personal",
-      },
-      {
-        id: "work",
-        name: "Work Calendar",
-        color: CALENDAR_COLORS[1].id,
-        selected: false,
-        visible: true,
-        type: "work",
-      },
-      {
-        id: "personal",
-        name: "Personal Calendar",
-        color: CALENDAR_COLORS[2].id,
-        selected: false,
-        visible: true,
-        type: "personal",
-      },
-      {
-        id: "tasks",
-        name: "Tasks",
-        color: CALENDAR_COLORS[3].id,
-        selected: false,
-        visible: true,
-        type: "task",
-      },
-      {
-        id: "reminders",
-        name: "Reminders",
-        color: CALENDAR_COLORS[4].id,
-        selected: false,
-        visible: true,
-        type: "reminder",
-      },
-    ];
-    setCalendars(defaultCalendars);
+  const initializeApp = async () => {
+    try {
+      console.log('Initializing app...');
+      
+      // Set default calendars
+      const defaultCalendars = [
+        {
+          id: "primary",
+          name: "Primary Calendar",
+          color: CALENDAR_COLORS[0].id,
+          selected: true,
+          visible: true,
+          type: "personal",
+        },
+        {
+          id: "work",
+          name: "Work Calendar",
+          color: CALENDAR_COLORS[1].id,
+          selected: false,
+          visible: true,
+          type: "work",
+        },
+        {
+          id: "personal",
+          name: "Personal Calendar",
+          color: CALENDAR_COLORS[2].id,
+          selected: false,
+          visible: true,
+          type: "personal",
+        },
+        {
+          id: "tasks",
+          name: "Tasks",
+          color: CALENDAR_COLORS[3].id,
+          selected: false,
+          visible: true,
+          type: "task",
+        },
+        {
+          id: "reminders",
+          name: "Reminders",
+          color: CALENDAR_COLORS[4].id,
+          selected: false,
+          visible: true,
+          type: "reminder",
+        },
+      ];
+      setCalendars(defaultCalendars);
 
-    // Load offline data
-    const savedEvents = localStorage.getItem("calendar_events");
-    if (savedEvents) {
-      setEvents(JSON.parse(savedEvents));
+      // Load offline events
+      const savedEvents = localStorage.getItem("calendar_events");
+      if (savedEvents) {
+        try {
+          const parsedEvents = JSON.parse(savedEvents);
+          setEvents(parsedEvents.filter(e => e.type === 'event' || !e.type));
+          setTasks(parsedEvents.filter(e => e.type === 'task'));
+          setReminders(parsedEvents.filter(e => e.type === 'reminder'));
+          setAppointments(parsedEvents.filter(e => e.type === 'appointment'));
+          console.log('Loaded events from localStorage:', parsedEvents.length);
+        } catch (e) {
+          console.error('Error parsing saved events:', e);
+        }
+      }
+
+      // If we have a saved token, validate it
+      if (accessToken && userProfile) {
+        console.log('Found saved session, validating token...');
+        setLoading(true);
+        
+        try {
+          const isValid = await verifyTokenValidity(accessToken);
+          
+          if (isValid) {
+            console.log('Token is valid, fetching calendar events...');
+            // Fetch fresh calendar data
+            await fetchCalendarEvents(accessToken);
+            setIsTokenValidated(true);
+            showNotification('Welcome back!', 'success');
+          } else {
+            console.log('Token is invalid, clearing session...');
+            // Token is invalid, clear session
+            handleLogout();
+            showNotification('Session expired. Please login again.', 'info');
+          }
+        } catch (error) {
+          console.error('Error validating token:', error);
+          // If validation fails, still keep the session but show warning
+          setIsTokenValidated(true);
+          showNotification('Restored previous session', 'info');
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        setIsTokenValidated(true);
+      }
+
+      // Check for notifications
+      checkForScheduledNotifications();
+      
+      console.log('App initialization complete');
+    } catch (error) {
+      console.error('Error during app initialization:', error);
+      showNotification('Error initializing app', 'error');
     }
-
-    // Check for notifications
-    checkForScheduledNotifications();
   };
 
   // ========== ONLINE/OFFLINE HANDLING ==========
   useEffect(() => {
     const handleOnline = () => {
       setIsOnline(true);
-      if (accessToken) {
+      if (accessToken && isTokenValidated) {
         syncCalendar();
       }
     };
@@ -979,7 +1123,7 @@ const EnhancedGoogleCalendar = () => {
       window.removeEventListener("online", handleOnline);
       window.removeEventListener("offline", handleOffline);
     };
-  }, [accessToken]);
+  }, [accessToken, isTokenValidated]);
 
   // ========== NOTIFICATION SCHEDULING ==========
   useEffect(() => {
@@ -1136,43 +1280,77 @@ const EnhancedGoogleCalendar = () => {
     }
   };
 
+  // ========== AUTHENTICATION FUNCTIONS ==========
   const login = useGoogleLogin({
     scope: CONFIG.scopes,
     onSuccess: async (response) => {
+      console.log('Login successful, processing...');
       setLoading(true);
       setErrorDetails(null);
       const token = response.access_token;
-      setAccessToken(token);
-      localStorage.setItem("google_access_token", token);
-
+      
       try {
-        await fetchUserProfile(token);
+        // Fetch user profile
+        const profile = await fetchUserProfile(token);
+        
+        // Save session
+        saveAuthSession(token, profile);
+        
+        // Update state
+        setAccessToken(token);
+        setUserProfile(profile);
+        setIsTokenValidated(true);
+        
+        // Fetch calendar events
         await fetchCalendarEvents(token);
+        
         showNotification("✅ Connected to Google Calendar!", "success");
       } catch (error) {
+        console.error('Login error:', error);
         handleGoogleError(error);
+        // Clear any partial session on error
+        clearAuthSession();
       } finally {
         setLoading(false);
       }
     },
     onError: (error) => {
+      console.error('Login error:', error);
       handleGoogleError(error);
     },
     flow: "implicit",
   });
 
-  const logout = () => {
-    googleLogout();
-    setAccessToken(null);
-    setUserProfile(null);
-    setEvents([]);
-    setTasks([]);
-    setReminders([]);
-    setAppointments([]);
-    setErrorDetails(null);
-    localStorage.removeItem("google_access_token");
-    localStorage.removeItem("google_user_profile");
-    showNotification("Logged out successfully", "info");
+  const handleLogout = async () => {
+    try {
+      // Try to revoke token on Google's end
+      if (accessToken) {
+        await axios.post('https://oauth2.googleapis.com/revoke', null, {
+          params: { token: accessToken },
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        }).catch(error => {
+          console.warn('Error revoking token (may already be expired):', error);
+        });
+      }
+    } catch (error) {
+      console.warn('Error during logout:', error);
+    } finally {
+      // Clear local session
+      clearAuthSession();
+      googleLogout();
+      
+      // Clear all state
+      setAccessToken(null);
+      setUserProfile(null);
+      setIsTokenValidated(false);
+      setEvents([]);
+      setTasks([]);
+      setReminders([]);
+      setAppointments([]);
+      setErrorDetails(null);
+      
+      showNotification("Logged out successfully", "info");
+    }
   };
 
   const fetchUserProfile = async (token) => {
@@ -1184,8 +1362,7 @@ const EnhancedGoogleCalendar = () => {
           params: { alt: "json" },
         },
       );
-      setUserProfile(data);
-      localStorage.setItem("google_user_profile", JSON.stringify(data));
+      console.log('Fetched user profile:', data.email);
       return data;
     } catch (error) {
       console.error("Profile fetch error:", error);
@@ -1257,12 +1434,22 @@ const EnhancedGoogleCalendar = () => {
       setAppointments(appointmentsList);
 
       // Save to localStorage for offline access
-      localStorage.setItem("calendar_events", JSON.stringify(formattedEvents));
+      const allEvents = [...eventsList, ...tasksList, ...remindersList, ...appointmentsList];
+      localStorage.setItem("calendar_events", JSON.stringify(allEvents));
 
       updateStats(eventsList, tasksList, remindersList, appointmentsList);
+      console.log('Fetched calendar events:', allEvents.length);
       return formattedEvents;
     } catch (error) {
       console.error("Events fetch error:", error);
+      
+      // If unauthorized, clear session
+      if (error.response?.status === 401) {
+        console.log('Unauthorized, clearing session...');
+        handleLogout();
+        showNotification('Session expired. Please login again.', 'warning');
+      }
+      
       handleGoogleError(error);
       throw error;
     } finally {
@@ -1644,7 +1831,7 @@ const EnhancedGoogleCalendar = () => {
 
   // ========== SYNC AND DRAG-DROP ==========
   const syncCalendar = async () => {
-    if (!accessToken) return;
+    if (!accessToken || !isTokenValidated) return;
 
     try {
       setSyncStatus("syncing");
@@ -2198,7 +2385,7 @@ const EnhancedGoogleCalendar = () => {
             message: "Session expired",
             details: "Please login again",
           });
-          logout();
+          handleLogout();
           break;
         case 403:
           const errorMsg = data.error?.message || "";
@@ -3512,6 +3699,53 @@ const EnhancedGoogleCalendar = () => {
     </Menu>
   );
 
+  // ========== RENDER AUTHENTICATION BUTTON ==========
+  const renderAuthButton = () => {
+    if (accessToken && userProfile) {
+      return (
+        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+          <Chip
+            avatar={<Avatar src={userProfile?.picture} />}
+            label={userProfile?.name || userProfile?.email || 'User'}
+            variant="outlined"
+            color="primary"
+          />
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => setQuickAddOpen(true)}
+          >
+            Quick Add
+          </Button>
+          <Button
+            variant="outlined"
+            startIcon={<RefreshIcon />}
+            onClick={syncCalendar}
+            disabled={loading || !isTokenValidated}
+          >
+            {syncStatus === "syncing" ? "Syncing..." : "Sync"}
+          </Button>
+          <Button variant="outlined" color="error" onClick={handleLogout}>
+            Logout
+          </Button>
+        </Box>
+      );
+    } else {
+      return (
+        <Button
+          variant="contained"
+          startIcon={<EventIcon />}
+          onClick={() => login()}
+          disabled={loading}
+          size="large"
+          color="primary"
+        >
+          {loading ? <CircularProgress size={24} /> : "Connect Google Calendar"}
+        </Button>
+      );
+    }
+  };
+
   // ========== MAIN RENDER ==========
   return (
     <DndProvider backend={HTML5Backend}>
@@ -3557,6 +3791,14 @@ const EnhancedGoogleCalendar = () => {
 
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
             {/* Search Bar */}
+            <TextField
+              size="small"
+              placeholder="Search events..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              sx={{ width: 200 }}
+              inputRef={searchRef}
+            />
 
             {/* Notification Bell */}
             <IconButton
@@ -3578,51 +3820,7 @@ const EnhancedGoogleCalendar = () => {
               {themeMode === "light" ? <DarkMode /> : <LightMode />}
             </IconButton>
 
-            {!accessToken ? (
-              <Button
-                variant="contained"
-                startIcon={<EventIcon />}
-                onClick={() => login()}
-                disabled={loading}
-                size="large"
-                color="primary"
-              >
-                {loading ? (
-                  <CircularProgress size={24} />
-                ) : (
-                  "Connect Google Calendar"
-                )}
-              </Button>
-            ) : (
-              <>
-                <Chip
-                  avatar={<Avatar src={userProfile?.picture} />}
-                  label={userProfile?.email || "User"}
-                  variant="outlined"
-                  color="primary"
-                />
-                <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-                  <Button
-                    variant="contained"
-                    startIcon={<AddIcon />}
-                    onClick={() => setQuickAddOpen(true)}
-                  >
-                    Quick Add
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    startIcon={<RefreshIcon />}
-                    onClick={syncCalendar}
-                    disabled={loading}
-                  >
-                    {syncStatus === "syncing" ? "Syncing..." : "Sync"}
-                  </Button>
-                  <Button variant="outlined" color="error" onClick={logout}>
-                    Logout
-                  </Button>
-                </Box>
-              </>
-            )}
+            {renderAuthButton()}
           </Box>
         </Box>
 
