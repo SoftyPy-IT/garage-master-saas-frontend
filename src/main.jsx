@@ -22,6 +22,7 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import AuthLoader from "./components/AuthLoader.jsx";
 import PrintProvider from "./context/PrintProvider.jsx";
 import { PermissionProvider } from "./context/PermissionContext.jsx";
+import { LanguageProvider } from "./providers/LanguageProvider.jsx";
 
 const queryClient = new QueryClient();
 const clientId =
@@ -32,26 +33,28 @@ localStorage.removeItem("google_user_profile");
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <ErrorBoundary>
-      <Provider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
-          <GoogleOAuthProvider clientId={clientId}>
-            <AuthLoader>
-              <QueryClientProvider client={queryClient}>
-                <ThemeProvider theme={theme}>
-                  <Providers>
-                    <PrintProvider>
-                      <PermissionProvider>
-                        <ToastContainer />
-                        <RouterProvider router={router} />
-                      </PermissionProvider>
-                    </PrintProvider>
-                  </Providers>
-                </ThemeProvider>
-              </QueryClientProvider>
-            </AuthLoader>
-          </GoogleOAuthProvider>
-        </PersistGate>
-      </Provider>
+      <LanguageProvider>
+        <Provider store={store}>
+          <PersistGate loading={null} persistor={persistor}>
+            <GoogleOAuthProvider clientId={clientId}>
+              <AuthLoader>
+                <QueryClientProvider client={queryClient}>
+                  <ThemeProvider theme={theme}>
+                    <Providers>
+                      <PrintProvider>
+                        <PermissionProvider>
+                          <ToastContainer />
+                          <RouterProvider router={router} />
+                        </PermissionProvider>
+                      </PrintProvider>
+                    </Providers>
+                  </ThemeProvider>
+                </QueryClientProvider>
+              </AuthLoader>
+            </GoogleOAuthProvider>
+          </PersistGate>
+        </Provider>
+      </LanguageProvider>
     </ErrorBoundary>
   </React.StrictMode>,
 );

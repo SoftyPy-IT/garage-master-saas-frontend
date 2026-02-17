@@ -12,7 +12,7 @@ import {
 import { ArrowForward, TaskAlt } from "@mui/icons-material";
 import { motion } from "framer-motion";
 
-const WorkflowSection = ({ workflowSteps }) => {
+const WorkflowSection = ({ workflowSteps, language }) => {
   return (
     <Box id="workflow" sx={{ py: 15 }}>
       <Container maxWidth="lg">
@@ -24,7 +24,6 @@ const WorkflowSection = ({ workflowSteps }) => {
           >
             <Typography
               variant="h2"
-              // className="flex items-center justify-center"
               sx={{
                 fontWeight: 900,
                 mb: 4,
@@ -39,15 +38,15 @@ const WorkflowSection = ({ workflowSteps }) => {
                 sx={{
                   display: "flex",
                   alignItems: "center",
-                  justifyContent:"center",
-                  gap:2
+                  justifyContent: "center",
+                  gap: 2,
                 }}
               >
                 <Box
                   sx={{
                     background: `linear-gradient(135deg, #06b6d4, ${alpha(
                       "#06b6d4",
-                      0.7
+                      0.7,
                     )})`,
                     borderRadius: 3,
                     p: 1.5,
@@ -58,10 +57,14 @@ const WorkflowSection = ({ workflowSteps }) => {
                 >
                   <TaskAlt sx={{ fontSize: 32 }} />
                 </Box>
-                Complete Workflow
+                {language === "ENG"
+                  ? "Complete Workflow"
+                  : "সম্পূর্ণ ওয়ার্কফ্লো"}
               </Box>
               <Box component="span" sx={{ display: "block" }}>
-                From Customer to Payment
+                {language === "ENG"
+                  ? "From Customer to Payment"
+                  : "গ্রাহক থেকে পেমেন্ট পর্যন্ত"}
               </Box>
             </Typography>
             <Typography
@@ -74,9 +77,9 @@ const WorkflowSection = ({ workflowSteps }) => {
                 fontWeight: 500,
               }}
             >
-              Our streamlined 9-step process ensures nothing falls through the
-              cracks. Every step is automated, tracked, and optimized for
-              maximum efficiency.
+              {language === "ENG"
+                ? "Our streamlined 9-step process ensures nothing falls through the cracks. Every step is automated, tracked, and optimized for maximum efficiency."
+                : "আমাদের সুবিন্যস্ত ৯-ধাপ প্রক্রিয়া নিশ্চিত করে যে কিছুই ফাঁক দিয়ে পড়ে না। প্রতিটি ধাপ স্বয়ংক্রিয়, ট্র্যাক করা এবং সর্বোচ্চ দক্ষতার জন্য অপ্টিমাইজ করা হয়েছে।"}
             </Typography>
           </motion.div>
         </Box>
@@ -121,7 +124,7 @@ const WorkflowSection = ({ workflowSteps }) => {
                       height: 4,
                       background: `linear-gradient(90deg, #06b6d4, ${alpha(
                         "#06b6d4",
-                        0.5
+                        0.5,
                       )})`,
                       opacity: 0.7,
                       transition: "opacity 0.3s ease",
@@ -137,7 +140,7 @@ const WorkflowSection = ({ workflowSteps }) => {
                           borderRadius: "50%",
                           background: `linear-gradient(135deg, #06b6d4, ${alpha(
                             "#06b6d4",
-                            0.7
+                            0.7,
                           )})`,
                           display: "flex",
                           alignItems: "center",
@@ -169,7 +172,7 @@ const WorkflowSection = ({ workflowSteps }) => {
                           sx={{
                             background: `linear-gradient(135deg, #06b6d4, ${alpha(
                               "#06b6d4",
-                              0.7
+                              0.7,
                             )})`,
                             borderRadius: 3,
                             p: 1.5,
@@ -189,7 +192,7 @@ const WorkflowSection = ({ workflowSteps }) => {
                       sx={{
                         background: `linear-gradient(135deg, #06b6d4, ${alpha(
                           "#06b6d4",
-                          0.7
+                          0.7,
                         )})`,
                         WebkitBackgroundClip: "text",
                         WebkitTextFillColor: "transparent",

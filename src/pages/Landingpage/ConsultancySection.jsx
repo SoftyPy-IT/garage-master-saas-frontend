@@ -24,44 +24,64 @@ import {
 } from "@mui/icons-material";
 import { motion } from "framer-motion";
 
-const ConsultancySection = () => {
+const ConsultancySection = ({ language }) => {
   const services = [
     {
       icon: <Business />,
-      title: "Business Analysis",
+      title: language === "ENG" ? "Business Analysis" : "ব্যবসায়িক বিশ্লেষণ",
       description:
-        "Complete assessment of your current operations and growth opportunities",
+        language === "ENG"
+          ? "Complete assessment of your current operations and growth opportunities"
+          : "আপনার বর্তমান কার্যক্রম এবং বৃদ্ধির সুযোগের সম্পূর্ণ মূল্যায়ন",
     },
     {
       icon: <AutoFixHigh />,
-      title: "Custom Setup",
+      title: language === "ENG" ? "Custom Setup" : "কাস্টম সেটআপ",
       description:
-        "Tailored system configuration to match your specific business needs",
+        language === "ENG"
+          ? "Tailored system configuration to match your specific business needs"
+          : "আপনার নির্দিষ্ট ব্যবসায়িক চাহিদা অনুযায়ী কাস্টমাইজড সিস্টেম কনফিগারেশন",
     },
     {
       icon: <Support />,
-      title: "Training & Support",
+      title: language === "ENG" ? "Training & Support" : "প্রশিক্ষণ ও সমর্থন",
       description:
-        "Comprehensive team training and ongoing support for maximum success",
+        language === "ENG"
+          ? "Comprehensive team training and ongoing support for maximum success"
+          : "সর্বোচ্চ সাফল্যের জন্য বিস্তৃত দলগত প্রশিক্ষণ এবং চলমান সমর্থন",
     },
     {
       icon: <TrendingUp />,
-      title: "Growth Strategy",
+      title: language === "ENG" ? "Growth Strategy" : "বৃদ্ধির কৌশল",
       description:
-        "Data-driven recommendations to accelerate your business growth",
+        language === "ENG"
+          ? "Data-driven recommendations to accelerate your business growth"
+          : "আপনার ব্যবসায়িক বৃদ্ধি ত্বরান্বিত করতে ডেটা-চালিত সুপারিশ",
     },
   ];
 
-  const implementationItems = [
-    "✅ Complete system setup & configuration",
-    "📊 Data migration from existing systems",
-    "👨‍🏫 Staff training & onboarding sessions",
-    "📱 Mobile app setup for your team",
-    "🔧 Custom workflow optimization",
-    "📞 30 days of priority support",
-    "📈 Performance monitoring & optimization",
-    "🎯 Growth strategy consultation",
-  ];
+  const implementationItems =
+    language === "ENG"
+      ? [
+          "✅ Complete system setup & configuration",
+          "📊 Data migration from existing systems",
+          "👨‍🏫 Staff training & onboarding sessions",
+          "📱 Mobile app setup for your team",
+          "🔧 Custom workflow optimization",
+          "📞 30 days of priority support",
+          "📈 Performance monitoring & optimization",
+          "🎯 Growth strategy consultation",
+        ]
+      : [
+          "✅ সম্পূর্ণ সিস্টেম সেটআপ ও কনফিগারেশন",
+          "📊 বিদ্যমান সিস্টেম থেকে ডেটা মাইগ্রেশন",
+          "👨‍🏫 কর্মীদের প্রশিক্ষণ ও অনবোর্ডিং সেশন",
+          "📱 আপনার দলের জন্য মোবাইল অ্যাপ সেটআপ",
+          "🔧 কাস্টম ওয়ার্কফ্লো অপ্টিমাইজেশন",
+          "📞 ৩০ দিনের অগ্রাধিকার সমর্থন",
+          "📈 কর্মক্ষমতা মনিটরিং ও অপ্টিমাইজেশন",
+          "🎯 বৃদ্ধির কৌশল পরামর্শ",
+        ];
 
   return (
     <Box id="consultancy" sx={{ py: 15 }}>
@@ -86,9 +106,10 @@ const ConsultancySection = () => {
                   fontSize: { xs: "2.5rem", md: "4rem" },
                 }}
               >
-                🎯 Expert Consultancy
+                🎯{" "}
+                {language === "ENG" ? "Expert Consultancy" : "বিশেষজ্ঞ পরামর্শ"}
                 <Box component="span" sx={{ display: "block" }}>
-                  & Implementation
+                  {language === "ENG" ? "& Implementation" : "ও বাস্তবায়ন"}
                 </Box>
               </Typography>
               <Typography
@@ -100,9 +121,9 @@ const ConsultancySection = () => {
                   color: alpha("#ffffff", 0.8),
                 }}
               >
-                Get personalized guidance from our garage management experts.
-                We'll help you implement the perfect workflow and maximize your
-                ROI from day one.
+                {language === "ENG"
+                  ? "Get personalized guidance from our garage management experts. We'll help you implement the perfect workflow and maximize your ROI from day one."
+                  : "আমাদের গ্যারেজ ব্যবস্থাপনা বিশেষজ্ঞদের থেকে ব্যক্তিগতকৃত নির্দেশনা পান। আমরা আপনাকে নিখুঁত ওয়ার্কফ্লো বাস্তবায়ন করতে এবং প্রথম দিন থেকেই আপনার ROI সর্বাধিক করতে সহায়তা করব।"}
               </Typography>
               <Grid container spacing={4} sx={{ mb: 6 }}>
                 {services.map((service, index) => (
@@ -191,7 +212,10 @@ const ConsultancySection = () => {
                       },
                     }}
                   >
-                    📞 Book Free Consultation
+                    📞{" "}
+                    {language === "ENG"
+                      ? "Book Free Consultation"
+                      : "ফ্রি পরামর্শ বুক করুন"}
                   </Button>
                 </a>
               </motion.div>
@@ -221,7 +245,10 @@ const ConsultancySection = () => {
                   gutterBottom
                   sx={{ color: "#06b6d4" }}
                 >
-                  🚀 Implementation Package
+                  🚀{" "}
+                  {language === "ENG"
+                    ? "Implementation Package"
+                    : "বাস্তবায়ন প্যাকেজ"}
                 </Typography>
                 <Typography
                   variant="body1"
@@ -231,9 +258,9 @@ const ConsultancySection = () => {
                     color: alpha("#ffffff", 0.8),
                   }}
                 >
-                  Get your garage up and running with our complete
-                  implementation package. Everything you need for a successful
-                  digital transformation.
+                  {language === "ENG"
+                    ? "Get your garage up and running with our complete implementation package. Everything you need for a successful digital transformation."
+                    : "আমাদের সম্পূর্ণ বাস্তবায়ন প্যাকেজের মাধ্যমে আপনার গ্যারেজ চালু করুন। একটি সফল ডিজিটাল রূপান্তরের জন্য আপনার যা যা প্রয়োজন।"}
                 </Typography>
                 <List disablePadding>
                   {implementationItems.map((item, index) => (
@@ -270,13 +297,18 @@ const ConsultancySection = () => {
                     fontWeight="bold"
                     sx={{ color: "#10b981", mb: 1 }}
                   >
-                    💰 Implementation Value: $2,500
+                    💰{" "}
+                    {language === "ENG"
+                      ? "Implementation Value: $2,500"
+                      : "বাস্তবায়ন মূল্য: $২,৫০০"}
                   </Typography>
                   <Typography
                     variant="body2"
                     sx={{ color: alpha("#ffffff", 0.8) }}
                   >
-                    FREE with annual subscription
+                    {language === "ENG"
+                      ? "FREE with annual subscription"
+                      : "বার্ষিক সাবস্ক্রিপশনের সাথে বিনামূল্যে"}
                   </Typography>
                 </Box>
               </Paper>

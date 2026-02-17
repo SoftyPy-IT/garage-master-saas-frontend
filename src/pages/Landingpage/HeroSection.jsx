@@ -21,7 +21,8 @@ import {
 import { motion, useScroll, useTransform } from "framer-motion";
 import { FloatingParticles } from "./FloatingParticle";
 
-export const HeroSection = () => {
+/* eslint-disable react/prop-types */
+export const HeroSection = ({ language }) => {
   const { scrollY } = useScroll();
   const y1 = useTransform(scrollY, [0, 500], [0, 150]);
   const y2 = useTransform(scrollY, [0, 500], [0, -150]);
@@ -73,7 +74,10 @@ export const HeroSection = () => {
         />
       </motion.div>
 
-      <Container maxWidth="lg" sx={{ position: "relative", zIndex: 2, mt: {lg:10} }}>
+      <Container
+        maxWidth="lg"
+        sx={{ position: "relative", zIndex: 2, mt: { lg: 10 } }}
+      >
         <Grid container spacing={8} alignItems="center">
           <Grid item xs={12} md={6}>
             <motion.div
@@ -90,13 +94,17 @@ export const HeroSection = () => {
                   }}
                 >
                   <Chip
-                    label="🏆 #1 Garage Management Platform"
+                    label={
+                      language === "ENG"
+                        ? "🏆 #1 Garage Management Platform"
+                        : "🏆 #১ গ্যারেজ ম্যানেজমেন্ট প্ল্যাটফর্ম"
+                    }
                     sx={{
                       background:
                         "linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)",
                       color: "#ffffff",
                       fontWeight: 700,
-                      px: {lg:3},
+                      px: { lg: 3 },
                       py: 1,
                       fontSize: "0.9rem",
                       boxShadow: `0 8px 25px rgba(6, 182, 212, 0.3)`,
@@ -112,7 +120,6 @@ export const HeroSection = () => {
                   fontWeight: 900,
                   fontSize: { xs: "3rem", md: "5rem" },
                   lineHeight: 0.9,
-
                   mb: 4,
                   background:
                     "linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)",
@@ -122,7 +129,7 @@ export const HeroSection = () => {
                   letterSpacing: "-3px",
                 }}
               >
-                Complete Garage
+                {language === "ENG" ? "Complete Garage" : "সম্পূর্ণ গ্যারেজ"}
                 <Box
                   component="span"
                   sx={{
@@ -134,10 +141,14 @@ export const HeroSection = () => {
                     backgroundClip: "text",
                   }}
                 >
-                  Management Solution
+                  {language === "ENG"
+                    ? "Management Solution"
+                    : "ব্যবস্থাপনা সমাধান"}
                 </Box>
                 <Box component="span" sx={{ fontSize: "0.5em", opacity: 0.8 }}>
-                  From Customer to Payment
+                  {language === "ENG"
+                    ? "From Customer to Payment"
+                    : "গ্রাহক থেকে পেমেন্ট পর্যন্ত"}
                 </Box>
               </Typography>
 
@@ -151,16 +162,20 @@ export const HeroSection = () => {
                   maxWidth: 600,
                 }}
               >
-                Streamline your entire garage workflow with our AI-powered
-                platform.{" "}
+                {language === "ENG"
+                  ? "Streamline your entire garage workflow with our AI-powered platform."
+                  : "আমাদের এআই-চালিত প্ল্যাটফর্মের মাধ্যমে আপনার সম্পূর্ণ গ্যারেজ ওয়ার্কফ্লো সুসংহত করুন।"}{" "}
                 <Box
                   component="span"
                   sx={{ fontWeight: 700, color: "#06b6d4" }}
                 >
-                  Customer → Job Card → Quotation → Invoice → Money Receipt →
-                  Inventory → Accounts
+                  {language === "ENG"
+                    ? "Customer → Job Card → Quotation → Invoice → Money Receipt → Inventory → Accounts"
+                    : "গ্রাহক → জব কার্ড → কোটেশন → ইনভয়েস → টাকা রসিদ → ইনভেন্টরি → অ্যাকাউন্টস"}
                 </Box>{" "}
-                - all in one seamless system.
+                {language === "ENG"
+                  ? "- all in one seamless system."
+                  : "- সবকিছু একটি নির্বিঘ্ন সিস্টেমে।"}
               </Typography>
 
               <Stack
@@ -177,13 +192,13 @@ export const HeroSection = () => {
                     size="large"
                     startIcon={<Rocket />}
                     sx={{
-                      width: {lg:380},
+                      width: { lg: 380 },
                       borderWidth: 3,
                       background:
                         "linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)",
-                      px: {lg:5},
-                      py: {lg:3},
-                      fontSize: {lg:"1.2rem"},
+                      px: { lg: 5 },
+                      py: { lg: 3 },
+                      fontSize: { lg: "1.2rem" },
                       fontWeight: 700,
                       borderRadius: 4,
                       boxShadow: `0 15px 50px rgba(6, 182, 212, 0.4)`,
@@ -196,7 +211,9 @@ export const HeroSection = () => {
                       },
                     }}
                   >
-                    START FREE 30-DAY TRIAL
+                    {language === "ENG"
+                      ? "START FREE 30-DAY TRIAL"
+                      : "ফ্রি ৩০-দিনের ট্রায়াল শুরু করুন"}
                   </Button>
                 </motion.div>
 
@@ -208,7 +225,6 @@ export const HeroSection = () => {
                     variant="outlined"
                     size="large"
                     startIcon={<PlayArrow />}
-                    // className="flex"
                     sx={{
                       width: 250,
                       display: "flex",
@@ -227,7 +243,7 @@ export const HeroSection = () => {
                       },
                     }}
                   >
-                    Watch Demo
+                    {language === "ENG" ? "Watch Demo" : "ডেমো দেখুন"}
                   </Button>
                 </motion.div>
               </Stack>
@@ -237,7 +253,6 @@ export const HeroSection = () => {
                 spacing={6}
                 alignItems="center"
                 flexWrap="wrap"
-             
               >
                 <Box sx={{ display: "flex", alignItems: "center" }}>
                   <Stack direction="row" spacing={0.5}>
@@ -256,13 +271,17 @@ export const HeroSection = () => {
                     ))}
                   </Stack>
                   <Typography variant="body1" sx={{ ml: 2, fontWeight: 700 }}>
-                    4.98/5 (2,500+ reviews)
+                    4.98/5 (2,500+ {language === "ENG" ? "reviews" : "রিভিউ"})
                   </Typography>
                 </Box>
                 <Stack direction="row" spacing={3} alignItems="center">
                   <Chip
                     icon={<Verified />}
-                    label="No Credit Card Required"
+                    label={
+                      language === "ENG"
+                        ? "No Credit Card Required"
+                        : "ক্রেডিট কার্ডের প্রয়োজন নেই"
+                    }
                     sx={{
                       background: "rgba(16, 185, 129, 0.1)",
                       color: "#10b981",
@@ -274,7 +293,7 @@ export const HeroSection = () => {
             </motion.div>
           </Grid>
 
-          <Grid item xs={12} md={6} style={{marginTop:80}}>
+          <Grid item xs={12} md={6} style={{ marginTop: 80 }}>
             <motion.div
               initial={{ opacity: 0, scale: 0.8, rotateY: 20 }}
               animate={{ opacity: 1, scale: 1, rotateY: 0 }}
@@ -307,9 +326,6 @@ export const HeroSection = () => {
                     }}
                   >
                     <Box
-                      // component="img"
-                      // src="/placeholder.svg?height=600&width=800"
-                      // alt="Garage Master Dashboard"
                       sx={{
                         width: "100%",
                         height: "auto",
@@ -317,9 +333,12 @@ export const HeroSection = () => {
                         filter: "brightness(1.1) contrast(1.1)",
                         color: "#fff",
                         textAlign: "center",
+                        p: 5,
                       }}
                     >
-                      Garage Master Dashboard
+                      {language === "ENG"
+                        ? "Garage Master Dashboard"
+                        : "গ্যারেজ মাস্টার ড্যাশবোর্ড"}
                     </Box>
                   </Paper>
                 </motion.div>
@@ -374,13 +393,13 @@ export const HeroSection = () => {
                           fontWeight="bold"
                           sx={{ color: "#10b981" }}
                         >
-                          +250% Revenue
+                          +250% {language === "ENG" ? "Revenue" : "রেভিনিউ"}
                         </Typography>
                         <Typography
                           variant="caption"
                           sx={{ color: "rgba(255, 255, 255, 0.7)" }}
                         >
-                          Average Growth
+                          {language === "ENG" ? "Average Growth" : "গড় বৃদ্ধি"}
                         </Typography>
                       </Box>
                     </Stack>
@@ -401,7 +420,7 @@ export const HeroSection = () => {
                   style={{
                     position: "absolute",
                     bottom: "180%",
-                    left: {sm:"-80%", lg:"-20%"},
+                    left: { sm: "-80%", lg: "-20%" },
                     zIndex: 3,
                   }}
                 >
@@ -434,13 +453,15 @@ export const HeroSection = () => {
                           fontWeight="bold"
                           sx={{ color: "#3b82f6" }}
                         >
-                          85% Faster
+                          85% {language === "ENG" ? "Faster" : "দ্রুততর"}
                         </Typography>
                         <Typography
                           variant="caption"
                           sx={{ color: "rgba(255, 255, 255, 0.7)" }}
                         >
-                          Processing Time
+                          {language === "ENG"
+                            ? "Processing Time"
+                            : "প্রসেসিং সময়"}
                         </Typography>
                       </Box>
                     </Stack>

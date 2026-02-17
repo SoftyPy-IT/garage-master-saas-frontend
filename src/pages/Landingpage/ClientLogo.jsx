@@ -1,20 +1,16 @@
 /* eslint-disable react/prop-types */
-
-import { Box, Container, Typography, Grid, Paper } from "@mui/material"
-import { motion } from "framer-motion"
+import { Box, Container, Typography, Grid, Paper } from "@mui/material";
+import { motion } from "framer-motion";
 import { useGetAllCompanyBrandsQuery } from "../../redux/api/companyBrandApi";
 import Loading from "../../components/Loading/Loading";
 
+export const ClientLogos = ({ language }) => {
+  const { data, isLoading } = useGetAllCompanyBrandsQuery({});
+  if (isLoading) {
+    return <Loading />;
+  }
 
-
-export const ClientLogos = () => {
-    const { data, isLoading } = useGetAllCompanyBrandsQuery({});
-    if(isLoading){
-      return <Loading/>
-    }
-  
   return (
-
     <Box
       id="clients"
       sx={{
@@ -25,7 +21,9 @@ export const ClientLogos = () => {
       <Container maxWidth="lg">
         <Box sx={{ textAlign: "center", mb: 6 }}>
           <Typography variant="h4" fontWeight="bold" gutterBottom>
-            Trusted by 2,500+ Garage Owners Worldwide
+            {language === "ENG"
+              ? "Trusted by 2,500+ Garage Owners Worldwide"
+              : "বিশ্বব্যাপী ২,৫০০+ গ্যারেজ মালিকদের দ্বারা বিশ্বস্ত"}
           </Typography>
         </Box>
         <Grid container spacing={4} alignItems="center" justifyContent="center">
@@ -74,5 +72,5 @@ export const ClientLogos = () => {
         </Grid>
       </Container>
     </Box>
-  )
-}
+  );
+};
