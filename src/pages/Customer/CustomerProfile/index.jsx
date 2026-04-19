@@ -65,19 +65,19 @@ const CustomerProfile = () => {
 
   const totalAmount = filteredInvoices.reduce(
     (sum, receipt) => sum + (receipt?.net_total || 0),
-    0
+    0,
   );
   const discount = filteredInvoices.reduce(
     (sum, receipt) => sum + (receipt?.discount || 0),
-    0
+    0,
   );
   const totalDue = filteredInvoices.reduce(
     (sum, receipt) => sum + (receipt?.due || 0),
-    0
+    0,
   );
   const totalAdvance = filteredInvoices.reduce(
     (sum, receipt) => sum + (receipt?.advance || 0),
-    0
+    0,
   );
 
   return (

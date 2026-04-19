@@ -34,6 +34,7 @@ const Detail = () => {
     tenantDomain,
     id,
   });
+  console.log("single quotation ", quotationPreview);
   useEffect(() => {
     if (data?.data) {
       setQuotationPreview(data.data);

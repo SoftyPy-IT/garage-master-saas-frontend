@@ -141,8 +141,6 @@ const UpdateQuotation = () => {
       skip: !id || !tenantDomain,
     }
   );
-
-  // Initialize form data when quotation data is loaded
   useEffect(() => {
     if (data && typeof data === "object") {
       const quotationData = data.data || data;
@@ -693,7 +691,7 @@ const UpdateQuotation = () => {
 
     const productName = product.product?.product_name || "";
     const productPrice = Number(product.product?.sellingPrice) || 0;
-    const productQuantity = product.stock || 1; // Use available stock instead of product quantity
+    const productQuantity = product.stock || 0; 
     const productUnit = findMatchingUnit(product.product?.unit);
     const total = productQuantity * productPrice;
 
@@ -796,7 +794,6 @@ const UpdateQuotation = () => {
   // Remove handlers
   const handleRemove = (index) => {
     if (index === 0 && items.length === 1) {
-      // Reset the first item instead of removing it
       setItems([
         {
           description: "",
