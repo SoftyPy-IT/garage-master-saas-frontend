@@ -62,7 +62,7 @@ const UpdateQuotation = () => {
   const { companyProfileData } = useCompanyProfileData();
 
   const userTypeFromProfile = new URLSearchParams(location.search).get(
-    "user_type"
+    "user_type",
   );
   const userFromProfile = new URLSearchParams(location.search).get("user");
   const [countryCode, setCountryCode] = useState(countries[0]);
@@ -139,7 +139,7 @@ const UpdateQuotation = () => {
     },
     {
       skip: !id || !tenantDomain,
-    }
+    },
   );
   useEffect(() => {
     if (data && typeof data === "object") {
@@ -236,24 +236,24 @@ const UpdateQuotation = () => {
       const existingPartsTotal =
         specificQuotation?.input_data?.reduce(
           (sum, item) => sum + (Number.parseFloat(item.total) || 0),
-          0
+          0,
         ) || 0;
 
       const newPartsTotal = items.reduce(
         (sum, item) => sum + (Number.parseFloat(item.total) || 0),
-        0
+        0,
       );
 
       // Calculate service total
       const existingServiceTotal =
         specificQuotation?.service_input_data?.reduce(
           (sum, item) => sum + (Number.parseFloat(item.total) || 0),
-          0
+          0,
         ) || 0;
 
       const newServiceTotal = serviceItems.reduce(
         (sum, item) => sum + (Number.parseFloat(item.total) || 0),
-        0
+        0,
       );
 
       const totalPartsAmount = existingPartsTotal + newPartsTotal;
@@ -308,7 +308,7 @@ const UpdateQuotation = () => {
 
     setActiveInputType("service");
     setActiveInputIndex(
-      index + (specificQuotation?.service_input_data?.length || 0)
+      index + (specificQuotation?.service_input_data?.length || 0),
     );
     filterProductSuggestions(value);
   };
@@ -647,7 +647,7 @@ const UpdateQuotation = () => {
     const filteredProducts = stockData.data.filter((stock) =>
       stock.product.product_name
         .toLowerCase()
-        .includes(searchTerm.toLowerCase())
+        .includes(searchTerm.toLowerCase()),
     );
 
     setProductSuggestions(filteredProducts);
@@ -667,7 +667,7 @@ const UpdateQuotation = () => {
         option.value === unitValue ||
         option.label === unitValue ||
         (shortName &&
-          (option.value === shortName || option.label === shortName))
+          (option.value === shortName || option.label === shortName)),
     );
     if (exactMatch) {
       return exactMatch.value;
@@ -678,7 +678,7 @@ const UpdateQuotation = () => {
         option.label.toLowerCase() === unitValue?.toLowerCase() ||
         (shortName &&
           (option.value.toLowerCase() === shortName.toLowerCase() ||
-            option.label.toLowerCase() === shortName.toLowerCase()))
+            option.label.toLowerCase() === shortName.toLowerCase())),
     );
     if (caseInsensitiveMatch) {
       return caseInsensitiveMatch.value;
@@ -691,7 +691,7 @@ const UpdateQuotation = () => {
 
     const productName = product.product?.product_name || "";
     const productPrice = Number(product.product?.sellingPrice) || 0;
-    const productQuantity = product.stock || 0; 
+    const productQuantity = product.stock || 0;
     const productUnit = findMatchingUnit(product.product?.unit);
     const total = productQuantity * productPrice;
 
@@ -1058,7 +1058,7 @@ const UpdateQuotation = () => {
             newMileageValue > 0
           ) {
             const mileageExists = updatedMileageHistory.some(
-              (entry) => entry.mileage === newMileageValue
+              (entry) => entry.mileage === newMileageValue,
             );
             if (!mileageExists) {
               updatedMileageHistory.push({
@@ -1119,47 +1119,79 @@ const UpdateQuotation = () => {
             if (res.success) {
               setReload(!reload);
               toast.success("Quotation updated successfully");
+
+              // Only navigate if update was successful
+              if (!userTypeFromProfile) {
+                navigate("/dashboard/quotation-list");
+              } else if (userTypeFromProfile === "company") {
+                navigate(`/dashboard/company-profile?id=${userFromProfile}`);
+              } else if (userTypeFromProfile === "customer") {
+                navigate(`/dashboard/customer-profile?id=${userFromProfile}`);
+              } else if (userTypeFromProfile === "showRoom") {
+                navigate(`/dashboard/show-room-profile?id=${userFromProfile}`);
+              }
             }
           }
         } catch (error) {
           console.error("Update error:", error);
-          if (error.response) {
-            setError(error?.response?.data?.message);
-          } else {
-            setError("An error occurred while updating the quotation");
+
+          // Handle the error and show appropriate toast message
+          let errorMessage = "An error occurred while updating the quotation";
+
+          if (error?.data?.message) {
+            errorMessage = error.data.message;
+          } else if (error?.message) {
+            errorMessage = error.message;
+          } else if (error?.error?.data?.message) {
+            errorMessage = error.error.data.message;
           }
+
+          // Show the error in a toast
+          toast.error(errorMessage);
+
+          // Set the error state for display
+          setError(errorMessage);
+
+          // Don't navigate - stay on the page so user can fix the issue
+          // Re-throw to prevent navigation in the performActionWithPermission callback
+          throw error;
         }
       },
-      "You don't have permission update quotation"
+      "You don't have permission update quotation",
     );
   };
 
   // Navigation handlers
-  const handleGoInvoice = () => {
-    handleSubmit(onSubmit)();
-    navigate(
-      `/dashboard/create-invoice?order_no=${specificQuotation?.job_no}&id=${id}`
-    );
+  const handleGoInvoice = async () => {
+    try {
+      await handleSubmit(onSubmit)();
+      // Only navigate if submission was successful
+      navigate(
+        `/dashboard/create-invoice?order_no=${specificQuotation?.job_no}&id=${id}`,
+      );
+    } catch (error) {
+      // Navigation prevented due to error
+      console.error("Submission failed:", error);
+    }
+  };
+  const handleGoPreview = async () => {
+    try {
+      await handleSubmit(onSubmit)();
+      // Only navigate if submission was successful
+      navigate(`/dashboard/quotation-view?id=${id}`);
+    } catch (error) {
+      // Navigation prevented due to error
+      console.error("Submission failed:", error);
+    }
   };
 
-  const handleGoPreview = () => {
-    handleSubmit(onSubmit)();
-    navigate(`/dashboard/quotation-view?id=${id}`);
-  };
-
-  const handleOnSubmit = () => {
-    handleSubmit(onSubmit)();
-    if (!userTypeFromProfile) {
-      navigate("/dashboard/quotation-list");
-    }
-    if (userTypeFromProfile === "company") {
-      navigate(`/dashboard/company-profile?id=${userFromProfile}`);
-    }
-    if (userTypeFromProfile === "customer") {
-      navigate(`/dashboard/customer-profile?id=${userFromProfile}`);
-    }
-    if (userTypeFromProfile === "showRoom") {
-      navigate(`/dashboard/show-room-profile?id=${userFromProfile}`);
+  const handleOnSubmit = async () => {
+    try {
+      await handleSubmit(onSubmit)();
+      // Navigation is now handled inside onSubmit after successful update
+    } catch (error) {
+      // Submission failed, stay on page
+      console.error("Submission failed:", error);
     }
   };
 
@@ -1377,7 +1409,7 @@ const UpdateQuotation = () => {
                       {...register(
                         specificQuotation?.user_type === "customer"
                           ? "customer_contact"
-                          : "company_contact"
+                          : "company_contact",
                       )}
                       variant="outlined"
                       fullWidth
@@ -1540,14 +1572,14 @@ const UpdateQuotation = () => {
                             <Chip
                               key={index}
                               label={`${entry.mileage} km (${new Date(
-                                entry.date
+                                entry.date,
                               ).toLocaleDateString()})`}
                               variant="outlined"
                               className="bg-gray-100 border-gray-300 text-gray-800"
                               onDelete={() => {
                                 const updatedHistory =
                                   specificQuotation?.vehicle?.mileageHistory.filter(
-                                    (_, i) => i !== index
+                                    (_, i) => i !== index,
                                   );
                                 setSpecificQuotation((prevState) => ({
                                   ...prevState,
@@ -1563,7 +1595,7 @@ const UpdateQuotation = () => {
                                 </span>
                               }
                             />
-                          )
+                          ),
                         )}
                       </div>
                     ) : (
@@ -2358,7 +2390,7 @@ const UpdateQuotation = () => {
             <b>Total Amount: </b>
             <span>
               {formateNumber(
-                grandTotal ? grandTotal : specificQuotation?.total_amount
+                grandTotal ? grandTotal : specificQuotation?.total_amount,
               )}
             </span>
           </div>
@@ -2393,7 +2425,7 @@ const UpdateQuotation = () => {
                   {formateNumber(
                     calculateFinalTotal()
                       ? calculateFinalTotal()
-                      : specificQuotation?.net_total
+                      : specificQuotation?.net_total,
                   )}
                 </span>
               </strong>
@@ -2434,7 +2466,6 @@ const UpdateQuotation = () => {
             </Can>
           </div>
         </div>
-        {error && <div className="pt-6 text-center text-red-400">{error}</div>}
       </div>
     </div>
   );
