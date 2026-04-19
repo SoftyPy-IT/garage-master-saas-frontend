@@ -6,7 +6,7 @@ import {
   Description as DescriptionIcon,
   Inventory as InventoryIcon,
   Label as LabelIcon,
-  MonetizationOn as MonetizationOnIcon
+  MonetizationOn as MonetizationOnIcon,
 } from "@mui/icons-material";
 import {
   Box,
@@ -21,8 +21,6 @@ import {
 import GarageModal from "../../../components/Share/Modal/GarageModal";
 
 export function StockDetailsDialog({ open, onClose, product, setOpen }) {
-  console.log("Product details in dialog:", product);
-
   if (!product) {
     return null;
   }
@@ -69,7 +67,6 @@ export function StockDetailsDialog({ open, onClose, product, setOpen }) {
     totalPurchaseValue = 0,
     totalSellingValue = 0,
     avgPurchasePrice = 0,
-
   } = product;
 
   // Calculate total value based on current stock and purchase price
@@ -85,7 +82,7 @@ export function StockDetailsDialog({ open, onClose, product, setOpen }) {
   };
 
   const formatCurrency = (amount) => {
-    if (typeof amount !== 'number') return '0 ৳';
+    if (typeof amount !== "number") return "0 ৳";
     return amount.toLocaleString("en-US") + " ৳";
   };
 
@@ -146,7 +143,15 @@ export function StockDetailsDialog({ open, onClose, product, setOpen }) {
               {category} {subCategory !== "N/A" ? `- ${subCategory}` : ""}
             </Typography>
 
-            <Box sx={{ mt: 1, display: 'flex', gap: 1, flexWrap: 'wrap', justifyContent: 'center' }}>
+            <Box
+              sx={{
+                mt: 1,
+                display: "flex",
+                gap: 1,
+                flexWrap: "wrap",
+                justifyContent: "center",
+              }}
+            >
               <Chip
                 label={status}
                 color={
@@ -274,7 +279,9 @@ export function StockDetailsDialog({ open, onClose, product, setOpen }) {
                 <Typography variant="body2" color="text.secondary">
                   Unit:
                 </Typography>
-                <Typography variant="body1">{unit} ({shortUnit})</Typography>
+                <Typography variant="body1">
+                  {unit} ({shortUnit})
+                </Typography>
               </Grid>
             </Grid>
           </Box>
@@ -316,7 +323,9 @@ export function StockDetailsDialog({ open, onClose, product, setOpen }) {
                 <Typography variant="body2" color="text.secondary">
                   Min Sale Price:
                 </Typography>
-                <Typography variant="body1">{formatCurrency(minimumSalePrice)}</Typography>
+                <Typography variant="body1">
+                  {formatCurrency(minimumSalePrice)}
+                </Typography>
               </Grid>
               <Grid item xs={6} md={3}>
                 <Typography variant="body2" color="text.secondary">
@@ -346,7 +355,9 @@ export function StockDetailsDialog({ open, onClose, product, setOpen }) {
                 <Typography variant="body2" color="text.secondary">
                   Avg Purchase Price:
                 </Typography>
-                <Typography variant="body1">{formatCurrency(avgPurchasePrice)}</Typography>
+                <Typography variant="body1">
+                  {formatCurrency(avgPurchasePrice)}
+                </Typography>
               </Grid>
             </Grid>
           </Box>
@@ -448,13 +459,17 @@ export function StockDetailsDialog({ open, onClose, product, setOpen }) {
                 <Typography variant="body2" color="text.secondary">
                   Manufacturing Date:
                 </Typography>
-                <Typography variant="body1">{formatDate(manufacturingDate)}</Typography>
+                <Typography variant="body1">
+                  {formatDate(manufacturingDate)}
+                </Typography>
               </Grid>
               <Grid item xs={6} md={4}>
                 <Typography variant="body2" color="text.secondary">
                   Expiry Date:
                 </Typography>
-                <Typography variant="body1">{formatDate(expiryDate)}</Typography>
+                <Typography variant="body1">
+                  {formatDate(expiryDate)}
+                </Typography>
               </Grid>
               <Grid item xs={6} md={4}>
                 <Typography variant="body2" color="text.secondary">

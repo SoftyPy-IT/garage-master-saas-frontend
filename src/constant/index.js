@@ -13,7 +13,7 @@ export const productCategory = [
   "Fleet Management",
 ];
 
-export const purchaseStatus = ['Unpaid', 'Paid', 'Draft'];
+export const purchaseStatus = ["Unpaid", "Paid", "Draft"];
 export const addjustment = ["Addition", "Subtraction"];
 export const productTag = [
   { title: "Oil Change" },
@@ -50,10 +50,9 @@ export const paymentMethods = [
   "Rocket",
   "Cash",
   "Bank Transfer",
-  'Check',
-  'Card',
+  "Check",
+  "Card",
   "Other",
-
 ];
 export const bankNames = [
   "Bangladesh Bank",
@@ -103,7 +102,6 @@ export const applicableEmployeeOption = [
   "Contract Employees",
 ];
 
-
 export const columns = [
   "SL No",
   "Employee",
@@ -119,4 +117,17 @@ export const columns = [
   "Late",
 ];
 
-export const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+export const months = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];

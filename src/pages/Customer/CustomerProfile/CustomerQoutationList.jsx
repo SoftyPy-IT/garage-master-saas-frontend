@@ -48,7 +48,6 @@ const CustomerQuotationList = ({
     moveRecycledQuotation,
     { idLoading: deleteLoading, error: deleteError },
   ] = useMoveRecycledQuotationMutation();
-  console.log(allQuotations);
 
   const deletePackage = async (quotationId) => {
     const willDelete = await swal({
@@ -64,13 +63,13 @@ const CustomerQuotationList = ({
         swal(
           "Moved to Recycle bin!",
           "Move to Recycle bin successful.",
-          "success"
+          "success",
         );
       } catch (error) {
         swal(
           "Error",
           "An error occurred while deleting the quotation.",
-          "error"
+          "error",
         );
       }
     }
@@ -163,7 +162,7 @@ const CustomerQuotationList = ({
         `${import.meta.env.VITE_API_URL}/quotations/quotation/${
           item._id
         }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
-          JSON.stringify(companyProfileData)
+          JSON.stringify(companyProfileData),
         )}`,
       target: "_blank",
     },

@@ -1,39 +1,115 @@
 /* eslint-disable react/no-unescaped-entities */
-"use client"
+"use client";
 
-import { Box, Container, Grid, Typography, Stack, Button, Divider, alpha } from "@mui/material"
-import { AutoFixHigh } from "@mui/icons-material"
-import { motion } from "framer-motion"
+import {
+  Box,
+  Container,
+  Grid,
+  Typography,
+  Stack,
+  Button,
+  Divider,
+  alpha,
+} from "@mui/material";
+import { AutoFixHigh } from "@mui/icons-material";
+import { motion } from "framer-motion";
 
-export const FooterSection = () => {
+/* eslint-disable react/prop-types */
+export const FooterSection = ({ language }) => {
   const footerSections = [
     {
-      title: "Product",
-      items: ["🚀 Features", "🔄 Workflow", "💎 Pricing", "🎬 Demo", "📱 Mobile App"],
+      title: language === "ENG" ? "Product" : "পণ্য",
+      items:
+        language === "ENG"
+          ? [
+              "🚀 Features",
+              "🔄 Workflow",
+              "💎 Pricing",
+              "🎬 Demo",
+              "📱 Mobile App",
+            ]
+          : [
+              "🚀 বৈশিষ্ট্য",
+              "🔄 ওয়ার্কফ্লো",
+              "💎 মূল্য নির্ধারণ",
+              "🎬 ডেমো",
+              "📱 মোবাইল অ্যাপ",
+            ],
     },
     {
-      title: "Company",
-      items: ["🏢 About", "💼 Careers", "📞 Contact", "📝 Blog", "🏆 Success Stories"],
+      title: language === "ENG" ? "Company" : "কোম্পানি",
+      items:
+        language === "ENG"
+          ? [
+              "🏢 About",
+              "💼 Careers",
+              "📞 Contact",
+              "📝 Blog",
+              "🏆 Success Stories",
+            ]
+          : [
+              "🏢 সম্পর্কে",
+              "💼 ক্যারিয়ার",
+              "📞 যোগাযোগ",
+              "📝 ব্লগ",
+              "🏆 সাফল্যের গল্প",
+            ],
     },
     {
-      title: "Support",
-      items: ["❓ Help Center", "📚 Documentation", "👥 Community", "📊 Status", "🎓 Training"],
+      title: language === "ENG" ? "Support" : "সহায়তা",
+      items:
+        language === "ENG"
+          ? [
+              "❓ Help Center",
+              "📚 Documentation",
+              "👥 Community",
+              "📊 Status",
+              "🎓 Training",
+            ]
+          : [
+              "❓ সাহায্য কেন্দ্র",
+              "📚 ডকুমেন্টেশন",
+              "👥 কমিউনিটি",
+              "📊 স্ট্যাটাস",
+              "🎓 প্রশিক্ষণ",
+            ],
     },
     {
-      title: "Solutions",
-      items: ["🔧 Implementation", "🎯 Consultancy", "📈 Analytics", "🔌 Integrations", "🏅 Enterprise"],
+      title: language === "ENG" ? "Solutions" : "সমাধান",
+      items:
+        language === "ENG"
+          ? [
+              "🔧 Implementation",
+              "🎯 Consultancy",
+              "📈 Analytics",
+              "🔌 Integrations",
+              "🏅 Enterprise",
+            ]
+          : [
+              "🔧 বাস্তবায়ন",
+              "🎯 পরামর্শ",
+              "📈 বিশ্লেষণ",
+              "🔌 ইন্টিগ্রেশন",
+              "🏅 এন্টারপ্রাইজ",
+            ],
     },
-  ]
+  ];
 
   return (
     <Box sx={{ bgcolor: "#0a0a0a", color: "#ffffff", py: 12 }}>
       <Container maxWidth="lg">
         <Grid container spacing={6}>
           <Grid item xs={12} md={4}>
-            <Stack direction="row" spacing={3} alignItems="center" sx={{ mb: 4 }}>
+            <Stack
+              direction="row"
+              spacing={3}
+              alignItems="center"
+              sx={{ mb: 4 }}
+            >
               <Box
                 sx={{
-                  background: "linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)",
+                  background:
+                    "linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)",
                   borderRadius: "50%",
                   p: 2,
                 }}
@@ -53,8 +129,9 @@ export const FooterSection = () => {
                 fontSize: "1.1rem",
               }}
             >
-              The world's most advanced garage management platform. Complete workflow solution from customer to payment
-              with AI-powered insights and automation.
+              {language === "ENG"
+                ? "The world's most advanced garage management platform. Complete workflow solution from customer to payment with AI-powered insights and automation."
+                : "বিশ্বের সবচেয়ে উন্নত গ্যারেজ ব্যবস্থাপনা প্ল্যাটফর্ম। এআই-চালিত অন্তর্দৃষ্টি এবং অটোমেশন সহ গ্রাহক থেকে পেমেন্ট পর্যন্ত সম্পূর্ণ ওয়ার্কফ্লো সমাধান।"}
             </Typography>
             <Stack direction="row" spacing={3}>
               <motion.div whileHover={{ scale: 1.1 }}>
@@ -70,7 +147,7 @@ export const FooterSection = () => {
                     },
                   }}
                 >
-                  Privacy Policy
+                  {language === "ENG" ? "Privacy Policy" : "গোপনীয়তা নীতি"}
                 </Button>
               </motion.div>
               <motion.div whileHover={{ scale: 1.1 }}>
@@ -86,7 +163,9 @@ export const FooterSection = () => {
                     },
                   }}
                 >
-                  Terms of Service
+                  {language === "ENG"
+                    ? "Terms of Service"
+                    : "পরিষেবার শর্তাবলী"}
                 </Button>
               </motion.div>
             </Stack>
@@ -98,7 +177,8 @@ export const FooterSection = () => {
                 fontWeight="bold"
                 gutterBottom
                 sx={{
-                  background: "linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)",
+                  background:
+                    "linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                   backgroundClip: "text",
@@ -131,23 +211,40 @@ export const FooterSection = () => {
           ))}
         </Grid>
         <Divider sx={{ my: 6, borderColor: alpha("#ffffff", 0.1) }} />
-        <Stack direction={{ xs: "column", sm: "row" }} justifyContent="space-between" alignItems="center" spacing={3}>
+        <Stack
+          direction={{ xs: "column", sm: "row" }}
+          justifyContent="space-between"
+          alignItems="center"
+          spacing={3}
+        >
           <Typography variant="body1" sx={{ opacity: 0.6 }}>
-            © 2024 Garage Master. All rights reserved. Built with ❤️ for garage owners worldwide.
+            © 2024 Garage Master.{" "}
+            {language === "ENG"
+              ? "All rights reserved."
+              : "সমস্ত অধিকার সংরক্ষিত।"}{" "}
+            {language === "ENG"
+              ? "Built with ❤️ for garage owners worldwide."
+              : "বিশ্বব্যাপী গ্যারেজ মালিকদের জন্য ❤️ দিয়ে তৈরি।"}
           </Typography>
           <Stack direction="row" spacing={4} alignItems="center">
             <Typography variant="body2" sx={{ opacity: 0.6 }}>
-              🌟 Trusted by 2,500+ garages
+              🌟{" "}
+              {language === "ENG"
+                ? "Trusted by 2,500+ garages"
+                : "২,৫০০+ গ্যারেজ দ্বারা বিশ্বস্ত"}
             </Typography>
             <Typography variant="body2" sx={{ opacity: 0.6 }}>
-              🚀 Complete Workflow Solution
+              🚀{" "}
+              {language === "ENG"
+                ? "Complete Workflow Solution"
+                : "সম্পূর্ণ ওয়ার্কফ্লো সমাধান"}
             </Typography>
             <Typography variant="body2" sx={{ opacity: 0.6 }}>
-              🏆 Industry Leader
+              🏆 {language === "ENG" ? "Industry Leader" : "শিল্প নেতা"}
             </Typography>
           </Stack>
         </Stack>
       </Container>
     </Box>
-  )
-}
+  );
+};

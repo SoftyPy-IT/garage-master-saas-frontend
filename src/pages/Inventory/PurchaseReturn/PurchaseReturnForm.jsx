@@ -51,7 +51,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import CalendarMonth from "@mui/icons-material/CalendarMonth";
 import EditNote from "@mui/icons-material/EditNote";
-import Loading from '@/components/Loading/Loading'
+import Loading from "@/components/Loading/Loading";
 import { useNavigate } from "react-router-dom";
 import {
   useCreatePurchaseReturnMutation,
@@ -99,7 +99,12 @@ export default function PurchaseReturnForm({ id }) {
   const watchedWarehouse = watch("warehouse");
   const watchedSuppliers = watch("suppliers");
   const watchedPurchase = watch("purchase");
-  const { performActionWithPermission, supplierOptions, warehouseOptions, tenantDomain } = useAppOptions()
+  const {
+    performActionWithPermission,
+    supplierOptions,
+    warehouseOptions,
+    tenantDomain,
+  } = useAppOptions();
 
   const queryParams = {
     tenantDomain,
@@ -116,21 +121,20 @@ export default function PurchaseReturnForm({ id }) {
     useCreatePurchaseReturnMutation();
   const [updatePurchaseReturn, { isLoading: isUpdating }] =
     useUpdatePurchaseReturnMutation();
-  const { data: singlePurchaseReturn, isLoading: singlePurchaseReturnLoading } = useGetSinglePurchaseReturnQuery({
-    tenantDomain,
-    id,
-  });
-
-  console.log('stock data ', stockData)
+  const { data: singlePurchaseReturn, isLoading: singlePurchaseReturnLoading } =
+    useGetSinglePurchaseReturnQuery({
+      tenantDomain,
+      id,
+    });
 
   useEffect(() => {
     if (stockData && stockData.data && stockData.data.length > 0) {
       const initialReturnItems = stockData.data.map((item, index) => {
         const productId = item.product?._id;
-
-        // Find existing item from singlePurchaseReturn
         const existingItem = singlePurchaseReturn?.data?.items?.find(
-          (returnItem) => returnItem.productId?._id === productId || returnItem.productId === productId
+          (returnItem) =>
+            returnItem.productId?._id === productId ||
+            returnItem.productId === productId,
         );
 
         const supplierName =
@@ -141,13 +145,21 @@ export default function PurchaseReturnForm({ id }) {
         return {
           id: index,
           product: {
-            code: item.product?.product_code || existingItem?.productCode || "N/A",
-            name: item.product?.product_name || existingItem?.productName || "Unknown Product",
+            code:
+              item.product?.product_code || existingItem?.productCode || "N/A",
+            name:
+              item.product?.product_name ||
+              existingItem?.productName ||
+              "Unknown Product",
             unit: item.product?.unit?.unit || existingItem?.unit || "Unit",
           },
           maxQuantity: item.stock || existingItem?.maxQuantity || 0,
           returnQuantity: existingItem ? existingItem.quantity : 0,
-          price: item.productPurchasePrice || item.product?.purchasePrice || existingItem?.unitPrice || 0,
+          price:
+            item.productPurchasePrice ||
+            item.product?.purchasePrice ||
+            existingItem?.unitPrice ||
+            0,
           total: existingItem ? existingItem.totalAmount : 0,
           selected: !!existingItem,
           productId: productId,
@@ -168,30 +180,36 @@ export default function PurchaseReturnForm({ id }) {
         setValue("warehouse", stockData.data[0].warehouse._id);
       }
       setIsFormLoading(false);
-    } else if (singlePurchaseReturn?.data?.items && singlePurchaseReturn.data.items.length > 0) {
+    } else if (
+      singlePurchaseReturn?.data?.items &&
+      singlePurchaseReturn.data.items.length > 0
+    ) {
       // If no stock data but we have single purchase return data, create items from it
-      const itemsFromPurchaseReturn = singlePurchaseReturn.data.items.map((item, index) => ({
-        id: index,
-        product: {
-          code: item.productCode || "N/A",
-          name: item.productName || "Unknown Product",
-          unit: item.unit || "Unit",
-        },
-        maxQuantity: item.maxQuantity || 0,
-        returnQuantity: item.quantity || 0,
-        price: item.unitPrice || 0,
-        total: item.totalAmount || 0,
-        selected: true,
-        productId: item.productId?._id || item.productId,
-        tax: 0,
-        discount: 0,
-        shipping: 0,
-        purchaseId: item._id,
-        purchaseReferenceNo: singlePurchaseReturn.data.referenceNo || "N/A",
-        supplierName: singlePurchaseReturn.data.suppliers?.[0]?.full_name || "Unknown",
-        warehouse: singlePurchaseReturn.data.warehouse,
-        warehouseName: "Unknown",
-      }));
+      const itemsFromPurchaseReturn = singlePurchaseReturn.data.items.map(
+        (item, index) => ({
+          id: index,
+          product: {
+            code: item.productCode || "N/A",
+            name: item.productName || "Unknown Product",
+            unit: item.unit || "Unit",
+          },
+          maxQuantity: item.maxQuantity || 0,
+          returnQuantity: item.quantity || 0,
+          price: item.unitPrice || 0,
+          total: item.totalAmount || 0,
+          selected: true,
+          productId: item.productId?._id || item.productId,
+          tax: 0,
+          discount: 0,
+          shipping: 0,
+          purchaseId: item._id,
+          purchaseReferenceNo: singlePurchaseReturn.data.referenceNo || "N/A",
+          supplierName:
+            singlePurchaseReturn.data.suppliers?.[0]?.full_name || "Unknown",
+          warehouse: singlePurchaseReturn.data.warehouse,
+          warehouseName: "Unknown",
+        }),
+      );
 
       setReturnItems(itemsFromPurchaseReturn);
       setIsFormLoading(false);
@@ -205,16 +223,19 @@ export default function PurchaseReturnForm({ id }) {
         "returnDate",
         singlePurchaseReturn.data.returnDate
           ? new Date(singlePurchaseReturn.data.returnDate)
-            .toISOString()
-            .split("T")[0]
-          : new Date().toISOString().split("T")[0]
+              .toISOString()
+              .split("T")[0]
+          : new Date().toISOString().split("T")[0],
       );
       setValue("referenceNo", singlePurchaseReturn.data.referenceNo || "");
       if (
         singlePurchaseReturn.data.suppliers &&
         singlePurchaseReturn.data.suppliers.length > 0
       ) {
-        setValue("suppliers", singlePurchaseReturn.data.suppliers.map(s => s._id));
+        setValue(
+          "suppliers",
+          singlePurchaseReturn.data.suppliers.map((s) => s._id),
+        );
       } else if (singlePurchaseReturn.data.supplier) {
         setValue("suppliers", [singlePurchaseReturn.data.supplier]);
       } else {
@@ -271,7 +292,7 @@ export default function PurchaseReturnForm({ id }) {
           };
         }
         return item;
-      })
+      }),
     );
   };
 
@@ -281,52 +302,60 @@ export default function PurchaseReturnForm({ id }) {
       returnItems.map((item) =>
         item.id === id
           ? {
-            ...item,
-            returnQuantity: Math.min(Math.max(0, quantity), item.maxQuantity),
-            total:
-              Math.min(Math.max(0, quantity), item.maxQuantity) * item.price,
-          }
-          : item
-      )
+              ...item,
+              returnQuantity: Math.min(Math.max(0, quantity), item.maxQuantity),
+              total:
+                Math.min(Math.max(0, quantity), item.maxQuantity) * item.price,
+            }
+          : item,
+      ),
     );
   };
 
   const calculateTotalItems = () => {
-    return returnItems.filter((item) => item.selected && item.returnQuantity > 0).length;
+    return returnItems.filter(
+      (item) => item.selected && item.returnQuantity > 0,
+    ).length;
   };
 
   const calculateTotalReturn = () => {
     return returnItems.reduce(
-      (sum, item) => (item.selected && item.returnQuantity > 0 ? sum + item.total : sum),
-      0
+      (sum, item) =>
+        item.selected && item.returnQuantity > 0 ? sum + item.total : sum,
+      0,
     );
   };
 
   const onSubmit = async (formData) => {
-    performActionWithPermission("/dashboard/purchase-return-add", id ? 'edit' : 'create',
+    performActionWithPermission(
+      "/dashboard/purchase-return-add",
+      id ? "edit" : "create",
       async () => {
-        const loadingToast = toast.loading(`${id ? 'Updating' : 'creating'} purchase return...`);
+        const loadingToast = toast.loading(
+          `${id ? "Updating" : "creating"} purchase return...`,
+        );
 
         try {
           let res;
           const selectedItems = returnItems.filter(
-            (item) => item.selected && item.returnQuantity > 0
+            (item) => item.selected && item.returnQuantity > 0,
           );
 
           if (selectedItems.length === 0) {
             toast.error(
-              "Please select at least one item to return with quantity greater than 0"
+              "Please select at least one item to return with quantity greater than 0",
             );
             return;
           }
           const invalidItems = selectedItems.filter(
             (item) =>
-              item.returnQuantity <= 0 || item.returnQuantity > item.maxQuantity
+              item.returnQuantity <= 0 ||
+              item.returnQuantity > item.maxQuantity,
           );
 
           if (invalidItems.length > 0) {
             toast.error(
-              "Please ensure all return quantities are valid (greater than 0 and not exceeding available quantity)"
+              "Please ensure all return quantities are valid (greater than 0 and not exceeding available quantity)",
             );
             return;
           }
@@ -347,7 +376,7 @@ export default function PurchaseReturnForm({ id }) {
 
           const totalReturnAmount = selectedItems.reduce(
             (sum, item) => sum + item.total,
-            0
+            0,
           );
 
           const submitData = {
@@ -371,7 +400,6 @@ export default function PurchaseReturnForm({ id }) {
               tenantDomain,
               data: submitData,
             }).unwrap();
-
           } else {
             res = await createPurchaseReturn({
               tenantDomain,
@@ -381,17 +409,22 @@ export default function PurchaseReturnForm({ id }) {
 
           if (res.success) {
             toast.dismiss(loadingToast);
-            toast.success(`Purchase return ${id ? 'update' : 'create'} successfully`);
+            toast.success(
+              `Purchase return ${id ? "update" : "create"} successfully`,
+            );
             setTimeout(() => {
               navigate("/dashboard/purchase-return");
             }, 1500);
           }
         } catch (error) {
           console.error("Error processing purchase return:", error);
-          toast.error(error.data?.message || "Failed to process purchase return");
+          toast.error(
+            error.data?.message || "Failed to process purchase return",
+          );
         }
-      }, `You don't have permission to ${id ? 'edit' : 'create'} purchase return `
-    )
+      },
+      `You don't have permission to ${id ? "edit" : "create"} purchase return `,
+    );
   };
 
   const handleCancel = () => {
@@ -445,7 +478,7 @@ export default function PurchaseReturnForm({ id }) {
       sx={{
         background: `linear-gradient(to bottom, ${alpha(
           theme.palette.primary.light,
-          0.05
+          0.05,
         )}, ${alpha(theme.palette.background.default, 1)})`,
         minHeight: "100vh",
         p: 1,
@@ -558,7 +591,7 @@ export default function PurchaseReturnForm({ id }) {
                   pb: 2,
                   borderBottom: `1px solid ${alpha(
                     theme.palette.divider,
-                    0.5
+                    0.5,
                   )}`,
                 }}
               >
@@ -670,7 +703,7 @@ export default function PurchaseReturnForm({ id }) {
                   pb: 2,
                   borderBottom: `1px solid ${alpha(
                     theme.palette.divider,
-                    0.5
+                    0.5,
                   )}`,
                 }}
               >
@@ -706,7 +739,7 @@ export default function PurchaseReturnForm({ id }) {
                       sx={{
                         backgroundColor: alpha(
                           theme.palette.primary.main,
-                          0.05
+                          0.05,
                         ),
                       }}
                     >
@@ -750,7 +783,7 @@ export default function PurchaseReturnForm({ id }) {
                             "&:hover": {
                               backgroundColor: alpha(
                                 theme.palette.primary.main,
-                                0.04
+                                0.04,
                               ),
                             },
                           }}
@@ -784,7 +817,7 @@ export default function PurchaseReturnForm({ id }) {
                               sx={{
                                 backgroundColor: alpha(
                                   theme.palette.secondary.main,
-                                  0.1
+                                  0.1,
                                 ),
                                 color: theme.palette.secondary.main,
                                 fontWeight: "medium",
@@ -809,7 +842,7 @@ export default function PurchaseReturnForm({ id }) {
                               sx={{
                                 backgroundColor: alpha(
                                   theme.palette.primary.main,
-                                  0.1
+                                  0.1,
                                 ),
                                 color: theme.palette.primary.main,
                                 fontWeight: "medium",
@@ -824,7 +857,7 @@ export default function PurchaseReturnForm({ id }) {
                               sx={{
                                 backgroundColor: alpha(
                                   theme.palette.info.main,
-                                  0.1
+                                  0.1,
                                 ),
                                 color: theme.palette.info.main,
                                 fontWeight: "medium",
@@ -844,14 +877,16 @@ export default function PurchaseReturnForm({ id }) {
                               InputProps={{
                                 inputProps: {
                                   min: 0,
-                                  max: item.maxQuantity || 0
+                                  max: item.maxQuantity || 0,
                                 },
                                 sx: { borderRadius: 2 },
                               }}
                               sx={{ width: 80 }}
                             />
                           </TableCell>
-                          <TableCell align="right">৳ {item.price || 0}</TableCell>
+                          <TableCell align="right">
+                            ৳ {item.price || 0}
+                          </TableCell>
                           <TableCell align="right" sx={{ fontWeight: "bold" }}>
                             ৳ {item.total || 0}
                           </TableCell>
@@ -887,7 +922,7 @@ export default function PurchaseReturnForm({ id }) {
                     pb: 2,
                     borderBottom: `1px solid ${alpha(
                       theme.palette.divider,
-                      0.5
+                      0.5,
                     )}`,
                   }}
                 >
@@ -1012,7 +1047,7 @@ export default function PurchaseReturnForm({ id }) {
                                     sx={{
                                       backgroundColor: alpha(
                                         theme.palette[status.color].main,
-                                        0.1
+                                        0.1,
                                       ),
                                       color: theme.palette[status.color].main,
                                       fontWeight: "medium",
@@ -1055,7 +1090,7 @@ export default function PurchaseReturnForm({ id }) {
                     backgroundColor: alpha(theme.palette.primary.main, 0.05),
                     border: `1px solid ${alpha(
                       theme.palette.primary.main,
-                      0.1
+                      0.1,
                     )}`,
                   }}
                 >
@@ -1104,7 +1139,10 @@ export default function PurchaseReturnForm({ id }) {
                 </Box>
 
                 <div className="gap-2 space-y-3">
-                  <Can page="/dashboard/purchase-return-add" action={id ? 'edit' : 'create'}>
+                  <Can
+                    page="/dashboard/purchase-return-add"
+                    action={id ? "edit" : "create"}
+                  >
                     <Button
                       fullWidth
                       type="submit"
@@ -1121,7 +1159,7 @@ export default function PurchaseReturnForm({ id }) {
                         isSubmitting ||
                         isUpdating ||
                         returnItems.filter(
-                          (item) => item.selected && item.returnQuantity > 0
+                          (item) => item.selected && item.returnQuantity > 0,
                         ).length === 0
                       }
                       sx={purchaseBtn}
@@ -1163,7 +1201,8 @@ export default function PurchaseReturnForm({ id }) {
         </DialogTitle>
         <DialogContent>
           <Typography gutterBottom>
-            Are you sure you want to {id ? "update" : "submit"} this purchase return?
+            Are you sure you want to {id ? "update" : "submit"} this purchase
+            return?
           </Typography>
           <Box
             sx={{
@@ -1195,7 +1234,10 @@ export default function PurchaseReturnForm({ id }) {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseConfirmDialog}>Cancel</Button>
-          <Can page="/dashboard/purchase-return-add" action={id ? 'edit' : 'create'}>
+          <Can
+            page="/dashboard/purchase-return-add"
+            action={id ? "edit" : "create"}
+          >
             <Button
               onClick={handleDialogConfirm}
               color="primary"

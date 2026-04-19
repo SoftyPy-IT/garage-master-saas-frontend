@@ -35,7 +35,6 @@ const AllCustomerList = () => {
   const totalCount = allCustomerData?.data?.meta?.total || 0;
   const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
 
-
   const handlePageChange = (_, page) => {
     setCurrentPage(page);
   };
@@ -67,7 +66,6 @@ const AllCustomerList = () => {
 
   return (
     <div className="w-full mt-5 mb-24">
-      {/* Header section */}
       <div className="flex flex-wrap items-center justify-between my-3 mb-8">
         <div className="flex items-center justify-center">
           <div className="ml-2">
@@ -84,7 +82,6 @@ const AllCustomerList = () => {
         </div>
       </div>
 
-      {/* Search section */}
       <div className="flex-wrap flex items-center justify-between mb-5 bg-[#F1F3F6] py-5 px-3">
         <h3 className="mb-3 text-3xl font-bold">All Customer List:</h3>
         <div className="flex items-center">
@@ -115,8 +112,6 @@ const AllCustomerList = () => {
           </button>
         </div>
       </div>
-
-      {/* Table section */}
       <div className="overflow-x-auto">
         {isLoading ? (
           <div className="flex items-center justify-center h-[300px] text-xl">
@@ -161,8 +156,8 @@ const AllCustomerList = () => {
                 {allCustomerData?.data?.data?.map((customer, index) => {
                   const lastVehicle = customer?.vehicles
                     ? [...customer.vehicles].sort(
-                      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-                    )[0]
+                        (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
+                      )[0]
                     : null;
 
                   const displayIndex =
@@ -174,7 +169,11 @@ const AllCustomerList = () => {
                       <td>{customer?.id}</td>
                       <td>{customer?.name}</td>
                       <td>{customer?.vehicle_username}</td>
-                      <td>{customer?.fullRegNums?.split(", ")[0] || ""}</td>
+                      <td>
+                        {customer?.vehicles?.[0]?.carReg_no +
+                          "-" +
+                          customer?.vehicles?.[0]?.car_registration_no}
+                      </td>
                       <td>{customer?.contact}</td>
                       <td>{customer?.userType}</td>
                       <td>
@@ -190,12 +189,13 @@ const AllCustomerList = () => {
                       <td>
                         <div className="editIconWrap edit">
                           <Link
-                            to={`/dashboard/${customer?.userType === "customer"
-                              ? "update-customer"
-                              : customer?.userType === "company"
-                                ? "update-company"
-                                : "update-show-room"
-                              }?id=${customer?._id}`}
+                            to={`/dashboard/${
+                              customer?.userType === "customer"
+                                ? "update-customer"
+                                : customer?.userType === "company"
+                                  ? "update-company"
+                                  : "update-show-room"
+                            }?id=${customer?._id}`}
                           >
                             <FaEdit className="editIcon text-blue-500" />
                           </Link>
@@ -209,8 +209,6 @@ const AllCustomerList = () => {
           </div>
         )}
       </div>
-
-      {/* Pagination section - Only show if there are pages */}
       {totalPages > 0 && (
         <div className="flex justify-center mt-4">
           <Pagination

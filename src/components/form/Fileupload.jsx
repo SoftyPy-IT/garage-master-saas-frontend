@@ -4,7 +4,7 @@ import { CloudUpload } from "@mui/icons-material";
 import { Box, Typography } from "@mui/material";
 import { useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
-import uploadFile from "../../helpers/uploadFile";
+import uploadFile from "../../helper/uploadFile";
 
 const TASFileupload = ({
   name,

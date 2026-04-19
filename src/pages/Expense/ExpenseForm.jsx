@@ -149,9 +149,8 @@ const ExpenseForm = ({ id }) => {
           transactionNumber: data.transactionNumber || "",
           note: data.note || "",
         };
-        console.log(expenseData);
         const toastId = toast.loading(
-          id ? "Updating Expense..." : "Creating Expense..."
+          id ? "Updating Expense..." : "Creating Expense...",
         );
 
         try {
@@ -189,7 +188,7 @@ const ExpenseForm = ({ id }) => {
           });
         }
       },
-      `You don't have permission to ${id ? "edit" : "create"} an expense.`
+      `You don't have permission to ${id ? "edit" : "create"} an expense.`,
     );
   };
 

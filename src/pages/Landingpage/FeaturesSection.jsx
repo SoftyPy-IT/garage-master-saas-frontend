@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable react/prop-types */
-import React from "react"
+import React from "react";
 import {
   Container,
   Typography,
@@ -15,11 +15,11 @@ import {
   ListItemIcon,
   ListItemText,
   alpha,
-} from "@mui/material"
-import { Check } from "@mui/icons-material"
-import { motion } from "framer-motion"
+} from "@mui/material";
+import { Check } from "@mui/icons-material";
+import { motion } from "framer-motion";
 
-const FeaturesSection = ({ features }) => {
+const FeaturesSection = ({ features, language }) => {
   return (
     <Box
       id="features"
@@ -33,7 +33,11 @@ const FeaturesSection = ({ features }) => {
     >
       <Container maxWidth="lg">
         <Box sx={{ textAlign: "center", mb: 12 }}>
-          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
             <Typography
               variant="h2"
               sx={{
@@ -46,9 +50,12 @@ const FeaturesSection = ({ features }) => {
                 fontSize: { xs: "2.5rem", md: "4rem" },
               }}
             >
-              🚀 Powerful Features
+              🚀{" "}
+              {language === "ENG" ? "Powerful Features" : "শক্তিশালী বৈশিষ্ট্য"}
               <Box component="span" sx={{ display: "block" }}>
-                Built for Success
+                {language === "ENG"
+                  ? "Built for Success"
+                  : "সাফল্যের জন্য নির্মিত"}
               </Box>
             </Typography>
             <Typography
@@ -61,8 +68,9 @@ const FeaturesSection = ({ features }) => {
                 fontWeight: 500,
               }}
             >
-              Everything you need to run a modern, efficient garage business. From customer management to financial
-              reporting, we've got you covered.
+              {language === "ENG"
+                ? "Everything you need to run a modern, efficient garage business. From customer management to financial reporting, we've got you covered."
+                : "একটি আধুনিক, দক্ষ গ্যারেজ ব্যবসা চালানোর জন্য আপনার যা কিছু প্রয়োজন। গ্রাহক ব্যবস্থাপনা থেকে আর্থিক প্রতিবেদন পর্যন্ত, আমরা সবকিছু কভার করেছি।"}
             </Typography>
           </motion.div>
         </Box>
@@ -119,7 +127,8 @@ const FeaturesSection = ({ features }) => {
                       left: "-100%",
                       width: "100%",
                       height: "100%",
-                      background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)",
+                      background:
+                        "linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)",
                       transition: "transform 0.6s ease",
                     },
                   }}
@@ -215,7 +224,10 @@ const FeaturesSection = ({ features }) => {
                             }}
                           >
                             <ListItemIcon sx={{ minWidth: 40 }}>
-                              <motion.div whileHover={{ rotate: 360 }} transition={{ duration: 0.3 }}>
+                              <motion.div
+                                whileHover={{ rotate: 360 }}
+                                transition={{ duration: 0.3 }}
+                              >
                                 <Check
                                   sx={{
                                     color: "#06b6d4",
@@ -246,7 +258,7 @@ const FeaturesSection = ({ features }) => {
         </Grid>
       </Container>
     </Box>
-  )
-}
+  );
+};
 
-export default FeaturesSection
+export default FeaturesSection;

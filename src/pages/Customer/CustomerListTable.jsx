@@ -41,8 +41,6 @@ const CustomerListTable = ({ handleDeleteAction, isRecycled, title }) => {
     isRecycled,
   });
 
-  console.log("customer data check", customerData);
-
   if (error) toast.error(error?.message);
 
   const handleIconPreview = (id) => {

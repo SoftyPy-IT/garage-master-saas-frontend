@@ -11,10 +11,26 @@ const quotationApi = baseApi.injectEndpoints({
       invalidatesTags: ["quotation"],
     }),
     getAllQuotations: builder.query({
-      query: ({ tenantDomain,id,limit, page, searchTerm, isRecycled,status }) => ({
+      query: ({
+        tenantDomain,
+        id,
+        limit,
+        page,
+        searchTerm,
+        isRecycled,
+        status,
+      }) => ({
         url: `/quotations`,
         method: "GET",
-        params: {tenantDomain, id ,limit, page, searchTerm,isRecycled,status },
+        params: {
+          tenantDomain,
+          id,
+          limit,
+          page,
+          searchTerm,
+          isRecycled,
+          status,
+        },
       }),
       providesTags: ["quotation"],
     }),
@@ -34,7 +50,7 @@ const quotationApi = baseApi.injectEndpoints({
       }),
       providesTags: ["quotation"],
     }),
-    
+
     updateQuotation: builder.mutation({
       query: (quotationInfo) => {
         return {
@@ -46,12 +62,12 @@ const quotationApi = baseApi.injectEndpoints({
       invalidatesTags: ["quotation"],
     }),
     removeQuotation: builder.mutation({
-      query: ({tenantDomain, quotationInfo}) => {
+      query: ({ tenantDomain, quotationInfo }) => {
         return {
           url: `/quotations/remove-quotation`,
           method: "PATCH",
           body: quotationInfo?.data,
-          params: { id: quotationInfo.id , tenantDomain},
+          params: { id: quotationInfo.id, tenantDomain },
         };
       },
       invalidatesTags: ["quotation"],
@@ -69,7 +85,7 @@ const quotationApi = baseApi.injectEndpoints({
       query: ({ tenantDomain, id }) => ({
         url: `/quotations/delete-permanantly/${id}`,
         method: "DELETE",
-          params: { tenantDomain },
+        params: { tenantDomain },
       }),
       invalidatesTags: ["quotation"],
     }),
@@ -77,7 +93,7 @@ const quotationApi = baseApi.injectEndpoints({
       query: ({ tenantDomain, id }) => ({
         url: `/quotations/recycle/${id}`,
         method: "PATCH",
-         params: { tenantDomain },
+        params: { tenantDomain },
       }),
       invalidatesTags: ["quotation"],
     }),
@@ -85,9 +101,17 @@ const quotationApi = baseApi.injectEndpoints({
       query: ({ tenantDomain, id }) => ({
         url: `/quotations/restore/${id}`,
         method: "PATCH",
-         params: { tenantDomain },
+        params: { tenantDomain },
       }),
       invalidatesTags: ["quotation"],
+    }),
+    cancelQuotation: builder.mutation({
+      query: ({ id, tenantDomain }) => ({
+        url: `quotations/${id}/cancel`,
+        method: "PUT",
+        params: { tenantDomain },
+      }),
+      invalidatesTags: ["Quotations"],
     }),
   }),
 });
@@ -103,5 +127,5 @@ export const {
   useMoveRecycledQuotationMutation,
   useRestoreFromRecycledQuotationMutation,
   usePermanantlyDeleteQuotationMutation,
- 
+  useCancelQuotationMutation,
 } = quotationApi;

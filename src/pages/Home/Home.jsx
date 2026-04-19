@@ -1,7 +1,8 @@
 /* eslint-disable no-unused-vars */
-import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { Tooltip } from "@mui/material";
+import { Visibility, VisibilityOff, CalendarToday } from "@mui/icons-material";
+import { Tooltip, Button } from "@mui/material";
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import Loading from "../../components/Loading/Loading";
 import { useTenantDomain } from "../../hooks/useTenantDomain";
 import {
@@ -35,29 +36,42 @@ const Home = () => {
           <h3 className="md:text-3xl font-bold">Welcome Admin !</h3>
           <span className="text-sm">Home / Dashboard</span>
         </div>
-        {/* Toggle Button */}
-        <button
-          onClick={() => setShowSensitiveData(!showSensitiveData)}
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded "
-        >
-          {showSensitiveData ? (
-            <>
-              <Tooltip title="Hide">
-                <VisibilityOff />
-              </Tooltip>
-            </>
-          ) : (
-            <>
-              <Tooltip title="Show">
-                {" "}
-                <Visibility />
-              </Tooltip>
-            </>
-          )}
-        </button>
+
+        <div className="flex items-center gap-3">
+          <Button
+            component={Link}
+            to="/dashboard/calender"
+            variant="contained"
+            startIcon={<CalendarToday />}
+            sx={{
+              backgroundColor: "#4285F4",
+              color: "#fff",
+              "&:hover": { backgroundColor: "#3367D6" },
+            }}
+          >
+            Connect Google Calendar
+          </Button>
+          <button
+            onClick={() => setShowSensitiveData(!showSensitiveData)}
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded "
+          >
+            {showSensitiveData ? (
+              <>
+                <Tooltip title="Hide">
+                  <VisibilityOff />
+                </Tooltip>
+              </>
+            ) : (
+              <>
+                <Tooltip title="Show">
+                  <Visibility />
+                </Tooltip>
+              </>
+            )}
+          </button>
+        </div>
       </div>
 
-      {/* Conditionally render sensitive sections */}
       <AllServices
         showSensitiveData={showSensitiveData}
         tenantDomain={tenantDomain}

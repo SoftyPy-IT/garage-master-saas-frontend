@@ -17,27 +17,39 @@ import { Phone, Email, LocationOn } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import ContactForm from "./ContactForm";
 
-const ContactSection = () => {
+const ContactSection = ({ language }) => {
   const contactInfo = [
     {
       icon: <Phone />,
-      title: "Call Us",
+      title: language === "ENG" ? "Call Us" : "কল করুন",
       content: "+880 167 0405 744",
-      description: "Saturday - Thursday - 9 AM - 7PM",
+      description:
+        language === "ENG"
+          ? "Saturday - Thursday - 9 AM - 7PM"
+          : "শনি-বৃহস্পতি - সকাল ৯টা - সন্ধ্যা ৭টা",
       color: "#06b6d4",
     },
     {
       icon: <Email />,
-      title: "Email Us",
+      title: language === "ENG" ? "Email Us" : "ইমেল করুন",
       content: "support@softypy.com",
-      description: "We'll respond within 24 hours",
+      description:
+        language === "ENG"
+          ? "We'll respond within 24 hours"
+          : "আমরা ২৪ ঘন্টার মধ্যে উত্তর দেব",
       color: "#3b82f6",
     },
     {
       icon: <LocationOn />,
-      title: "Visit Us",
-      content: " Ka-86/1, Al -Hera Tower",
-      description: "Level -1 (lift-1), Kuratoli, Khilkhet, Dhaka - 1229",
+      title: language === "ENG" ? "Visit Us" : "আমাদের দেখুন",
+      content:
+        language === "ENG"
+          ? " Ka-86/1, Al -Hera Tower"
+          : " কএ-৮৬/১, আল-হেরা টাওয়ার",
+      description:
+        language === "ENG"
+          ? "Level -1 (lift-1), Kuratoli, Khilkhet, Dhaka - 1229"
+          : "লেভেল -১ (লিফট-১), কুড়াটোলি, খিলক্ষেত, ঢাকা - ১২২৯",
       color: "#f59e0b",
     },
   ];
@@ -49,9 +61,9 @@ const ContactSection = () => {
         py: 15,
         background: `
           linear-gradient(135deg, ${alpha("#06b6d4", 0.03)} 0%, ${alpha(
-          "#3b82f6",
-          0.03
-        )} 100%)
+            "#3b82f6",
+            0.03,
+          )} 100%)
         `,
       }}
     >
@@ -74,9 +86,11 @@ const ContactSection = () => {
                 fontSize: { xs: "2.5rem", md: "4rem" },
               }}
             >
-              📞 Get In Touch
+              📞 {language === "ENG" ? "Get In Touch" : "যোগাযোগ করুন"}
               <Box component="span" sx={{ display: "block" }}>
-                Let's Transform Your Garage
+                {language === "ENG"
+                  ? "Let's Transform Your Garage"
+                  : "আপনার গ্যারেজ রূপান্তর করুন"}
               </Box>
             </Typography>
             <Typography
@@ -88,14 +102,15 @@ const ContactSection = () => {
                 lineHeight: 1.6,
               }}
             >
-              Ready to revolutionize your garage business? Contact our experts
-              today for a personalized demo and consultation.
+              {language === "ENG"
+                ? "Ready to revolutionize your garage business? Contact our experts today for a personalized demo and consultation."
+                : "আপনার গ্যারেজ ব্যবসা বিপ্লব করতে প্রস্তুত? ব্যক্তিগতকৃত ডেমো এবং পরামর্শের জন্য আজই আমাদের বিশেষজ্ঞদের সাথে যোগাযোগ করুন।"}
             </Typography>
           </motion.div>
         </Box>
         <Grid container spacing={8}>
           <Grid item xs={12} md={6}>
-            <ContactForm />
+            <ContactForm language={language} />
           </Grid>
           <Grid item xs={12} md={6}>
             <motion.div
@@ -191,11 +206,15 @@ const ContactSection = () => {
                     }}
                   >
                     <Typography variant="h5" fontWeight="bold" gutterBottom>
-                      🎯 Ready to Get Started?
+                      🎯{" "}
+                      {language === "ENG"
+                        ? "Ready to Get Started?"
+                        : "শুরু করতে প্রস্তুত?"}
                     </Typography>
                     <Typography variant="body1" sx={{ mb: 3, opacity: 0.9 }}>
-                      Book a free 30-minute consultation with our garage
-                      management experts.
+                      {language === "ENG"
+                        ? "Book a free 30-minute consultation with our garage management experts."
+                        : "আমাদের গ্যারেজ ব্যবস্থাপনা বিশেষজ্ঞদের সাথে একটি বিনামূল্যে ৩০ মিনিটের পরামর্শ বুক করুন।"}
                     </Typography>
                     <motion.div
                       whileHover={{ scale: 1.05 }}
@@ -216,7 +235,10 @@ const ContactSection = () => {
                           },
                         }}
                       >
-                        📅 Schedule Free Demo
+                        📅{" "}
+                        {language === "ENG"
+                          ? "Schedule Free Demo"
+                          : "বিনামূল্যে ডেমো নির্ধারণ করুন"}
                       </Button>
                     </motion.div>
                   </Paper>
