@@ -104,7 +104,7 @@ const UpdateQuotation = () => {
   const [currentMileage, setCurrentMileage] = useState("");
   const [mileageChanged, setMileageChanged] = useState(false);
   const { performActionWithPermission } = usePermissions();
-
+  console.log("product suggestion this ", productSuggestions);
   const {
     register,
     handleSubmit,
@@ -1268,13 +1268,16 @@ const UpdateQuotation = () => {
           />
           <div>
             <div className="flex-1 text-center">
-              <h2 className="trustAutoTitle">
-                {companyProfileData?.companyNameBN}
-              </h2>
-
-              <h3 className="text-lg md:text-xl english-font mt-1 text-[#4671A1] font-bold ">
-                ({companyProfileData?.companyName})
-              </h3>
+              {companyProfileData?.companyNameBN && (
+                <h2 className="trustAutoTitle">
+                  {companyProfileData.companyNameBN}
+                </h2>
+              )}
+              {companyProfileData?.companyName && (
+                <h3 className="text-lg md:text-xl english-font mt-1 text-[#4671A1] font-bold ">
+                  ({companyProfileData?.companyName})
+                </h3>
+              )}
             </div>
             <span className="text-[12px] lg:text-xl mt-5 block">
               Office: {companyProfileData?.address}

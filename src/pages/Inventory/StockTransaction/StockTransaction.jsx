@@ -1,4 +1,3 @@
-
 import {
   Box,
   Typography,
@@ -13,7 +12,6 @@ import {
 import {
   Refresh as RefreshIcon,
   GetApp as DownloadIcon,
-  Info as InfoIcon,
 } from "@mui/icons-material";
 import { useTheme } from "@mui/material/styles";
 import { useStockTransactions } from "../../../hooks/useStockTransactions";
@@ -23,7 +21,6 @@ import TransactionTable from "./TransactionTable";
 const StockTransaction = () => {
   const theme = useTheme();
   const {
-
     totalTransactions,
     totalIn,
     totalOut,
@@ -80,9 +77,7 @@ const StockTransaction = () => {
               mb: 2,
             }}
           >
-            <Typography
-              color="primary.main"
-            >
+            <Typography color="primary.main">
               <div className="text-[27px] md:text-4xl font-semibold">
                 Stock Transactions
               </div>
@@ -135,30 +130,12 @@ const StockTransaction = () => {
             handleRequestSort={handleRequestSort}
             setSearchTerm={setSearchTerm}
             setFilterType={setFilterType}
+            handleChangePage={(event, newPage) => setPage(newPage)}
+            handleChangeRowsPerPage={(event) => {
+              setRowsPerPage(parseInt(event.target.value, 10));
+              setPage(0);
+            }}
           />
-        </CardContent>
-      </Card>
-
-      <Card
-        sx={{
-          mt: 3,
-          borderRadius: 2,
-          boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
-        }}
-      >
-        <CardContent>
-          <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-            <InfoIcon color="info" sx={{ mr: 1 }} />
-            <Typography variant="subtitle2" color="textSecondary">
-              Stock Transaction Information
-            </Typography>
-          </Box>
-          <Typography variant="body2" color="textSecondary">
-            This page displays all stock transactions in your system. Each
-            transaction represents a movement of products between warehouses or
-            locations. You can filter by transaction type (Stock In/Out) and
-            search by product name, warehouse, or reference information.
-          </Typography>
         </CardContent>
       </Card>
     </Box>

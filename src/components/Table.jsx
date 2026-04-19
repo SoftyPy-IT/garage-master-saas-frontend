@@ -118,11 +118,10 @@ const TableRow = ({
   columns,
   actions,
   currentPage,
-  // Remove pageSize parameter
+
   navigate,
   getRowClass,
 }) => {
-  // Calculate index based on page number and fixed limit (10 items per page)
   const globalIndex = (currentPage - 1) * 10 + (index + 1);
   const rowClass = getRowClass(item);
 
@@ -179,14 +178,12 @@ const TableRow = ({
 };
 
 const ActionButton = ({ action, Icon, item, navigate }) => {
-  // Check if the action is disabled
   const isDisabled = action.disabled?.(item);
 
   const iconStyle = {
     color: action.color || "#2563EB",
     fontSize: action.size || "18px",
     cursor: isDisabled ? "not-allowed" : "pointer",
-    // Add opacity to visually indicate disabled state
     opacity: isDisabled ? 0.5 : 1,
   };
 
@@ -233,7 +230,6 @@ const ActionButton = ({ action, Icon, item, navigate }) => {
     );
   };
 
-  // Determine Tooltip Title: Execute if it's a function, otherwise use string directly
   const tooltipTitle =
     typeof action.tooltip === "function"
       ? action.tooltip(item)
