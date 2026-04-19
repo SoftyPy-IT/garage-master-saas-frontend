@@ -19,6 +19,8 @@ import {
   useMediaQuery,
   alpha,
   Container,
+  ToggleButton,
+  ToggleButtonGroup,
 } from "@mui/material";
 import {
   Menu as MenuIcon,
@@ -28,27 +30,55 @@ import {
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
-export const Navigation = ({ scrollToSection }) => {
+export const Navigation = ({ scrollToSection, language, setLanguage }) => {
   const theme = useTheme();
 
-  // Enhanced breakpoints for different device sizes
-  const isExtraSmall = useMediaQuery(theme.breakpoints.down("sm")); // Mobile phones
-  const isSmall = useMediaQuery(theme.breakpoints.between("sm", "md")); // Tablets
-  const isMedium = useMediaQuery(theme.breakpoints.between("md", "lg")); // Small laptops
-  const isLarge = useMediaQuery(theme.breakpoints.up("lg")); // Large screens
+  const isExtraSmall = useMediaQuery(theme.breakpoints.down("sm"));
+  const isSmall = useMediaQuery(theme.breakpoints.between("sm", "md"));
+  const isMedium = useMediaQuery(theme.breakpoints.between("md", "lg"));
+  const isLarge = useMediaQuery(theme.breakpoints.up("lg"));
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [showFullMenu, setShowFullMenu] = useState(true);
 
+  // Language toggle handler
+  const handleLanguageChange = (event, newLanguage) => {
+    if (newLanguage !== null) {
+      setLanguage(newLanguage);
+    }
+  };
+
+  // Navigation items with dynamic language
   const navItems = [
-    { label: "Features", id: "features" },
-    { label: "Workflow", id: "workflow" },
-    { label: "Pricing", id: "pricing" },
-    { label: "Clients", id: "clients" },
-    { label: "Testimonials", id: "testimonials" },
-    { label: "Consultancy", id: "consultancy" },
-    { label: "Contact", id: "contact" },
+    {
+      label: language === "ENG" ? "Features" : "বৈশিষ্ট্য",
+      id: "features",
+    },
+    {
+      label: language === "ENG" ? "Workflow" : "কর্মপ্রবাহ",
+      id: "workflow",
+    },
+    {
+      label: language === "ENG" ? "Pricing" : "মূল্য নির্ধারণ",
+      id: "pricing",
+    },
+    {
+      label: language === "ENG" ? "Clients" : "ক্লায়েন্ট",
+      id: "clients",
+    },
+    {
+      label: language === "ENG" ? "Testimonials" : "সুপারিশ",
+      id: "testimonials",
+    },
+    {
+      label: language === "ENG" ? "Consultancy" : "পরামর্শ",
+      id: "consultancy",
+    },
+    {
+      label: language === "ENG" ? "Contact" : "যোগাযোগ",
+      id: "contact",
+    },
   ];
 
   useEffect(() => {
@@ -59,35 +89,31 @@ export const Navigation = ({ scrollToSection }) => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Check if there's enough space for all menu items
   useEffect(() => {
     const checkMenuSpace = () => {
-      const navContainer = document.getElementById('nav-container');
-      const navContent = document.getElementById('nav-content');
-      
+      const navContainer = document.getElementById("nav-container");
+      const navContent = document.getElementById("nav-content");
+
       if (navContainer && navContent) {
         const containerWidth = navContainer.offsetWidth;
         const contentWidth = navContent.scrollWidth;
-        
-        // If content is wider than container, show drawer menu
+
         setShowFullMenu(contentWidth <= containerWidth);
       }
     };
 
-    // Check initially and on resize
     checkMenuSpace();
-    window.addEventListener('resize', checkMenuSpace);
-    
-    return () => window.removeEventListener('resize', checkMenuSpace);
-  }, []);
+    window.addEventListener("resize", checkMenuSpace);
+
+    return () => window.removeEventListener("resize", checkMenuSpace);
+  }, [language]);
 
   const handleNavClick = (sectionId) => {
     scrollToSection(sectionId);
     setIsMenuOpen(false);
   };
 
-  // Enhanced responsive styles for all menu items
-  const getResponsiveStyles = () => ({
+  const responsiveStyles = {
     logo: {
       extraSmall: { variant: "h6", size: "1.1rem" },
       small: { variant: "h5", size: "1.4rem" },
@@ -96,7 +122,7 @@ export const Navigation = ({ scrollToSection }) => {
       extraLarge: { variant: "h5", size: "1.8rem" },
     },
     navButton: {
-      extraSmall: { },
+      extraSmall: { px: 0.8, fontSize: "0.65rem", minWidth: "auto" },
       small: { px: 1, fontSize: "0.7rem", minWidth: "auto" },
       medium: { px: 1.2, fontSize: "0.75rem", minWidth: "auto" },
       large: { px: 1.5, fontSize: "0.8rem", minWidth: "auto" },
@@ -109,6 +135,13 @@ export const Navigation = ({ scrollToSection }) => {
       large: { px: 2, fontSize: "0.8rem" },
       extraLarge: { px: 3.5, fontSize: "0.85rem" },
     },
+    langButton: {
+      extraSmall: { px: 0.5, fontSize: "0.6rem", minWidth: 30 },
+      small: { px: 0.8, fontSize: "0.65rem", minWidth: 35 },
+      medium: { px: 1, fontSize: "0.7rem", minWidth: 40 },
+      large: { px: 1.2, fontSize: "0.75rem", minWidth: 45 },
+      extraLarge: { px: 1.5, fontSize: "0.8rem", minWidth: 50 },
+    },
     spacing: {
       extraSmall: 0.3,
       small: 0.5,
@@ -116,9 +149,7 @@ export const Navigation = ({ scrollToSection }) => {
       large: 1,
       extraLarge: 1.2,
     },
-  });
-
-  const responsiveStyles = getResponsiveStyles();
+  };
 
   const getCurrentSize = () => {
     if (isExtraSmall) return "extraSmall";
@@ -129,8 +160,6 @@ export const Navigation = ({ scrollToSection }) => {
   };
 
   const currentSize = getCurrentSize();
-
-  // Determine if we should show drawer menu
   const shouldShowDrawer = !showFullMenu || isExtraSmall || isSmall;
 
   return (
@@ -152,11 +181,11 @@ export const Navigation = ({ scrollToSection }) => {
           id="nav-container"
           sx={{
             px: {
-              xs: 1, 
-              sm: 2, 
-              md: 0, 
-              lg: 4, 
-              xl: 0, 
+              xs: 1,
+              sm: 2,
+              md: 0,
+              lg: 4,
+              xl: 0,
             },
           }}
         >
@@ -164,10 +193,10 @@ export const Navigation = ({ scrollToSection }) => {
             sx={{
               px: { xs: 0, sm: 0.5, md: 1 },
               minHeight: {
-                xs: 56, 
-                sm: 64, 
-                md: 72, 
-                lg: 80, 
+                xs: 56,
+                sm: 64,
+                md: 72,
+                lg: 80,
               },
             }}
           >
@@ -188,11 +217,11 @@ export const Navigation = ({ scrollToSection }) => {
                 <Box
                   sx={{
                     width: {
-                      xs: 30, 
-                      sm: 34, 
-                      md: 38, 
-                      lg: 42, 
-                      xl: 44, 
+                      xs: 30,
+                      sm: 34,
+                      md: 38,
+                      lg: 42,
+                      xl: 44,
                     },
                     height: {
                       xs: 30,
@@ -215,11 +244,11 @@ export const Navigation = ({ scrollToSection }) => {
                     sx={{
                       color: "white",
                       fontSize: {
-                        xs: 16, 
-                        sm: 18, 
-                        md: 20, 
-                        lg: 22, 
-                        xl: 24, 
+                        xs: 16,
+                        sm: 18,
+                        md: 20,
+                        lg: 22,
+                        xl: 24,
                       },
                     }}
                   />
@@ -230,7 +259,7 @@ export const Navigation = ({ scrollToSection }) => {
                 variant={responsiveStyles.logo[currentSize].variant}
                 component="div"
                 sx={{
-                  fontWeight: {xs:400,  xl:600},
+                  fontWeight: { xs: 400, xl: 600 },
                   letterSpacing: {
                     xs: "-0.3px",
                     sm: "-0.5px",
@@ -245,7 +274,7 @@ export const Navigation = ({ scrollToSection }) => {
                   textOverflow: "ellipsis",
                 }}
               >
-                Garage Master
+                {language === "ENG" ? "Garage Master" : "গ্যারেজ মাস্টার"}
               </Typography>
             </Stack>
 
@@ -264,13 +293,13 @@ export const Navigation = ({ scrollToSection }) => {
                   transition: "all 0.3s ease",
                 }}
               >
-                {/* Show ALL navigation items with responsive text */}
+                {/* Navigation items with dynamic language */}
                 {navItems.map((item) => (
                   <motion.div key={item.id} whileHover={{ y: -2 }}>
                     <Button
                       variant="text"
                       onClick={() => handleNavClick(item.id)}
-                      sx={{ 
+                      sx={{
                         fontWeight: {
                           md: 500,
                           lg: 600,
@@ -293,7 +322,7 @@ export const Navigation = ({ scrollToSection }) => {
                         "&:hover": {
                           background: `linear-gradient(135deg, ${alpha(
                             "#06b6d4",
-                            0.1
+                            0.1,
                           )} 0%, ${alpha("#3b82f6", 0.1)} 100%)`,
                           color: "#ffffff",
                         },
@@ -305,17 +334,57 @@ export const Navigation = ({ scrollToSection }) => {
                   </motion.div>
                 ))}
 
+                {/* Language Toggle Buttons */}
+                <ToggleButtonGroup
+                  value={language}
+                  exclusive
+                  onChange={handleLanguageChange}
+                  aria-label="language selection"
+                  size="small"
+                  sx={{
+                    ml: responsiveStyles.spacing[currentSize],
+                    border: `1px solid ${alpha("#ffffff", 0.3)}`,
+                    borderRadius: 2,
+                    "& .MuiToggleButton-root": {
+                      color: alpha("#ffffff", 0.7),
+                      border: "none",
+                      px: responsiveStyles.langButton[currentSize].px,
+                      py: 0.5,
+                      fontSize:
+                        responsiveStyles.langButton[currentSize].fontSize,
+                      minWidth:
+                        responsiveStyles.langButton[currentSize].minWidth,
+                      "&.Mui-selected": {
+                        background:
+                          "linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)",
+                        color: "#ffffff",
+                        "&:hover": {
+                          background:
+                            "linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)",
+                        },
+                      },
+                      "&:hover": {
+                        background: alpha("#ffffff", 0.1),
+                        color: "#ffffff",
+                      },
+                    },
+                  }}
+                >
+                  <ToggleButton value="ENG" aria-label="english">
+                    ENG
+                  </ToggleButton>
+                  <ToggleButton value="BN" aria-label="bengali">
+                    BN
+                  </ToggleButton>
+                </ToggleButtonGroup>
+
                 {/* Auth Buttons with compact design */}
                 <Stack
                   direction="row"
                   spacing={responsiveStyles.spacing[currentSize]}
                   alignItems="center"
                   sx={{
-                    ml: {
-                      md: 0.5,
-                      lg: 1,
-                      xl: 1.5,
-                    },
+                    ml: responsiveStyles.spacing[currentSize],
                     flexShrink: 0,
                   }}
                 >
@@ -339,8 +408,8 @@ export const Navigation = ({ scrollToSection }) => {
                         px: responsiveStyles.authButton[currentSize].px,
                         py: {
                           md: 0.5,
-                          lg: 2,
-                          xl: 2,
+                          lg: 1,
+                          xl: 1.2,
                         },
                         borderRadius: 2,
                         fontSize:
@@ -357,7 +426,7 @@ export const Navigation = ({ scrollToSection }) => {
                         transition: "all 0.2s ease",
                       }}
                     >
-                      Login
+                      {language === "ENG" ? "Login" : "লগইন"}
                     </Button>
                   </motion.div>
 
@@ -378,8 +447,8 @@ export const Navigation = ({ scrollToSection }) => {
                         px: responsiveStyles.authButton[currentSize].px,
                         py: {
                           md: 0.5,
-                          lg: 2,
-                          xl: 2,
+                          lg: 1,
+                          xl: 1.2,
                         },
                         borderRadius: 2,
                         fontSize:
@@ -397,32 +466,80 @@ export const Navigation = ({ scrollToSection }) => {
                         transition: "all 0.2s ease",
                       }}
                     >
-                      {isMedium ? "🚀 Trial" : "🚀 Free Trial"}
+                      {language === "ENG"
+                        ? isMedium
+                          ? "🚀 Trial"
+                          : "🚀 Free Trial"
+                        : isMedium
+                          ? "🚀 ট্রায়াল"
+                          : "🚀 ফ্রি ট্রায়াল"}
                     </Button>
                   </motion.div>
                 </Stack>
               </Stack>
             ) : (
               /* Mobile Menu Button - Shows when not enough space or small devices */
-              <IconButton
-                color="inherit"
-                onClick={() => setIsMenuOpen(true)}
-                sx={{
-                  display: { xs: "flex", sm: shouldShowDrawer ? "flex" : "none" },
-                  p: { xs: 1, sm: 1.2 },
-                }}
-              >
-                <MenuIcon
+              <Stack direction="row" spacing={1} alignItems="center">
+                {/* Language Toggle for Mobile */}
+                <ToggleButtonGroup
+                  value={language}
+                  exclusive
+                  onChange={handleLanguageChange}
+                  aria-label="language selection"
+                  size="small"
                   sx={{
-                    fontSize: {
-                      xs: 24, // Extra small
-                      sm: 28, // Small
-                      md: 32, // Medium
+                    display: { xs: "flex", sm: "flex" },
+                    border: `1px solid ${alpha("#ffffff", 0.3)}`,
+                    borderRadius: 2,
+                    "& .MuiToggleButton-root": {
+                      color: alpha("#ffffff", 0.7),
+                      border: "none",
+                      px: { xs: 1, sm: 1.5 },
+                      py: 0.5,
+                      fontSize: { xs: "0.7rem", sm: "0.75rem" },
+                      "&.Mui-selected": {
+                        background:
+                          "linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)",
+                        color: "#ffffff",
+                      },
+                      "&:hover": {
+                        background: alpha("#ffffff", 0.1),
+                        color: "#ffffff",
+                      },
                     },
-                    color: "white",
                   }}
-                />
-              </IconButton>
+                >
+                  <ToggleButton value="ENG" aria-label="english">
+                    ENG
+                  </ToggleButton>
+                  <ToggleButton value="BN" aria-label="bengali">
+                    BN
+                  </ToggleButton>
+                </ToggleButtonGroup>
+
+                <IconButton
+                  color="inherit"
+                  onClick={() => setIsMenuOpen(true)}
+                  sx={{
+                    display: {
+                      xs: "flex",
+                      sm: shouldShowDrawer ? "flex" : "none",
+                    },
+                    p: { xs: 1, sm: 1.2 },
+                  }}
+                >
+                  <MenuIcon
+                    sx={{
+                      fontSize: {
+                        xs: 24,
+                        sm: 28,
+                        md: 32,
+                      },
+                      color: "white",
+                    }}
+                  />
+                </IconButton>
+              </Stack>
             )}
           </Toolbar>
         </Container>
@@ -436,9 +553,9 @@ export const Navigation = ({ scrollToSection }) => {
         PaperProps={{
           sx: {
             width: {
-              xs: "85%", // Extra small
-              sm: "75%", // Small
-              md: "65%", // Medium
+              xs: "85%",
+              sm: "75%",
+              md: "65%",
             },
             maxWidth: 400,
             background: "linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)",
@@ -449,9 +566,9 @@ export const Navigation = ({ scrollToSection }) => {
         <Box
           sx={{
             p: {
-              xs: 2, // Extra small
-              sm: 2.5, // Small
-              md: 3, // Medium
+              xs: 2,
+              sm: 2.5,
+              md: 3,
             },
             display: "flex",
             justifyContent: "space-between",
@@ -467,15 +584,15 @@ export const Navigation = ({ scrollToSection }) => {
               md: "1.4rem",
             }}
           >
-            Menu
+            {language === "ENG" ? "Menu" : "মেনু"}
           </Typography>
           <IconButton color="inherit" onClick={() => setIsMenuOpen(false)}>
             <CloseIcon
               sx={{
                 fontSize: {
-                  xs: 20, // Extra small
-                  sm: 24, // Small
-                  md: 28, // Medium
+                  xs: 20,
+                  sm: 24,
+                  md: 28,
                 },
               }}
             />
@@ -492,14 +609,14 @@ export const Navigation = ({ scrollToSection }) => {
               sx={{
                 cursor: "pointer",
                 py: {
-                  xs: 1.25, // Extra small
-                  sm: 1.5, // Small
-                  md: 1.75, // Medium
+                  xs: 1.25,
+                  sm: 1.5,
+                  md: 1.75,
                 },
                 px: {
-                  xs: 2, // Extra small
-                  sm: 2.5, // Small
-                  md: 3, // Medium
+                  xs: 2,
+                  sm: 2.5,
+                  md: 3,
                 },
                 "&:hover": {
                   background: alpha("#ffffff", 0.1),
@@ -510,9 +627,9 @@ export const Navigation = ({ scrollToSection }) => {
                 primary={item.label}
                 primaryTypographyProps={{
                   fontSize: {
-                    xs: "0.95rem", // Extra small
-                    sm: "1.05rem", // Small
-                    md: "1.1rem", // Medium
+                    xs: "0.95rem",
+                    sm: "1.05rem",
+                    md: "1.1rem",
                   },
                   fontWeight: 500,
                 }}
@@ -524,17 +641,17 @@ export const Navigation = ({ scrollToSection }) => {
         <Box
           sx={{
             p: {
-              xs: 2, // Extra small
-              sm: 2.5, // Small
-              md: 3, // Medium
+              xs: 2,
+              sm: 2.5,
+              md: 3,
             },
             mt: "auto",
             display: "flex",
             flexDirection: "column",
             gap: {
-              xs: 1.25, // Extra small
-              sm: 1.5, // Small
-              md: 2, // Medium
+              xs: 1.25,
+              sm: 1.5,
+              md: 2,
             },
           }}
         >
@@ -545,20 +662,20 @@ export const Navigation = ({ scrollToSection }) => {
             color="inherit"
             sx={{
               py: {
-                xs: 0.9, // Extra small
-                sm: 1.1, // Small
-                md: 1.25, // Medium
+                xs: 0.9,
+                sm: 1.1,
+                md: 1.25,
               },
               fontSize: {
-                xs: "0.85rem", // Extra small
-                sm: "0.9rem", // Small
-                md: "0.95rem", // Medium
+                xs: "0.85rem",
+                sm: "0.9rem",
+                md: "0.95rem",
               },
               border: `1px solid ${alpha("#ffffff", 0.3)}`,
               fontWeight: 500,
             }}
           >
-            Login
+            {language === "ENG" ? "Login" : "লগইন"}
           </Button>
 
           <Button
@@ -568,14 +685,14 @@ export const Navigation = ({ scrollToSection }) => {
               background: "#ffffff",
               color: "#06b6d4",
               py: {
-                xs: 0.9, // Extra small
-                sm: 1.1, // Small
-                md: 1.25, // Medium
+                xs: 0.9,
+                sm: 1.1,
+                md: 1.25,
               },
               fontSize: {
-                xs: "0.85rem", // Extra small
-                sm: "0.9rem", // Small
-                md: "0.95rem", // Medium
+                xs: "0.85rem",
+                sm: "0.9rem",
+                md: "0.95rem",
               },
               fontWeight: 600,
               "&:hover": {
@@ -586,7 +703,7 @@ export const Navigation = ({ scrollToSection }) => {
               transition: "all 0.2s ease",
             }}
           >
-            Free Trial
+            {language === "ENG" ? "Free Trial" : "ফ্রি ট্রায়াল"}
           </Button>
         </Box>
       </Drawer>
@@ -595,10 +712,10 @@ export const Navigation = ({ scrollToSection }) => {
       <Toolbar
         sx={{
           minHeight: {
-            xs: 56, // Extra small
-            sm: 64, // Small
-            md: 72, // Medium
-            lg: 80, // Large & Extra large
+            xs: 56,
+            sm: 64,
+            md: 72,
+            lg: 80,
           },
         }}
       />

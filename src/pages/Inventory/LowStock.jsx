@@ -34,46 +34,44 @@ export default function LowStocksPage() {
     searchTerm: searchTerm,
   };
 
-  const {
-    data: stockData,
-    isLoading: stockLoading,
-  } = useGetAllStocksQuery(queryParams);
+  const { data: stockData, isLoading: stockLoading } =
+    useGetAllStocksQuery(queryParams);
 
-
-  const criticalStocks = stockData?.data?.filter(stock =>
-    stock.stock <= stock.product?.stock_alert
-  ) || [];
+  const criticalStocks =
+    stockData?.data?.filter(
+      (stock) => stock.stock <= stock.product?.stock_alert,
+    ) || [];
 
   const lowStockColumns = [
     {
       key: "slNo",
       label: "SL No",
-      type: "index"
+      type: "index",
     },
     {
       key: "product.product_name",
       label: "Product Name",
-      render: (stock) => stock.product?.product_name || "N/A"
+      render: (stock) => stock.product?.product_name || "N/A",
     },
     {
       key: "product.product_code",
       label: "Product Code",
-      render: (stock) => stock.product?.product_code || "N/A"
+      render: (stock) => stock.product?.product_code || "N/A",
     },
     {
       key: "product.brand.brand",
       label: "Brand",
-      render: (stock) => stock.product?.brand?.brand || "N/A"
+      render: (stock) => stock.product?.brand?.brand || "N/A",
     },
     {
       key: "product.category.main_category",
       label: "Category",
-      render: (stock) => stock.product?.category?.main_category || "N/A"
+      render: (stock) => stock.product?.category?.main_category || "N/A",
     },
     {
       key: "warehouse.name",
       label: "Warehouse",
-      render: (stock) => stock.warehouse?.name || "N/A"
+      render: (stock) => stock.warehouse?.name || "N/A",
     },
     {
       key: "stock",
@@ -82,18 +80,21 @@ export default function LowStocksPage() {
         <Typography
           variant="body2"
           sx={{
-            fontWeight: 'bold',
-            color: stock.stock <= stock.product?.stock_alert ? 'error.main' : 'warning.main'
+            fontWeight: "bold",
+            color:
+              stock.stock <= stock.product?.stock_alert
+                ? "error.main"
+                : "warning.main",
           }}
         >
           {stock.stock}
         </Typography>
-      )
+      ),
     },
     {
       key: "product.stock_alert",
       label: "Alert Level",
-      render: (stock) => stock.product?.stock_alert || "N/A"
+      render: (stock) => stock.product?.stock_alert || "N/A",
     },
     {
       key: "status",
@@ -107,12 +108,12 @@ export default function LowStocksPage() {
             <Typography
               variant="body2"
               sx={{
-                color: 'error.main',
-                fontWeight: 'bold',
+                color: "error.main",
+                fontWeight: "bold",
                 bgcolor: alpha(theme.palette.error.main, 0.1),
                 px: 1,
                 py: 0.5,
-                borderRadius: 1
+                borderRadius: 1,
               }}
             >
               Out of Stock
@@ -123,12 +124,12 @@ export default function LowStocksPage() {
             <Typography
               variant="body2"
               sx={{
-                color: 'warning.main',
-                fontWeight: 'bold',
+                color: "warning.main",
+                fontWeight: "bold",
                 bgcolor: alpha(theme.palette.warning.main, 0.1),
                 px: 1,
                 py: 0.5,
-                borderRadius: 1
+                borderRadius: 1,
               }}
             >
               Low Stock
@@ -139,35 +140,36 @@ export default function LowStocksPage() {
             <Typography
               variant="body2"
               sx={{
-                color: 'success.main',
-                fontWeight: 'bold',
+                color: "success.main",
+                fontWeight: "bold",
                 bgcolor: alpha(theme.palette.success.main, 0.1),
                 px: 1,
                 py: 0.5,
-                borderRadius: 1
+                borderRadius: 1,
               }}
             >
               In Stock
             </Typography>
           );
         }
-      }
+      },
     },
     {
       key: "product.reorderLevel",
       label: "Reorder Level",
-      render: (stock) => stock.product?.reorderLevel || "N/A"
+      render: (stock) => stock.product?.reorderLevel || "N/A",
     },
     {
       key: "product.unit.unit",
       label: "Unit",
-      render: (stock) => stock.product?.unit?.unit || "N/A"
+      render: (stock) => stock.product?.unit?.unit || "N/A",
     },
     {
       key: "product.sellingPrice",
       label: "Selling Price",
-      render: (stock) => `৳${stock.product?.sellingPrice?.toFixed(2) || "0.00"}`
-    }
+      render: (stock) =>
+        `৳${stock.product?.sellingPrice?.toFixed(2) || "0.00"}`,
+    },
   ];
   const lowStockActions = [
     {
@@ -176,11 +178,8 @@ export default function LowStocksPage() {
       label: "View Details",
       tooltip: "View Product Details",
       className: "flex flex-col items-center edit2",
-      onClick: (stock) => {
-
-        console.log('View product:', stock.product?._id);
-      }
-    }
+      onClick: (stock) => {},
+    },
   ];
 
   const getLowStockRowClass = (stock) => {

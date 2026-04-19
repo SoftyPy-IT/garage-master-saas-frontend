@@ -18,7 +18,8 @@ import {
 import { motion } from "framer-motion";
 import { FloatingParticles } from "./FloatingParticle";
 
-const FinalCTASection = () => {
+/* eslint-disable react/prop-types */
+const FinalCTASection = ({ language }) => {
   return (
     <Box
       sx={{
@@ -61,9 +62,14 @@ const FinalCTASection = () => {
                 textShadow: "0 4px 20px rgba(0,0,0,0.3)",
               }}
             >
-              🚀 Ready to Transform
+              🚀{" "}
+              {language === "ENG"
+                ? "Ready to Transform"
+                : "রূপান্তর করতে প্রস্তুত"}
               <Box component="span" sx={{ display: "block" }}>
-                Your Garage Business?
+                {language === "ENG"
+                  ? "Your Garage Business?"
+                  : "আপনার গ্যারেজ ব্যবসা?"}
               </Box>
             </Typography>
           </motion.div>
@@ -78,10 +84,24 @@ const FinalCTASection = () => {
               textShadow: "0 2px 10px rgba(0,0,0,0.2)",
             }}
           >
-            Join over <strong>2,500 successful garage owners</strong> who have
-            revolutionized their business with our complete workflow solution.
-            Start your transformation today with our{" "}
-            <strong>30-day FREE trial</strong> - no credit card required!
+            {language === "ENG" ? "Join over " : "যোগ দিন "}
+            <strong>
+              2,500{" "}
+              {language === "ENG"
+                ? "successful garage owners"
+                : "সফল গ্যারেজ মালিকদের"}
+            </strong>
+            {language === "ENG"
+              ? " who have revolutionized their business with our complete workflow solution. Start your transformation today with our "
+              : " যারা আমাদের সম্পূর্ণ ওয়ার্কফ্লো সমাধানের মাধ্যমে তাদের ব্যবসা বিপ্লব করেছেন। আমাদের "}
+            <strong>
+              {language === "ENG"
+                ? "30-day FREE trial"
+                : "৩০-দিনের বিনামূল্যে ট্রায়াল"}
+            </strong>
+            {language === "ENG"
+              ? " - no credit card required!"
+              : " দিয়ে আজই আপনার রূপান্তর শুরু করুন - ক্রেডিট কার্ডের প্রয়োজন নেই!"}
           </Typography>
           <Stack
             direction={{ xs: "column", sm: "row" }}
@@ -112,7 +132,10 @@ const FinalCTASection = () => {
                   },
                 }}
               >
-                🎉 START FREE 30-DAY TRIAL
+                🎉{" "}
+                {language === "ENG"
+                  ? "START FREE 30-DAY TRIAL"
+                  : "ফ্রি ৩০-দিনের ট্রায়াল শুরু করুন"}
               </Button>
             </motion.div>
             <motion.div
@@ -139,7 +162,7 @@ const FinalCTASection = () => {
                   },
                 }}
               >
-                🎬 Watch Live Demo
+                🎬 {language === "ENG" ? "Watch Live Demo" : "লাইভ ডেমো দেখুন"}
               </Button>
             </motion.div>
           </Stack>
@@ -159,9 +182,15 @@ const FinalCTASection = () => {
                 <Security sx={{ fontSize: 32 }} />
                 <Box>
                   <Typography variant="h6" fontWeight="bold">
-                    Enterprise Security
+                    {language === "ENG"
+                      ? "Enterprise Security"
+                      : "এন্টারপ্রাইজ নিরাপত্তা"}
                   </Typography>
-                  <Typography variant="body2">Bank-level encryption</Typography>
+                  <Typography variant="body2">
+                    {language === "ENG"
+                      ? "Bank-level encryption"
+                      : "ব্যাংক-স্তরের এনক্রিপশন"}
+                  </Typography>
                 </Box>
               </Stack>
             </Grid>
@@ -175,10 +204,14 @@ const FinalCTASection = () => {
                 <Support sx={{ fontSize: 32 }} />
                 <Box>
                   <Typography variant="h6" fontWeight="bold">
-                    24/7 VIP Support
+                    {language === "ENG"
+                      ? "24/7 VIP Support"
+                      : "২৪/৭ ভিআইপি সমর্থন"}
                   </Typography>
                   <Typography variant="body2">
-                    Dedicated success team
+                    {language === "ENG"
+                      ? "Dedicated success team"
+                      : "নিবেদিত সাফল্য দল"}
                   </Typography>
                 </Box>
               </Stack>
@@ -193,9 +226,11 @@ const FinalCTASection = () => {
                 <CloudSync sx={{ fontSize: 32 }} />
                 <Box>
                   <Typography variant="h6" fontWeight="bold">
-                    99.99% Uptime
+                    {language === "ENG" ? "99.99% Uptime" : "৯৯.৯৯% আপটাইম"}
                   </Typography>
-                  <Typography variant="body2">Always available</Typography>
+                  <Typography variant="body2">
+                    {language === "ENG" ? "Always available" : "সর্বদা উপলব্ধ"}
+                  </Typography>
                 </Box>
               </Stack>
             </Grid>

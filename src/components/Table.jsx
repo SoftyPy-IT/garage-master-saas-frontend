@@ -118,11 +118,12 @@ const TableRow = ({
   columns,
   actions,
   currentPage,
-  pageSize,
+  // Remove pageSize parameter
   navigate,
   getRowClass,
 }) => {
-  const globalIndex = (currentPage - 1) * pageSize + (index + 1);
+  // Calculate index based on page number and fixed limit (10 items per page)
+  const globalIndex = (currentPage - 1) * 10 + (index + 1);
   const rowClass = getRowClass(item);
 
   return (
@@ -178,10 +179,15 @@ const TableRow = ({
 };
 
 const ActionButton = ({ action, Icon, item, navigate }) => {
+  // Check if the action is disabled
+  const isDisabled = action.disabled?.(item);
+
   const iconStyle = {
     color: action.color || "#2563EB",
     fontSize: action.size || "18px",
-    cursor: action.disabled?.(item) ? "not-allowed" : "pointer",
+    cursor: isDisabled ? "not-allowed" : "pointer",
+    // Add opacity to visually indicate disabled state
+    opacity: isDisabled ? 0.5 : 1,
   };
 
   const content = () => {
@@ -193,6 +199,7 @@ const ActionButton = ({ action, Icon, item, navigate }) => {
           }
           target={action.target}
           rel="noreferrer"
+          style={{ pointerEvents: isDisabled ? "none" : "auto" }}
         >
           <Icon style={iconStyle} />
         </a>
@@ -204,6 +211,7 @@ const ActionButton = ({ action, Icon, item, navigate }) => {
           to={
             typeof action.link === "function" ? action.link(item) : action.link
           }
+          style={{ pointerEvents: isDisabled ? "none" : "auto" }}
         >
           <Icon style={iconStyle} />
         </Link>
@@ -211,19 +219,39 @@ const ActionButton = ({ action, Icon, item, navigate }) => {
 
     return (
       <button
-        onClick={() => action.onClick?.(item, { navigate })}
-        disabled={action.disabled?.(item)}
+        onClick={() => !isDisabled && action.onClick?.(item, { navigate })}
+        disabled={isDisabled}
+        style={{
+          background: "none",
+          border: "none",
+          padding: 0,
+          cursor: isDisabled ? "not-allowed" : "pointer",
+        }}
       >
         <Icon style={iconStyle} />
       </button>
     );
   };
 
-  return action.tooltip ? (
-    <Tooltip title={action.tooltip}>{content()}</Tooltip>
-  ) : (
-    content()
-  );
+  // Determine Tooltip Title: Execute if it's a function, otherwise use string directly
+  const tooltipTitle =
+    typeof action.tooltip === "function"
+      ? action.tooltip(item)
+      : action.tooltip;
+
+  if (tooltipTitle) {
+    return (
+      <Tooltip title={tooltipTitle} arrow>
+        {isDisabled ? (
+          <span style={{ display: "inline-block" }}>{content()}</span>
+        ) : (
+          content()
+        )}
+      </Tooltip>
+    );
+  }
+
+  return content();
 };
 
 export default Table;

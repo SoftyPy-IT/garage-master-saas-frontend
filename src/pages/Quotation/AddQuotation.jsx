@@ -73,7 +73,6 @@ const AddQuotation = () => {
   const [activeInputIndex, setActiveInputIndex] = useState(null);
   const { tenantDomain } = useTenantDomain();
   const { performActionWithPermission } = usePermissions();
-  console.log("product suggestion ", productSuggestions);
   const {
     register,
     handleSubmit,
@@ -259,10 +258,10 @@ const AddQuotation = () => {
     const totalSum = items.reduce((sum, item) => sum + Number(item.total), 0);
     const serviceTotalSum = serviceItems.reduce(
       (sum, item) => sum + Number(item.total),
-      0
+      0,
     );
     const roundedTotalSum = Number.parseFloat(
-      totalSum + serviceTotalSum
+      totalSum + serviceTotalSum,
     ).toFixed(2);
     setPartsTotal(Number(totalSum));
     setServiceTotal(Number(serviceTotalSum));
@@ -278,7 +277,7 @@ const AddQuotation = () => {
     const filteredProducts = stockData.data.filter((stock) =>
       stock.product.product_name
         .toLowerCase()
-        .includes(searchTerm.toLowerCase())
+        .includes(searchTerm.toLowerCase()),
     );
     setProductSuggestions(filteredProducts);
     setShowSuggestions(filteredProducts.length > 0);
@@ -456,7 +455,7 @@ const AddQuotation = () => {
         option.value === unitValue ||
         option.label === unitValue ||
         (shortName &&
-          (option.value === shortName || option.label === shortName))
+          (option.value === shortName || option.label === shortName)),
     );
     if (exactMatch) {
       return exactMatch.value;
@@ -467,7 +466,7 @@ const AddQuotation = () => {
         option.label.toLowerCase() === unitValue?.toLowerCase() ||
         (shortName &&
           (option.value.toLowerCase() === shortName.toLowerCase() ||
-            option.label.toLowerCase() === shortName.toLowerCase()))
+            option.label.toLowerCase() === shortName.toLowerCase())),
     );
     if (caseInsensitiveMatch) {
       return caseInsensitiveMatch.value;
@@ -476,7 +475,6 @@ const AddQuotation = () => {
   };
 
   const handleSelectSuggestion = (product) => {
-    console.log("select product ", product);
     if (activeInputType === "service") {
       const newItems = [...serviceItems];
       const matchingUnit = findMatchingUnit(product.product.unit);
@@ -500,7 +498,7 @@ const AddQuotation = () => {
         (Number.parseFloat(newItems[activeInputIndex].quantity) || 0) *
         (Number.parseFloat(newItems[activeInputIndex].rate) || 0);
       newItems[activeInputIndex].total = Number.parseFloat(
-        newItems[activeInputIndex].total.toFixed(2)
+        newItems[activeInputIndex].total.toFixed(2),
       );
       setServiceItems(newItems);
     } else if (activeInputType === "parts") {
@@ -526,7 +524,7 @@ const AddQuotation = () => {
         (Number.parseFloat(newItems[activeInputIndex].quantity) || 0) *
         (Number.parseFloat(newItems[activeInputIndex].rate) || 0);
       newItems[activeInputIndex].total = Number.parseFloat(
-        newItems[activeInputIndex].total.toFixed(2)
+        newItems[activeInputIndex].total.toFixed(2),
       );
       setItems(newItems);
     }
@@ -589,7 +587,7 @@ const AddQuotation = () => {
 
           // Check if this mileage value already exists in history
           const mileageExists = updatedMileageHistory.some(
-            (entry) => entry.mileage === Number(currentMileage)
+            (entry) => entry.mileage === Number(currentMileage),
           );
 
           if (!mileageExists) {
@@ -600,7 +598,7 @@ const AddQuotation = () => {
         // Only add a new entry if it's a valid number and not already in the history
         if (!isNaN(newMileageValue) && newMileageValue > 0) {
           const mileageExists = updatedMileageHistory.some(
-            (entry) => entry.mileage === newMileageValue
+            (entry) => entry.mileage === newMileageValue,
           );
 
           if (!mileageExists) {
@@ -660,7 +658,7 @@ const AddQuotation = () => {
               setGoOtherButton("");
             } else if (goOtherButton === "invoice") {
               navigate(
-                `/dashboard/create-invoice?order_no=${jobCardData?.data?.job_no}&id=${res?.data?._id}`
+                `/dashboard/create-invoice?order_no=${jobCardData?.data?.job_no}&id=${res?.data?._id}`,
               );
               setGoOtherButton("");
             } else {
@@ -677,7 +675,7 @@ const AddQuotation = () => {
           toast.dismiss(toastId);
         }
       },
-      "You don't permission to create quotation !"
+      "You don't permission to create quotation !",
     );
   };
 
@@ -708,13 +706,16 @@ const AddQuotation = () => {
           />
           <div>
             <div className="flex-1 text-center">
-              <h2 className="trustAutoTitle">
-                {CompanyInfoData?.data?.companyNameBN}
-              </h2>
-
-              <h3 className="text-lg md:text-xl english-font mt-1 text-[#4671A1] font-bold ">
-                ({CompanyInfoData?.data?.companyName})
-              </h3>
+              {CompanyInfoData?.data?.companyNameBN && (
+                <h2 className="trustAutoTitle">
+                  {CompanyInfoData?.data?.companyNameBN}
+                </h2>
+              )}
+              {CompanyInfoData?.data?.companyName && (
+                <h3 className="text-lg md:text-xl english-font mt-1 text-[#4671A1] font-bold ">
+                  ({CompanyInfoData?.data?.companyName})
+                </h3>
+              )}
             </div>
             <span className="text-[12px] lg:text-xl mt-5 block">
               Office: {CompanyInfoData?.data?.address}
@@ -1047,14 +1048,14 @@ const AddQuotation = () => {
                             <Chip
                               key={index}
                               label={`${entry.mileage} km (${new Date(
-                                entry.date
+                                entry.date,
                               ).toLocaleDateString()})`}
                               variant="outlined"
                               className="bg-gray-100 border-gray-300 text-gray-800"
                               onDelete={() => {
                                 const updatedHistory =
                                   getDataWithChassisNo.mileageHistory.filter(
-                                    (_, i) => i !== index
+                                    (_, i) => i !== index,
                                   );
                                 setGetDataWithChassisNo((prevState) => ({
                                   ...prevState,
@@ -1067,7 +1068,7 @@ const AddQuotation = () => {
                                 </span>
                               }
                             />
-                          )
+                          ),
                         )}
                       </div>
                     ) : (
@@ -1229,7 +1230,7 @@ const AddQuotation = () => {
                         onChange={(e) =>
                           handleServiceRateChange(i, e.target.value)
                         }
-                        value={item.rateDisplay || ""}
+                        value={formateNumber(item.rateDisplay) || ""}
                       />
                     </div>
                     <div className="col-span-12 md:col-span-1">
@@ -1397,7 +1398,7 @@ const AddQuotation = () => {
                       placeholder="Rate"
                       onChange={(e) => handleRateChange(i, e.target.value)}
                       type="text"
-                      value={item.rateDisplay || ""}
+                      value={formateNumber(item.rateDisplay) || ""}
                     />
                   </div>
                   <div className="col-span-12 md:col-span-1">

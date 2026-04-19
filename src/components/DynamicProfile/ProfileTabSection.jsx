@@ -59,14 +59,12 @@ const ProfileTabsSection = ({
         </Tabs>
       </Box>
 
-      {/* Tab Panels */}
       {config.tabs.map((tab, index) => (
         <ProfileTab key={index} value={value} index={index}>
           {React.createElement(tab.component, getTabProps(tab, index))}
         </ProfileTab>
       ))}
 
-      {/* Footer */}
       <div>
         <p className="my-5 text-center">
           © Copyright 2024 | Garage Master | All Rights Reserved

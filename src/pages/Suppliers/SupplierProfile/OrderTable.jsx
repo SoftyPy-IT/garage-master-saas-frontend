@@ -39,6 +39,7 @@ import {
 } from "../../../redux/api/purchaseOrderApi";
 import Table from "../../../components/Table";
 import { DeleteIcon, EditIcon } from "lucide-react";
+import { formatDate } from "../../../utils/formateDate";
 
 const OrderTable = ({ refetch: parentRefetch }) => {
   const theme = useTheme();
@@ -74,12 +75,9 @@ const OrderTable = ({ refetch: parentRefetch }) => {
     paymentStatus: selectedPaymentStatus || undefined,
     sort: sortOption || undefined,
   });
-  console.log(data)
 
   const orders = data?.data?.orders || [];
   const meta = data?.meta || {};
-
-  // --- UI helpers
   const getStatusColor = (status) => {
     switch (status) {
       case "Delivered":
@@ -110,13 +108,8 @@ const OrderTable = ({ refetch: parentRefetch }) => {
     }
   };
 
-  const formatDate = (dateString) =>
-    dateString ? new Date(dateString).toISOString().split("T")[0] : "N/A";
-
   const calculateTotalItems = (products = []) =>
     products.reduce((total, p) => total + (p.quantity || 0), 0);
-
-  // --- Actions
   const handleDeleteOrder = async (order) => {
     Swal.fire({
       title: "Are you sure?",
@@ -157,8 +150,6 @@ const OrderTable = ({ refetch: parentRefetch }) => {
     refetch();
     setFilterMenuAnchor(null);
   };
-
-  // --- Columns & actions
   const columns = [
     {
       key: "referenceNo",

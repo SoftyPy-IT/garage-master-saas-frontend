@@ -31,47 +31,51 @@ import { usePermissionFormData } from "../../hooks/usePermissionFormData";
 import FormAutoCompleted from "../../components/form/FormAutoCompleted";
 import Can from "../../components/Can";
 
-
-const AddUserModal = ({ open, onClose, onSuccess, performActionWithPermission, tenantDomain }) => {
+const AddUserModal = ({
+  open,
+  onClose,
+  onSuccess,
+  performActionWithPermission,
+  tenantDomain,
+}) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [createUser, { isLoading }] = useCreateUserMutation();
   const { roleOptions } = usePermissionFormData();
 
-
   const handleSubmit = async (data, reset) => {
-    console.log('raw', data)
+    performActionWithPermission(
+      "/dashboard/all-user-list",
+      "delete",
+      async () => {
+        try {
+          if (data.password !== data.confirmPassword) {
+            return toast.error("Passwords do not match");
+          }
+          const submitData = {
+            name: data.name,
+            createdBy: data.createdBy || "system",
+            email: data.email,
+            password: data.password,
+            tenantDomain: tenantDomain,
+            role: data.role?.[0]?.label || data.role?.label,
+          };
+          const result = await createUser(submitData).unwrap();
 
-    performActionWithPermission('/dashboard/all-user-list', 'delete', async () => {
-      try {
-        if (data.password !== data.confirmPassword) {
-          return toast.error("Passwords do not match");
+          if (result.success) {
+            toast.success(result.message || "User created successfully");
+            onSuccess?.();
+            onClose();
+            reset();
+          }
+        } catch (error) {
+          console.error("Error details:", error);
+          const message = error?.data?.message || "Failed to create user";
+          toast.error(message);
         }
-        const submitData = {
-          name: data.name,
-          createdBy: data.createdBy || 'system',
-          email: data.email,
-          password: data.password,
-          tenantDomain: tenantDomain,
-          role: data.role?.[0]?.label || data.role?.label,
-        };
-
-        console.log('submit data', submitData)
-
-        const result = await createUser(submitData).unwrap();
-
-        if (result.success) {
-          toast.success(result.message || "User created successfully");
-          onSuccess?.();
-          onClose();
-          reset();
-        }
-      } catch (error) {
-        console.error('Error details:', error);
-        const message = error?.data?.message || "Failed to create user";
-        toast.error(message);
-      }
-    }, "You don't have permission to create a user !")
+      },
+      "You don't have permission to create a user !",
+    );
   };
 
   return (
@@ -84,11 +88,10 @@ const AddUserModal = ({ open, onClose, onSuccess, performActionWithPermission, t
       <GarageForm
         onSubmit={handleSubmit}
         defaultValues={{
-          tenantDomain: tenantDomain
+          tenantDomain: tenantDomain,
         }}
       >
         <Grid container spacing={2} padding={1}>
-
           {/* Full Name Field */}
           <Grid item xs={12} md={6}>
             <FormInput
@@ -163,8 +166,8 @@ const AddUserModal = ({ open, onClose, onSuccess, performActionWithPermission, t
                 required: "Password is required",
                 minLength: {
                   value: 6,
-                  message: "Password must be at least 6 characters"
-                }
+                  message: "Password must be at least 6 characters",
+                },
               }}
             />
           </Grid>
@@ -182,7 +185,9 @@ const AddUserModal = ({ open, onClose, onSuccess, performActionWithPermission, t
                 endAdornment: (
                   <InputAdornment position="end">
                     <IconButton
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
                       edge="end"
                       size="small"
                     >
@@ -194,7 +199,7 @@ const AddUserModal = ({ open, onClose, onSuccess, performActionWithPermission, t
               rules={{
                 required: "Please confirm your password",
                 validate: (value, formValues) =>
-                  value === formValues.password || "Passwords do not match"
+                  value === formValues.password || "Passwords do not match",
               }}
             />
           </Grid>
@@ -202,12 +207,7 @@ const AddUserModal = ({ open, onClose, onSuccess, performActionWithPermission, t
           {/* Terms and Conditions */}
           <Grid item xs={12}>
             <FormControlLabel
-              control={
-                <Checkbox
-                  name="agreeTerms"
-                  color="primary"
-                />
-              }
+              control={<Checkbox name="agreeTerms" color="primary" />}
               label={
                 <Typography variant="body2">
                   I agree to the{" "}
@@ -225,13 +225,13 @@ const AddUserModal = ({ open, onClose, onSuccess, performActionWithPermission, t
               name="agreeTerms"
               type="checkbox"
               rules={{ required: "You must agree to the terms and conditions" }}
-              sx={{ display: 'none' }}
+              sx={{ display: "none" }}
             />
           </Grid>
         </Grid>
 
         {/* Action Buttons */}
-        <Box className='flex flex-col md:flex-col space-y-2 items-center mb-4' >
+        <Box className="flex flex-col md:flex-col space-y-2 items-center mb-4">
           <Button
             onClick={onClose}
             disabled={isLoading}
@@ -240,7 +240,7 @@ const AddUserModal = ({ open, onClose, onSuccess, performActionWithPermission, t
           >
             Cancel
           </Button>
-          <Can page='/dashboard/all-user-list' action='create'>
+          <Can page="/dashboard/all-user-list" action="create">
             <Button
               type="submit"
               variant="contained"

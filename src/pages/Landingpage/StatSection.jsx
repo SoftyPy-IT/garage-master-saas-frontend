@@ -7,29 +7,30 @@ import { People, DirectionsCar, Shield, TrendingUp } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import { AnimatedCounter } from "./AnimateCounter";
 
-export const StatsSection = () => {
+/* eslint-disable react/prop-types */
+export const StatsSection = ({ language }) => {
   const stats = [
     {
       value: 2500,
-      label: "Happy Clients",
+      label: language === "ENG" ? "Happy Clients" : "সন্তুষ্ট ক্লায়েন্ট",
       suffix: "+",
       icon: <People />,
     },
     {
       value: 150000,
-      label: "Vehicles Managed",
+      label: language === "ENG" ? "Vehicles Managed" : "পরিচালিত যানবাহন",
       suffix: "+",
       icon: <DirectionsCar />,
     },
     {
       value: 99.99,
-      label: "Uptime Guarantee",
+      label: language === "ENG" ? "Uptime Guarantee" : "আপটাইম গ্যারান্টি",
       suffix: "%",
       icon: <Shield />,
     },
     {
       value: 85,
-      label: "Average Growth",
+      label: language === "ENG" ? "Average Growth" : "গড় বৃদ্ধি",
       suffix: "%",
       icon: <TrendingUp />,
     },
@@ -64,11 +65,15 @@ export const StatsSection = () => {
                 backgroundClip: "text",
               }}
             >
-              🚀 Proven Results That Speak for Themselves
+              🚀{" "}
+              {language === "ENG"
+                ? "Proven Results That Speak for Themselves"
+                : "প্রমাণিত ফলাফল যা নিজেই কথা বলে"}
             </Typography>
             <Typography variant="h6" sx={{ color: "rgba(255, 255, 255, 0.8)" }}>
-              Join thousands of successful garage owners who've transformed
-              their business
+              {language === "ENG"
+                ? "Join thousands of successful garage owners who've transformed their business"
+                : "হাজার হাজার সফল গ্যারেজ মালিকদের সাথে যোগ দিন যারা তাদের ব্যবসা রূপান্তরিত করেছেন"}
             </Typography>
           </motion.div>
         </Box>

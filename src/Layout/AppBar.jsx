@@ -34,13 +34,9 @@ const AppBar = ({ toggle, navRef, toggleSideBar }) => {
       },
       {
         label: "BD Shop",
-
-        onClick: () => console.log("Open BD Shop"),
       },
       {
         label: "Global Shop",
-
-        onClick: () => console.log("Open Global Shop"),
       },
     ];
     return (
