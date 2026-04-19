@@ -88,7 +88,7 @@ const AllServices = ({ showSensitiveData }) => {
               <FaCarSide className="dashboardCardIcon" />
             </div>
             <div className="invoice-info">
-              <h2 className={amount}>000</h2>
+              <h2 className={amount}> {allMetaData?.data?.totalProduct}</h2>
               <p className="label">Total Product</p>
             </div>
           </div>

@@ -22,14 +22,18 @@ export const usePermissions = () => {
 
 export const PermissionProvider = ({ children }) => {
   const { tenantDomain } = useTenantDomain();
-  console.log('tenant domain check this ', tenantDomain)
   const user = useSelector(selectCurrentUser);
 
-  const { data: permissionData, isLoading, error, isError } = useGetUserPermissionQuery(
+  const {
+    data: permissionData,
+    isLoading,
+    error,
+    isError,
+  } = useGetUserPermissionQuery(
     { userId: user?.userId, tenantDomain },
     {
       skip: !user?.userId || !tenantDomain,
-    }
+    },
   );
 
   const permissions = permissionData?.data?.permissions || [];
@@ -51,11 +55,8 @@ export const PermissionProvider = ({ children }) => {
         pagePath.startsWith("/") ? pagePath : "/" + pagePath,
       ];
 
-      const pathMatch = possiblePaths.includes(page.path) || possiblePaths.includes(page.route);
-
-      // if (pathMatch) {
-      //   console.log(`Path match found for ${pagePath}:`, page.path, page.route);
-      // }
+      const pathMatch =
+        possiblePaths.includes(page.path) || possiblePaths.includes(page.route);
 
       return pathMatch;
     });
@@ -73,13 +74,19 @@ export const PermissionProvider = ({ children }) => {
     return checkPermission(pagePath, "view");
   };
 
-  const performActionWithPermission = (pagePath, action, callback, alertMessage) => {
+  const performActionWithPermission = (
+    pagePath,
+    action,
+    callback,
+    alertMessage,
+  ) => {
     if (checkPermission(pagePath, action)) {
       callback();
     } else {
       swal({
         title: "Access Denied!",
-        text: alertMessage || `You don't have permission to ${action} this item.`,
+        text:
+          alertMessage || `You don't have permission to ${action} this item.`,
         icon: "error",
         button: "OK",
         className: "permission-alert",
@@ -94,12 +101,17 @@ export const PermissionProvider = ({ children }) => {
     checkPermission,
     hasPageAccess,
     performActionWithPermission,
-    user
+    user,
   };
 
   if (isLoading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="100vh"
+      >
         <Box textAlign="center">
           <CircularProgress size={60} />
           <Typography variant="h6" mt={2}>
@@ -112,7 +124,12 @@ export const PermissionProvider = ({ children }) => {
 
   if (isError) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="100vh"
+      >
         <Box textAlign="center">
           <Typography variant="h6" color="error">
             Error loading permissions: {error?.message || "Unknown error"}
@@ -129,5 +146,9 @@ export const PermissionProvider = ({ children }) => {
     );
   }
 
-  return <PermissionContext.Provider value={value}>{children}</PermissionContext.Provider>;
+  return (
+    <PermissionContext.Provider value={value}>
+      {children}
+    </PermissionContext.Provider>
+  );
 };

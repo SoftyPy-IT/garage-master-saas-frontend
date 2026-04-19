@@ -34,8 +34,6 @@ const Detail = () => {
     tenantDomain,
     id,
   });
-  console.log("quotaton preview check this ", quotationPreview);
-
   useEffect(() => {
     if (data?.data) {
       setQuotationPreview(data.data);
@@ -45,8 +43,6 @@ const Detail = () => {
   if (loading) {
     return <Loading />;
   }
-
-  console.log("quotation view this ", quotationPreview);
 
   return (
     <div ref={componentRef}>
@@ -266,7 +262,7 @@ const Detail = () => {
                           <td>{formateNumber(data.rate)}</td>
                           <td>{formateNumber(data.total)}</td>
                         </tr>
-                      )
+                      ),
                     )}
                   </>
                 </tbody>
@@ -376,7 +372,7 @@ const Detail = () => {
               href={`${import.meta.env.VITE_API_URL}/quotations/quotation/${
                 quotationPreview?._id
               }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
-                JSON.stringify(companyProfileData)
+                JSON.stringify(companyProfileData),
               )}`}
               target="_blank"
               rel="noreferrer"

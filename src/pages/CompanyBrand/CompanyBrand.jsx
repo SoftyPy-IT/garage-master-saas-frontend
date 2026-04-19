@@ -17,7 +17,7 @@ import {
   useDeleteCompanyBrandMutation,
 } from "../../redux/api/companyBrandApi";
 import swal from "sweetalert";
-import uploadFile from "../../helpers/uploadFile";
+import uploadFile from "../../helper/uploadFile";
 import { useTenantDomain } from "../../hooks/useTenantDomain";
 
 const CompanyBrand = () => {

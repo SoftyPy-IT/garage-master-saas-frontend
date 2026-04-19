@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-"use client"
+"use client";
 import {
   Container,
   Typography,
@@ -14,16 +14,20 @@ import {
   ListItemIcon,
   ListItemText,
   alpha,
-} from "@mui/material"
-import { Check } from "@mui/icons-material"
-import { motion } from "framer-motion"
+} from "@mui/material";
+import { Check } from "@mui/icons-material";
+import { motion } from "framer-motion";
 
-const PricingSection = ({ pricingPlans }) => {
+const PricingSection = ({ pricingPlans, language }) => {
   return (
     <Box id="pricing" sx={{ py: 15 }}>
       <Container maxWidth="lg">
         <Box sx={{ textAlign: "center", mb: 12 }}>
-          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
             <Typography
               variant="h2"
               sx={{
@@ -36,9 +40,9 @@ const PricingSection = ({ pricingPlans }) => {
                 fontSize: { xs: "2.5rem", md: "4rem" },
               }}
             >
-              💎 Simple Pricing
+              💎 {language === "ENG" ? "Simple Pricing" : "সহজ মূল্য নির্ধারণ"}
               <Box component="span" sx={{ display: "block" }}>
-                Maximum Value
+                {language === "ENG" ? "Maximum Value" : "সর্বোচ্চ মূল্য"}
               </Box>
             </Typography>
             <Typography
@@ -51,14 +55,20 @@ const PricingSection = ({ pricingPlans }) => {
                 mb: 4,
               }}
             >
-              Choose the perfect plan for your garage business. All plans include our complete workflow system and
-              premium support.
+              {language === "ENG"
+                ? "Choose the perfect plan for your garage business. All plans include our complete workflow system and premium support."
+                : "আপনার গ্যারেজ ব্যবসার জন্য উপযুক্ত পরিকল্পনা নির্বাচন করুন। সমস্ত পরিকল্পনায় আমাদের সম্পূর্ণ ওয়ার্কফ্লো সিস্টেম এবং প্রিমিয়াম সমর্থন অন্তর্ভুক্ত রয়েছে।"}
             </Typography>
             <Stack direction="row" spacing={2} justifyContent="center">
               <Chip
-                label="🎉 Limited Time: 50% OFF"
+                label={
+                  language === "ENG"
+                    ? "🎉 Limited Time: 50% OFF"
+                    : "🎉 সীমিত সময়: ৫০% ছাড়"
+                }
                 sx={{
-                  background: "linear-gradient(45deg, #ff006e, #8338ec, #3a86ff)",
+                  background:
+                    "linear-gradient(45deg, #ff006e, #8338ec, #3a86ff)",
                   color: "#ffffff",
                   fontWeight: 700,
                   px: 3,
@@ -73,7 +83,11 @@ const PricingSection = ({ pricingPlans }) => {
                 }}
               />
               <Chip
-                label="⚡ 30-Day FREE Trial"
+                label={
+                  language === "ENG"
+                    ? "⚡ 30-Day FREE Trial"
+                    : "⚡ ৩০-দিনের ফ্রি ট্রায়াল"
+                }
                 sx={{
                   background: alpha("#10b981", 0.1),
                   color: "#10b981",
@@ -106,9 +120,13 @@ const PricingSection = ({ pricingPlans }) => {
                     p: 5,
                     borderRadius: 6,
                     position: "relative",
-                    background: plan.popular ? alpha("#1e293b", 0.8) : alpha("#ffffff", 0.05),
+                    background: plan.popular
+                      ? alpha("#1e293b", 0.8)
+                      : alpha("#ffffff", 0.05),
                     backdropFilter: "blur(20px)",
-                    border: plan.popular ? `3px solid #06b6d4` : `2px solid ${alpha("#06b6d4", 0.1)}`,
+                    border: plan.popular
+                      ? `3px solid #06b6d4`
+                      : `2px solid ${alpha("#06b6d4", 0.1)}`,
                     transform: plan.popular ? "scale(1.05)" : "scale(1)",
                     overflow: "hidden",
                     "&:hover": {
@@ -126,7 +144,8 @@ const PricingSection = ({ pricingPlans }) => {
                       left: 0,
                       right: 0,
                       height: 6,
-                      background: "linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)",
+                      background:
+                        "linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)",
                       opacity: plan.popular ? 1 : 0.7,
                       transition: "opacity 0.3s ease",
                     },
@@ -145,13 +164,18 @@ const PricingSection = ({ pricingPlans }) => {
                       }}
                     >
                       <Chip
-                        label="🏆 MOST POPULAR"
+                        label={
+                          language === "ENG"
+                            ? "🏆 MOST POPULAR"
+                            : "🏆 সবচেয়ে জনপ্রিয়"
+                        }
                         sx={{
                           position: "absolute",
                           top: -15,
                           left: "50%",
                           transform: "translateX(-50%)",
-                          background: "linear-gradient(45deg, #ff006e, #8338ec, #3a86ff)",
+                          background:
+                            "linear-gradient(45deg, #ff006e, #8338ec, #3a86ff)",
                           color: "#ffffff",
                           fontWeight: 800,
                           px: 3,
@@ -174,7 +198,8 @@ const PricingSection = ({ pricingPlans }) => {
                       fontWeight="bold"
                       gutterBottom
                       sx={{
-                        background: "linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)",
+                        background:
+                          "linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)",
                         WebkitBackgroundClip: "text",
                         WebkitTextFillColor: "transparent",
                         backgroundClip: "text",
@@ -195,7 +220,12 @@ const PricingSection = ({ pricingPlans }) => {
                       {plan.description}
                     </Typography>
                     <Box sx={{ my: 4 }}>
-                      <Stack direction="row" alignItems="baseline" justifyContent="center" spacing={1}>
+                      <Stack
+                        direction="row"
+                        alignItems="baseline"
+                        justifyContent="center"
+                        spacing={1}
+                      >
                         <Typography
                           variant="h6"
                           sx={{
@@ -210,7 +240,8 @@ const PricingSection = ({ pricingPlans }) => {
                           variant="h2"
                           sx={{
                             fontWeight: 900,
-                            background: "linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)",
+                            background:
+                              "linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)",
                             WebkitBackgroundClip: "text",
                             WebkitTextFillColor: "transparent",
                             backgroundClip: "text",
@@ -218,7 +249,10 @@ const PricingSection = ({ pricingPlans }) => {
                         >
                           ${plan.price}
                         </Typography>
-                        <Typography variant="h6" sx={{ color: alpha("#ffffff", 0.6) }}>
+                        <Typography
+                          variant="h6"
+                          sx={{ color: alpha("#ffffff", 0.6) }}
+                        >
                           /{plan.period}
                         </Typography>
                       </Stack>
@@ -279,7 +313,10 @@ const PricingSection = ({ pricingPlans }) => {
                       </motion.div>
                     ))}
                   </List>
-                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
                     <Button
                       variant={plan.popular ? "contained" : "outlined"}
                       fullWidth
@@ -291,10 +328,12 @@ const PricingSection = ({ pricingPlans }) => {
                         borderRadius: 4,
                         ...(plan.popular
                           ? {
-                              background: "linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)",
+                              background:
+                                "linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)",
                               boxShadow: `0 15px 40px ${alpha("#06b6d4", 0.4)}`,
                               "&:hover": {
-                                background: "linear-gradient(45deg, #ff006e, #8338ec, #3a86ff)",
+                                background:
+                                  "linear-gradient(45deg, #ff006e, #8338ec, #3a86ff)",
                                 boxShadow: `0 20px 50px ${alpha("#06b6d4", 0.5)}`,
                               },
                             }
@@ -310,13 +349,22 @@ const PricingSection = ({ pricingPlans }) => {
                             }),
                       }}
                     >
-                      🚀 Start {plan.popular ? "Premium" : "Free"} Trial
+                      🚀{" "}
+                      {language === "ENG"
+                        ? `Start ${plan.popular ? "Premium" : "Free"} Trial`
+                        : `${plan.popular ? "প্রিমিয়াম" : "ফ্রি"} ট্রায়াল শুরু করুন`}
                     </Button>
                   </motion.div>
                   {plan.popular && (
                     <Box sx={{ mt: 3, textAlign: "center" }}>
-                      <Typography variant="caption" sx={{ color: alpha("#ffffff", 0.6) }}>
-                        ⚡ Most chosen by successful garages
+                      <Typography
+                        variant="caption"
+                        sx={{ color: alpha("#ffffff", 0.6) }}
+                      >
+                        ⚡{" "}
+                        {language === "ENG"
+                          ? "Most chosen by successful garages"
+                          : "সফল গ্যারেজ দ্বারা সর্বাধিক নির্বাচিত"}
                       </Typography>
                     </Box>
                   )}
@@ -327,7 +375,7 @@ const PricingSection = ({ pricingPlans }) => {
         </Grid>
       </Container>
     </Box>
-  )
-}
+  );
+};
 
-export default PricingSection
+export default PricingSection;

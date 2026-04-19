@@ -1,59 +1,63 @@
-"use client"
+"use client";
 
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import { PhotoCamera as PhotoCameraIcon } from "@mui/icons-material"
-import { Box, Typography, alpha } from "@mui/material"
-import { useState, useEffect } from "react"
-import { Controller, useFormContext } from "react-hook-form"
-import uploadFile from "../../helpers/uploadFile"
+import { PhotoCamera as PhotoCameraIcon } from "@mui/icons-material";
+import { Box, Typography, alpha } from "@mui/material";
+import { useState, useEffect } from "react";
+import { Controller, useFormContext } from "react-hook-form";
+import uploadFile from "../../helper/uploadFile";
 
-const ImageUpload = ({ name, label = "Upload Image", uploadBoxStyles = {}, defaultValues }) => {
-  const { control, setValue, getValues } = useFormContext()
-  const [imageUrls, setImageUrls] = useState(defaultValues ? [defaultValues] : [])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState("")
+const ImageUpload = ({
+  name,
+  label = "Upload Image",
+  uploadBoxStyles = {},
+  defaultValues,
+}) => {
+  const { control, setValue, getValues } = useFormContext();
+  const [imageUrls, setImageUrls] = useState(
+    defaultValues ? [defaultValues] : [],
+  );
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (defaultValues) {
-      setImageUrls([defaultValues])
-      setValue(name, [defaultValues])
-    
+      setImageUrls([defaultValues]);
+      setValue(name, [defaultValues]);
     }
-  }, [defaultValues, name, setValue])
-
-
+  }, [defaultValues, name, setValue]);
 
   const handleFileChange = async (event) => {
-    const files = event.target.files
-    if (!files || files.length === 0) return
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
 
-    setLoading(true)
-    const uploadedUrls = []
+    setLoading(true);
+    const uploadedUrls = [];
 
     try {
       for (let i = 0; i < files.length; i++) {
-        const uploadPhoto = await uploadFile(files[i])
+        const uploadPhoto = await uploadFile(files[i]);
         if (uploadPhoto?.secure_url) {
-          uploadedUrls.push(uploadPhoto.secure_url)
+          uploadedUrls.push(uploadPhoto.secure_url);
         } else {
-          throw new Error("Invalid image URL format")
+          throw new Error("Invalid image URL format");
         }
       }
 
-      setImageUrls(uploadedUrls)
+      setImageUrls(uploadedUrls);
 
       setValue(name, uploadedUrls, {
         shouldValidate: true,
         shouldDirty: true,
         shouldTouch: true,
-      })
+      });
     } catch (error) {
-      setError(error.message || "Error uploading file")
+      setError(error.message || "Error uploading file");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <Controller
@@ -69,7 +73,7 @@ const ImageUpload = ({ name, label = "Upload Image", uploadBoxStyles = {}, defau
           <Box
             sx={{
               width: "100%",
-              height: {xs:"120px", sm:"150px", md:"200px"},
+              height: { xs: "120px", sm: "150px", md: "200px" },
               border: "2px dashed #6a1b9a",
               borderRadius: "16px",
               display: "flex",
@@ -79,7 +83,7 @@ const ImageUpload = ({ name, label = "Upload Image", uploadBoxStyles = {}, defau
               flexDirection: "column",
               position: "relative",
               overflow: "hidden",
-              bgcolor: '#fff',
+              bgcolor: "#fff",
               ...uploadBoxStyles,
             }}
             onClick={() => document.getElementById(`${name}-input`).click()}
@@ -120,7 +124,7 @@ const ImageUpload = ({ name, label = "Upload Image", uploadBoxStyles = {}, defau
                     borderRadius: "12px",
                     overflow: "hidden",
                     border: "1px solid",
-                    borderColor: '#42A1DA',
+                    borderColor: "#42A1DA",
                   }}
                 >
                   <img
@@ -138,14 +142,20 @@ const ImageUpload = ({ name, label = "Upload Image", uploadBoxStyles = {}, defau
           )}
 
           {error && (
-            <Typography component="p" fontSize="12px" fontWeight="bold" color="error" sx={{ mt: 1 }}>
+            <Typography
+              component="p"
+              fontSize="12px"
+              fontWeight="bold"
+              color="error"
+              sx={{ mt: 1 }}
+            >
               {error}
             </Typography>
           )}
         </Box>
       )}
     />
-  )
-}
+  );
+};
 
-export default ImageUpload
+export default ImageUpload;

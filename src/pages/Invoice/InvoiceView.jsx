@@ -83,7 +83,6 @@ const InvoiceView = () => {
   const totalAmountNumber = cleanNumber(invoicePreview?.net_total);
   const advanceAmountNumber = cleanNumber(invoicePreview?.advance);
   const isFullyPaid = totalAmountNumber === advanceAmountNumber;
-  console.log("invoice view ", invoicePreview);
 
   return (
     <div ref={componentRef} className="h-screen">
@@ -315,7 +314,7 @@ const InvoiceView = () => {
                             <td>{formateNumber(data.rate)}</td>
                             <td>{formateNumber(data.total)}</td>
                           </tr>
-                        )
+                        ),
                       )}
                     </>
                   </tbody>
@@ -398,9 +397,8 @@ const InvoiceView = () => {
                   <div>
                     <small>
                       {" "}
-                      : {formateNumber(
-                        invoicePreview?.total_amount
-                      )} &#2547;{" "}
+                      : {formateNumber(invoicePreview?.total_amount)}{" "}
+                      &#2547;{" "}
                     </small>
                     {invoicePreview.discount > 0 && (
                       <small>
@@ -465,7 +463,7 @@ const InvoiceView = () => {
               href={`${import.meta.env.VITE_API_URL}/invoices/invoice/${
                 invoicePreview._id
               }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
-                JSON.stringify(companyProfileData)
+                JSON.stringify(companyProfileData),
               )}`}
               target="_blank"
               rel="noreferrer"

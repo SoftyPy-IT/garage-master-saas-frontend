@@ -1,11 +1,22 @@
 /* eslint-disable react/prop-types */
-"use client"
-import { Container, Typography, Box, Grid, Card, Chip, Stack, Paper, Avatar, alpha } from "@mui/material"
-import { Star } from "@mui/icons-material"
-import { motion } from "framer-motion"
-import { FloatingParticles } from "./FloatingParticle"
+"use client";
+import {
+  Container,
+  Typography,
+  Box,
+  Grid,
+  Card,
+  Chip,
+  Stack,
+  Paper,
+  Avatar,
+  alpha,
+} from "@mui/material";
+import { Star } from "@mui/icons-material";
+import { motion } from "framer-motion";
+import { FloatingParticles } from "./FloatingParticle";
 
-const TestimonialsSection = ({ testimonials }) => {
+const TestimonialsSection = ({ testimonials, language }) => {
   return (
     <Box
       id="testimonials"
@@ -20,10 +31,14 @@ const TestimonialsSection = ({ testimonials }) => {
         overflow: "hidden",
       }}
     >
-      <FloatingParticles/>
+      <FloatingParticles />
       <Container maxWidth="lg" sx={{ position: "relative", zIndex: 1 }}>
         <Box sx={{ textAlign: "center", mb: 12 }}>
-          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
             <Typography
               variant="h2"
               sx={{
@@ -36,9 +51,9 @@ const TestimonialsSection = ({ testimonials }) => {
                 fontSize: { xs: "2.5rem", md: "4rem" },
               }}
             >
-              😊 Happy Clients
+              😊 {language === "ENG" ? "Happy Clients" : "সন্তুষ্ট ক্লায়েন্ট"}
               <Box component="span" sx={{ display: "block" }}>
-                Success Stories
+                {language === "ENG" ? "Success Stories" : "সাফল্যের গল্প"}
               </Box>
             </Typography>
             <Typography
@@ -50,8 +65,9 @@ const TestimonialsSection = ({ testimonials }) => {
                 lineHeight: 1.6,
               }}
             >
-              Discover how garage owners worldwide are achieving extraordinary results and transforming their businesses
-              with our complete workflow solution.
+              {language === "ENG"
+                ? "Discover how garage owners worldwide are achieving extraordinary results and transforming their businesses with our complete workflow solution."
+                : "আবিষ্কার করুন কিভাবে বিশ্বব্যাপী গ্যারেজ মালিকরা আমাদের সম্পূর্ণ ওয়ার্কফ্লো সমাধানের সাথে অসাধারণ ফলাফল অর্জন করছেন এবং তাদের ব্যবসা রূপান্তরিত করছেন।"}
             </Typography>
           </motion.div>
         </Box>
@@ -94,7 +110,8 @@ const TestimonialsSection = ({ testimonials }) => {
                       left: 0,
                       right: 0,
                       height: 6,
-                      background: "linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)",
+                      background:
+                        "linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)",
                       opacity: 0.8,
                       transition: "opacity 0.3s ease",
                     },
@@ -104,7 +121,8 @@ const TestimonialsSection = ({ testimonials }) => {
                     <Chip
                       label={testimonial.badge}
                       sx={{
-                        background: "linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)",
+                        background:
+                          "linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)",
                         color: "#ffffff",
                         fontWeight: 700,
                         fontSize: "0.75rem",
@@ -139,7 +157,6 @@ const TestimonialsSection = ({ testimonials }) => {
                       fontSize: "1.1rem",
                       position: "relative",
                       color: alpha("#ffffff", 0.9),
-                     
                     }}
                   >
                     {testimonial.content}
@@ -162,12 +179,18 @@ const TestimonialsSection = ({ testimonials }) => {
                           textAlign: "center",
                         }}
                       >
-                        {testimonial.revenue} Revenue Growth
+                        {testimonial.revenue}{" "}
+                        {language === "ENG"
+                          ? "Revenue Growth"
+                          : "রাজস্ব বৃদ্ধি"}
                       </Typography>
                     </Paper>
                   </Box>
                   <Stack direction="row" spacing={3} alignItems="center">
-                    <motion.div whileHover={{ scale: 1.1, rotate: 5 }} transition={{ duration: 0.3 }}>
+                    <motion.div
+                      whileHover={{ scale: 1.1, rotate: 5 }}
+                      transition={{ duration: 0.3 }}
+                    >
                       <Avatar
                         src={testimonial.avatar}
                         sx={{
@@ -183,7 +206,8 @@ const TestimonialsSection = ({ testimonials }) => {
                         variant="h6"
                         fontWeight="bold"
                         sx={{
-                          background: "linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)",
+                          background:
+                            "linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)",
                           WebkitBackgroundClip: "text",
                           WebkitTextFillColor: "transparent",
                           backgroundClip: "text",
@@ -191,10 +215,16 @@ const TestimonialsSection = ({ testimonials }) => {
                       >
                         {testimonial.name}
                       </Typography>
-                      <Typography variant="body2" sx={{ color: alpha("#ffffff", 0.8), fontWeight: 600 }}>
+                      <Typography
+                        variant="body2"
+                        sx={{ color: alpha("#ffffff", 0.8), fontWeight: 600 }}
+                      >
                         {testimonial.role}
                       </Typography>
-                      <Typography variant="caption" sx={{ color: alpha("#ffffff", 0.6) }}>
+                      <Typography
+                        variant="caption"
+                        sx={{ color: alpha("#ffffff", 0.6) }}
+                      >
                         {testimonial.company}
                       </Typography>
                     </Box>
@@ -206,7 +236,7 @@ const TestimonialsSection = ({ testimonials }) => {
         </Grid>
       </Container>
     </Box>
-  )
-}
+  );
+};
 
-export default TestimonialsSection
+export default TestimonialsSection;

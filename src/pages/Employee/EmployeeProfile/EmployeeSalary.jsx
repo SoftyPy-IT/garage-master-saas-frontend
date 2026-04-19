@@ -7,27 +7,19 @@ import { useGetSalaryForProfileQuery } from "../../../redux/api/salary";
 import {
   Box,
   Card,
-  CardContent,
   Paper,
-  Table,
-  TableBody,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TableCell,
   Typography,
   useTheme,
-  Pagination,
   Grid,
   Chip,
+  LinearProgress,
 } from "@mui/material";
-import { CalendarMonth } from "@mui/icons-material";
+import { CalendarMonth, Payments, History } from "@mui/icons-material";
 import Loading from "../../../components/Loading/Loading";
 import PaymentHistoryModal from "./PaymentHistoryModal.jsx";
 import EmployeeSalaryFilters from "./EmployeeSalaryFilters";
-import EmployeeSalaryTableRow from "./EmployeeSalaryTableRow";
-import EmployeeSalaryEmptyState from "./EmployeeSalaryEmptyState";
 import PartialPaymentModal from "../PartialSalaryPaymentModal.jsx";
+import Table from "../../../components/Table"; // Importing your reusable Table
 
 const EmployeeSalary = ({ id, tenantDomain }) => {
   const theme = useTheme();
@@ -125,6 +117,109 @@ const EmployeeSalary = ({ id, tenantDomain }) => {
     handleCloseModal();
   };
 
+  // Columns definition using the 'render' prop to keep the original design style
+  const columns = [
+    { key: "employeeId", label: "Employee ID" },
+    {
+      key: "month_year",
+      label: "Month of Salary",
+      render: (item) => `${item.month_of_salary} ${item.year_of_salary}`,
+    },
+    { key: "bonus", label: "Bonus" },
+    { key: "total_overtime", label: "Overtime" },
+    { key: "salary_amount", label: "Salary Amount" },
+    { key: "total_payment", label: "Total Payment" },
+    { key: "paid_amount", label: "Paid Amount" },
+    { key: "due_amount", label: "Due Amount" },
+    {
+      key: "payment_date",
+      label: "Payment Date",
+      render: (item) => {
+        const history = item.payment_history || [];
+        if (history.length === 0) return "N/A";
+        const lastPayment = history[history.length - 1];
+        return lastPayment.date || "N/A";
+      },
+    },
+    {
+      key: "progress",
+      label: "Payment Progress",
+      render: (item) => {
+        const percent =
+          item.total_payment > 0
+            ? (item.paid_amount / item.total_payment) * 100
+            : 0;
+        return (
+          <Box sx={{ width: "100%", display: "flex", alignItems: "center" }}>
+            <Box sx={{ width: "100%", mr: 1 }}>
+              <LinearProgress
+                variant="determinate"
+                value={percent}
+                sx={{
+                  height: 10,
+                  borderRadius: 5,
+                  backgroundColor: "rgba(0,0,0,0.1)",
+                  "& .MuiLinearProgress-bar": {
+                    borderRadius: 5,
+                    backgroundColor:
+                      percent === 100 ? "#4caf50" : theme.palette.primary.main,
+                  },
+                }}
+              />
+            </Box>
+            <Box sx={{ minWidth: 35 }}>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                fontWeight="bold"
+              >{`${Math.round(percent)}%`}</Typography>
+            </Box>
+          </Box>
+        );
+      },
+    },
+    {
+      key: "status",
+      label: "Status",
+      render: (item) => (
+        <Chip
+          label={item.payment_status}
+          sx={{
+            fontWeight: "bold",
+            textTransform: "uppercase",
+            fontSize: "0.75rem",
+          }}
+          color={
+            item.payment_status === "Paid"
+              ? "success"
+              : item.payment_status === "Partial"
+                ? "warning"
+                : "default"
+          }
+          variant="outlined"
+        />
+      ),
+    },
+  ];
+
+  // Actions definition
+  const actions = [
+    {
+      key: "pay",
+      icon: Payments,
+      tooltip: "Pay Salary",
+      onClick: handleOpenPaymentModal,
+      color: "#2e7d32", // Custom green matching design
+    },
+    {
+      key: "history",
+      icon: History,
+      tooltip: "Payment History",
+      onClick: handleOpenPaymentHistory,
+      color: "#1565c0", // Custom blue matching design
+    },
+  ];
+
   if (isLoading) {
     return <Loading />;
   }
@@ -169,121 +264,21 @@ const EmployeeSalary = ({ id, tenantDomain }) => {
         onResetFilters={handleResetFilter}
       />
 
-      <Card elevation={4} sx={{ mb: 4, borderRadius: 2, overflow: "auto" }}>
-        <CardContent sx={{ p: 0 }}>
-          <TableContainer
-            component={Paper}
-            elevation={0}
-            sx={{
-              "& .MuiTableCell-root": {
-                padding: "12px",
-                whiteSpace: "nowrap",
-              },
-            }}
-          >
-            <Table sx={{ minWidth: 1400 }}>
-              <TableHead>
-                <TableRow sx={{ backgroundColor: theme.palette.primary.main }}>
-                  <TableCell
-                    sx={{ color: "white", fontWeight: "bold", width: "120px" }}
-                  >
-                    Employee ID
-                  </TableCell>
-                  <TableCell
-                    sx={{ color: "white", fontWeight: "bold", width: "150px" }}
-                  >
-                    Month of Salary
-                  </TableCell>
-                  <TableCell
-                    sx={{ color: "white", fontWeight: "bold", width: "120px" }}
-                  >
-                    Bonus
-                  </TableCell>
-                  <TableCell
-                    sx={{ color: "white", fontWeight: "bold", width: "120px" }}
-                  >
-                    Overtime
-                  </TableCell>
-                  <TableCell
-                    sx={{ color: "white", fontWeight: "bold", width: "120px" }}
-                  >
-                    Salary Amount
-                  </TableCell>
-                  <TableCell
-                    sx={{ color: "white", fontWeight: "bold", width: "120px" }}
-                  >
-                    Total Payment
-                  </TableCell>
-                  <TableCell
-                    sx={{ color: "white", fontWeight: "bold", width: "120px" }}
-                  >
-                    Paid Amount
-                  </TableCell>
-                  <TableCell
-                    sx={{ color: "white", fontWeight: "bold", width: "120px" }}
-                  >
-                    Due Amount
-                  </TableCell>
-                  <TableCell
-                    sx={{ color: "white", fontWeight: "bold", width: "120px" }}
-                  >
-                    Payment Date
-                  </TableCell>
-                  <TableCell
-                    sx={{ color: "white", fontWeight: "bold", width: "150px" }}
-                  >
-                    Payment Progress
-                  </TableCell>
-                  <TableCell
-                    sx={{ color: "white", fontWeight: "bold", width: "120px" }}
-                  >
-                    Status
-                  </TableCell>
-                  <TableCell
-                    sx={{ color: "white", fontWeight: "bold", width: "150px" }}
-                  >
-                    Actions
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {data?.data?.salaries?.length > 0 ? (
-                  data.data.salaries.map((salary) => (
-                    <EmployeeSalaryTableRow
-                      key={salary._id}
-                      salary={salary}
-                      theme={theme}
-                      onOpenPaymentModal={handleOpenPaymentModal}
-                      onOpenPaymentHistory={handleOpenPaymentHistory}
-                    />
-                  ))
-                ) : (
-                  <EmployeeSalaryEmptyState
-                    filterMonth={filterMonth}
-                    filterYear={filterYear}
-                    filterDay={filterDay}
-                    currentYear={currentYear}
-                  />
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </CardContent>
+      <Card elevation={4} sx={{ mb: 4, borderRadius: 2 }}>
+        <Table
+          title="Salary Records"
+          columns={columns}
+          data={data?.data?.salaries || []}
+          actions={actions}
+          loading={isLoading}
+          currentPage={currentPage}
+          totalPages={data?.data?.meta?.totalPages || 1}
+          onPageChange={setCurrentPage}
+          onSearch={() => {}} // Search not applicable for backend list
+          searchPlaceholder="Search..."
+          emptyMessage="No salary records found for the selected filters."
+        />
       </Card>
-
-      {data?.data?.salaries?.length > 0 && (
-        <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
-          <Pagination
-            count={data?.data?.meta?.totalPages}
-            page={currentPage}
-            color="primary"
-            onChange={(_, page) => setCurrentPage(page)}
-            size="large"
-            showFirstButton
-            showLastButton
-          />
-        </Box>
-      )}
 
       {selectedSalary && (
         <PartialPaymentModal

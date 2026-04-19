@@ -33,7 +33,6 @@ export default function StockManagement() {
     isFetching,
   } = useGetAllStocksQuery(queryParams);
   const isLoading = productLoading || isFetching;
-  console.log("stock data check this ", stockData);
 
   const handleOpenStockDetails = () => setOpenStockDetails(true);
   const handleCloseDialogs = () => setOpenStockDetails(false);
@@ -133,19 +132,17 @@ export default function StockManagement() {
 
   const selectedProduct = useMemo(
     () => products.find((p) => p.id === selectedStockId),
-    [selectedStockId, products]
+    [selectedStockId, products],
   );
-
-  console.log("selected product ", selectedProduct);
 
   const summaryStats = useMemo(() => {
     const totalItems = products.reduce(
       (sum, item) => sum + item.currentStock,
-      0
+      0,
     );
     const totalPurchaseValue = products.reduce(
       (sum, item) => sum + item.totalPurchaseValue,
-      0
+      0,
     );
     return {
       totalItems,

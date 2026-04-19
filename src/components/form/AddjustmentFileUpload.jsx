@@ -4,7 +4,7 @@ import { CloudUpload } from "@mui/icons-material";
 import { Box, Typography } from "@mui/material";
 import { useState, useEffect } from "react";
 import { Controller, useFormContext } from "react-hook-form";
-import uploadFile from "../../helpers/uploadFile";
+import uploadFile from "../../helper/uploadFile";
 
 const AddjustmentFileUpload = ({
   name,
@@ -14,7 +14,7 @@ const AddjustmentFileUpload = ({
 }) => {
   const { control, setValue } = useFormContext();
   const [imageUrls, setImageUrls] = useState(
-    defaultValues ? [defaultValues] : []
+    defaultValues ? [defaultValues] : [],
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
