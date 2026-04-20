@@ -1,7 +1,7 @@
 "use client";
 
 import { Add as AddIcon, Visibility } from "@mui/icons-material";
-import { Box, Button, Grid, Paper, Stack, Typography } from "@mui/material";
+import { Box, Button, Grid, Paper, Stack } from "@mui/material";
 import { DeleteIcon, EditIcon } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -181,15 +181,7 @@ export default function ProductList() {
       <ProductHeader />
 
       <Grid container spacing={2} alignItems="center" sx={{ mb: 3 }}>
-        <Grid item xs={12} md={8}>
-          <Typography
-            variant="h5"
-            component="h2"
-            sx={{ fontWeight: 600, color: theme.palette.primary.main }}
-          >
-            Total Products ({data?.data?.meta?.total})
-          </Typography>
-        </Grid>
+        <Grid item xs={12} md={8}></Grid>
 
         <Grid item xs={12} md={4}>
           <Stack
@@ -221,7 +213,7 @@ export default function ProductList() {
       ></Paper>
 
       <Table
-        title="Products List"
+        title={`Products List ${data?.data?.meta?.total || 0}`}
         columns={columns}
         data={products}
         actions={actions}

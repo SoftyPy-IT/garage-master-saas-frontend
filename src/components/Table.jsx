@@ -33,9 +33,7 @@ const Table = ({
     <div className="mt-5 overflow-x-auto">
       <div className="overflow-x-auto">
         <div className="flex flex-wrap items-center justify-between mb-5">
-          <h3 className="mb-3 text-xl md:text-3xl font-bold">
-            {title}: {data.length}
-          </h3>
+          <h3 className="mb-3 text-xl md:text-3xl font-bold">{title}</h3>
           <div className="flex items-center searcList">
             <div className="searchGroup" style={{ minWidth: "200px" }}>
               <input

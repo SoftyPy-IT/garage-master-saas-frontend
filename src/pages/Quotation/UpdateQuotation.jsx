@@ -104,7 +104,6 @@ const UpdateQuotation = () => {
   const [currentMileage, setCurrentMileage] = useState("");
   const [mileageChanged, setMileageChanged] = useState(false);
   const { performActionWithPermission } = usePermissions();
-  console.log("product suggestion this ", productSuggestions);
   const {
     register,
     handleSubmit,
@@ -1011,6 +1010,7 @@ const UpdateQuotation = () => {
   ];
 
   const onSubmit = async (data) => {
+    console.log("raw data check this ", data);
     performActionWithPermission(
       "/dashboard/update-quotation",
       "edit",
@@ -1045,9 +1045,13 @@ const UpdateQuotation = () => {
           };
 
           data.vehicle_model = Number(data.vehicle_model);
-          data.mileage = Number(data.mileage);
 
-          const newMileageValue = Number(data.mileage);
+          const newMileageValue =
+            Number(currentMileage) ||
+            Number(data.mileage) ||
+            Number(specificQuotation?.mileage) ||
+            0;
+          data.mileage = newMileageValue;
           const existingMileageHistory =
             specificQuotation?.vehicle?.mileageHistory || [];
           const updatedMileageHistory = [...existingMileageHistory];
@@ -1075,8 +1079,8 @@ const UpdateQuotation = () => {
             engine_no: data.engine_no,
             vehicle_brand: data.vehicle_brand,
             vehicle_name: data.vehicle_name,
-            mileage: newMileageValue,
-            mileageHistory: updatedMileageHistory,
+            // mileage: newMileageValue,
+            // mileageHistory: updatedMileageHistory,
           };
 
           const quotation = {
@@ -1096,6 +1100,7 @@ const UpdateQuotation = () => {
             net_total: calculateFinalTotal() || specificQuotation.net_total,
             input_data: input_data,
             service_input_data: service_input_data,
+            mileage: newMileageValue, // ← THIS was missing
           };
 
           const values = {
@@ -1105,7 +1110,10 @@ const UpdateQuotation = () => {
             showRoom,
             vehicle,
             quotation,
+            mileage: data.mileage,
           };
+
+          console.log("values console this ", values);
 
           const newValue = {
             id: id,
@@ -1113,23 +1121,24 @@ const UpdateQuotation = () => {
               ...values,
             },
           };
+          console.log("new value check ", newValue);
 
           if (removeButton === "") {
             const res = await updateQuotation(newValue).unwrap();
             if (res.success) {
               setReload(!reload);
               toast.success("Quotation updated successfully");
-
+              console.log("response this ", res);
               // Only navigate if update was successful
-              if (!userTypeFromProfile) {
-                navigate("/dashboard/quotation-list");
-              } else if (userTypeFromProfile === "company") {
-                navigate(`/dashboard/company-profile?id=${userFromProfile}`);
-              } else if (userTypeFromProfile === "customer") {
-                navigate(`/dashboard/customer-profile?id=${userFromProfile}`);
-              } else if (userTypeFromProfile === "showRoom") {
-                navigate(`/dashboard/show-room-profile?id=${userFromProfile}`);
-              }
+              // if (!userTypeFromProfile) {
+              //   navigate("/dashboard/quotation-list");
+              // } else if (userTypeFromProfile === "company") {
+              //   navigate(`/dashboard/company-profile?id=${userFromProfile}`);
+              // } else if (userTypeFromProfile === "customer") {
+              //   navigate(`/dashboard/customer-profile?id=${userFromProfile}`);
+              // } else if (userTypeFromProfile === "showRoom") {
+              //   navigate(`/dashboard/show-room-profile?id=${userFromProfile}`);
+              // }
             }
           }
         } catch (error) {
@@ -1537,32 +1546,83 @@ const UpdateQuotation = () => {
                   />
                 </Grid>
                 <Grid item lg={12} md={12} sm={12} xs={12}>
-                  <TextField
-                    fullWidth
-                    {...register("mileage", {
-                      required: "Mileage is required!",
-                    })}
-                    label="Current Mileage (KM)"
-                    type="number"
-                    focused={!!specificQuotation?.mileage}
-                    defaultValue={specificQuotation?.mileage || ""}
-                    onChange={(e) => {
-                      const newMileage = e.target.value;
-                      setCurrentMileage(newMileage);
-                      setFormValue("mileage", newMileage);
+                  <Autocomplete
+                    freeSolo
+                    options={
+                      specificQuotation?.vehicle?.mileageHistory
+                        ? [...specificQuotation.vehicle.mileageHistory]
+                            .sort((a, b) => new Date(b.date) - new Date(a.date))
+                            .map((entry) => ({
+                              label: `${entry?.mileage} km (${new Date(entry.date).toLocaleDateString()})`,
+                              value: String(entry?.mileage),
+                            }))
+                        : []
+                    }
+                    getOptionLabel={(option) =>
+                      typeof option === "string" ? option : option.label
+                    }
+                    value={
+                      currentMileage !== ""
+                        ? currentMileage
+                        : specificQuotation?.mileage
+                          ? String(specificQuotation?.mileage)
+                          : ""
+                    }
+                    onChange={(_, newValue) => {
+                      // user clicked a suggestion from dropdown
+                      const selected =
+                        typeof newValue === "object" && newValue !== null
+                          ? newValue.value
+                          : newValue;
+                      const val = selected || "";
+                      setCurrentMileage(val);
+                      setFormValue("mileage", val);
                       const lastMileage =
                         specificQuotation?.vehicle?.mileageHistory?.slice(-1)[0]
                           ?.mileage;
-                      if (lastMileage && Number(newMileage) !== lastMileage) {
+                      if (lastMileage && Number(val) !== lastMileage) {
                         setMileageChanged(true);
-                      } else if (!lastMileage && newMileage) {
+                      } else if (!lastMileage && val) {
                         setMileageChanged(true);
                       } else {
                         setMileageChanged(false);
                       }
                     }}
-                    error={!!errors.mileage}
-                    helperText={errors.mileage?.message}
+                    onInputChange={(_, newInputValue, reason) => {
+                      // user typed manually
+                      if (reason === "input") {
+                        setCurrentMileage(newInputValue);
+                        setFormValue("mileage", newInputValue);
+                        const lastMileage =
+                          specificQuotation?.vehicle?.mileageHistory?.slice(
+                            -1,
+                          )[0]?.mileage;
+                        if (
+                          lastMileage &&
+                          Number(newInputValue) !== lastMileage
+                        ) {
+                          setMileageChanged(true);
+                        } else if (!lastMileage && newInputValue) {
+                          setMileageChanged(true);
+                        } else {
+                          setMileageChanged(false);
+                        }
+                      }
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        {...register("mileage", {
+                          required: "Mileage is required!",
+                        })}
+                        fullWidth
+                        label="Current Mileage (KM)"
+                        type="number"
+                        focused={!!specificQuotation?.mileage}
+                        error={!!errors.mileage}
+                        helperText={errors.mileage?.message}
+                      />
+                    )}
                   />
                 </Grid>
                 <Grid item lg={12} md={12} sm={12} xs={12}>

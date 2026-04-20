@@ -66,6 +66,7 @@ const AddQuotation = () => {
       total: "",
     },
   ]);
+  console.log("getDataWithChassisNo ", getDataWithChassisNo);
   const [productSuggestions, setProductSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(0);
@@ -1005,37 +1006,82 @@ const AddQuotation = () => {
                   />
                 </Grid>
                 <Grid item lg={12} md={12} sm={12} xs={12}>
-                  <TextField
-                    fullWidth
-                    {...register("mileage", {
-                      required: "Mileage is required!",
-                    })}
-                    label="Current Mileage (KM)"
-                    type="number"
-                    value={
-                      currentMileage ||
-                      (getDataWithChassisNo?.mileageHistory?.length > 0
-                        ? getDataWithChassisNo.mileageHistory[
-                            getDataWithChassisNo.mileageHistory.length - 1
-                          ].mileage
-                        : getDataWithChassisNo?.mileage || "")
+                  <Autocomplete
+                    freeSolo
+                    options={
+                      getDataWithChassisNo?.mileageHistory
+                        ? [...getDataWithChassisNo.mileageHistory]
+                            .sort((a, b) => new Date(b.date) - new Date(a.date))
+                            .map((entry) => ({
+                              label: `${entry.mileage} km (${new Date(entry.date).toLocaleDateString()})`,
+                              value: String(entry.mileage),
+                            }))
+                        : []
                     }
-                    onChange={(e) => {
-                      const newMileage = e.target.value;
-                      setCurrentMileage(newMileage);
+                    getOptionLabel={(option) =>
+                      typeof option === "string" ? option : option.label
+                    }
+                    value={
+                      currentMileage !== ""
+                        ? currentMileage
+                        : getDataWithChassisNo?.mileageHistory?.length > 0
+                          ? String(
+                              getDataWithChassisNo.mileageHistory[
+                                getDataWithChassisNo.mileageHistory.length - 1
+                              ].mileage,
+                            )
+                          : String(getDataWithChassisNo?.mileage || "")
+                    }
+                    onChange={(_, newValue) => {
+                      // user clicked a suggestion from dropdown
+                      const selected =
+                        typeof newValue === "object" && newValue !== null
+                          ? newValue.value
+                          : newValue;
+                      setCurrentMileage(selected || "");
                       const lastMileage =
                         getDataWithChassisNo?.mileageHistory?.slice(-1)[0]
                           ?.mileage;
-                      if (lastMileage && Number(newMileage) !== lastMileage) {
+                      if (lastMileage && Number(selected) !== lastMileage) {
                         setMileageChanged(true);
-                      } else if (!lastMileage && newMileage) {
+                      } else if (!lastMileage && selected) {
                         setMileageChanged(true);
                       } else {
                         setMileageChanged(false);
                       }
                     }}
-                    error={!!errors.mileage}
-                    helperText={errors.mileage?.message}
+                    onInputChange={(_, newInputValue, reason) => {
+                      // user typed manually
+                      if (reason === "input") {
+                        setCurrentMileage(newInputValue);
+                        const lastMileage =
+                          getDataWithChassisNo?.mileageHistory?.slice(-1)[0]
+                            ?.mileage;
+                        if (
+                          lastMileage &&
+                          Number(newInputValue) !== lastMileage
+                        ) {
+                          setMileageChanged(true);
+                        } else if (!lastMileage && newInputValue) {
+                          setMileageChanged(true);
+                        } else {
+                          setMileageChanged(false);
+                        }
+                      }
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        {...register("mileage", {
+                          required: "Mileage is required!",
+                        })}
+                        fullWidth
+                        label="Current Mileage (KM)"
+                        type="number"
+                        error={!!errors.mileage}
+                        helperText={errors.mileage?.message}
+                      />
+                    )}
                   />
                 </Grid>
                 <Grid item lg={12} md={12} sm={12} xs={12}>
