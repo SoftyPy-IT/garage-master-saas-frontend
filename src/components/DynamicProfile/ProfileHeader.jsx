@@ -32,7 +32,7 @@ const ProfileHeader = ({ profileType, profileData, config }) => {
     },
   ];
 
-  console.log("config check", config);
+  console.log("profileType", profileType);
 
   console.log("profile data check there ", profileData);
 

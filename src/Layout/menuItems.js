@@ -366,8 +366,13 @@ export const getMenuItems = (user, handleLogout) => [
       },
       {
         icon: getIcon("Payments", "mui"),
-        text: "Salary",
-        link: "/dashboard/employee-salary",
+        text: "Add Salary",
+        link: "/dashboard/add-salary",
+      },
+      {
+        icon: getIcon("Payments", "mui"),
+        text: "Salary List",
+        link: "/dashboard/salary-list",
       },
     ],
   },

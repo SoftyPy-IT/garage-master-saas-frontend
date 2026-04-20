@@ -1,12 +1,9 @@
 /* eslint-disable react-refresh/only-export-components */
 /* eslint-disable no-unused-vars */
 
-import { useState } from "react";
-import { useGetAllSalaryQuery } from "../../redux/api/salary";
-import EmployeeSalaryForm from "./EmployeeSalaryForm";
-import EmployeeSalaryListTable from "./EmployeeSalaryListTable";
-import { allMonths } from "../../utils/month";
 import { useAppOptions } from "../../hooks/useAppOptions";
+import { allMonths } from "../../utils/month";
+import EmployeeSalaryForm from "./EmployeeSalaryForm";
 const years = [{ value: "Select Year", label: "Select Year" }];
 for (let year = 2024; year <= 2030; year++) {
   years.push({ value: String(year), label: String(year) });
@@ -15,22 +12,13 @@ for (let year = 2024; year <= 2030; year++) {
 const initialSelectedOption = allMonths[new Date().getMonth()];
 
 const EmployeeSalary = () => {
-  const { tenantDomain, performActionWithPermission } = useAppOptions()
-  const [filterType, setFilterType] = useState(initialSelectedOption);
+  const { tenantDomain, performActionWithPermission } = useAppOptions();
 
-  const {
-    data: getAllSalary,
-  } = useGetAllSalaryQuery({
-    searchTerm: filterType,
-  });
   return (
     <>
-      <EmployeeSalaryForm performActionWithPermission={performActionWithPermission} tenantDomain={tenantDomain} />
-      <EmployeeSalaryListTable performActionWithPermission={performActionWithPermission}
+      <EmployeeSalaryForm
+        performActionWithPermission={performActionWithPermission}
         tenantDomain={tenantDomain}
-        filterType={filterType}
-        setFilterType={setFilterType}
-        getAllSalary={getAllSalary}
       />
     </>
   );

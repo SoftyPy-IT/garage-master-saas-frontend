@@ -57,6 +57,7 @@ import PaymentHistoryModal from "./EmployeeProfile/PaymentHistoryModal";
 import Swal from "sweetalert2";
 import Can from "../../components/Can";
 import PartialPaymentModal from "./PartialSalaryPaymentModal";
+import { Link } from "react-router-dom";
 
 const generateYears = () => {
   const years = [{ value: "", label: "All Years" }];
@@ -68,7 +69,10 @@ const generateYears = () => {
 
 const years = generateYears();
 
-const EnhancedEmployeeSalaryListTable = ({ tenantDomain, performActionWithPermission }) => {
+const EnhancedEmployeeSalaryListTable = ({
+  tenantDomain,
+  performActionWithPermission,
+}) => {
   const theme = useTheme();
   const [filterMonth, setFilterMonth] = useState("");
   const [filterYear, setFilterYear] = useState("");
@@ -209,7 +213,9 @@ const EnhancedEmployeeSalaryListTable = ({ tenantDomain, performActionWithPermis
   };
 
   const handleSalaryDelete = async (id) => {
-    performActionWithPermission('/dashboard/employee-salary', 'delete',
+    performActionWithPermission(
+      "/dashboard/employee-salary",
+      "delete",
       async () => {
         const result = await Swal.fire({
           title: "Are you sure?",
@@ -227,15 +233,16 @@ const EnhancedEmployeeSalaryListTable = ({ tenantDomain, performActionWithPermis
             await Swal.fire(
               "Deleted!",
               "Salary record has been deleted.",
-              "success"
+              "success",
             );
             refetch();
           } catch (error) {
             Swal.fire("Error!", "Failed to delete salary record.", "error");
           }
         }
-      }, "You don't have permission to delete salary record."
-    )
+      },
+      "You don't have permission to delete salary record.",
+    );
   };
 
   if (salaryLoading) {
@@ -276,19 +283,22 @@ const EnhancedEmployeeSalaryListTable = ({ tenantDomain, performActionWithPermis
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   {hasActiveFilters()
-                    ? `${filterMonth || "All Months"} ${filterYear || ""} ${filterDay ? `- Day: ${filterDay.getDate()}` : ""
-                    }`
+                    ? `${filterMonth || "All Months"} ${filterYear || ""} ${
+                        filterDay ? `- Day: ${filterDay.getDate()}` : ""
+                      }`
                     : `${currentMonth} ${currentYear}`}{" "}
                   - Manage partial payments
                 </Typography>
               </Grid>
               <Grid item>
-                <Chip
-                  icon={<CalendarMonth />}
-                  label={`${currentMonth} ${currentYear}`}
-                  color="primary"
-                  variant="outlined"
-                />
+                <Button
+                  component={Link}
+                  to="/dashboard/add-salary"
+                  sx={{ color: "white" }}
+                >
+                  {" "}
+                  Add Salary
+                </Button>
               </Grid>
             </Grid>
           </Paper>
@@ -491,7 +501,7 @@ const EnhancedEmployeeSalaryListTable = ({ tenantDomain, performActionWithPermis
                         const totalPayment = salary.total_payment || 0;
                         const paymentProgress = getPaymentProgress(
                           paidAmount,
-                          totalPayment
+                          totalPayment,
                         );
                         const paymentStatus = getPaymentStatusDisplay(salary);
 
@@ -758,7 +768,10 @@ const EnhancedEmployeeSalaryListTable = ({ tenantDomain, performActionWithPermis
                                 </Tooltip>
 
                                 <Tooltip title="Delete Salary">
-                                  <Can page='/dashboard/employee-salary' action='delete'>
+                                  <Can
+                                    page="/dashboard/employee-salary"
+                                    action="delete"
+                                  >
                                     <IconButton
                                       onClick={() =>
                                         handleSalaryDelete(salary._id)
@@ -766,7 +779,8 @@ const EnhancedEmployeeSalaryListTable = ({ tenantDomain, performActionWithPermis
                                       size="small"
                                       color="error"
                                       sx={{
-                                        bgcolor: theme.palette.error.light + "20",
+                                        bgcolor:
+                                          theme.palette.error.light + "20",
                                         "&:hover": {
                                           bgcolor:
                                             theme.palette.error.light + "40",

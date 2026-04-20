@@ -9,6 +9,7 @@ import UpdateEmployeeSalary from "../../pages/Employee/UpdateEmployeeSalary";
 import EmployeeOvertime from "../../pages/Employee/EmployeeOvertime";
 import CreateEmployeeOverTime from "../../pages/Employee/CreateEmployeeOverTime";
 import RecycledbinEmployeeList from "../../pages/Recyclebin/RecycledbinEmployeeList";
+import SalaryList from "../../pages/Employee/SalaryList";
 
 export const employeeRoutes = [
   {
@@ -38,8 +39,12 @@ export const employeeRoutes = [
     element: <Attendance />,
   },
   {
-    path: "employee-salary",
+    path: "add-salary",
     element: <EmployeeSalary />,
+  },
+  {
+    path: "salary-list",
+    element: <SalaryList />,
   },
   {
     path: "employee-salary-update",

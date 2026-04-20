@@ -274,7 +274,7 @@ const EmployeeSalary = ({ id, tenantDomain }) => {
           currentPage={currentPage}
           totalPages={data?.data?.meta?.totalPages || 1}
           onPageChange={setCurrentPage}
-          onSearch={() => {}} // Search not applicable for backend list
+          onSearch={() => {}}
           searchPlaceholder="Search..."
           emptyMessage="No salary records found for the selected filters."
         />
