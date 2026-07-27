@@ -93,7 +93,7 @@ const PreviewJobCard = () => {
           <div className="headerContainer">
             <div className="mx-auto text-center border-b-[2px] ">
               <div className="mx-auto text-center border-b-[2px] border-[#110255] py-2">
-                <div className="flex flex-col md:flex-row justify-between items-center">
+                <div className="flex gap-x-5 flex-col md:flex-row justify-between items-center">
                   <img
                     className="w-[110px] mb-2 md:mb-0"
                     src={CompanyInfoData?.data?.logo[0]}
