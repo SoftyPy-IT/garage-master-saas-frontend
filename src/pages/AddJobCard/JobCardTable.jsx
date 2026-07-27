@@ -38,6 +38,8 @@ const JobCardTable = ({
       isRecycled,
     });
 
+  console.log('all jobcard ', allJobCards)
+
   useEffect(() => {
     if (search) setFilterType(search);
   }, [search]);
@@ -55,14 +57,29 @@ const JobCardTable = ({
           case "company":
             return item?.company?.company_name || "—";
           case "showRoom":
-            return item?.showRoom?.showroom_name || "—";
+            return item?.showRoom?.showRoom_name || "—";
           default:
             return "—";
         }
       },
     },
 
-    { key: "customer.fullCustomerNum", label: "Mobile No." },
+    {
+      key: "mobile_no",
+      label: "Mobile No.",
+      render: (item) => {
+        switch (item?.user_type) {
+          case "customer":
+            return item?.customer?.fullCustomerNum || "—";
+          case "company":
+            return item?.company?.fullCompanyNum || "—";
+          case "showRoom":
+            return item?.showRoom?.fullCompanyNum || "—";
+          default:
+            return "—";
+        }
+      },
+    },
     {
       key: "vehicle.vehicle_name",
       label: "Vehicle Name",
@@ -106,8 +123,7 @@ const JobCardTable = ({
       icon: Download,
 
       href: (item) =>
-        `${import.meta.env.VITE_API_URL}/jobCards/jobcard/${
-          item._id
+        `${import.meta.env.VITE_API_URL}/jobCards/jobcard/${item._id
         }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
           JSON.stringify(companyProfileData)
         )}`,
