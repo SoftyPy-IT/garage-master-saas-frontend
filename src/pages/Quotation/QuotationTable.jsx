@@ -5,8 +5,8 @@
 import { useEffect, useState } from "react";
 import { FaEye, FaDownload, FaFileInvoice, FaTimes } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Box, Button } from "@mui/material";
-import { ArrowBack } from "@mui/icons-material";
+import { Box, Button, Tooltip } from "@mui/material";
+import { ArrowBack, AccessTime, Undo } from "@mui/icons-material";
 import { DeleteIcon, EditIcon } from "lucide-react";
 import swal from "sweetalert";
 
@@ -23,9 +23,11 @@ import { useCompanyProfileData } from "../../hooks/useCompanyProfileData";
 
 const QuotationTable = ({
   isRecycled,
+  isPendingList = false,
   title = "Quotations",
   status,
   handleMoveAction,
+  handlePendingAction,
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -42,15 +44,21 @@ const QuotationTable = ({
   const [cancelQuotation, { isLoading: cancelLoading }] =
     useCancelQuotationMutation();
 
+  const queryParams = {
+    tenantDomain,
+    limit,
+    page: currentPage,
+    searchTerm: filterType,
+    isRecycled,
+    status,
+  };
+
+  if (!isRecycled && status === undefined) {
+    queryParams.isPending = isPendingList ? "true" : "false";
+  }
+
   const { data: allQuotations, isLoading: quotationLoading } =
-    useGetAllQuotationsQuery({
-      tenantDomain,
-      limit,
-      page: currentPage,
-      searchTerm: filterType,
-      isRecycled,
-      status,
-    });
+    useGetAllQuotationsQuery(queryParams);
 
   const handleCancel = (id) => {
     swal({
@@ -184,6 +192,23 @@ const QuotationTable = ({
         ]
       : []),
 
+    ...(!isRecycled && status === undefined
+      ? [
+          {
+            key: "pending",
+            icon: isPendingList ? Undo : AccessTime,
+            color: "#fff",
+            label: isPendingList
+              ? "Restore to Quotation List"
+              : "Move to Pending",
+            onClick: (d) => handlePendingAction?.(d._id),
+            tooltip: isPendingList
+              ? "Restore to Quotation List"
+              : "Move to Pending",
+          },
+        ]
+      : []),
+
     {
       key: "delete",
       icon: DeleteIcon,
@@ -210,7 +235,19 @@ const QuotationTable = ({
     { label: title },
   ];
 
-  const handleBack = () => navigate(-1);
+  const showPendingListButton = !isRecycled && !isPendingList && status === undefined;
+
+  const handleBack = () => {
+    if (isPendingList) {
+      navigate("/dashboard/quotation-list");
+      return;
+    }
+    navigate(-1);
+  };
+
+  const handleGoToPendingList = () => {
+    navigate("/dashboard/pending-quotation");
+  };
 
   const externalHooks = {
     tenantDomain,
@@ -223,16 +260,31 @@ const QuotationTable = ({
 
   return (
     <Box sx={wrapBoxStyle}>
-      <Box display="flex" justifyContent="space-between">
+      <Box display="flex" justifyContent="space-between" alignItems="center">
         <Breadcrumb items={breadcrumbItems} />
-        <Button
-          variant="outlined"
-          startIcon={<ArrowBack />}
-          onClick={handleBack}
-          sx={{ borderRadius: 5 }}
-        >
-          Back
-        </Button>
+        <Box display="flex" gap={1}>
+          {showPendingListButton && (
+            <Tooltip title="Pending Quotation List">
+              <Button
+                variant="contained"
+                color="warning"
+                startIcon={<AccessTime />}
+                onClick={handleGoToPendingList}
+                sx={{ borderRadius: 5 }}
+              >
+                Pending Quotations
+              </Button>
+            </Tooltip>
+          )}
+          <Button
+            variant="outlined"
+            startIcon={<ArrowBack />}
+            onClick={handleBack}
+            sx={{ borderRadius: 5 }}
+          >
+            Back
+          </Button>
+        </Box>
       </Box>
 
       <Table

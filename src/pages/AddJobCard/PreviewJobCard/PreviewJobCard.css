@@ -19,7 +19,7 @@
 	border: 1px solid black;
 	border-radius: 5px;
 	padding: 3px;
-	font-size: 12px;
+	font-size: 13px;
 	color: black;
 }
 
@@ -33,14 +33,40 @@
 
 .jobCardPrint {
 	max-width: 8.27in;
+	width: 100%;
 	margin: 0 auto;
 	background-color: #fff;
-	height: 10.5in;
+	height: 11.69in;
+	max-height: 11.69in;
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
-	/* padding: 15px 27px; */
-	height: 100%;
+	box-sizing: border-box;
+	overflow: hidden;
+	padding: 0.55in 1.5rem;
+}
+
+.headerContainer {
+	flex: 1 1 auto;
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+	overflow: hidden;
+}
+
+.jobCardBody {
+	flex: 1 1 auto;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	min-height: 0;
+}
+
+.jobCardFooter {
+	flex-shrink: 0;
+	text-align: center;
+	margin: 0;
+	padding: 0;
 }
 
 .carImgWrap {
@@ -50,41 +76,46 @@
 	padding: 5px;
 	border-radius: 5px;
 	margin-top: 19px;
-
+	flex-shrink: 0;
 }
 
 .carImgWrap img {
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
+	display: block;
+}
+
+.rightSide {
+	width: 270px;
+	flex-shrink: 0;
 }
 
 .leftSide label {
 	display: block;
-	margin-bottom: 5px;
+	margin-bottom: 4px;
 }
- 
+
 .leftSide textarea,
 .rightSide textarea,
 .fullTextArea textarea {
-	
 	border: 1px solid black;
 	border-radius: 5px;
-	padding-left: 5px;
-	padding-top: 5px;
+	padding: 5px;
 	resize: none;
 	height: 102px;
-	font-size: 13px;
+	font-size: 12.5px;
+	line-height: 1.25;
 }
 
 .rightSide .note {
-	height: 50px;
+	height: 56px;
 	width: 100%;
 }
 
 .fullTextArea textarea {
 	width: 100%;
-
+	height: 98px;
 }
 
 .leftSide textarea:focus,
@@ -92,30 +123,31 @@
 	outline: none;
 }
 
-
 .inputGroup input,
 .inputGroup2 input,
 .inputGroup p {
 	border: 1px solid black;
 	margin-right: 5px;
 	border-radius: 5px;
-	width: 130px;
+	width: 126px;
 	margin-bottom: 3px;
 	color: black;
-	font-size: 10px;
-	padding: 1px 0px 1px 3px;
+	font-size: 11.5px;
+	padding: 2px 0 2px 3px;
+	box-sizing: border-box;
+	max-width: 100%;
 }
 
 .inputGroup p {
-	margin-top: 5px
+	margin-top: 5px;
 }
 
 .inputGroup2 input {
-	width: 175px !important;
+	width: 168px !important;
 }
 
 .inputGroup input::placeholder {
-	font-size: 12px;
+	font-size: 11px;
 	color: black;
 }
 
@@ -124,30 +156,60 @@
 .rightSide label,
 .inputGroup2 label,
 .fullTextArea label {
-	font-size: 11px;
+	font-size: 12px;
 	text-transform: capitalize;
 	font-weight: bold;
 }
 
 .previwCard2 {
-	font-size: .6rem;
+	font-size: 0.75rem;
 	width: 10rem;
 	text-transform: uppercase;
-	margin: 0px;
+	margin: 0;
 }
 
 .customerSignatureWrap2 {
 	padding: 0 8px;
 }
 
+.jobCardPrint .trustAutoTitle {
+	font-size: 36px;
+	line-height: 1.15;
+}
 
-@media only screen and (max-width:1024px) {
+.jobCardPrint .text-lg,
+.jobCardPrint .md\:text-xl {
+	font-size: 1.3rem;
+	line-height: 1.6rem;
+}
+
+.jobCardPrint .text-\[12px\] {
+	font-size: 14px;
+	line-height: 17px;
+}
+
+.jobCardPrint .text-xs {
+	font-size: 13px;
+	line-height: 17px;
+}
+
+.jobCardPrint h6 {
+	font-size: 1rem;
+	margin-bottom: 0.4rem;
+}
+
+.jobCardPrint .w-full.md\:w-\[445px\] {
+	width: 445px;
+	max-width: 445px;
+}
+
+@media only screen and (max-width: 1024px) {
 	.trustAutoTitle {
 		font-size: 32px;
 	}
 
 	.jobCardContactInfo {
-		font-size: 12px;
+		font-size: 13px;
 	}
 }
 
@@ -155,260 +217,286 @@
 	.trustAutoTitle {
 		font-size: 25px;
 	}
+
+	.jobCardPrint {
+		height: auto;
+		max-height: none;
+		overflow: visible;
+	}
+
+	.rightSide {
+		width: 100%;
+	}
+
+	.carImgWrap {
+		width: 100%;
+		max-width: 270px;
+	}
 }
 
-
 @media print {
-  @page {
-    size: A4 portrait;
-    margin: 0;
-  }
+	@page {
+		size: A4 portrait;
+		margin: 0;
+	}
 
-  html,
-  body {
-    margin: 0 !important;
-    padding: 0 !important;
-    background: #fff !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
+	html,
+	body {
+		margin: 0 !important;
+		padding: 0 !important;
+		background: #fff !important;
+		-webkit-print-color-adjust: exact !important;
+		print-color-adjust: exact !important;
+	}
 
-  .jobCardViewWrap {
-    background: #fff !important;
-    padding: 0 !important;
-    margin: 0 !important;
-  }
+	.jobCardViewWrap {
+		background: #fff !important;
+		padding: 0 !important;
+		margin: 0 !important;
+	}
 
-  .printBtnGroup {
-    display: none !important;
-  }
+	.printBtnGroup {
+		display: none !important;
+	}
 
-  .jobCardPrint {
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: space-between !important;
-    width: 8.27in !important;
-    max-width: 8.27in !important;
-    min-height: 10.5in !important;
-    height: 10.5in !important;
-    margin: 0 auto !important;
-    padding: 2.5rem 2rem !important;
-    background: #fff !important;
-    box-shadow: none !important;
-    transform: none !important;
-    zoom: 1 !important;
-    box-sizing: border-box !important;
-  }
+	.jobCardPrint {
+		display: flex !important;
+		flex-direction: column !important;
+		justify-content: space-between !important;
+		width: 8.27in !important;
+		max-width: 8.27in !important;
+		height: 11.69in !important;
+		max-height: 11.69in !important;
+		min-height: 11.69in !important;
+		margin: 0 auto !important;
+		padding: 0.55in 1.5rem !important;
+		background: #fff !important;
+		box-shadow: none !important;
+		box-sizing: border-box !important;
+		overflow: hidden !important;
+		page-break-inside: avoid !important;
+		break-inside: avoid !important;
+		-webkit-print-color-adjust: exact !important;
+		print-color-adjust: exact !important;
+	}
 
-  .headerContainer {
-    flex: 1 1 auto !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: flex-start !important;
-    height: auto !important;
-    gap: 0 !important;
-  }
+	.headerContainer {
+		flex: 1 1 auto !important;
+		display: flex !important;
+		flex-direction: column !important;
+		justify-content: flex-start !important;
+		min-height: 0 !important;
+		overflow: hidden !important;
+		page-break-inside: avoid !important;
+		break-inside: avoid !important;
+	}
 
-  /* Footer fixed at bottom — gap only between content block and footer */
-  .jobCardPrint > div:last-child {
-    flex-shrink: 0 !important;
-    margin-top: 16px !important;
-  }
+	.jobCardBody {
+		flex: 1 1 auto !important;
+		display: flex !important;
+		flex-direction: column !important;
+		justify-content: space-between !important;
+		min-height: 0 !important;
+	}
 
-  /* Force desktop (md) layout — same as screen view */
-  .jobCardPrint .flex-col.md\:flex-row {
-    flex-direction: row !important;
-  }
+	.jobCardFooter {
+		flex-shrink: 0 !important;
+		margin: 0 !important;
+		padding: 0 !important;
+		text-align: center !important;
+	}
 
-  .jobCardPrint .hidden.md\:flex {
-    display: flex !important;
-  }
+	.jobCardPrint .md\:hidden {
+		display: none !important;
+	}
 
-  .jobCardPrint .hidden.md\:block {
-    display: block !important;
-  }
+	.jobCardPrint .hidden.md\:flex {
+		display: flex !important;
+	}
 
-  .jobCardPrint .md\:hidden {
-    display: none !important;
-  }
+	.jobCardPrint .hidden.md\:block {
+		display: block !important;
+	}
 
-  .jobCardPrint .grid.md\:grid-cols-3 {
-    display: grid !important;
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  }
+	.jobCardPrint .flex-col.md\:flex-row {
+		flex-direction: row !important;
+	}
 
-  .jobCardPrint .flex-col.md\:flex-row.md\:items-center {
-    flex-direction: row !important;
-    align-items: center !important;
-  }
+	.jobCardPrint .flex-col.md\:flex-row.md\:items-center {
+		flex-direction: row !important;
+		align-items: center !important;
+	}
 
-  /* Slightly larger print fonts */
-  .jobCardPrint .trustAutoTitle {
-    font-family: 'Merriweather', serif !important;
-    font-size: 32px !important;
-    font-weight: 900 !important;
-    color: #4671A1 !important;
-    line-height: 1.2 !important;
-  }
+	.jobCardPrint .grid.md\:grid-cols-3 {
+		display: grid !important;
+		grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+	}
 
-  .jobCardPrint .text-lg,
-  .jobCardPrint .md\:text-xl {
-    font-size: 1.4rem !important;
-    line-height: 1.85rem !important;
-  }
+	.jobCardPrint .w-full.md\:w-\[445px\] {
+		width: 445px !important;
+		max-width: 445px !important;
+	}
 
-  .jobCardPrint .text-\[12px\] {
-    font-size: 14px !important;
-    line-height: 18px !important;
-  }
+	.jobCardPrint .trustAutoTitle {
+		font-size: 36px !important;
+		line-height: 1.15 !important;
+	}
 
-  .jobCardPrint .text-xs {
-    font-size: 13px !important;
-    line-height: 18px !important;
-  }
+	.jobCardPrint .text-lg,
+	.jobCardPrint .md\:text-xl {
+		font-size: 1.3rem !important;
+		line-height: 1.6rem !important;
+	}
 
-  .jobCardPrint .mb-2 {
-    margin-bottom: 0.5rem !important;
-  }
+	.jobCardPrint .text-\[12px\] {
+		font-size: 14px !important;
+		line-height: 17px !important;
+	}
 
-  .jobCardPrint .my-2 {
-    margin-top: 0.5rem !important;
-    margin-bottom: 0.5rem !important;
-  }
+	.jobCardPrint .text-xs {
+		font-size: 13px !important;
+		line-height: 17px !important;
+	}
 
-  .jobCardPrint .mt-3 {
-    margin-top: 0.75rem !important;
-  }
+	.jobCardPrint h6 {
+		font-size: 1rem !important;
+	}
 
-  .jobCardPrint .mt-2 {
-    margin-top: 0.5rem !important;
-  }
+	.jobCardPrint .inputGroup label,
+	.jobCardPrint .leftSide label,
+	.jobCardPrint .rightSide label,
+	.jobCardPrint .inputGroup2 label,
+	.jobCardPrint .fullTextArea label {
+		font-size: 12px !important;
+	}
 
-  .jobCardPrint img.w-\[110px\] {
-    width: 110px !important;
-    height: auto !important;
-    margin-bottom: 0 !important;
-  }
+	.jobCardPrint .inputGroup input,
+	.jobCardPrint .inputGroup2 input {
+		font-size: 11px !important;
+		padding: 2px 0 2px 3px !important;
+		box-sizing: border-box !important;
+		max-width: 100% !important;
+	}
 
-  .jobCardPrint .w-\[120px\],
-  .jobCardPrint .md\:w-\[150px\] {
-    width: 150px !important;
-  }
+	.jobCardPrint .inputGroup input {
+		width: 126px !important;
+	}
 
-  .jobCardPrint .vehicleCard.previwCard2 {
-    font-size: 0.90rem !important;
-    width: 10rem !important;
-    text-transform: uppercase !important;
-    margin: 0 !important;
-    box-shadow: #42a1da 0px 3px 2px 3px !important;
-    padding: 5px 10px !important;
-    border-radius: 8px !important;
-    font-weight: bold !important;
-    text-align: center !important;
-  }
+	.jobCardPrint .inputGroup2 input {
+		width: 168px !important;
+	}
 
-  .jobCardPrint .inputGroup label,
-  .jobCardPrint .leftSide label,
-  .jobCardPrint .rightSide label,
-  .jobCardPrint .inputGroup2 label,
-  .jobCardPrint .fullTextArea label {
-    font-size: 12px !important;
-    font-weight: bold !important;
-    text-transform: capitalize !important;
-  }
+	.jobCardPrint .leftSide textarea,
+	.jobCardPrint .rightSide textarea,
+	.jobCardPrint .fullTextArea textarea {
+		font-size: 12.5px !important;
+		line-height: 1.3 !important;
+		padding: 4px !important;
+		box-sizing: border-box !important;
+	}
 
-  .jobCardPrint .inputGroup input,
-  .jobCardPrint .inputGroup2 input {
-    width: 130px !important;
-    font-size: 12px !important;
-    padding: 2px 0 2px 4px !important;
-    margin-right: 5px !important;
-    margin-bottom: 4px !important;
-    min-height: 22px !important;
-    line-height: normal !important;
-    border: 1px solid #000 !important;
-    border-radius: 5px !important;
-    color: #000 !important;
-    background: #fff !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
+	.jobCardPrint .leftSide textarea {
+		height: 102px !important;
+		min-height: 102px !important;
+		max-height: 102px !important;
+	}
 
-  .jobCardPrint .inputGroup2 input {
-    width: 175px !important;
-  }
+	.jobCardPrint .fullTextArea textarea {
+		height: 98px !important;
+		min-height: 98px !important;
+		max-height: 98px !important;
+	}
 
-  .jobCardPrint .leftSide textarea,
-  .jobCardPrint .rightSide textarea,
-  .jobCardPrint .fullTextArea textarea {
-    border: 1px solid #000 !important;
-    border-radius: 5px !important;
-    padding: 6px !important;
-    font-size: 14px !important;
-    line-height: 1.35 !important;
-    color: #000 !important;
-    background: #fff !important;
-    resize: none !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
+	.jobCardPrint .rightSide .note {
+		height: 56px !important;
+		min-height: 56px !important;
+		max-height: 56px !important;
+	}
 
-  .jobCardPrint .fullTextArea textarea {
-    width: 100% !important;
-    height: 110px !important;
-    min-height: 110px !important;
-  }
+	.jobCardPrint .rightSide {
+		width: 270px !important;
+		flex-shrink: 0 !important;
+	}
 
-  .jobCardPrint .leftSide textarea {
-    height: 110px !important;
-    min-height: 110px !important;
-  }
+	.jobCardPrint .carImgWrap {
+		width: 270px !important;
+		height: 290px !important;
+		min-width: 270px !important;
+		min-height: 290px !important;
+		max-width: 270px !important;
+		max-height: 290px !important;
+		margin-top: 19px !important;
+		padding: 5px !important;
+		border: 1px solid #000 !important;
+		border-radius: 5px !important;
+		page-break-inside: avoid !important;
+		break-inside: avoid !important;
+		flex-shrink: 0 !important;
+	}
 
-  .jobCardPrint .w-full.md\:w-\[445px\] {
-    width: 445px !important;
-    max-width: 445px !important;
-    min-width: 445px !important;
-  }
+	.jobCardPrint .carImgWrap img {
+		width: 100% !important;
+		height: 100% !important;
+		object-fit: cover !important;
+		display: block !important;
+	}
 
-  .jobCardPrint .rightSide .note {
-    height: 56px !important;
-    min-height: 56px !important;
-    width: 100% !important;
-  }
+	.jobCardPrint img.w-\[110px\] {
+		width: 110px !important;
+		height: auto !important;
+		margin-bottom: 0 !important;
+	}
 
-  .jobCardPrint .carImgWrap {
-    width: 270px !important;
-    height: 290px !important;
-    min-width: 270px !important;
-    min-height: 290px !important;
-    margin-top: 19px !important;
-    padding: 5px !important;
-    border: 1px solid #000 !important;
-    border-radius: 5px !important;
-    page-break-inside: avoid;
-  }
+	.jobCardPrint .w-\[120px\],
+	.jobCardPrint .md\:w-\[150px\] {
+		width: 150px !important;
+	}
 
-  .jobCardPrint .carImgWrap img {
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: cover !important;
-  }
+	.jobCardPrint .border-\[\#110255\] {
+		border-color: #110255 !important;
+	}
 
-  .jobCardPrint .border-\[\#110255\] {
-    border-color: #110255 !important;
-  }
+	.jobCardPrint .trustAutoTitle,
+	.jobCardPrint .text-\[\#4671A1\] {
+		color: #4671A1 !important;
+	}
 
-  .jobCardPrint h6 {
-    font-size: 1.1rem !important;
-    font-weight: 700 !important;
-  }
+	.jobCardPrint .vehicleCard.previwCard2 {
+		font-size: 0.75rem !important;
+		box-shadow: #42a1da 0px 3px 2px 3px !important;
+		-webkit-print-color-adjust: exact !important;
+		print-color-adjust: exact !important;
+	}
 
-  /* Keep inner sections tight — no extra gaps inside content */
-  .jobCardPrint .headerContainer > div > div {
-    gap: 0 !important;
-  }
+	.jobCardPrint input,
+	.jobCardPrint textarea {
+		border: 1px solid #000 !important;
+		background: #fff !important;
+		color: #000 !important;
+		-webkit-text-fill-color: #000 !important;
+		opacity: 1 !important;
+		-webkit-print-color-adjust: exact !important;
+		print-color-adjust: exact !important;
+	}
 
-  .jobCardPrint .justify-between {
-    justify-content: space-between !important;
-  }
+	.jobCardPrint .justify-between {
+		justify-content: space-between !important;
+	}
+
+	.jobCardPrint .my-2 {
+		margin-top: 0.35rem !important;
+		margin-bottom: 0.35rem !important;
+	}
+
+	.jobCardPrint .mt-2 {
+		margin-top: 0.35rem !important;
+	}
+
+	.jobCardPrint .mt-3 {
+		margin-top: 0.5rem !important;
+	}
+
+	.jobCardPrint .mb-2 {
+		margin-bottom: 0.35rem !important;
+	}
 }

@@ -19,6 +19,7 @@ const quotationApi = baseApi.injectEndpoints({
         searchTerm,
         isRecycled,
         status,
+        isPending,
       }) => ({
         url: `/quotations`,
         method: "GET",
@@ -30,6 +31,7 @@ const quotationApi = baseApi.injectEndpoints({
           searchTerm,
           isRecycled,
           status,
+          isPending,
         },
       }),
       providesTags: ["quotation"],
@@ -105,6 +107,22 @@ const quotationApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["quotation"],
     }),
+    moveToPendingQuotation: builder.mutation({
+      query: ({ tenantDomain, id }) => ({
+        url: `/quotations/pending/${id}`,
+        method: "PATCH",
+        params: { tenantDomain },
+      }),
+      invalidatesTags: ["quotation"],
+    }),
+    restoreFromPendingQuotation: builder.mutation({
+      query: ({ tenantDomain, id }) => ({
+        url: `/quotations/restore-pending/${id}`,
+        method: "PATCH",
+        params: { tenantDomain },
+      }),
+      invalidatesTags: ["quotation"],
+    }),
     cancelQuotation: builder.mutation({
       query: ({ id, tenantDomain }) => ({
         url: `quotations/${id}/cancel`,
@@ -126,6 +144,8 @@ export const {
   useRemoveQuotationMutation,
   useMoveRecycledQuotationMutation,
   useRestoreFromRecycledQuotationMutation,
+  useMoveToPendingQuotationMutation,
+  useRestoreFromPendingQuotationMutation,
   usePermanantlyDeleteQuotationMutation,
   useCancelQuotationMutation,
 } = quotationApi;

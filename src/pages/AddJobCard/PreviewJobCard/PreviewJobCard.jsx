@@ -41,8 +41,20 @@ const PreviewJobCard = () => {
         height: 100%;
         margin: 0 !important;
         padding: 0 !important;
+        background: #fff !important;
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
+      }
+      .jobCardPrint {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+        height: 11.69in !important;
+        max-height: 11.69in !important;
+        overflow: hidden !important;
+      }
+      input, textarea {
+        -webkit-text-fill-color: #000 !important;
+        opacity: 1 !important;
       }
     `,
   });
@@ -89,7 +101,7 @@ const PreviewJobCard = () => {
   return (
     <main className="jobCardViewWrap">
       <div ref={componentRef}>
-        <div className="jobCardPrint flex flex-col justify-between px-2 md:px-8 py-2 md:py-10">
+        <div className="jobCardPrint">
           <div className="headerContainer">
             <div className="mx-auto text-center border-b-[2px] ">
               <div className="mx-auto text-center border-b-[2px] border-[#110255] py-2">
@@ -120,7 +132,7 @@ const PreviewJobCard = () => {
               </div>
             </div>
 
-            <div>
+            <div className="jobCardBody">
               <div className="md:hidden flex justify-center items-center my-3">
                 <div className="vehicleCard previwCard2">Vehicle Job Card </div>
               </div>
@@ -412,7 +424,6 @@ const PreviewJobCard = () => {
                   </div>
                 </div>
               </div>
-            </div>
 
             <div className="flex flex-col md:flex-row md:items-center justify-between inputGroup2">
               <div>
@@ -453,10 +464,11 @@ const PreviewJobCard = () => {
                 />
               </div>
             </div>
+            </div>
           </div>
 
-          <div>
-            <div className="text-center  mt-3">
+          <div className="jobCardFooter">
+            <div className="text-center">
               <p className="text-xs">
                 <b>Office: </b>
                 {CompanyInfoData?.data?.address || "N/A"}

@@ -87,6 +87,12 @@ export const getMenuItems = (user, handleLogout) => [
         text: "Quotation List",
         link: "/dashboard/quotation-list",
       },
+      {
+        icon: getIcon("AccessTime", "mui", 24),
+        text: "Pending Quotation List",
+        link: "/dashboard/pending-quotation",
+      },
+
     ],
   },
   {

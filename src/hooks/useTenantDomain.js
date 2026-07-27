@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 export function getTenantDomain(hostname) {
   if (!hostname) return "";
@@ -7,7 +7,6 @@ export function getTenantDomain(hostname) {
   if (hostname.includes("localhost")) {
     const hostWithoutPort = hostname.split(":")[0];
     const parts = hostWithoutPort.split(".");
-    // Remove 'localhost' part (last part)
     return parts.slice(0, parts.length - 1).join(".");
   }
 
@@ -15,15 +14,12 @@ export function getTenantDomain(hostname) {
 }
 
 export function useTenantDomain() {
-  const [tenantDomain, setTenantDomain] = useState("");
-
-  useEffect(() => {
+  const [tenantDomain] = useState(() => {
     if (typeof window !== "undefined") {
-      const hostname = window.location.hostname;
-      const tenant = getTenantDomain(hostname);
-      setTenantDomain(tenant);
+      return getTenantDomain(window.location.hostname);
     }
-  }, []);
+    return "";
+  });
 
   return { tenantDomain };
-}
+};
