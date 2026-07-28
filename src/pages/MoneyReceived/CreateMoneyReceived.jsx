@@ -25,6 +25,11 @@ import { useCreateMoneyReceiptMutation } from "../../redux/api/money-receipt";
 import { useGetSingleJobCardWithJobNoQuery } from "../../redux/api/jobCard";
 import MoneyReceiptTable from "./MoneyReceiptTable";
 import Can from "../../components/Can";
+import {
+  getReturnTo,
+  navigateAfterSave,
+  navigateWithReturnTo,
+} from "../../utils/profileNavigation";
 
 const formatBangladeshiNumber = (num) => {
   if (!num) return "";
@@ -364,10 +369,16 @@ const CreateMoneyReceived = () => {
           if (response.success) {
             toast.success(response.message);
             if (preview === "preview") {
-              navigate(`/dashboard/money-receipt-view?id=${response?.data?._id}`);
+              navigateWithReturnTo(
+                navigate,
+                `/dashboard/money-receipt-view?id=${response?.data?._id}`,
+                getReturnTo(location),
+              );
               setPreview("");
             } else {
-              navigate("/dashboard/money-receipt-list");
+              navigateAfterSave(navigate, location, {
+                defaultPath: "/dashboard/money-receipt-list",
+              });
               setPreview("");
             }
           }

@@ -11,7 +11,7 @@ import {
   FaFileInvoice,
   FaDownload,
 } from "react-icons/fa";
-import { Link, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 import { toast } from "react-toastify";
 import {
@@ -21,6 +21,12 @@ import {
 import Table from "../../../components/Table";
 import { Button } from "@mui/material";
 import { purchaseBtn } from "../../../utils/customStyle";
+import {
+  buildViewUrl,
+  getReturnPath,
+  navigateWithReturnTo,
+  withReturnTo,
+} from "../../../utils/profileNavigation";
 
 const CustomerQuotationList = ({
   id,
@@ -31,9 +37,11 @@ const CustomerQuotationList = ({
 }) => {
   const [filterType, setFilterType] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const returnTo = getReturnPath(location);
   const limit = 10;
 
-  // Fetch quotations
   const { data: allQuotations, isLoading: quotationLoading } =
     useGetAllQuotationsQuery({
       tenantDomain,
@@ -79,6 +87,14 @@ const CustomerQuotationList = ({
     toast.error(deleteError?.message);
   }
 
+  const handleCreateQuotation = () => {
+    navigateWithReturnTo(
+      navigate,
+      `/dashboard/create-quotation?id=${id}`,
+      returnTo,
+    );
+  };
+
   const columns = [
     { key: "index", label: "SL No", type: "index" },
     { key: "job_no", label: "Quotation No." },
@@ -99,7 +115,6 @@ const CustomerQuotationList = ({
           ? d.vehicle.map((v) => v.vehicle_name || "—").join(", ")
           : d.vehicle?.vehicle_name || "N/A",
     },
-
     {
       key: "car_no",
       label: "Vehicle Reg No ",
@@ -142,16 +157,22 @@ const CustomerQuotationList = ({
       icon: FaEye,
       tooltip: "Preview",
       color: "#fff",
-      onClick: (item, { navigate }) =>
-        navigate(`/dashboard/quotation-view?id=${item._id}`),
+      onClick: (item, { navigate: nav }) =>
+        nav(
+          buildViewUrl("/dashboard/quotation-view", item._id, user_type, id),
+          { state: withReturnTo(returnTo) },
+        ),
     },
     {
       key: "create-invoice",
       icon: FaFileInvoice,
       color: "#fff",
       tooltip: "Create Invoice",
-      href: (item) =>
-        `/dashboard/create-invoice?order_no=${item.job_no}&id=${item._id}`,
+      onClick: (item, { navigate: nav }) =>
+        nav(
+          `/dashboard/create-invoice?order_no=${item.job_no}&id=${item._id}`,
+          { state: withReturnTo(returnTo) },
+        ),
     },
     {
       key: "download",
@@ -173,6 +194,7 @@ const CustomerQuotationList = ({
       tooltip: "Edit Quotation",
       link: (item) =>
         `/dashboard/update-quotation?id=${item._id}&user_type=${user_type}&user=${id}`,
+      getState: () => withReturnTo(returnTo),
     },
     {
       key: "delete",
@@ -186,11 +208,7 @@ const CustomerQuotationList = ({
 
   return (
     <div className="mb-24 mt-10 w-full">
-      <Button
-        sx={purchaseBtn}
-        component={Link}
-        to={`/dashboard/create-quotation?id=${id}`}
-      >
+      <Button sx={purchaseBtn} onClick={handleCreateQuotation}>
         Create Quotation <HiOutlinePlus size={20} />
       </Button>
 
@@ -215,33 +233,18 @@ const CustomerQuotationList = ({
               No Quotations Found
             </h2>
             <p className="text-xl text-gray-600 mb-6 max-w-md">
-              Start creating quotations to streamline your garage's pricing
+              Start creating quotations to streamline your garage&apos;s pricing
               process.
             </p>
-            <Link
-              to={`/dashboard/create-quotation?id=${id}`}
+            <button
+              type="button"
+              onClick={handleCreateQuotation}
               className="group relative inline-flex items-center overflow-hidden rounded-full bg-blue-600 px-8 py-3 text-white focus:outline-none focus:ring active:bg-blue-500 hover:bg-blue-700 transition duration-300"
             >
-              <span className="absolute right-0 translate-x-full transition-transform group-hover:-translate-x-4">
-                <svg
-                  className="h-5 w-5"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M12 4v16m8-8H4"
-                  />
-                </svg>
-              </span>
               <span className="text-sm font-medium transition-all group-hover:mr-4">
                 Create Your First Quotation
               </span>
-            </Link>
+            </button>
           </div>
         }
       />

@@ -40,6 +40,11 @@ import { useGetCompanyProfileQuery } from "../../redux/api/companyProfile";
 import Loading from "../../components/Loading/Loading";
 import Can from "../../components/Can";
 import {
+  getReturnTo,
+  navigateAfterSave,
+  navigateWithReturnTo,
+} from "../../utils/profileNavigation";
+import {
   useCreateJobCardMutation,
   useGetAllJobCardsQuery,
   useGetUserDetailsForJobCardQuery,
@@ -440,20 +445,32 @@ const AddJobCard = () => {
           if (res.success) {
             toast.success(res?.message);
             if (clickControl === "preview") {
-              navigate(`/dashboard/preview?id=${res?.data?._id}`);
+              navigateWithReturnTo(
+                navigate,
+                `/dashboard/preview?id=${res?.data?._id}`,
+                getReturnTo(location),
+              );
             }
             if (clickControl === "quotation") {
-              navigate(
-                `/dashboard/create-quotation?order_no=${res?.data?.job_no}`
+              navigateWithReturnTo(
+                navigate,
+                `/dashboard/create-quotation?order_no=${res?.data?.job_no}`,
+                getReturnTo(location),
               );
             }
             if (clickControl === "invoice") {
-              navigate(
-                `/dashboard/create-invoice?order_no=${res?.data?.job_no}`
+              navigateWithReturnTo(
+                navigate,
+                `/dashboard/create-invoice?order_no=${res?.data?.job_no}`,
+                getReturnTo(location),
               );
             }
             if (clickControl === null) {
-              navigate("/dashboard/jobcard-list");
+              navigateAfterSave(navigate, location, {
+                userType: user,
+                userId: id,
+                defaultPath: "/dashboard/jobcard-list",
+              });
             }
           }
         } catch (err) {

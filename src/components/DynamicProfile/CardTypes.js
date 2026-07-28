@@ -41,7 +41,7 @@ export const CARD_TYPES = {
             { label: "Total Amount", key: "net_total", prefix: "৳" }
         ],
         createLink: "/dashboard/create-invoice",
-        viewLink: "/dashboard/detail",
+        viewLink: "/dashboard/invoice-view",
         editIcon: true
     },
     moneyReceipt: {

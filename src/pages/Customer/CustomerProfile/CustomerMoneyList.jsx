@@ -3,7 +3,7 @@
 "use client";
 
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   FaEye,
   FaEdit,
@@ -22,6 +22,12 @@ import {
   useMoveRecycledMoneyReceiptMutation,
 } from "../../../redux/api/money-receipt";
 import Table from "../../../components/Table";
+import {
+  buildViewUrl,
+  getReturnPath,
+  navigateWithReturnTo,
+  withReturnTo,
+} from "../../../utils/profileNavigation";
 
 const CustomerMoneyList = ({
   id,
@@ -32,6 +38,8 @@ const CustomerMoneyList = ({
   const [currentPage, setCurrentPage] = useState(1);
   const [filterType, setFilterType] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
+  const returnTo = getReturnPath(location);
 
   const limit = 10;
 
@@ -68,24 +76,36 @@ const CustomerMoneyList = ({
         swal(
           "Moved!",
           "Money Receipt moved to Recycle bin successfully.",
-          "success"
+          "success",
         );
       } catch (err) {
         swal(
           "Error",
           "An error occurred while moving the money receipt.",
-          "error"
+          "error",
         );
       }
     }
   };
 
   const handleIconPreview = (receiptId) => {
-    navigate(`/dashboard/money-receipt-view?id=${receiptId}`);
+    navigate(
+      buildViewUrl("/dashboard/money-receipt-view", receiptId, user_type, id),
+      { state: withReturnTo(returnTo) },
+    );
+  };
+
+  const handleAddMoneyReceipt = () => {
+    navigateWithReturnTo(
+      navigate,
+      `/dashboard/money-receive-create?id=${id}`,
+      returnTo,
+    );
   };
 
   if (moneyReceiptLoading) return <Loading />;
   if (error) toast.error(error.message);
+
   const columns = [
     { key: "index", label: "SL No", type: "index" },
     { key: "job_no", label: "Final B.A Bill" },
@@ -107,7 +127,6 @@ const CustomerMoneyList = ({
         return carRegNo || carRegistrationNo || "—";
       },
     },
-
     { key: "total_amount", label: "Total" },
     {
       key: "advance",
@@ -140,7 +159,7 @@ const CustomerMoneyList = ({
         `${import.meta.env.VITE_API_URL}/money-receipts/money/${
           item._id
         }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
-          JSON.stringify(companyProfileData)
+          JSON.stringify(companyProfileData),
         )}`,
       target: "_blank",
     },
@@ -149,8 +168,11 @@ const CustomerMoneyList = ({
       icon: FaEdit,
       color: "#fff",
       tooltip: "Edit Money Receipt",
-      link: (item) =>
-        `/dashboard/money-receipt-update?id=${item._id}&user_type=${user_type}&user=${id}`,
+      onClick: (item, { navigate: nav }) =>
+        nav(
+          `/dashboard/money-receipt-update?id=${item._id}&user_type=${user_type}&user=${id}`,
+          { state: withReturnTo(returnTo) },
+        ),
     },
     {
       key: "delete",
@@ -171,11 +193,7 @@ const CustomerMoneyList = ({
   return (
     <div className="mb-24 mt-10 w-full">
       <div className="flex flex-wrap items-center justify-between mb-5">
-        <Button
-          to={`/dashboard/money-receive-create?id=${id}`}
-          sx={purchaseBtn}
-          component={Link}
-        >
+        <Button sx={purchaseBtn} onClick={handleAddMoneyReceipt}>
           Add Money Receipt <HiOutlinePlus size={20} />
         </Button>
       </div>
@@ -199,15 +217,15 @@ const CustomerMoneyList = ({
               No Money Receipts Found
             </h3>
             <p className="text-gray-600 mb-4">
-              Start by adding your first money receipt to keep track of
-              payments.
+              Start by adding your first money receipt to keep track of payments.
             </p>
-            <Link
-              to={`/dashboard/money-receive-create?id=${id}`}
+            <button
+              type="button"
+              onClick={handleAddMoneyReceipt}
               className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-full transition duration-300 flex items-center gap-x-2"
             >
               <FaMoneyBillWave /> Create Your First Money Receipt
-            </Link>
+            </button>
           </div>
         }
       />

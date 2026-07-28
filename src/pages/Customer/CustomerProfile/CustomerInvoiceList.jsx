@@ -2,8 +2,8 @@
 /* eslint-disable react/prop-types */
 import { useState } from "react";
 import { HiOutlinePlus } from "react-icons/hi";
-import {  Money } from "@mui/icons-material";
-import { Link } from "react-router-dom";
+import { Money } from "@mui/icons-material";
+import { useLocation, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 import Loading from "../../../components/Loading/Loading";
 import {
@@ -14,7 +14,13 @@ import { getRowClass } from "../../../utils/getRowClass";
 import Table from "../../../components/Table";
 import { Button } from "@mui/material";
 import { purchaseBtn } from "../../../utils/customStyle";
-import { DeleteIcon, Download, EditIcon, Eye, View } from "lucide-react";
+import { DeleteIcon, Download, EditIcon, Eye } from "lucide-react";
+import {
+  buildViewUrl,
+  getReturnPath,
+  navigateWithReturnTo,
+  withReturnTo,
+} from "../../../utils/profileNavigation";
 
 const CustomerInvoiceList = ({
   id,
@@ -24,6 +30,9 @@ const CustomerInvoiceList = ({
 }) => {
   const [filterType, setFilterType] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const returnTo = getReturnPath(location);
   const limit = 10;
 
   const { data: allInvoices, isLoading: invoiceLoading } =
@@ -57,11 +66,19 @@ const CustomerInvoiceList = ({
     }
   };
 
+  const handleCreateInvoice = () => {
+    navigateWithReturnTo(
+      navigate,
+      `/dashboard/create-invoice?id=${id}`,
+      returnTo,
+    );
+  };
+
   if (invoiceLoading) return <Loading />;
+
   const columns = [
     { key: "slNo", label: "SL No", type: "index" },
     { key: "job_no", label: "Invoice No." },
-
     {
       key: "customer",
       label: "Customer Name",
@@ -82,7 +99,6 @@ const CustomerInvoiceList = ({
         return vehicles.map((v) => v.vehicle_name || "—").join(", ");
       },
     },
-
     {
       key: "vehicle",
       label: "Vehicle Reg No",
@@ -104,7 +120,6 @@ const CustomerInvoiceList = ({
           .join(", ");
       },
     },
-
     {
       key: "contact",
       label: "Mobile No.",
@@ -114,7 +129,6 @@ const CustomerInvoiceList = ({
         data.showRoom?.fullCompanyNum ||
         "N/A",
     },
-
     { key: "date", label: "Date" },
   ];
 
@@ -123,16 +137,22 @@ const CustomerInvoiceList = ({
       key: "money",
       color: "#fff",
       icon: Money,
-      href: (item) =>
-        `/dashboard/money-receive-create?order_no=${item.job_no}&id=${item._id}&net_total=${item.due}`,
       tooltip: "Money Receipt",
+      onClick: (item, { navigate: nav }) =>
+        nav(
+          `/dashboard/money-receive-create?order_no=${item.job_no}&id=${item._id}&net_total=${item.due}`,
+          { state: withReturnTo(returnTo) },
+        ),
     },
     {
       key: "preview",
       icon: Eye,
       color: "#fff",
-      onClick: (item) =>
-        window.location.assign(`/dashboard/invoice-view?id=${item._id}`),
+      onClick: (item, { navigate: nav }) =>
+        nav(
+          buildViewUrl("/dashboard/invoice-view", item._id, user_type, id),
+          { state: withReturnTo(returnTo) },
+        ),
       tooltip: "Preview Invoice",
     },
     {
@@ -143,7 +163,7 @@ const CustomerInvoiceList = ({
         `${import.meta.env.VITE_API_URL}/invoices/invoice/${
           item._id
         }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
-          JSON.stringify(companyProfileData)
+          JSON.stringify(companyProfileData),
         )}`,
       target: "_blank",
       tooltip: "Download Invoice",
@@ -154,6 +174,7 @@ const CustomerInvoiceList = ({
       color: "#fff",
       link: (item) =>
         `/dashboard/update-invoice?id=${item._id}&user_type=${user_type}&user=${id}`,
+      getState: () => withReturnTo(returnTo),
       tooltip: "Edit Invoice",
     },
     {
@@ -168,11 +189,7 @@ const CustomerInvoiceList = ({
 
   return (
     <div className="mb-24 mt-10 w-full">
-      <Button
-        component={Link}
-        sx={purchaseBtn}
-        to={`/dashboard/create-invoice?id=${id}`}
-      >
+      <Button sx={purchaseBtn} onClick={handleCreateInvoice}>
         Create Invoice <HiOutlinePlus size={20} className="ml-2" />
       </Button>
       <Table

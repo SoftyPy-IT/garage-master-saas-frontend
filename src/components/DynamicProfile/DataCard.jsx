@@ -4,12 +4,15 @@ import { Link } from "react-router-dom";
 import { HiOutlineEye } from "react-icons/hi";
 import Card from "../Card/Card";
 import { formatValue } from "./FormatedValue";
+import { buildViewUrl, withReturnTo } from "../../utils/profileNavigation";
 
 const DataCard = ({
-
     cardConfig,
     recentItems,
-    onVehicleDetailsOpen
+    onVehicleDetailsOpen,
+    profileId,
+    userType,
+    returnTo,
 }) => {
     const hasData = recentItems.some(item => item !== null);
 
@@ -68,7 +71,15 @@ const DataCard = ({
                                 <HiOutlineEye className="w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10" />
                             </b>
                         ) : (
-                            <Link to={`${cardConfig.viewLink}?id=${item._id}`}>
+                            <Link
+                                to={buildViewUrl(
+                                    cardConfig.viewLink,
+                                    item._id,
+                                    userType,
+                                    profileId,
+                                )}
+                                state={withReturnTo(returnTo)}
+                            >
                                 <b className="cursor-pointer">
                                     <HiOutlineEye className="w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10" />
                                 </b>

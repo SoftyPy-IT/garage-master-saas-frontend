@@ -1,13 +1,17 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
 import VehicleDetailsModal from "../../pages/Customer/CustomerProfile/VehicleDetailsModal";
 import { ACCOUNT_CONFIG } from "./AccountConfig";
 import { CARD_TYPES } from "./CardTypes";
 import ContactInfoCard from "./ContactInfo";
 import DataCard from "./DataCard";
+import { getReturnPath } from "../../utils/profileNavigation";
 
 const DynamicAccount = ({ profileType = "customer", profileData, tenantDomain }) => {
+    const location = useLocation();
+    const returnTo = getReturnPath(location);
     const [vehicleDetails, setVehicleDetails] = useState(false);
     const [getId, setGetId] = useState("");
 
@@ -40,6 +44,9 @@ const DynamicAccount = ({ profileType = "customer", profileData, tenantDomain })
                 cardConfig={cardConfig}
                 recentItems={recentItems}
                 onVehicleDetailsOpen={handVehicleDetailsOpen}
+                profileId={profileData?.data?._id}
+                userType={profileData?.data?.user_type}
+                returnTo={returnTo}
             />
         );
     };

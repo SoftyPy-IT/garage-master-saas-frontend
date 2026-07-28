@@ -11,6 +11,7 @@ import { formateNumber } from "../../utils/formateSemicolon";
 import { useGetSingleInvoiceQuery } from "../../redux/api/invoice";
 import { useGetCompanyProfileQuery } from "../../redux/api/companyProfile";
 import { useTenantDomain } from "../../hooks/useTenantDomain";
+import { buildEditUrl, getReturnTo, withReturnTo } from "../../utils/profileNavigation";
 
 const InvoiceView = () => {
   const componentRef = useRef();
@@ -32,6 +33,11 @@ const InvoiceView = () => {
   };
   const location = useLocation();
   const id = new URLSearchParams(location.search).get("id");
+  const editInvoiceUrl = buildEditUrl(
+    "/dashboard/update-invoice",
+    id,
+    location.search,
+  );
 
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
@@ -454,7 +460,10 @@ const InvoiceView = () => {
         <div className="printInvoiceBtnGroup">
           <button onClick={handlePrint}>Print </button>
 
-          <Link to={`/dashboard/update-invoice?id=${id}`}>
+          <Link
+            to={editInvoiceUrl}
+            state={withReturnTo(getReturnTo(location))}
+          >
             <button> Edit </button>
           </Link>
           <Button sx={{ fontSize: "12px" }}>
@@ -473,6 +482,7 @@ const InvoiceView = () => {
           </Button>
           <Link
             to={`/dashboard/money-receive-create?order_no=${invoicePreview.job_no}&id=${invoicePreview?._id}&net_total=${net_total}`}
+            state={withReturnTo(getReturnTo(location))}
           >
             <button> Money </button>
           </Link>

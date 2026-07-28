@@ -32,6 +32,7 @@ import { useGetCompanyProfileQuery } from "../../redux/api/companyProfile";
 import { useTenantDomain } from "../../hooks/useTenantDomain";
 import { usePermissions } from "../../context/PermissionContext";
 import Can from "../../components/Can";
+import { appendProfileParams, getReturnTo, navigateAfterSave, navigateWithReturnTo } from "../../utils/profileNavigation";
 
 const UpdateInvoice = () => {
   const [specificInvoice, setSpecificInvoice] = useState(null);
@@ -879,18 +880,11 @@ const UpdateInvoice = () => {
 
   const handleOnSubmit = () => {
     handleSubmit(onSubmit)();
-    if (!userTypeFromProfile) {
-      navigate("/dashboard/invoice-list");
-    }
-    if (userTypeFromProfile === "company") {
-      navigate(`/dashboard/company-profile?id=${userFromProfile}`);
-    }
-    if (userTypeFromProfile === "customer") {
-      navigate(`/dashboard/customer-profile?id=${userFromProfile}`);
-    }
-    if (userTypeFromProfile === "showRoom") {
-      navigate(`/dashboard/show-room-profile?id=${userFromProfile}`);
-    }
+    navigateAfterSave(navigate, location, {
+      userType: userTypeFromProfile,
+      userId: userFromProfile,
+      defaultPath: "/dashboard/invoice-list",
+    });
     toast.success("Invoice update successful");
   };
 
@@ -903,7 +897,15 @@ const UpdateInvoice = () => {
 
   const handleGoPreview = () => {
     handleSubmit(onSubmit)();
-    navigate(`/dashboard/invoice-view?id=${id}`);
+    navigateWithReturnTo(
+      navigate,
+      appendProfileParams(
+        `/dashboard/invoice-view?id=${id}`,
+        userTypeFromProfile,
+        userFromProfile,
+      ),
+      getReturnTo(location),
+    );
   };
 
   return (

@@ -13,11 +13,17 @@ import { useGetCompanyProfileQuery } from "../../redux/api/companyProfile";
 import { useTenantDomain } from "../../hooks/useTenantDomain";
 import { formateNumber } from "../../utils/formateSemicolon";
 import { useCompanyProfileData } from "../../hooks/useCompanyProfileData";
+import { buildEditUrl, getReturnTo, withReturnTo } from "../../utils/profileNavigation";
 
 const Detail = () => {
   const componentRef = useRef();
   const location = useLocation();
   const id = new URLSearchParams(location.search).get("id");
+  const editQuotationUrl = buildEditUrl(
+    "/dashboard/update-quotation",
+    id,
+    location.search,
+  );
   const { tenantDomain } = useTenantDomain();
   const { data: profileData } = useGetCompanyProfileQuery({
     tenantDomain,
@@ -365,7 +371,10 @@ const Detail = () => {
           <div className="printInvoiceBtnGroup">
             <button onClick={handlePrint}>Print </button>
 
-            <Link to={`/dashboard/update-quotation?id=${id}`}>
+            <Link
+              to={editQuotationUrl}
+              state={withReturnTo(getReturnTo(location))}
+            >
               <button> Edit </button>
             </Link>
             <a
@@ -382,6 +391,7 @@ const Detail = () => {
             </a>
             <Link
               to={`/dashboard/create-invoice?order_no=${quotationPreview?.job_no}&id=${id}`}
+              state={withReturnTo(getReturnTo(location))}
             >
               <button> Invoice </button>
             </Link>

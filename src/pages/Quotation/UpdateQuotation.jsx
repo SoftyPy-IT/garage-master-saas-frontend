@@ -36,6 +36,12 @@ import { usePermissions } from "../../context/PermissionContext";
 import Can from "../../components/Can";
 import { formateNumber } from "../../utils/formateSemicolon";
 import { useCompanyProfileData } from "../../hooks/useCompanyProfileData";
+import {
+  appendProfileParams,
+  getReturnTo,
+  navigateAfterSave,
+  navigateWithReturnTo,
+} from "../../utils/profileNavigation";
 
 const UpdateQuotation = () => {
   const [specificQuotation, setSpecificQuotation] = useState({});
@@ -1129,16 +1135,11 @@ const UpdateQuotation = () => {
               setReload(!reload);
               toast.success("Quotation updated successfully");
               console.log("response this ", res);
-              // Only navigate if update was successful
-              // if (!userTypeFromProfile) {
-              //   navigate("/dashboard/quotation-list");
-              // } else if (userTypeFromProfile === "company") {
-              //   navigate(`/dashboard/company-profile?id=${userFromProfile}`);
-              // } else if (userTypeFromProfile === "customer") {
-              //   navigate(`/dashboard/customer-profile?id=${userFromProfile}`);
-              // } else if (userTypeFromProfile === "showRoom") {
-              //   navigate(`/dashboard/show-room-profile?id=${userFromProfile}`);
-              // }
+              navigateAfterSave(navigate, location, {
+                userType: userTypeFromProfile,
+                userId: userFromProfile,
+                defaultPath: "/dashboard/quotation-list",
+              });
             }
           }
         } catch (error) {
@@ -1187,7 +1188,15 @@ const UpdateQuotation = () => {
     try {
       await handleSubmit(onSubmit)();
       // Only navigate if submission was successful
-      navigate(`/dashboard/quotation-view?id=${id}`);
+      navigateWithReturnTo(
+        navigate,
+        appendProfileParams(
+          `/dashboard/quotation-view?id=${id}`,
+          userTypeFromProfile,
+          userFromProfile,
+        ),
+        getReturnTo(location),
+      );
     } catch (error) {
       // Navigation prevented due to error
       console.error("Submission failed:", error);

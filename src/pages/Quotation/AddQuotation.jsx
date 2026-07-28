@@ -20,6 +20,11 @@ import { useTenantDomain } from "../../hooks/useTenantDomain";
 import Can from "../../components/Can";
 import { usePermissions } from "../../context/PermissionContext";
 import QuotationTable from "./QuotationTable";
+import {
+  getReturnTo,
+  navigateAfterSave,
+  navigateWithReturnTo,
+} from "../../utils/profileNavigation";
 const AddQuotation = () => {
   const [getDataWithChassisNo, setGetDataWithChassisNo] = useState({});
   const [value, setValue] = useState(getDataWithChassisNo?.vehicle?.carReg_no);
@@ -655,15 +660,23 @@ const AddQuotation = () => {
           if (res.success) {
             toast.success(res.message);
             if (goOtherButton === "preview") {
-              navigate(`/dashboard/quotation-view?id=${res?.data?._id}`);
+              navigateWithReturnTo(
+                navigate,
+                `/dashboard/quotation-view?id=${res?.data?._id}`,
+                getReturnTo(location),
+              );
               setGoOtherButton("");
             } else if (goOtherButton === "invoice") {
-              navigate(
+              navigateWithReturnTo(
+                navigate,
                 `/dashboard/create-invoice?order_no=${jobCardData?.data?.job_no}&id=${res?.data?._id}`,
+                getReturnTo(location),
               );
               setGoOtherButton("");
             } else {
-              navigate("/dashboard/quotation-list");
+              navigateAfterSave(navigate, location, {
+                defaultPath: "/dashboard/quotation-list",
+              });
               setGoOtherButton("");
             }
             refetch();

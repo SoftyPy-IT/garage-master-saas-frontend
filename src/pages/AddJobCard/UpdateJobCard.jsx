@@ -31,6 +31,12 @@ import { usePermissions } from "../../context/PermissionContext";
 import { useTenantDomain } from "../../hooks/useTenantDomain";
 import { useGetCompanyProfileQuery } from "../../redux/api/companyProfile";
 import Can from "../../components/Can";
+import {
+  appendProfileParams,
+  getReturnTo,
+  navigateAfterSave,
+  navigateWithReturnTo,
+} from "../../utils/profileNavigation";
 
 const UpdateJobCard = () => {
   const [inputValue, setInputValue] = useState("");
@@ -418,7 +424,15 @@ const UpdateJobCard = () => {
           if (res.success) {
             toast.success(res.message);
             if (clickControl === "preview") {
-              navigate(`/dashboard/preview?id=${res?.data?._id}`);
+              navigateWithReturnTo(
+                navigate,
+                appendProfileParams(
+                  `/dashboard/preview?id=${res?.data?._id}`,
+                  userTypeFromProfile,
+                  userFromProfile,
+                ),
+                getReturnTo(location),
+              );
             }
             if (clickControl === "quotation") {
               navigate(
@@ -430,17 +444,12 @@ const UpdateJobCard = () => {
                 `/dashboard/create-invoice?order_no=${res?.data?.job_no}`
               );
             }
-            if (clickControl === null && !userTypeFromProfile) {
-              navigate("/dashboard/jobcard-list");
-            }
-            if (clickControl === null && userTypeFromProfile === "company") {
-              navigate(`/dashboard/company-profile?id=${userFromProfile}`);
-            }
-            if (clickControl === null && userTypeFromProfile === "customer") {
-              navigate(`/dashboard/customer-profile?id=${userFromProfile}`);
-            }
-            if (clickControl === null && userTypeFromProfile === "showRoom") {
-              navigate(`/dashboard/show-room-profile?id=${userFromProfile}`);
+            if (clickControl === null) {
+              navigateAfterSave(navigate, location, {
+                userType: userTypeFromProfile,
+                userId: userFromProfile,
+                defaultPath: "/dashboard/jobcard-list",
+              });
             }
             refetch();
           }

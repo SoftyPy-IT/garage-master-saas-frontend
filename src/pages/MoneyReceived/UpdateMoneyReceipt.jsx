@@ -23,6 +23,7 @@ import { useTenantDomain } from "../../hooks/useTenantDomain";
 import { useGetSingleMoneyReceiptQuery, useUpdateMoneyReceiptMutation } from "../../redux/api/money-receipt";
 import { useGetCompanyProfileQuery } from "../../redux/api/companyProfile";
 import Can from "../../components/Can";
+import { appendProfileParams, getReturnTo, navigateAfterSave, navigateWithReturnTo } from "../../utils/profileNavigation";
 
 
 const UpdateMoneyReceipt = () => {
@@ -35,7 +36,6 @@ const UpdateMoneyReceipt = () => {
     "user_type"
   );
   const userFromProfile = new URLSearchParams(location.search).get("user");
-  const { origin } = location.state || {};
   const { data: singleMoneyReceipt, refetch } = useGetSingleMoneyReceiptQuery({
     tenantDomain,
     id,
@@ -361,18 +361,11 @@ const UpdateMoneyReceipt = () => {
     handleSubmit(onSubmit)();
     refetch();
 
-    if (!userTypeFromProfile) {
-      navigate("/dashboard/money-receipt-list");
-    }
-    if (userTypeFromProfile === "company") {
-      navigate(`/dashboard/company-profile?id=${userFromProfile}`);
-    }
-    if (userTypeFromProfile === "customer") {
-      navigate(`/dashboard/customer-profile?id=${userFromProfile}`);
-    }
-    if (userTypeFromProfile === "showRoom") {
-      navigate(`/dashboard/show-room-profile?id=${userFromProfile}`);
-    }
+    navigateAfterSave(navigate, location, {
+      userType: userTypeFromProfile,
+      userId: userFromProfile,
+      defaultPath: "/dashboard/money-receipt-list",
+    });
 
     toast.success("Money receipt update successful");
   };
@@ -380,7 +373,15 @@ const UpdateMoneyReceipt = () => {
   const handlePreview = () => {
     handleSubmit(onSubmit)();
     refetch();
-    navigate(`/dashboard/money-receipt-view?id=${id}`);
+    navigateWithReturnTo(
+      navigate,
+      appendProfileParams(
+        `/dashboard/money-receipt-view?id=${id}`,
+        userTypeFromProfile,
+        userFromProfile,
+      ),
+      getReturnTo(location),
+    );
   };
 
   const [formattedDate, setFormattedDate] = useState("");

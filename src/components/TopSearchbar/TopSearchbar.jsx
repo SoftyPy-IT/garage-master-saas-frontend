@@ -15,7 +15,7 @@ const TopSearchbar = () => {
     const routes = {
       "job-card": `/dashboard/jobcard-list`,
       quotation: `/dashboard/quotation-list`,
-      invoice: `/dashboard/create-invoice-list`,
+      invoice: `/dashboard/invoice-list`,
       "money-receipt": `/dashboard/money-receipt-list`,
       customer: `/dashboard/customer-list`,
       company: `/dashboard/company-list`,
@@ -56,7 +56,7 @@ const TopSearchbar = () => {
 
       <div className="relative flex-grow">
         <input
-          type="text" 
+          type="text"
           placeholder="Search"
           value={searchData}
           onChange={(e) => setSearchData(e.target.value)}

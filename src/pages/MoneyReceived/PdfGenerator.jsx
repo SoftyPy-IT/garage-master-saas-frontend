@@ -12,9 +12,15 @@ import { useGetSingleMoneyReceiptQuery } from "../../redux/api/money-receipt";
 import Loading from "../../components/Loading/Loading";
 import { useCompanyProfileData } from "../../hooks/useCompanyProfileData";
 import { formatDate } from "../../utils/formateDate";
+import { buildEditUrl, getReturnTo, withReturnTo } from "../../utils/profileNavigation";
 const PdfGenerator = () => {
   const location = useLocation();
   const id = new URLSearchParams(location.search).get("id");
+  const editMoneyReceiptUrl = buildEditUrl(
+    "/dashboard/money-receipt-update",
+    id,
+    location.search,
+  );
   const { tenantDomain } = useTenantDomain();
   const { companyProfileData } = useCompanyProfileData();
   const componentRef = useRef();
@@ -364,7 +370,10 @@ const PdfGenerator = () => {
             Download
           </a>
         )}
-        <Link to={`/dashboard/money-receipt-update?id=${id}`}>
+        <Link
+          to={editMoneyReceiptUrl}
+          state={withReturnTo(getReturnTo(location))}
+        >
           <Button> Edit </Button>
         </Link>
       </div>

@@ -22,6 +22,11 @@ import Can from "../../components/Can";
 import { usePermissions } from "../../context/PermissionContext";
 import InvoiceTable from "./InvoiceTable";
 import { formateNumber } from "../../utils/formateSemicolon";
+import {
+  getReturnTo,
+  navigateAfterSave,
+  navigateWithReturnTo,
+} from "../../utils/profileNavigation";
 
 const Invoice = () => {
   const { tenantDomain } = useTenantDomain();
@@ -651,15 +656,23 @@ const Invoice = () => {
             setReload(!reload);
             refetch();
             if (goOtherButton === "preview") {
-              navigate(`/dashboard/invoice-view?id=${res?.data?._id}`);
+              navigateWithReturnTo(
+                navigate,
+                `/dashboard/invoice-view?id=${res?.data?._id}`,
+                getReturnTo(location),
+              );
               setGoOtherButton("");
             } else if (goOtherButton === "money-receipt") {
-              navigate(
-                `/dashboard/money-receive-create?order_no=${jobCardData?.data?.job_no}&id=${res?.data?._id}&net_total=${res?.net_total}`
+              navigateWithReturnTo(
+                navigate,
+                `/dashboard/money-receive-create?order_no=${jobCardData?.data?.job_no}&id=${res?.data?._id}&net_total=${res?.net_total}`,
+                getReturnTo(location),
               );
               setGoOtherButton("");
             } else {
-              navigate("/dashboard/invoice-list");
+              navigateAfterSave(navigate, location, {
+                defaultPath: "/dashboard/invoice-list",
+              });
               setGoOtherButton("");
             }
           }

@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import "./PreviewJobCard.css";
 import car from "../../../../public/assets/car3.jpeg";
-import { useLocation } from "react-router-dom";
+import { Link as RouterLink, useLocation } from "react-router-dom";
 import { useReactToPrint } from "react-to-print";
 import { Button, Link } from "@mui/material";
 import { WhatsApp } from "@mui/icons-material";
@@ -13,6 +13,7 @@ import { useTenantDomain } from "../../../hooks/useTenantDomain";
 import { PrintContext } from "../../../context/PrintProvider";
 import { useCompanyProfileData } from "../../../hooks/useCompanyProfileData";
 import { formatDate } from "../../../utils/formateDate";
+import { buildEditUrl, getReturnTo, withReturnTo } from "../../../utils/profileNavigation";
 const PreviewJobCard = () => {
   const { componentRef } = useContext(PrintContext);
 
@@ -23,6 +24,11 @@ const PreviewJobCard = () => {
 
   const location = useLocation();
   const id = new URLSearchParams(location.search).get("id");
+  const editJobCardUrl = buildEditUrl(
+    "/dashboard/update-jobcard",
+    id,
+    location.search,
+  );
   const { data: CompanyInfoData } = useGetCompanyProfileQuery({
     tenantDomain,
   });
@@ -509,15 +515,17 @@ const PreviewJobCard = () => {
             padding: "7px 20px",
             marginRight: "5px",
           }}
-          component={Link}
-          href={`/dashboard/create-quotation?order_no=${previewData?.job_no}`}
+          component={RouterLink}
+          to={`/dashboard/create-quotation?order_no=${previewData?.job_no}`}
+          state={withReturnTo(getReturnTo(location))}
         >
           Quotation
         </Button>
         <Button
           sx={{ color: "white", borderRadius: "20px", padding: "7px 20px" }}
-          component={Link}
-          href={`/dashboard/update-jobcard?id=${id}`}
+          component={RouterLink}
+          to={editJobCardUrl}
+          state={withReturnTo(getReturnTo(location))}
         >
           Edit
         </Button>

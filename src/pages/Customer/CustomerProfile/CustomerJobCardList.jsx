@@ -4,7 +4,7 @@
 import { useState } from "react";
 import { HiOutlinePlus } from "react-icons/hi";
 import { FaTrashAlt, FaEdit, FaEye, FaDownload } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 import EmptyCustomerData from "../../../components/EmptyCustomerData/EmptyCustomerData";
 import {
@@ -14,6 +14,12 @@ import {
 import Table from "../../../components/Table";
 import { Button } from "@mui/material";
 import { purchaseBtn } from "../../../utils/customStyle";
+import {
+  buildViewUrl,
+  getReturnPath,
+  withReturnTo,
+  navigateWithReturnTo,
+} from "../../../utils/profileNavigation";
 
 const CustomerJobCardList = ({
   id,
@@ -24,7 +30,11 @@ const CustomerJobCardList = ({
 }) => {
   const [filterType, setFilterType] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const returnTo = getReturnPath(location);
   const limit = 10;
+
   const { data: jobCards, isLoading } = useGetAllJobCardsQuery({
     tenantDomain,
     id,
@@ -61,6 +71,15 @@ const CustomerJobCardList = ({
       }
     }
   };
+
+  const handleCreateJobCard = () => {
+    navigateWithReturnTo(
+      navigate,
+      `/dashboard/create-job-card?id=${customerId}&user_type=${user_type}`,
+      returnTo,
+    );
+  };
+
   const columns = [
     { key: "index", label: "SL. N.", type: "index" },
     { key: "job_no", label: "Job Card No." },
@@ -80,8 +99,22 @@ const CustomerJobCardList = ({
         }
       },
     },
-
-    { key: "customer.fullCustomerNum", label: "Mobile No." },
+    {
+      key: "mobile_no",
+      label: "Mobile No.",
+      render: (item) => {
+        switch (item?.user_type) {
+          case "customer":
+            return item?.customer?.fullCustomerNum || "—";
+          case "company":
+            return item?.company?.fullCompanyNum || "—";
+          case "showRoom":
+            return item?.showRoom?.fullCompanyNum || "—";
+          default:
+            return "—";
+        }
+      },
+    },
     {
       key: "vehicle.vehicle_name",
       label: "Vehicle Name",
@@ -104,34 +137,35 @@ const CustomerJobCardList = ({
           .join(", ");
       },
     },
-
     { key: "date", label: "Date" },
   ];
-
-  const getRowClass = () => "";
 
   const actions = [
     {
       key: "create-quotation",
       icon: FaEdit,
       tooltip: "Create Quotation",
-      link: (item) => `/dashboard/create-quotation?order_no=${item.job_no}`,
+      onClick: (item, { navigate: nav }) =>
+        nav(`/dashboard/create-quotation?order_no=${item.job_no}`, {
+          state: withReturnTo(returnTo),
+        }),
       color: "purple",
     },
     {
       key: "preview",
       icon: FaEye,
       tooltip: "Preview",
-      onClick: (item, { navigate }) =>
-        navigate(`/dashboard/preview?id=${item._id}`),
+      onClick: (item, { navigate: nav }) =>
+        nav(buildViewUrl("/dashboard/preview", item._id, user_type, id), {
+          state: withReturnTo(returnTo),
+        }),
     },
     {
       key: "download",
       icon: FaDownload,
       tooltip: "Download Job Card",
       href: (item) =>
-        `${import.meta.env.VITE_API_URL}/jobCards/jobcard/${
-          item._id
+        `${import.meta.env.VITE_API_URL}/jobCards/jobcard/${item._id
         }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
           JSON.stringify(companyProfileData),
         )}`,
@@ -144,6 +178,7 @@ const CustomerJobCardList = ({
       tooltip: "Edit Job Card",
       link: (item) =>
         `/dashboard/update-jobcard?id=${item._id}&user_type=${user_type}&user=${id}`,
+      getState: () => withReturnTo(returnTo),
       color: "blue",
     },
     {
@@ -158,11 +193,7 @@ const CustomerJobCardList = ({
 
   return (
     <div className="mb-24 mt-10 w-full">
-      <Button
-        sx={purchaseBtn}
-        component={Link}
-        to={`/dashboard/create-job-card?id=${customerId}&user_type=${user_type}`}
-      >
+      <Button sx={purchaseBtn} onClick={handleCreateJobCard}>
         Create Job Card <HiOutlinePlus size={20} />
       </Button>
       <Table
@@ -178,7 +209,7 @@ const CustomerJobCardList = ({
           setFilterType(value);
           setCurrentPage(1);
         }}
-        getRowClass={getRowClass}
+        getRowClass={() => ""}
         emptyMessage={
           <EmptyCustomerData
             title="Your Garage Awaits!"

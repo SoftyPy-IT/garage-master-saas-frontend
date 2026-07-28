@@ -200,17 +200,21 @@ const ActionButton = ({ action, Icon, item, navigate }) => {
         </a>
       );
 
-    if (action.link)
+    if (action.link) {
+      const to =
+        typeof action.link === "function" ? action.link(item) : action.link;
+      const linkState = action.getState?.(item) ?? action.state;
+
       return (
         <Link
-          to={
-            typeof action.link === "function" ? action.link(item) : action.link
-          }
+          to={to}
+          state={linkState}
           style={{ pointerEvents: isDisabled ? "none" : "auto" }}
         >
           <Icon style={iconStyle} />
         </Link>
       );
+    }
 
     return (
       <button
