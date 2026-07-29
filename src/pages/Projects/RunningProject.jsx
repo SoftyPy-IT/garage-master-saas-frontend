@@ -5,12 +5,14 @@ import { ArrowBack } from "@mui/icons-material";
 import { Button } from "@mui/material";
 import { backBtnStyle } from "../../utils/customStyle";
 import QuotationTable from "../Quotation/QuotationTable";
-const QuotationList = () => {
+
+const RunningProject = () => {
   const navigate = useNavigate();
+  const status = "running";
+
   const handleBack = () => {
     navigate(-1);
   };
-  const status = "running";
 
   return (
     <div>
@@ -37,4 +39,4 @@ const QuotationList = () => {
   );
 };
 
-export default QuotationList;
+export default RunningProject;

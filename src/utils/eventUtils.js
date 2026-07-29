@@ -1,4 +1,4 @@
-import { SERVICE_TYPES } from "../constants";
+import { SERVICE_TYPES } from "../constant/calendar";
 
 export const determineEventType = (event) => {
   const summary = (event.summary || "").toLowerCase();

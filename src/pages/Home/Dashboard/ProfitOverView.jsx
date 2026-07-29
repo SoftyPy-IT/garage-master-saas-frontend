@@ -3,9 +3,8 @@ import { Stack, styled } from "@mui/material";
 import LinearProgress, {
   linearProgressClasses,
 } from "@mui/material/LinearProgress";
-import { useGetAllExpensesQuery } from "../../../redux/api/expense";
-import { useGetAllIncomesQuery } from "../../../redux/api/income";
 import { useGetAllDonationQuery } from "../../../redux/api/donationApi";
+import { useGetAllMetaQuery } from "../../../redux/api/meta.api";
 import Loading from "../../../components/Loading/Loading";
 import { useTenantDomain } from "../../../hooks/useTenantDomain";
 
@@ -27,43 +26,21 @@ const ProfitOverView = () => {
   const tenantDomain = useTenantDomain();
 
 
-  const { data: donationData, isLoading } =
+  const { data: donationData, isLoading: donationLoading } =
     useGetAllDonationQuery();
   const {
-    data: expenseData,
-    error: expenseError,
-    isLoading: expenseLoading,
-  } = useGetAllExpensesQuery({
-    tenantDomain,
-    limit: 9000000000000,
-    page: 1,
-  });
+    data: metaData,
+    error: metaError,
+    isLoading: metaLoading,
+  } = useGetAllMetaQuery({ tenantDomain });
 
-  const {
-    data: incomeData,
-    error: incomeError,
-    isLoading: incomeLoading,
-  } = useGetAllIncomesQuery({
-    tenantDomain,
-    limit: 900000000000,
-    page: 1,
-  });
+  if (metaLoading || donationLoading) return <Loading />;
+  if (metaError)
+    return <div>Error: {metaError?.message}</div>;
 
-  if (expenseLoading || incomeLoading) return <Loading />;
-  if (expenseError || incomeError)
-    return <div>Error: {expenseError?.message || incomeError?.message}</div>;
+  const totalIncome = metaData?.data?.incomes?.totalIncomeAmount || 0;
 
-  const totalIncome =
-    incomeData?.data?.incomes?.reduce(
-      (sum, income) => sum + income.amount,
-      0
-    ) || 0;
-
-  const totalExpenses =
-    expenseData?.data?.expenses?.reduce(
-      (sum, expense) => sum + Number(expense.amount),
-      0
-    ) || 0;
+  const totalExpenses = metaData?.data?.expense?.totalExpenseAmount || 0;
 
   const profit = totalIncome - totalExpenses;
 
@@ -90,8 +67,6 @@ const ProfitOverView = () => {
 
   const previousMonthEarnings = 5785;
   const previousMonthExpenses = 305785;
-
-  if (isLoading) return <Loading />;
 
   return (
     <div className="profiteCardWrap lg:flex-nowrap flex-wrap flex items-center justify-between sectionMargin gap-5">

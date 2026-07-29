@@ -18,6 +18,8 @@ import {
   useGetAllQuotationsQuery,
   useMoveRecycledQuotationMutation,
   useCancelQuotationMutation,
+  useMoveToPendingQuotationMutation,
+  useRestoreFromPendingQuotationMutation,
 } from "../../redux/api/quotation";
 import { useCompanyProfileData } from "../../hooks/useCompanyProfileData";
 
@@ -43,6 +45,8 @@ const QuotationTable = ({
     useMoveRecycledQuotationMutation();
   const [cancelQuotation, { isLoading: cancelLoading }] =
     useCancelQuotationMutation();
+  const [moveToPendingQuotation] = useMoveToPendingQuotationMutation();
+  const [restoreFromPendingQuotation] = useRestoreFromPendingQuotationMutation();
 
   const queryParams = {
     tenantDomain,
@@ -53,7 +57,7 @@ const QuotationTable = ({
     status,
   };
 
-  if (!isRecycled && status === undefined) {
+  if (!isRecycled) {
     queryParams.isPending = isPendingList ? "true" : "false";
   }
 
@@ -83,6 +87,68 @@ const QuotationTable = ({
           });
       }
     });
+  };
+
+  const handleMoveToPending = (id) => {
+    swal({
+      title: "Are you sure?",
+      text: "You want to move this quotation to Pending List?",
+      icon: "warning",
+      buttons: true,
+    }).then((willMove) => {
+      if (willMove) {
+        moveToPendingQuotation({ tenantDomain, id })
+          .unwrap()
+          .then(() => {
+            swal("Moved!", "Quotation moved to Pending List.", "success");
+          })
+          .catch((err) => {
+            swal(
+              "Error",
+              err?.data?.message || "Failed to move quotation to pending.",
+              "error",
+            );
+          });
+      }
+    });
+  };
+
+  const handleRestoreFromPending = (id) => {
+    swal({
+      title: "Are you sure?",
+      text: "You want to restore this quotation to the main list?",
+      icon: "warning",
+      buttons: true,
+    }).then((willRestore) => {
+      if (willRestore) {
+        restoreFromPendingQuotation({ tenantDomain, id })
+          .unwrap()
+          .then(() => {
+            swal("Restored!", "Quotation restored to main list.", "success");
+          })
+          .catch((err) => {
+            swal(
+              "Error",
+              err?.data?.message || "Failed to restore quotation.",
+              "error",
+            );
+          });
+      }
+    });
+  };
+
+  const handlePendingClick = (id) => {
+    if (handlePendingAction) {
+      handlePendingAction(id);
+      return;
+    }
+
+    if (isPendingList) {
+      handleRestoreFromPending(id);
+      return;
+    }
+
+    handleMoveToPending(id);
   };
 
   const quotationColumns = [
@@ -154,8 +220,7 @@ const QuotationTable = ({
       color: "#fff",
       label: "Download Quotation",
       href: (d) =>
-        `${import.meta.env.VITE_API_URL}/quotations/quotation/${
-          d._id
+        `${import.meta.env.VITE_API_URL}/quotations/quotation/${d._id
         }?tenantDomain=${tenantDomain}&companyProfileData=${encodeURIComponent(
           JSON.stringify(companyProfileData),
         )}`,
@@ -175,38 +240,23 @@ const QuotationTable = ({
       link: (d) => `/dashboard/update-quotation?id=${d._id}`,
     },
 
-    ...(status === "running"
-      ? [
-          {
-            key: "cancel",
-            icon: FaTimes,
-            color: "#fff",
-            label: "Cancel Quotation",
-            onClick: (d) => handleCancel(d._id),
-            disabled: (d) => cancelLoading || d.invoiced || d.is_invoiced,
-            tooltip: (d) =>
-              d.invoiced || d.is_invoiced
-                ? "Already Invoiced"
-                : "Cancel Quotation",
-          },
-        ]
-      : []),
 
-    ...(!isRecycled && status === undefined
+
+    ...(!isRecycled
       ? [
-          {
-            key: "pending",
-            icon: isPendingList ? Undo : AccessTime,
-            color: "#fff",
-            label: isPendingList
-              ? "Restore to Quotation List"
-              : "Move to Pending",
-            onClick: (d) => handlePendingAction?.(d._id),
-            tooltip: isPendingList
-              ? "Restore to Quotation List"
-              : "Move to Pending",
-          },
-        ]
+        {
+          key: "pending",
+          icon: isPendingList ? Undo : AccessTime,
+          color: "#fff",
+          label: isPendingList
+            ? "Restore to Quotation List"
+            : "Move to Pending",
+          onClick: (d) => handlePendingClick(d._id),
+          tooltip: isPendingList
+            ? "Restore to Quotation List"
+            : "Move to Pending",
+        },
+      ]
       : []),
 
     {

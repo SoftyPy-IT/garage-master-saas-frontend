@@ -35,11 +35,10 @@ import {
   StackedLineChart,
 } from "@mui/icons-material";
 
-const DashboardSummary = ({ accountSummary }) => {
-
+const DashboardSummary = ({ accountSummary, data }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  const [timeRange, setTimeRange] = useState("monthly");
+  const [timeRange, setTimeRange] = useState("total");
 
   const getDataByTimeRange = (category, subCategory = null) => {
     if (!accountSummary?.data?.[category]) return subCategory ? 0 : {};
@@ -59,14 +58,55 @@ const DashboardSummary = ({ accountSummary }) => {
 
     return subCategory ? 0 : {};
   };
-  const incomeData = getDataByTimeRange("income");
-  const expenseData = getDataByTimeRange("expense");
+
+  const getIncomeData = () => {
+    if (timeRange === "total" && data?.incomes) {
+      return {
+        totalAmount: data.incomes.totalIncomeAmount || 0,
+        totalInvoiceIncome: data.incomes.totalInvoiceIncome || 0,
+        totalOtherIncome: data.incomes.totalOtherIncome || 0,
+        serviceIncomeAmount: data.incomes.serviceIncomeAmount || 0,
+        partsIncomeAmount: data.incomes.partsIncomeAmount || 0,
+      };
+    }
+
+    const summaryIncome = getDataByTimeRange("income");
+    return {
+      totalAmount: summaryIncome.totalAmount || 0,
+      totalInvoiceIncome: summaryIncome.totalInvoiceIncome || 0,
+      totalOtherIncome: summaryIncome.totalOtherIncome || 0,
+      serviceIncomeAmount: summaryIncome.serviceIncomeAmount || 0,
+      partsIncomeAmount: summaryIncome.partsIncomeAmount || 0,
+    };
+  };
+
+  const getExpenseData = () => {
+    if (timeRange === "total" && data?.expense) {
+      return {
+        totalAmount: data.expense.totalExpenseAmount || 0,
+        invoiceCost: data.expense.totalInvoiceCost || 0,
+        totalOtherExpense: data.expense.totalOtherExpense || 0,
+      };
+    }
+
+    const summaryExpense = getDataByTimeRange("expense");
+    return {
+      totalAmount: summaryExpense.totalAmount || 0,
+      invoiceCost: summaryExpense.invoiceCost || 0,
+      totalOtherExpense: summaryExpense.totalOtherExpense || 0,
+    };
+  };
+
+  const incomeData = getIncomeData();
+  const expenseData = getExpenseData();
   const donationAmount = getDataByTimeRange("donation");
   const salaryAmount = getDataByTimeRange("salary");
   const netProfitAmount = getDataByTimeRange("netProfit");
 
   const totalIncome = incomeData.totalAmount || 0;
-  const totalExpense = accountSummary?.data?.netTotalExpense?.total || 0;
+  const totalExpense =
+    accountSummary?.data?.netTotalExpense?.[timeRange] ??
+    (timeRange === "total" ? data?.expense?.totalExpenseAmount || 0 : 0);
   const netProfit = netProfitAmount || totalIncome - totalExpense;
   const profitColor = netProfit >= 0 ? "success" : "error";
   const profitIcon = netProfit >= 0 ? <TrendingUp /> : <TrendingDown />;
@@ -371,7 +411,7 @@ const DashboardSummary = ({ accountSummary }) => {
               <Grid item xs={12} sm={6} md={12}>
                 <StatCard
                   title="Invoice Income"
-                  value={incomeData.serviceIncomeAmount || 0}
+                  value={incomeData.totalInvoiceIncome || 0}
                   icon={<AccountTree color="info" />}
                   color="info"
                 />

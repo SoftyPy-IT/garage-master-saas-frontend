@@ -1,17 +1,17 @@
 import axios from "axios";
 
-// ========== TOKEN MANAGEMENT FUNCTIONS ==========
+const TOKEN_KEY = "google_access_token";
+const PROFILE_KEY = "google_user_profile";
+const TIMESTAMP_KEY = "auth_timestamp";
+
 export const saveAuthSession = (accessToken, userProfile) => {
   try {
-    localStorage.setItem("google_access_token", accessToken);
-    localStorage.setItem("google_user_profile", JSON.stringify(userProfile));
-    localStorage.setItem("auth_timestamp", Date.now().toString());
+    localStorage.setItem(TOKEN_KEY, accessToken);
+    localStorage.setItem(PROFILE_KEY, JSON.stringify(userProfile));
+    localStorage.setItem(TIMESTAMP_KEY, Date.now().toString());
 
-    // Also save to sessionStorage for additional persistence
-    sessionStorage.setItem("google_access_token", accessToken);
-    sessionStorage.setItem("google_user_profile", JSON.stringify(userProfile));
-
-    console.log("Auth session saved successfully");
+    sessionStorage.setItem(TOKEN_KEY, accessToken);
+    sessionStorage.setItem(PROFILE_KEY, JSON.stringify(userProfile));
   } catch (error) {
     console.error("Error saving auth session:", error);
   }
@@ -19,15 +19,13 @@ export const saveAuthSession = (accessToken, userProfile) => {
 
 export const clearAuthSession = () => {
   try {
-    localStorage.removeItem("google_access_token");
-    localStorage.removeItem("google_user_profile");
-    localStorage.removeItem("auth_timestamp");
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(PROFILE_KEY);
+    localStorage.removeItem(TIMESTAMP_KEY);
     localStorage.removeItem("calendar_events");
 
-    sessionStorage.removeItem("google_access_token");
-    sessionStorage.removeItem("google_user_profile");
-
-    console.log("Auth session cleared");
+    sessionStorage.removeItem(TOKEN_KEY);
+    sessionStorage.removeItem(PROFILE_KEY);
   } catch (error) {
     console.error("Error clearing auth session:", error);
   }
@@ -35,31 +33,16 @@ export const clearAuthSession = () => {
 
 export const loadAuthSession = () => {
   try {
-    // Try to load from localStorage first
-    let token = localStorage.getItem("google_access_token");
-    let profile = localStorage.getItem("google_user_profile");
+    let token = localStorage.getItem(TOKEN_KEY);
+    let profile = localStorage.getItem(PROFILE_KEY);
 
-    // If not found in localStorage, try sessionStorage
     if (!token || !profile) {
-      token = sessionStorage.getItem("google_access_token");
-      profile = sessionStorage.getItem("google_user_profile");
+      token = sessionStorage.getItem(TOKEN_KEY);
+      profile = sessionStorage.getItem(PROFILE_KEY);
     }
 
     if (token && profile) {
-      const parsedProfile = JSON.parse(profile);
-
-      // Check if token is recent (within 1 hour)
-      const authTimestamp = localStorage.getItem("auth_timestamp");
-      const currentTime = Date.now();
-      const oneHour = 60 * 60 * 1000;
-
-      if (authTimestamp && currentTime - parseInt(authTimestamp) < oneHour) {
-        return { token, profile: parsedProfile };
-      } else {
-        // Token is too old, clear it
-        clearAuthSession();
-        return null;
-      }
+      return { token, profile: JSON.parse(profile) };
     }
 
     return null;
@@ -72,7 +55,6 @@ export const loadAuthSession = () => {
 
 export const verifyTokenValidity = async (token) => {
   try {
-    // Simple token validation by making a lightweight API call
     const response = await axios.get(
       "https://www.googleapis.com/oauth2/v1/tokeninfo",
       {
@@ -81,11 +63,7 @@ export const verifyTokenValidity = async (token) => {
       },
     );
 
-    // Check if token is valid and has calendar scope
-    if (response.data.expires_in > 0) {
-      return true;
-    }
-    return false;
+    return response.data.expires_in > 0;
   } catch (error) {
     console.error("Token validation failed:", error);
     return false;
