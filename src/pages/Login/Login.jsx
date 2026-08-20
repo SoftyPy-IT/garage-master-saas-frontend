@@ -1,8 +1,15 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/no-unescaped-entities */
-import { useState } from "react";
+
+import { useState, useMemo } from "react";
 import { useDispatch } from "react-redux";
-import { Button, Alert } from "@mui/material";
+import {
+  Button,
+  Alert,
+  Box,
+  Typography,
+  Divider,
+} from "@mui/material";
 import { Lock, Person } from "@mui/icons-material";
 import AuthLayout from "../../auth/AuthLayout";
 import { useTenantLoginMutation } from "../../redux/api/authApi";
@@ -14,8 +21,14 @@ import toast from "react-hot-toast";
 const Login = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
   const [tenantLogin] = useTenantLoginMutation();
   const dispatch = useDispatch();
+
+  // Show demo account ONLY on app.trustautosolution.com
+  const showDemoLogin = useMemo(() => {
+    return window.location.hostname === "app.trustautosolution.com";
+  }, []);
 
   const handleSubmit = async (data) => {
     setLoading(true);
@@ -29,11 +42,12 @@ const Login = () => {
         const user = res?.data?.user;
 
         dispatch(setUser({ user, token: accessToken }));
+
         document.cookie = `accessToken=${accessToken}; path=/; domain=.localhost; SameSite=Lax;`;
 
         toast.success(res.message || "Login successful!");
 
-        const tenantKey = user?.tenantId ? user.domain : "superadmin"; // domain from backend
+        const tenantKey = user?.tenantId ? user.domain : "superadmin";
         const isLocalhost = window.location.hostname.includes("localhost");
 
         const redirectURL =
@@ -42,8 +56,8 @@ const Login = () => {
               ? "http://localhost:5173/dashboard"
               : "https://garage.trustautosolution.com/dashboard/all-tenant-list"
             : isLocalhost
-              ? `http://${tenantKey}.localhost:5173/dashboard`
-              : `https://${tenantKey}/dashboard`;
+            ? `http://${tenantKey}.localhost:5173/dashboard`
+            : `https://${tenantKey}/dashboard`;
 
         setTimeout(() => {
           window.location.href = redirectURL;
@@ -59,7 +73,13 @@ const Login = () => {
     }
   };
 
-
+  // Demo Login
+  const handleDemoLogin = () => {
+    handleSubmit({
+      name: "Trust Auto Solution",
+      password: "Auto26!@#trust",
+    });
+  };
 
   return (
     <AuthLayout
@@ -69,6 +89,51 @@ const Login = () => {
       {error && (
         <Alert severity="error" sx={{ mb: 3 }}>
           {error}
+        </Alert>
+      )}
+
+      {showDemoLogin && (
+        <Alert
+          severity="info"
+          sx={{
+            mb: 3,
+            "& .MuiAlert-message": { width: "100%" },
+          }}
+        >
+          <Box>
+            <Typography variant="subtitle2" fontWeight="bold" mb={1}>
+              Demo Account
+            </Typography>
+
+            <Typography variant="body2">
+              <strong>Username:</strong> Trust Auto Solution
+            </Typography>
+
+            <Typography variant="body2" mb={2}>
+              <strong>Password:</strong> Auto26!@#trust
+            </Typography>
+
+            <Button
+              variant="contained"
+              size="small"
+              fullWidth
+              onClick={handleDemoLogin}
+              disabled={loading}
+            >
+              {loading ? "Signing in..." : "Login with Demo Account"}
+            </Button>
+
+            <Divider sx={{ my: 2 }} />
+
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              display="block"
+              textAlign="center"
+            >
+              Or sign in with your own account below
+            </Typography>
+          </Box>
         </Alert>
       )}
 
@@ -84,8 +149,8 @@ const Login = () => {
 
         <FormInput
           name="password"
-          label="User password"
-          placeholder="User password"
+          label="User Password"
+          placeholder="User Password"
           required
           icon={Lock}
           iconPosition="start"

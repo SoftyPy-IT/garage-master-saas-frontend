@@ -5,7 +5,7 @@ export const subscriptionPlans = [
     name: "Monthly Plan",
     price: "৳2000",
     period: "per month",
-    duration: 1, 
+    duration: 1,
     features: [
       "Up to 3 users",
       "Basic inventory management",
@@ -20,7 +20,7 @@ export const subscriptionPlans = [
     name: "Half Yearly Plan",
     price: "৳12,000",
     period: "per 6 months",
-    duration: 6, 
+    duration: 6,
     features: [
       "Up to 10 users",
       "Advanced inventory management",
@@ -36,7 +36,7 @@ export const subscriptionPlans = [
     name: "Yearly Plan",
     price: "৳24,000",
     period: "per year",
-    duration: 12, 
+    duration: 12,
     features: [
       "Unlimited users",
       "Complete inventory management",
