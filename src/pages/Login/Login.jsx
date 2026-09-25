@@ -3,8 +3,8 @@
 
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { Button, Alert, Typography, Box } from "@mui/material";
-import { Lock, Person } from "@mui/icons-material";
+import { Button, Alert, Typography, Box, IconButton, InputAdornment } from "@mui/material";
+import { Lock, Person, Visibility, VisibilityOff } from "@mui/icons-material";
 import AuthLayout from "../../auth/AuthLayout";
 import { useTenantLoginMutation } from "../../redux/api/authApi";
 import GarageForm from "../../components/form/Form";
@@ -15,6 +15,7 @@ import toast from "react-hot-toast";
 const Login = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false); // toggle state
   const [tenantLogin] = useTenantLoginMutation();
   const dispatch = useDispatch();
 
@@ -96,6 +97,20 @@ const Login = () => {
           required
           icon={Lock}
           iconPosition="start"
+          type={showPassword ? "text" : "password"}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  edge="end"
+                  tabIndex={-1}
+                >
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
         />
 
         <Button
