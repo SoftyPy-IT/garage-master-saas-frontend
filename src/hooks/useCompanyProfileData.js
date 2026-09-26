@@ -13,15 +13,16 @@ export const useCompanyProfileData = () => {
 
   const companyProfileData = profileData?.data
     ? {
-        companyName: profileData.data.companyName,
-        address: profileData.data.address,
-        website: profileData.data.website,
-        phone: profileData.data.phone,
-        email: profileData.data.email,
-        logo: profileData.data.logo?.[0] || null,
-        companyNameBN: profileData.data.companyNameBN,
-        description: profileData.data.description,
-      }
+      companyName: profileData.data.companyName,
+      address: profileData.data.address,
+      website: profileData.data.website,
+      phone: profileData.data.phone,
+      email: profileData.data.email,
+      logo: profileData.data.logo?.[0] || null,
+      companyNameBN: profileData.data.companyNameBN,
+      description: profileData.data.description,
+      whatsapp: profileData.data.whatsapp,
+    }
     : null;
 
   return {
