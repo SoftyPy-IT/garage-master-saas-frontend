@@ -3,7 +3,7 @@ import "./PreviewJobCard.css";
 import car from "../../../../public/assets/car3.jpeg";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 import { useReactToPrint } from "react-to-print";
-import { Button, Link } from "@mui/material";
+import { Button } from "@mui/material";
 import { WhatsApp } from "@mui/icons-material";
 import { WhatsappShareButton } from "react-share";
 import { useGetSingleJobCardQuery } from "../../../redux/api/jobCard";
