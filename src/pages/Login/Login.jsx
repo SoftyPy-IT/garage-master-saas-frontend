@@ -62,12 +62,18 @@ const Login = () => {
       } else {
         toast.error(res.message || "Invalid username or password!");
       }
-    } catch (err) {
-      toast.error(err?.data?.message || "Login failed. Please try again.");
-      setError("Invalid username or password. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+   
+} catch (err) {
+  const statusCode = err?.status || err?.originalStatus || err?.data?.err?.statusCode;
+  const message =
+    err?.data?.message || "Login failed. Please try again.";
+
+  setError(message);
+  toast.error(message);
+} finally {
+  setLoading(false);
+}
+
   };
 
   return (
